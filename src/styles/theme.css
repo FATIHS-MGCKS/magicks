@@ -1,0 +1,51 @@
+@layer base {
+  :root {
+    --magicks-base: #0a0a0a;
+    --magicks-elevated: #111111;
+    --magicks-glass: rgba(255, 255, 255, 0.035);
+    --magicks-border: rgba(255, 255, 255, 0.075);
+    --magicks-accent-a: #38bdf8;
+    --magicks-accent-b: #a78bfa;
+    --magicks-accent-c: #22d3ee;
+  }
+
+  html {
+    @apply scroll-smooth;
+    scroll-padding-top: 4.75rem;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--magicks-base);
+    color: #fafafa;
+    font-family: "SF Pro Display", "Manrope", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+
+  @media (min-width: 768px) {
+    body {
+      font-size: 16px;
+    }
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-normal;
+    letter-spacing: -0.02em;
+  }
+}
+
+.font-instrument {
+  font-family: "Instrument Serif", ui-serif, Georgia, serif;
+  letter-spacing: -0.02em;
+}
+
+.font-ui {
+  font-family: "SF Pro Display", "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
