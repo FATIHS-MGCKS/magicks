@@ -8,7 +8,7 @@ import { MagicksLogo } from "./MagicksLogo";
 const navLinks = [
   { label: "Leistungen", to: "/leistungen" },
   { label: "Projekte", to: "/projekte" },
-  { label: "Über MAGICKS", to: "/ueber-magicks" },
+  { label: "Über uns", to: "/ueber-uns" },
   { label: "Kontakt", to: "/kontakt" },
 ];
 

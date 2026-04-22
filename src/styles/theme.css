@@ -2,11 +2,13 @@
   :root {
     --magicks-base: #0a0a0a;
     --magicks-elevated: #111111;
+    --magicks-lifted: #161616;
     --magicks-glass: rgba(255, 255, 255, 0.035);
     --magicks-border: rgba(255, 255, 255, 0.075);
-    --magicks-accent-a: #38bdf8;
-    --magicks-accent-b: #a78bfa;
-    --magicks-accent-c: #22d3ee;
+    --magicks-border-strong: rgba(255, 255, 255, 0.16);
+    --magicks-text-1: rgba(255, 255, 255, 0.95);
+    --magicks-text-2: rgba(255, 255, 255, 0.6);
+    --magicks-text-3: rgba(255, 255, 255, 0.38);
   }
 
   html {
@@ -27,17 +29,16 @@
     letter-spacing: -0.01em;
   }
 
-  @media (min-width: 768px) {
-    body {
-      font-size: 16px;
-    }
-  }
-
   h1,
   h2,
   h3 {
     @apply font-normal;
     letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
   }
 }
 

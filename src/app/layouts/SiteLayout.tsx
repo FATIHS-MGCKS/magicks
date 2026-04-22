@@ -18,6 +18,7 @@ export function SiteLayout() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] font-sans text-zinc-100" style={{ overflowX: "clip" }}>
+      <div aria-hidden className="magicks-grain" />
       <Navbar />
       <Outlet />
       <Footer />

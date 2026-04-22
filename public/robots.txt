@@ -1,0 +1,9 @@
+# MAGICKS Studio — crawler directives.
+# Public site, fully indexable. Legal pages carry their own noindex
+# meta (Impressum, Datenschutz) — blocking them here would prevent
+# that signal from being read, so they're left crawlable on purpose.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://magicks.studio/sitemap.xml

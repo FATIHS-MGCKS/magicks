@@ -1,28 +1,23 @@
-import { useEffect } from "react";
-import { Hero } from "../components/Hero";
-import { ThinkingSection } from "../components/ThinkingSection";
-import { Services } from "../components/Services";
-import { Process } from "../components/Process";
-import { CaseStudies } from "../components/CaseStudies";
-import { HomePositionSection } from "../components/HomePositionSection";
-import { HomeCapabilitySection } from "../components/HomeCapabilitySection";
-import { CtaSection } from "../components/CtaSection";
+import { Hero } from "../components/home/Hero";
+import { ValueStatement } from "../components/home/ValueStatement";
+import { Services } from "../components/home/Services";
+import { WhyMagicks } from "../components/home/WhyMagicks";
+import { About } from "../components/home/About";
+import { FinalCTA } from "../components/home/FinalCTA";
+import { RouteSEO } from "../seo/RouteSEO";
 
 export default function HomePage() {
-  useEffect(() => {
-    document.title = "MAGICKS — Digitale Markenauftritte & Lösungen";
-  }, []);
-
   return (
-    <main>
-      <Hero />
-      <ThinkingSection />
-      <Services />
-      <Process />
-      <CaseStudies />
-      <HomePositionSection />
-      <HomeCapabilitySection />
-      <CtaSection />
-    </main>
+    <>
+      <RouteSEO path="/" />
+      <main>
+        <Hero />
+        <ValueStatement />
+        <Services />
+        <WhyMagicks />
+        <About />
+        <FinalCTA />
+      </main>
+    </>
   );
 }

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MAGICKS Studio  default Open Graph fallback.
+
+  Infrastructure-only placeholder. Pages can (and should) ship their
+  own og:image over time; this file exists so that crawlers never pull
+  a 404 for the site-level default.
+
+  Dimensions: 1200×630  the canonical 1.91:1 OG ratio.
+  Palette: #0A0A0A background, #F3F7FF foreground  matches the site.
+  No imagery beyond the wordmark; no copy beyond the brand signature.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="MAGICKS Studio">
+  <rect width="1200" height="630" fill="#0A0A0A"/>
+
+  <!-- Editorial inner frame  mirrors the hairline rule idiom on the site. -->
+  <g stroke="#F3F7FF" fill="none">
+    <rect x="72" y="72" width="1056" height="486" stroke-opacity="0.08" stroke-width="1"/>
+    <line x1="72" y1="118" x2="1128" y2="118" stroke-opacity="0.06" stroke-width="1"/>
+    <line x1="72" y1="512" x2="1128" y2="512" stroke-opacity="0.06" stroke-width="1"/>
+  </g>
+
+  <!-- Top-left folio. -->
+  <text x="96" y="104"
+        font-family="'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace"
+        font-size="14" letter-spacing="4.2"
+        fill="#F3F7FF" fill-opacity="0.46">§ 00  STUDIO · MMXXVI</text>
+
+  <!-- Top-right specimen. -->
+  <text x="1104" y="104" text-anchor="end"
+        font-family="'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace"
+        font-size="14" letter-spacing="4.2"
+        fill="#F3F7FF" fill-opacity="0.34">MAGICKS.STUDIO</text>
+
+  <!-- Wordmark. Generous optical size, serif italic cadence. -->
+  <text x="600" y="332" text-anchor="middle"
+        font-family="'Instrument Serif', 'Cormorant Garamond', Georgia, 'Times New Roman', serif"
+        font-size="176" letter-spacing="-6"
+        fill="#F3F7FF">MAGICKS</text>
+
+  <!-- Italic coda. -->
+  <text x="600" y="392" text-anchor="middle"
+        font-family="'Instrument Serif', 'Cormorant Garamond', Georgia, 'Times New Roman', serif"
+        font-size="36" font-style="italic" letter-spacing="0.2"
+        fill="#F3F7FF" fill-opacity="0.68">Studio</text>
+
+  <!-- Bottom strap  quiet editorial line. -->
+  <text x="600" y="548" text-anchor="middle"
+        font-family="'SF Mono', 'IBM Plex Mono', Menlo, Consolas, monospace"
+        font-size="12" letter-spacing="5.2"
+        fill="#F3F7FF" fill-opacity="0.38">WEBSITES · SHOPS · WEB-SOFTWARE · KI-AUTOMATIONEN</text>
+</svg>
