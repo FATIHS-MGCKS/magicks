@@ -1,6 +1,26 @@
 @import "./fonts.css";
 @import "./tailwind.css";
 
+/* ——————————————————————————————————————————————————
+   Mobile-aware uppercase mono label tracking cap.
+   Narrow viewports cannot carry desktop-level 0.30em–0.46em tracking
+   used for editorial folios — letters disconnect, lines wrap mid-word,
+   empty gaps appear inside label rows. On ≤640px we re-anchor uppercase
+   mono labels to a calmer ceiling. Declared unlayered so it wins over
+   Tailwind utility-level letter-spacing regardless of source order.
+   Desktop stays untouched.
+   —————————————————————————————————————————————————— */
+@media (max-width: 640px) {
+  .font-mono.uppercase,
+  .hero-vertical-credit {
+    letter-spacing: 0.22em;
+  }
+  /* Opt-out escape hatch when a specific label really needs wider tracking. */
+  .font-mono.uppercase.tracking-mobile-keep {
+    letter-spacing: inherit;
+  }
+}
+
 @layer components {
   .layout-max {
     @apply mx-auto w-full max-w-[1280px];
@@ -157,6 +177,17 @@
       monospace;
     font-feature-settings: "tnum" 1, "zero" 1;
     font-variant-numeric: tabular-nums slashed-zero;
+  }
+
+  /* Desktop-level editorial label with optional compact mobile rendering.
+     Use on standalone uppercase mono folios where mobile needs restraint. */
+  .editorial-folio {
+    font-family: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    font-feature-settings: "tnum" 1, "zero" 1;
+    font-variant-numeric: tabular-nums slashed-zero;
+    text-transform: uppercase;
+    font-weight: 500;
+    line-height: 1;
   }
 
   /* ——————————————————————————————————————————————————

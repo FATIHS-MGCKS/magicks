@@ -1392,10 +1392,10 @@ export default function KiAutomationenPage() {
                       Direkt
                     </span>
                     <a
-                      href="mailto:hello@magicks.studio"
+                      href="mailto:hello@magicks.de"
                       className="font-instrument text-[1.1rem] italic text-white no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white/82 sm:text-[1.25rem] md:text-[1.35rem]"
                     >
-                      hello@magicks.studio
+                      hello@magicks.de
                     </a>
                   </div>
                 </div>

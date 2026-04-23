@@ -754,13 +754,13 @@ export default function KiAutomationUnternehmenPage() {
 
                         {/* Direktkontakt — italic serif email link */}
                         <a
-                          href="mailto:hello@magicks.studio"
+                          href="mailto:hello@magicks.de"
                           className="group/mail relative inline-flex items-baseline gap-2 text-[15px] font-medium text-white/82 no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white sm:text-[15.5px] md:text-[16px]"
                           aria-label="Direktkontakt per E-Mail"
                         >
                           <span className="relative pb-2">
                             <span className="font-instrument italic tracking-[-0.006em]">
-                              hello@magicks.studio
+                              hello@magicks.de
                             </span>
                             <span
                               aria-hidden
@@ -1848,10 +1848,10 @@ export default function KiAutomationUnternehmenPage() {
                       Direkt
                     </span>
                     <a
-                      href="mailto:hello@magicks.studio"
+                      href="mailto:hello@magicks.de"
                       className="font-instrument text-[1.1rem] italic text-white no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white/82 sm:text-[1.25rem] md:text-[1.35rem]"
                     >
-                      hello@magicks.studio
+                      hello@magicks.de
                     </a>
                   </div>
                 </div>

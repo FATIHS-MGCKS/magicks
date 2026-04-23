@@ -1515,10 +1515,10 @@ export default function LeistungenPage() {
                     oder direkt
                   </span>
                   <a
-                    href="mailto:hello@magicks.studio"
+                    href="mailto:hello@magicks.de"
                     className="font-instrument text-[1.1rem] italic text-white/88 no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white sm:text-[1.2rem]"
                   >
-                    hello@magicks.studio
+                    hello@magicks.de
                   </a>
                 </div>
               </div>

@@ -310,10 +310,10 @@ export function FinalCTA() {
                   Direkt
                 </span>
                 <a
-                  href="mailto:hello@magicks.studio"
+                  href="mailto:hello@magicks.de"
                   className="font-instrument text-[1.25rem] italic text-white no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white/82 sm:text-[1.45rem] md:text-[1.6rem]"
                 >
-                  hello@magicks.studio
+                  hello@magicks.de
                 </a>
               </div>
 

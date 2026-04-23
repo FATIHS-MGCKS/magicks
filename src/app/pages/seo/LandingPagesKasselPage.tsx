@@ -854,11 +854,13 @@ export default function LandingPagesKasselPage() {
               </div>
 
               {/* ----- Campaign meta triad -----
-                  The first stamp (Ziel · Conversion) carries the
-                  conversion intent and is rendered a notch brighter —
-                  a subtle hierarchy within a flat row of editorial
-                  stamps, not a full visual pop. */}
-              <div className="mt-14 flex flex-wrap items-center gap-x-7 gap-y-3 sm:mt-16 md:mt-20">
+                  Mobile: column-stacked ledger (3 lines, left-rail num,
+                  relaxed tracking) so the stamps never wrap mid-row
+                  and never spread into dead horizontal gaps.
+                  Desktop: inline row of three flat editorial stamps,
+                  the first (Ziel · Conversion) rendered a notch brighter
+                  for subtle hierarchy. */}
+              <div className="mt-12 flex flex-col gap-2 sm:mt-16 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-7 sm:gap-y-3 md:mt-20">
                 {[
                   { num: "01", label: "Ziel · Conversion", primary: true },
                   { num: "02", label: "Studio · Kassel", primary: false },
@@ -867,7 +869,7 @@ export default function LandingPagesKasselPage() {
                   <span
                     key={m.num}
                     data-lp-meta
-                    className={`font-mono flex items-center gap-3 text-[10px] font-medium uppercase leading-none tracking-[0.3em] sm:text-[10.5px] ${
+                    className={`font-mono flex items-center gap-3 text-[10px] font-medium uppercase leading-none tracking-[0.2em] sm:tracking-[0.3em] sm:text-[10.5px] ${
                       m.primary ? "text-white/78" : "text-white/48"
                     }`}
                   >
@@ -927,14 +929,18 @@ export default function LandingPagesKasselPage() {
           <div className="relative layout-max">
             <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
               <div data-lp-reveal className="md:pt-2">
-                <div className="flex flex-col gap-4">
-                  <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
+                {/* Mobile: compact 2-line header (folio + editorial triplet).
+                    Desktop: full 3-label register with ChapterMarker rail. */}
+                <div className="flex flex-col gap-2 sm:gap-4">
+                  <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-white/52 sm:tracking-[0.34em] sm:text-[10.5px] sm:text-white/48">
                     § 01 — Prinzip
                   </p>
-                  <ChapterMarker num="01" label="Fokus" />
+                  <div className="hidden sm:block">
+                    <ChapterMarker num="01" label="Fokus" />
+                  </div>
                   <span
                     aria-hidden
-                    className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/34 sm:text-[10.5px]"
+                    className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.18em] text-white/40 sm:tracking-[0.3em] sm:text-[10.5px] sm:text-white/34"
                   >
                     Ziel · Führung · Handlung
                   </span>

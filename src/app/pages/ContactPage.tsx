@@ -1027,7 +1027,7 @@ export default function ContactPage() {
 
               <div className="relative border-t border-white/[0.14] pt-8 md:border-l md:border-t-0 md:pl-10 md:pt-2 lg:pl-14">
                 <a
-                  href="mailto:hello@magicks.studio"
+                  href="mailto:hello@magicks.de"
                   className="group inline-flex flex-col gap-3 no-underline"
                 >
                   <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/40 transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:text-white/72 sm:text-[10px]">
@@ -1035,7 +1035,7 @@ export default function ContactPage() {
                   </span>
                   <span className="relative inline-block">
                     <span className="font-instrument text-[2rem] italic leading-[1.05] tracking-[-0.025em] text-white transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:text-white/84 sm:text-[2.5rem] md:text-[2.95rem] lg:text-[3.25rem]">
-                      hello@magicks.studio
+                      hello@magicks.de
                     </span>
                     <span
                       aria-hidden

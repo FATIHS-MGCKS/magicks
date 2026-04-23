@@ -77,7 +77,7 @@ function submitAnfrage(data: FormState): void {
   ].filter(Boolean);
 
   const href =
-    `mailto:hello@magicks.studio` +
+    `mailto:hello@magicks.de` +
     `?subject=${encodeURIComponent(subject)}` +
     `&body=${encodeURIComponent(bodyLines.join("\n"))}`;
 
@@ -169,10 +169,10 @@ export function ProjectIntakeForm() {
 
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-8">
           <a
-            href="mailto:hello@magicks.studio"
+            href="mailto:hello@magicks.de"
             className="font-instrument text-[1.2rem] italic tracking-[-0.01em] text-white no-underline transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:text-white/82 sm:text-[1.3rem] md:text-[1.4rem]"
           >
-            hello@magicks.studio
+            hello@magicks.de
           </a>
 
           <span aria-hidden className="hidden h-3 w-px bg-white/22 sm:inline-block" />
@@ -348,7 +348,7 @@ export function ProjectIntakeForm() {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
           <div className="flex flex-col gap-1.5">
             <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.36em] text-white/50 sm:text-[10.5px]">
-              § Anfrage · hello@magicks.studio
+              § Anfrage · hello@magicks.de
             </span>
             <span id={`${uid}-hint`} className="font-ui text-[12.5px] leading-[1.55] text-white/46 sm:text-[13px]">
               Kein Druck, keine Agenturschleife — erste Einschätzung in der Regel innerhalb von 24 Stunden.

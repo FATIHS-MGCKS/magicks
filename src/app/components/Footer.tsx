@@ -30,13 +30,13 @@ const locationNav = [
 ];
 
 const linkClass =
-  "font-ui text-[14.5px] text-white/50 magicks-duration-hover magicks-ease-out transition-colors hover:text-white";
+  "font-ui inline-flex min-h-[36px] items-center text-[14.5px] text-white/50 magicks-duration-hover magicks-ease-out transition-colors hover:text-white";
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/[0.06] bg-[#0A0A0A] px-5 pb-7 pt-12 md:pt-16">
+    <footer className="border-t border-white/[0.06] bg-[#0A0A0A] px-5 pb-8 pt-14 md:pt-16">
       <div className="layout-max">
-        <div className="grid gap-12 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] md:gap-10 lg:gap-14">
+        <div className="grid gap-10 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] md:gap-10 lg:gap-14">
           {/* Brand column */}
           <div className="max-w-sm">
             <Link to="/" className="inline-block no-underline">
@@ -120,10 +120,10 @@ export function Footer() {
           </p>
           <p className="font-ui text-[12.5px] text-white/34">
             <a
-              href="mailto:hello@magicks.studio"
+              href="mailto:hello@magicks.de"
               className="magicks-duration-hover magicks-ease-out transition-colors hover:text-white/70"
             >
-              hello@magicks.studio
+              hello@magicks.de
             </a>
           </p>
         </div>

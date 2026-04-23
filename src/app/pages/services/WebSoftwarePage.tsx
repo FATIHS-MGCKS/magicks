@@ -520,8 +520,8 @@ export default function WebSoftwarePage() {
                 </Link>
               </div>
 
-              {/* Meta triad */}
-              <div className="mt-14 flex flex-wrap items-center gap-x-7 gap-y-3 sm:mt-18 md:mt-20">
+              {/* Meta triad — mobile stacks as ledger column. */}
+              <div className="mt-12 flex flex-col gap-2 sm:mt-18 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-7 sm:gap-y-3 md:mt-20">
                 {["Struktur", "System", "Prozess"].map((m, i) => (
                   <span
                     key={m}
@@ -1215,10 +1215,10 @@ export default function WebSoftwarePage() {
                       Direkt
                     </span>
                     <a
-                      href="mailto:hello@magicks.studio"
+                      href="mailto:hello@magicks.de"
                       className="font-instrument text-[1.1rem] italic text-white no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white/82 sm:text-[1.25rem] md:text-[1.35rem]"
                     >
-                      hello@magicks.studio
+                      hello@magicks.de
                     </a>
                   </div>
                 </div>

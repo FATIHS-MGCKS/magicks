@@ -14,7 +14,7 @@ import {
  * Der Inhalt dieser Seite basiert ausschließlich auf dem realen
  * Implementierungsstand der Website. Konkret berücksichtigt:
  *
- *   · Hosting              Vercel (vercel.json im Repo)
+ *   · Hosting              Hostinger (EU-Rechenzentrum)
  *   · Externe Schriften    Google Fonts (Instrument Serif, Manrope)
  *                          geladen über fonts.googleapis.com und
  *                          fonts.gstatic.com
@@ -97,10 +97,10 @@ export default function DatenschutzPage() {
           <p>
             E-Mail:{" "}
             <a
-              href="mailto:hello@magicks.studio"
+              href="mailto:hello@magicks.de"
               className="text-white no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color] hover:underline hover:decoration-white/60"
             >
-              hello@magicks.studio
+              hello@magicks.de
             </a>
           </p>
         </LegalSection>
@@ -111,11 +111,12 @@ export default function DatenschutzPage() {
         <LegalSection folio="§ 03" title={<>Hosting &amp; Server-Log-Dateien</>}>
           <p>
             Diese Website wird bei{" "}
-            <span className="text-white/88">Vercel Inc.</span> gehostet (340 S
-            Lemon Ave #4133, Walnut, CA 91789, USA). Beim Aufruf der Website
-            werden durch den Hosting-Provider automatisch Informationen in
-            sogenannten Server-Log-Dateien erfasst, die Ihr Browser automatisch
-            übermittelt. Dazu zählen insbesondere:
+            <span className="text-white/88">Hostinger International Ltd.</span>{" "}
+            gehostet (61 Lordou Vironos Street, 6023 Larnaca, Zypern). Die
+            Ausliefer­ung erfolgt über Rechenzentren innerhalb der Europäischen
+            Union. Beim Aufruf der Website werden durch den Hosting-Provider
+            automatisch Informationen in sogenannten Server-Log-Dateien
+            erfasst, die Ihr Browser übermittelt. Dazu zählen insbesondere:
           </p>
           <ul className="list-none space-y-1.5 border-l border-white/[0.14] pl-5">
             <li>IP-Adresse des anfragenden Endgeräts</li>
@@ -134,17 +135,15 @@ export default function DatenschutzPage() {
             stabilen Betrieb der Website.
           </p>
           <p>
-            Mit Vercel besteht ein Auftrags­verarbeitungs­vertrag gemäß Art. 28
-            DSGVO. Bei einer Datenübermittlung in die USA stützt sich Vercel
-            insbesondere auf EU-Standard­vertrags­klauseln; weitere
-            Informationen finden Sie in der{" "}
+            Mit Hostinger besteht ein Auftrags­verarbeitungs­vertrag gemäß
+            Art. 28 DSGVO. Weitere Informationen finden Sie in der{" "}
             <a
-              href="https://vercel.com/legal/privacy-policy"
+              href="https://www.hostinger.com/legal/privacy-policy"
               target="_blank"
               rel="noopener noreferrer"
               className="text-white/88 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
             >
-              Datenschutz­erklärung von Vercel
+              Datenschutz­erklärung von Hostinger
             </a>
             .
           </p>
@@ -181,10 +180,10 @@ export default function DatenschutzPage() {
             die gewählte Projekt­kategorie sowie Ihre Nachricht. Alternativ
             können Sie uns jederzeit direkt an{" "}
             <a
-              href="mailto:hello@magicks.studio"
+              href="mailto:hello@magicks.de"
               className="text-white no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color] hover:underline hover:decoration-white/60"
             >
-              hello@magicks.studio
+              hello@magicks.de
             </a>{" "}
             schreiben.
           </p>
@@ -316,7 +315,7 @@ export default function DatenschutzPage() {
           </p>
           <p>
             Technisch erforderliche Cookies können durch den Hosting-Anbieter
-            (Vercel) zur Auslieferung und zum sicheren Betrieb der Website
+            (Hostinger) zur Auslieferung und zum sicheren Betrieb der Website
             gesetzt werden. Diese Verarbeitung ist für die Darstellung der
             Website zwingend erforderlich; Rechtsgrundlage ist § 25 Abs. 2
             Nr. 2 TDDDG in Verbindung mit Art. 6 Abs. 1 lit. f DSGVO. Eine
@@ -381,10 +380,10 @@ export default function DatenschutzPage() {
             Zur Ausübung dieser Rechte genügt eine formlose Mitteilung per
             E-Mail an{" "}
             <a
-              href="mailto:hello@magicks.studio"
+              href="mailto:hello@magicks.de"
               className="text-white no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color] hover:underline hover:decoration-white/60"
             >
-              hello@magicks.studio
+              hello@magicks.de
             </a>
             . Unabhängig davon haben Sie das Recht, sich bei einer Datenschutz-
             Aufsichts­behörde zu beschweren. Zuständig für uns ist{" "}
@@ -441,10 +440,10 @@ export default function DatenschutzPage() {
           <LegalFooter>
             Bei Fragen rund um den Datenschutz schreiben Sie uns direkt an{" "}
             <a
-              href="mailto:hello@magicks.studio"
+              href="mailto:hello@magicks.de"
               className="text-white/82 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
             >
-              hello@magicks.studio
+              hello@magicks.de
             </a>{" "}
             oder nutzen Sie die{" "}
             <Link

@@ -415,7 +415,7 @@ export function About() {
             >
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[0.95rem] border border-white/[0.08] bg-[#0A0A0A] shadow-[0_2px_6px_-1px_rgba(0,0,0,0.55),0_44px_130px_-60px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.06)]">
                 <img
-                  src="/media/home/about-studio.png"
+                  src="/media/home/about-studio.webp"
                   alt="Ruhiger Studio-Arbeitsplatz: Leinen-Notizbuch, Messinglineal, gefaltete Print-Proofs, Olivenzweig und ein matter Laptop bei weichem Seitenlicht."
                   loading="lazy"
                   decoding="async"

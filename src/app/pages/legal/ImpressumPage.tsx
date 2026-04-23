@@ -15,7 +15,7 @@ import {
  *   · Firmenname       — MAGICKS Studio
  *   · Inhaber / GF     — Fatih Serin
  *   · Anschrift        — Schwabstr. 7a, 34125 Kassel
- *   · E-Mail           — hello@magicks.studio (öffentlich auf
+ *   · E-Mail           — hello@magicks.de (öffentlich auf
  *                        der Seite ausgewiesen und damit eindeutig
  *                        dem Studio zugeordnet)
  *
@@ -67,10 +67,10 @@ export default function ImpressumPage() {
           <p>
             E-Mail:{" "}
             <a
-              href="mailto:hello@magicks.studio"
+              href="mailto:hello@magicks.de"
               className="text-white no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color] hover:underline hover:decoration-white/60"
             >
-              hello@magicks.studio
+              hello@magicks.de
             </a>
           </p>
           <p className="text-white/56">
@@ -209,10 +209,10 @@ export default function ImpressumPage() {
             </Link>{" "}
             oder schreiben Sie direkt an{" "}
             <a
-              href="mailto:hello@magicks.studio"
+              href="mailto:hello@magicks.de"
               className="text-white/82 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
             >
-              hello@magicks.studio
+              hello@magicks.de
             </a>
             . Hinweise zur Verarbeitung personenbezogener Daten finden Sie in
             unserer{" "}

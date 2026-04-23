@@ -26,24 +26,25 @@ export function SectionTransition({
   return (
     <div
       aria-hidden
-      className={`relative ${bg} px-5 py-10 sm:px-8 sm:py-12 md:px-12 md:py-14 lg:px-16`}
+      className={`relative ${bg} px-5 py-7 sm:px-8 sm:py-12 md:px-12 md:py-14 lg:px-16`}
     >
       <div className="layout-max">
-        <div className="flex items-center gap-5 sm:gap-7">
-          <span aria-hidden className="h-px w-10 bg-white/22 sm:w-16" />
+        <div className="flex items-center gap-3 sm:gap-7">
+          <span aria-hidden className="h-px w-8 bg-white/22 sm:w-16" />
 
-          <span className="font-mono whitespace-nowrap text-[9px] font-medium uppercase leading-none tracking-[0.42em] text-white/38 sm:text-[9.5px] md:text-[10px]">
+          {/* Mobile: compact forward signage only. Desktop: full from→to register. */}
+          <span className="hidden sm:inline font-mono whitespace-nowrap text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/38 md:text-[10px]">
             {from}
           </span>
 
           <span
             aria-hidden
-            className="font-mono flex-shrink-0 text-[9px] font-medium leading-none tracking-[0.3em] text-white/38 sm:text-[9.5px] md:text-[10px]"
+            className="font-mono flex-shrink-0 text-[10px] font-medium leading-none tracking-[0.3em] text-white/48 sm:text-[9.5px] sm:text-white/38 md:text-[10px]"
           >
             ↘
           </span>
 
-          <span className="font-mono whitespace-nowrap text-[9px] font-medium uppercase leading-none tracking-[0.42em] text-white/58 sm:text-[9.5px] md:text-[10px]">
+          <span className="font-mono whitespace-nowrap text-[9.5px] font-medium uppercase leading-none tracking-[0.22em] text-white/64 sm:tracking-[0.42em] sm:text-white/58 md:text-[10px]">
             {to}
           </span>
 

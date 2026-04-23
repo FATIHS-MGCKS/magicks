@@ -1120,10 +1120,10 @@ export default function UeberUnsPage() {
                     oder direkt
                   </span>
                   <a
-                    href="mailto:hello@magicks.studio"
+                    href="mailto:hello@magicks.de"
                     className="font-instrument text-[1.1rem] italic tracking-[-0.01em] text-white/86 no-underline transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:text-white sm:text-[1.18rem]"
                   >
-                    hello@magicks.studio
+                    hello@magicks.de
                   </a>
                 </div>
               </div>

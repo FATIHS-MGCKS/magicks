@@ -63,12 +63,12 @@ export function Navbar() {
 
         <button
           type="button"
-          className="rounded-full p-2 text-white md:hidden"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-white md:hidden"
           onClick={() => setMenuOpen((o) => !o)}
           aria-expanded={menuOpen}
           aria-label={menuOpen ? "Menü schließen" : "Menü öffnen"}
         >
-          {menuOpen ? <X className="h-5 w-5" strokeWidth={1.25} /> : <Menu className="h-5 w-5" strokeWidth={1.25} />}
+          {menuOpen ? <X className="h-[22px] w-[22px]" strokeWidth={1.25} /> : <Menu className="h-[22px] w-[22px]" strokeWidth={1.25} />}
         </button>
       </nav>
 
@@ -80,20 +80,20 @@ export function Navbar() {
             aria-label="Menü schließen"
             onClick={() => setMenuOpen(false)}
           />
-          <div className="liquid-glass liquid-glass-nav pointer-events-auto relative z-50 layout-max mt-2 rounded-2xl p-4 md:hidden">
-            <div className="flex flex-col gap-0.5">
+          <div className="liquid-glass liquid-glass-nav pointer-events-auto relative z-50 layout-max mt-2 rounded-2xl p-3 md:hidden">
+            <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="font-ui magicks-duration-hover magicks-ease-out rounded-lg px-3 py-2.5 text-[15px] font-medium text-white/78 transition-colors hover:bg-white/[0.05] hover:text-white"
+                  className="font-ui magicks-duration-hover magicks-ease-out flex min-h-[48px] items-center rounded-xl px-4 text-[15px] font-medium text-white/82 transition-colors hover:bg-white/[0.05] hover:text-white"
                 >
                   {link.label}
                 </Link>
               ))}
               <Link
                 to="/kontakt"
-                className="font-ui mt-3 rounded-full bg-white py-3.5 text-center text-[15px] font-medium text-black"
+                className="font-ui mt-3 flex min-h-[52px] items-center justify-center rounded-full bg-white text-[15px] font-semibold text-black"
               >
                 Unverbindlich anfragen
               </Link>

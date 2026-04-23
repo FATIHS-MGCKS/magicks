@@ -36,7 +36,7 @@ const SERVICES: Service[] = [
       "Markenauftritte und Leadstrecken als zusammenhängendes System — nicht als Einzelseiten.",
     metric: "Von Auftritt bis Conversion",
     href: "/websites-landingpages",
-    image: "/media/home/service-websites.png",
+    image: "/media/home/service-websites.webp",
     imageAlt:
       "Editorial-Website auf einem Laptop, daneben ein Messinglineal und ein gefalteter Print-Proof auf dunklem Walnut-Desk.",
   },
@@ -49,7 +49,7 @@ const SERVICES: Service[] = [
     teaser: "Komplexe Produkte führbar machen — vom ersten Klick bis zur sauberen Übergabe.",
     metric: "Shopware · Shopify · Custom",
     href: "/shops-produktkonfiguratoren",
-    image: "/media/home/service-shops.png",
+    image: "/media/home/service-shops.webp",
     imageAlt:
       "Produktkonfigurator für eine moderne Terrassenüberdachung auf einem Laptop, darunter ein architektonischer Bauplan.",
   },
@@ -62,7 +62,7 @@ const SERVICES: Service[] = [
     teaser: "Interne Systeme, die Arbeit bündeln, statt neue manuelle Schleifen zu eröffnen.",
     metric: "Intern · Multi-Tenant · API",
     href: "/web-software",
-    image: "/media/home/service-software.png",
+    image: "/media/home/service-software.webp",
     imageAlt:
       "Mehrpaneel-Plattform mit Projekttabelle, Statuschips und Timeline-Drawer auf einem Wide-Monitor vor einer Betonwand.",
   },
@@ -75,7 +75,7 @@ const SERVICES: Service[] = [
     teaser: "Wiederkehrende Last aus dem Team holen — nachvollziehbar und wartbar.",
     metric: "n8n · Agents · LLM-Integration",
     href: "/ki-automationen-integrationen",
-    image: "/media/home/service-automation.png",
+    image: "/media/home/service-automation.webp",
     imageAlt:
       "Drei verbundene UI-Fragmente — Anfrage, Verarbeitung, CRM-Eintrag — auf einer dunklen Gitterplatte, verbunden durch feine Flusslinien.",
   },

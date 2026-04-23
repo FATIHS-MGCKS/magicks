@@ -4,15 +4,20 @@ type MagicksLogoProps = {
 };
 
 /**
- * Offizielles MAGICKS-Wordmark (PNG mit Transparenz).
+ * Offizielles MAGICKS-Wordmark (WebP mit Transparenz).
+ * Intrinsic width/height hints prevent CLS when the bitmap arrives
+ * after initial layout. Ratio ≈ 977 × 354 = 2.76 : 1.
  */
 export function MagicksLogo({ className = "h-8" }: MagicksLogoProps) {
   return (
     <img
-      src="/magicks-logo.png"
+      src="/magicks-logo.webp"
       alt="MAGICKS"
+      width={977}
+      height={354}
       className={`w-auto shrink-0 object-contain object-left ${className}`}
       decoding="async"
+      fetchPriority="high"
     />
   );
 }

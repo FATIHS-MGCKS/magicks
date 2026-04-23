@@ -17,9 +17,31 @@ import { gsap, ScrollTrigger } from "./gsap";
  * Helpers avoid springy easing. They never use `back.out`, `elastic`, or
  * overshoot — those feel app-like. Cinematic pacing comes from
  * `power2.inOut` curves across a wide scroll distance, not from bounces.
+ *
+ * Mobile adaptation:
+ *   Narrow viewports (<= 640px) scale down blur radius and yFrom/yTo
+ *   displacement. CSS `filter: blur()` is GPU-expensive on iOS Safari
+ *   and large Y displacement amplifies the perceived "jank" when the
+ *   user flicks quickly. The desktop experience is unchanged.
  */
 
 type MaybeEl = Element | string | null;
+
+/** Narrow-viewport detection. Cached lazily; SSR-safe. */
+function isNarrowViewport(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(max-width: 640px)").matches;
+}
+
+/** Mobile-adaptive blur: halve radius on narrow viewports (min 1.5px). */
+function adaptBlur(blur: number): number {
+  return isNarrowViewport() ? Math.max(1.5, blur * 0.5) : blur;
+}
+
+/** Mobile-adaptive displacement: soften to 65% on narrow viewports. */
+function adaptY(y: number): number {
+  return isNarrowViewport() ? Math.round(y * 0.65) : y;
+}
 
 export type PresenceEnvelopeOptions = {
   /** Trigger element (defaults to the target itself). */
@@ -76,6 +98,9 @@ export function presenceEnvelope(
   const halfHold = holdRatio / 2;
   const entryEnd = 0.5 - halfHold;
   const exitStart = 0.5 + halfHold;
+  const blurPx = adaptBlur(blur);
+  const yFromPx = adaptY(yFrom);
+  const yToPx = adaptY(yTo);
 
   targets.forEach((el, i) => {
     if (!el) return;
@@ -86,7 +111,7 @@ export function presenceEnvelope(
     // envelopes" and for "per-row envelopes" without two APIs.
     const triggerEl = trigger ?? (el as Element);
 
-    gsap.set(el, { opacity: opacityFloor, y: yFrom, filter: `blur(${blur}px)` });
+    gsap.set(el, { opacity: opacityFloor, y: yFromPx, filter: `blur(${blurPx}px)` });
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -101,7 +126,7 @@ export function presenceEnvelope(
 
     tl.fromTo(
       el,
-      { opacity: opacityFloor, y: yFrom, filter: `blur(${blur}px)` },
+      { opacity: opacityFloor, y: yFromPx, filter: `blur(${blurPx}px)` },
       {
         opacity: 1,
         y: 0,
@@ -120,8 +145,8 @@ export function presenceEnvelope(
       el,
       {
         opacity: opacityFloor,
-        y: yTo,
-        filter: `blur(${blur}px)`,
+        y: yToPx,
+        filter: `blur(${blurPx}px)`,
         duration: 1 - exitStart - offset,
         ease: "power2.in",
       },
@@ -162,13 +187,14 @@ export function focusEnvelope(
   const halfHold = holdRatio / 2;
   const entryEnd = 0.5 - halfHold;
   const exitStart = 0.5 + halfHold;
+  const blurPx = adaptBlur(blur);
 
   targets.forEach((el, i) => {
     if (!el) return;
     const offset = stagger * i;
     const triggerEl = trigger ?? (el as Element);
 
-    gsap.set(el, { opacity: opacityFloor, filter: `blur(${blur}px)` });
+    gsap.set(el, { opacity: opacityFloor, filter: `blur(${blurPx}px)` });
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -183,7 +209,7 @@ export function focusEnvelope(
 
     tl.fromTo(
       el,
-      { opacity: opacityFloor, filter: `blur(${blur}px)` },
+      { opacity: opacityFloor, filter: `blur(${blurPx}px)` },
       { opacity: focusOpacity, filter: "blur(0px)", duration: entryEnd + offset, ease: "power2.out" },
       0,
     );
@@ -196,7 +222,7 @@ export function focusEnvelope(
       el,
       {
         opacity: opacityFloor * 1.35,
-        filter: `blur(${blur * 0.8}px)`,
+        filter: `blur(${blurPx * 0.8}px)`,
         duration: 1 - exitStart - offset,
         ease: "power2.in",
       },
@@ -326,8 +352,10 @@ export function rackFocusTrack(
 ) {
   if (!items.length) return;
 
+  const blurPx = adaptBlur(blur);
+
   items.forEach((el) => {
-    gsap.set(el, { opacity: softOpacity, filter: `blur(${blur}px)` });
+    gsap.set(el, { opacity: softOpacity, filter: `blur(${blurPx}px)` });
   });
 
   const slot = 1 / items.length;
@@ -383,7 +411,7 @@ export function rackFocusTrack(
         el,
         {
           opacity: softOpacity * 1.1,
-          filter: `blur(${blur * 0.72}px)`,
+          filter: `blur(${blurPx * 0.72}px)`,
           duration: pullEnd - holdEnd,
           ease: "power2.in",
         },

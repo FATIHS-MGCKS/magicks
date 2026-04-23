@@ -26,15 +26,15 @@ export function ChapterMarker({
     <div className={`flex items-center ${alignClass} ${className}`.trim()}>
       <span
         aria-hidden
-        className="mr-[0.9em] inline-block h-px w-[42px] bg-gradient-to-r from-white/0 via-white/35 to-white/35 sm:w-[56px]"
+        className="mr-[0.75em] inline-block h-px w-[28px] bg-gradient-to-r from-white/0 via-white/35 to-white/35 sm:mr-[0.9em] sm:w-[56px]"
       />
-      <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
+      <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-white/50 sm:tracking-[0.34em] sm:text-[10.5px] sm:text-white/46">
         {prefix} — {label}
       </span>
       {variant === "end" ? (
         <span
           aria-hidden
-          className="ml-[0.9em] inline-block h-px w-[42px] bg-gradient-to-l from-white/0 via-white/35 to-white/35 sm:w-[56px]"
+          className="ml-[0.75em] inline-block h-px w-[28px] bg-gradient-to-l from-white/0 via-white/35 to-white/35 sm:ml-[0.9em] sm:w-[56px]"
         />
       ) : null}
     </div>

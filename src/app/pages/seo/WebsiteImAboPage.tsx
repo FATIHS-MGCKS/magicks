@@ -443,8 +443,8 @@ export default function WebsiteImAboPage() {
                 </Link>
               </div>
 
-              {/* Meta triad — monthly rhythm triangulated */}
-              <div className="mt-14 flex flex-wrap items-center gap-x-7 gap-y-3 sm:mt-18 md:mt-20">
+              {/* Meta triad — monthly rhythm triangulated. Mobile column stack. */}
+              <div className="mt-12 flex flex-col gap-2 sm:mt-18 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-7 sm:gap-y-3 md:mt-20">
                 {["Monatlich", "Planbar", "Betreut"].map((m, i) => (
                   <span
                     key={m}
@@ -998,10 +998,10 @@ export default function WebsiteImAboPage() {
                       Direkt
                     </span>
                     <a
-                      href="mailto:hello@magicks.studio"
+                      href="mailto:hello@magicks.de"
                       className="font-instrument text-[1.1rem] italic text-white no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white/82 sm:text-[1.25rem] md:text-[1.35rem]"
                     >
-                      hello@magicks.studio
+                      hello@magicks.de
                     </a>
                   </div>
                 </div>
