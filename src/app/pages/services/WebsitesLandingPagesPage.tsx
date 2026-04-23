@@ -4,6 +4,7 @@ import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { ChapterMarker } from "../../components/home/ChapterMarker";
 import { ContextualCrossLink } from "../../components/service/ContextualCrossLink";
+import { EditorialAnchor } from "../../components/service/EditorialAnchor";
 import { SectionTransition } from "../../components/service/SectionTransition";
 import { RouteSEO } from "../../seo/RouteSEO";
 
@@ -453,6 +454,24 @@ export default function WebsitesLandingPagesPage() {
                 </p>
               </div>
             </div>
+
+            {/* Editorial visual anchor — proof for the "Substanz" claim.
+                Placed at the end of § 01 so the argument is closed by a
+                single, deliberate picture rather than more prose. */}
+            <div className="mt-20 sm:mt-24 md:mt-28">
+              <EditorialAnchor
+                src="/media/services/websites/hero-brand.webp"
+                alt="Premium Brand-Site auf einem Laptop auf dunklem Studiotisch: serifige Headline ‚Werkstätte · 2026‘, schlichte 4er-Navigation, eine einzelne Fassaden-Aufnahme, daneben eine handgezeichnete Skizze."
+                folio="Fig. 01"
+                context="Web-Entwurf"
+                leftCaption="Brand-Site · Desktop"
+                rightCaption="Entwurf · Studio MAGICKS"
+                aspect="16/9"
+                align="right"
+                maxWidth="44rem"
+                revealAttr="data-wl-reveal"
+              />
+            </div>
           </div>
         </section>
 
@@ -614,6 +633,25 @@ export default function WebsitesLandingPagesPage() {
                   im Alltag funktioniert.
                 </p>
               </div>
+            </div>
+
+            {/* Editorial visual anchor — an interface-plate crop that shows
+                the same thought in practice ("Unser Ansatz beginnt mit
+                Verstehen."). Deliberately a crop, not a whole device: the
+                section is about how we work, not what the outside looks like. */}
+            <div className="mt-20 sm:mt-24 md:mt-28">
+              <EditorialAnchor
+                src="/media/services/websites/detail-approach.webp"
+                alt="Enger Bildausschnitt einer dunklen Website-Section: serifige Überschrift ‚Unser Ansatz beginnt mit Verstehen.‘, zwei Absätze in Off-White und ein reduzierter Gespräch-anfragen-Button."
+                folio="Fig. 02"
+                context="Interface-Plate"
+                leftCaption="Arbeitsweise · Ausschnitt"
+                rightCaption="Entwurf · § 04"
+                aspect="16/9"
+                align="left"
+                maxWidth="46rem"
+                revealAttr="data-wl-reveal"
+              />
             </div>
           </div>
         </section>

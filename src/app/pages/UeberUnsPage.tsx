@@ -1,8 +1,10 @@
 import { useLayoutEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { registerGsap, MAGICKS_EASE } from "../lib/gsap";
+import { parallaxDrift, presenceEnvelope, rackFocusTrack } from "../lib/scrollMotion";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { SectionTransition } from "../components/service/SectionTransition";
+import { EditorialAnchor } from "../components/service/EditorialAnchor";
 import { RouteSEO } from "../seo/RouteSEO";
 
 /* ------------------------------------------------------------------
@@ -106,125 +108,338 @@ export default function UeberUnsPage() {
         tl.from(heroMasthead, { opacity: 0, y: 4, duration: 0.9, stagger: 0.05 }, 1.2);
       if (heroCredit) tl.from(heroCredit, { opacity: 0, duration: 1.1 }, 1.1);
 
-      /* Generic reveal — every [data-ab-reveal] fades + drifts in place */
-      root.querySelectorAll<HTMLElement>("[data-ab-reveal]").forEach((el) => {
-        gsap.from(el, {
-          opacity: 0,
-          y: 22,
-          duration: 0.95,
-          ease: MAGICKS_EASE,
-          scrollTrigger: { trigger: el, start: "top 82%", once: true },
-        });
-      });
+      /* ---- Hero scroll-exit — makes the preamble feel spatial ----
+       * The hero copy parallaxes up and softens as the reader moves
+       * on, so the page releases its opening page rather than snapping
+       * from "hero" to "body". Atmospheric field on the backdrop
+       * breathes in and out with scroll. Vertical credit fades as a
+       * perimeter signal once the reader has clearly left the hero. */
+      const heroSection = root.querySelector<HTMLElement>("[data-ab-hero]");
+      const heroCopy = root.querySelector<HTMLElement>("[data-ab-hero-copy]");
+      const heroTexture = root.querySelector<HTMLElement>("[data-ab-hero-texture]");
 
-      /* Principia — per-line letter-spacing settle + stagger.
-         Slower, more deliberate: a manifesto is read slowly. */
-      root.querySelectorAll<HTMLElement>("[data-ab-principle]").forEach((line, i) => {
-        gsap.fromTo(
-          line,
-          { opacity: 0, letterSpacing: "0.05em", y: 16 },
-          {
-            opacity: 1,
-            letterSpacing: "-0.025em",
-            y: 0,
-            duration: 1.4,
-            delay: i * 0.07,
-            ease: MAGICKS_EASE,
-            scrollTrigger: { trigger: line, start: "top 88%", once: true },
+      if (heroCopy && heroSection) {
+        gsap.to(heroCopy, {
+          yPercent: -6,
+          opacity: 0.42,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroSection,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
           },
-        );
+        });
+      }
+
+      if (heroTexture && heroSection) {
+        // Subtle texture parallax only — keeps the hero present on
+        // first load, then drifts quietly as the reader scrolls past.
+        // We deliberately avoid a full atmosphericField here so the
+        // opening page reads at peak immediately.
+        parallaxDrift(heroTexture, {
+          trigger: heroSection,
+          from: 0,
+          to: -24,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        });
+      }
+
+      if (heroCredit && heroSection) {
+        gsap.to(heroCredit, {
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroSection,
+            start: "center top",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+      }
+
+      const heroMastheadBox = root.querySelector<HTMLElement>("[data-ab-masthead]");
+      if (heroMastheadBox && heroSection) {
+        // The bottom "Manifest · MAGICKS · MMXXVI" masthead drifts
+        // upward slightly with the reader so it feels anchored to
+        // the hero frame, not pinned in place.
+        parallaxDrift(heroMastheadBox, {
+          trigger: heroSection,
+          from: 0,
+          to: -12,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        });
+      }
+
+      /* =================================================================
+       * Bidirectional scroll motion — manifesto-grade choreography.
+       *
+       * Every non-hero section is treated as a three-zone envelope:
+       *   · entry — block gathers presence from soft/blurred state
+       *   · focus — block holds its clearest, sharpest state
+       *   · exit  — block gently softens, letting the next passage speak
+       *
+       * Scrolling up re-plays the choreography in reverse. No once:true
+       * latches, no hard reveals, no springy easing.
+       * ================================================================= */
+
+      /* Generic reveal — every [data-ab-reveal] block breathes through
+         the viewport. Triggered per-element with a wide envelope so
+         long blocks fade in and out naturally. */
+      const reveals = gsap.utils.toArray<HTMLElement>("[data-ab-reveal]");
+      presenceEnvelope(reveals, {
+        start: "top 90%",
+        end: "bottom 12%",
+        yFrom: 20,
+        yTo: -12,
+        blur: 4,
+        holdRatio: 0.5,
+        scrub: 0.95,
       });
 
-      /* Method rows — slight horizontal drift on stagger */
-      const methodRows = root.querySelectorAll<HTMLElement>("[data-ab-method-row]");
-      if (methodRows.length) {
-        gsap.from(methodRows, {
-          opacity: 0,
-          x: -18,
-          duration: 0.9,
-          stagger: 0.08,
-          ease: MAGICKS_EASE,
-          scrollTrigger: { trigger: methodRows[0], start: "top 82%", once: true },
-        });
-      }
+      /* Principia — each aphorism gains presence as a line, with a
+         scrubbed letter-spacing settle driven by its own position.
+         The whole stanza doubles as a section group so adjacent lines
+         read as a passage rather than individual reveals. */
+      const principia = gsap.utils.toArray<HTMLElement>("[data-ab-principle]");
+      if (principia.length) {
+        const principiaSection =
+          (principia[0] as HTMLElement).closest("section") ?? principia[0];
 
-      /* Werk index rows */
-      const werkRows = root.querySelectorAll<HTMLElement>("[data-ab-werk-row]");
-      if (werkRows.length) {
-        gsap.from(werkRows, {
-          opacity: 0,
-          y: 14,
-          duration: 0.9,
-          stagger: 0.075,
-          ease: MAGICKS_EASE,
-          scrollTrigger: { trigger: werkRows[0], start: "top 82%", once: true },
-        });
-      }
-
-      /* Reasons stanza — soft fade */
-      const reasonLines = root.querySelectorAll<HTMLElement>("[data-ab-reason]");
-      if (reasonLines.length) {
-        gsap.from(reasonLines, {
-          opacity: 0,
-          y: 14,
-          duration: 1.0,
-          stagger: 0.09,
-          ease: MAGICKS_EASE,
-          scrollTrigger: { trigger: reasonLines[0], start: "top 80%", once: true },
-        });
-      }
-
-      /* Ceremonial statement — masked word-by-word reveal */
-      const statementWords = root.querySelectorAll<HTMLElement>("[data-ab-statement] [data-ab-word] > span");
-      if (statementWords.length) {
-        gsap.from(statementWords, {
-          yPercent: 120,
-          opacity: 0,
-          duration: 1.25,
-          stagger: 0.05,
-          ease: MAGICKS_EASE,
-          scrollTrigger: { trigger: statementWords[0], start: "top 75%", once: true },
-        });
-      }
-
-      /* Invitation plate */
-      const invBlocks = root.querySelectorAll<HTMLElement>("[data-ab-invite]");
-      if (invBlocks.length) {
-        gsap.from(invBlocks, {
+        gsap.set(principia, {
           opacity: 0,
           y: 18,
-          duration: 0.95,
-          stagger: 0.08,
-          ease: MAGICKS_EASE,
-          scrollTrigger: { trigger: invBlocks[0], start: "top 80%", once: true },
+          letterSpacing: "0.05em",
+          filter: "blur(5px)",
+        });
+
+        gsap.to(principia, {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          letterSpacing: "-0.025em",
+          ease: "none",
+          stagger: 0.06,
+          scrollTrigger: {
+            trigger: principiaSection,
+            start: "top 82%",
+            end: "top 20%",
+            scrub: 1.1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        // Gentle release on exit — the stanza softens, it does not vanish.
+        gsap.to(principia, {
+          opacity: 0.38,
+          filter: "blur(3px)",
+          letterSpacing: "0.004em",
+          ease: "none",
+          stagger: 0.03,
+          scrollTrigger: {
+            trigger: principiaSection,
+            start: "bottom 55%",
+            end: "bottom 5%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
         });
       }
 
-      /* Final CTA — letter-spacing settle on the display H2 */
-      const finalHead = root.querySelector<HTMLElement>("[data-ab-final-head]");
-      if (finalHead) {
-        gsap.fromTo(
-          finalHead,
-          { opacity: 0, letterSpacing: "0.03em", y: 16 },
-          {
-            opacity: 1,
-            letterSpacing: "-0.03em",
-            y: 0,
-            duration: 1.2,
-            ease: MAGICKS_EASE,
-            scrollTrigger: { trigger: finalHead, start: "top 78%", once: true },
-          },
-        );
-      }
-      const finalBody = root.querySelectorAll<HTMLElement>("[data-ab-final-body]");
-      if (finalBody.length) {
-        gsap.from(finalBody, {
+      /* Method rows — horizontal drift stagger, now scroll-coupled.
+         Reads as a register of method entries being brought into focus. */
+      const methodRows = gsap.utils.toArray<HTMLElement>("[data-ab-method-row]");
+      if (methodRows.length) {
+        const methodSection =
+          (methodRows[0] as HTMLElement).closest("section") ?? methodRows[0];
+
+        gsap.set(methodRows, {
           opacity: 0,
-          y: 14,
-          duration: 0.95,
-          stagger: 0.07,
-          ease: MAGICKS_EASE,
-          scrollTrigger: { trigger: finalBody[0], start: "top 82%", once: true },
+          x: -18,
+          filter: "blur(4px)",
+        });
+        gsap.to(methodRows, {
+          opacity: 1,
+          x: 0,
+          filter: "blur(0px)",
+          ease: "none",
+          stagger: 0.08,
+          scrollTrigger: {
+            trigger: methodSection,
+            start: "top 82%",
+            end: "top 30%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
+        });
+      }
+
+      /* Werk index rows — focus track: each row tightens as it enters
+         the reading band, softens as it exits. */
+      const werkRows = gsap.utils.toArray<HTMLElement>("[data-ab-werk-row]");
+      if (werkRows.length) {
+        const werkSection =
+          (werkRows[0] as HTMLElement).closest("section") ?? werkRows[0];
+
+        gsap.set(werkRows, { opacity: 0, y: 14, filter: "blur(4px)" });
+        gsap.to(werkRows, {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          ease: "none",
+          stagger: 0.075,
+          scrollTrigger: {
+            trigger: werkSection,
+            start: "top 82%",
+            end: "top 26%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
+        });
+      }
+
+      /* Reasons stanza — four lines read as a single measured breath. */
+      const reasonLines = gsap.utils.toArray<HTMLElement>("[data-ab-reason]");
+      if (reasonLines.length) {
+        const reasonsSection =
+          (reasonLines[0] as HTMLElement).closest("section") ?? reasonLines[0];
+
+        gsap.set(reasonLines, { opacity: 0, y: 14, filter: "blur(5px)" });
+        gsap.to(reasonLines, {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          ease: "none",
+          stagger: 0.09,
+          scrollTrigger: {
+            trigger: reasonsSection,
+            start: "top 80%",
+            end: "top 22%",
+            scrub: 1.05,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        gsap.to(reasonLines, {
+          opacity: 0.3,
+          filter: "blur(3px)",
+          ease: "none",
+          stagger: 0.04,
+          scrollTrigger: {
+            trigger: reasonsSection,
+            start: "bottom 55%",
+            end: "bottom 5%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
+        });
+      }
+
+      /* Ceremonial statement — masked word-by-word lift, scroll-coupled
+         so the declaration rises as the reader engages and settles back
+         into the page when they move on. The mask/clipping is preserved
+         by the parent overflow; we only animate translate + opacity. */
+      const statementWords = gsap.utils.toArray<HTMLElement>(
+        "[data-ab-statement] [data-ab-word] > span",
+      );
+      if (statementWords.length) {
+        const statementSection =
+          (statementWords[0] as HTMLElement).closest("section") ?? statementWords[0];
+
+        gsap.set(statementWords, { yPercent: 120, opacity: 0 });
+        gsap.to(statementWords, {
+          yPercent: 0,
+          opacity: 1,
+          ease: "none",
+          stagger: 0.05,
+          scrollTrigger: {
+            trigger: statementSection,
+            start: "top 78%",
+            end: "top 28%",
+            scrub: 1.1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        // Gentle release — the statement softens slightly but stays
+        // legible until the user is clearly past it.
+        gsap.to(statementWords, {
+          opacity: 0.32,
+          ease: "none",
+          stagger: 0.02,
+          scrollTrigger: {
+            trigger: statementSection,
+            start: "bottom 52%",
+            end: "bottom 0%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
+        });
+      }
+
+      /* Invitation plates — two blocks side-by-side, each with its own
+         presence envelope so they read as a paired declaration. */
+      const invBlocks = gsap.utils.toArray<HTMLElement>("[data-ab-invite]");
+      if (invBlocks.length) {
+        presenceEnvelope(invBlocks, {
+          start: "top 88%",
+          end: "bottom 12%",
+          yFrom: 22,
+          yTo: -12,
+          blur: 4,
+          holdRatio: 0.5,
+          stagger: 0.12,
+          scrub: 1.0,
+        });
+      }
+
+      /* Final CTA — the display H2 settles into focus as the reader
+         arrives; the body paragraph and CTA rail track alongside. */
+      const finalHead = root.querySelector<HTMLElement>("[data-ab-final-head]");
+      const finalBody = gsap.utils.toArray<HTMLElement>("[data-ab-final-body]");
+      const finalSection =
+        finalHead?.closest("section") ??
+        (finalBody[0] as HTMLElement | undefined)?.closest("section") ??
+        finalHead ??
+        (finalBody[0] as HTMLElement | undefined) ??
+        null;
+
+      if (finalHead && finalSection) {
+        gsap.set(finalHead, {
+          opacity: 0,
+          y: 16,
+          letterSpacing: "0.03em",
+          filter: "blur(5px)",
+        });
+        gsap.to(finalHead, {
+          opacity: 1,
+          y: 0,
+          letterSpacing: "-0.03em",
+          filter: "blur(0px)",
+          ease: "none",
+          scrollTrigger: {
+            trigger: finalSection,
+            start: "top 80%",
+            end: "top 28%",
+            scrub: 1.1,
+            invalidateOnRefresh: true,
+          },
+        });
+      }
+
+      if (finalBody.length && finalSection) {
+        rackFocusTrack(finalBody, {
+          trigger: finalSection,
+          start: "top 72%",
+          end: "top 22%",
+          blur: 4,
+          opacityFloor: 0,
+          stagger: 0.09,
+          scrub: 1.0,
         });
       }
 
@@ -243,12 +458,13 @@ export default function UeberUnsPage() {
           ════════════════════════════════════════════════════════════ */}
         <section
           data-ab-section="preamble"
+          data-ab-hero
           className="relative overflow-hidden px-5 pb-20 pt-[6.5rem] sm:px-8 sm:pb-24 sm:pt-[7.5rem] md:px-12 md:pb-28 md:pt-[8.5rem] lg:px-16"
         >
           <HeroTexture />
           <VerticalCredit label="Manifest · Edition MMXXVI · MAGICKS Studio" />
 
-          <div className="layout-max relative">
+          <div data-ab-hero-copy className="layout-max relative">
             {/* Top folio — quiet chapter signal */}
             <div data-ab-eyebrow className="flex items-center gap-4">
               <span aria-hidden className="h-px w-10 bg-white/28 sm:w-14" />
@@ -399,6 +615,62 @@ export default function UeberUnsPage() {
                   wie Standard funktionieren.
                 </p>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ════════════════════════════════════════════════════════════
+              § INTERLUDIUM — Tipped-in Plate
+              The single literal photograph on the entire manifesto,
+              placed precisely where the argument pivots from *what we
+              believe* to *how we work*. Treated as a tipped-in plate
+              in the convention of a printed book: centered on the
+              measure, preceded by a quiet folio, followed by a single
+              italic pull-quote line. No explanation copy — the plate
+              is allowed to breathe.
+
+              Idiom-distinct: this page uses the ceremonial centered
+              cadence that § 04 Principia and § Statement also use.
+              On /webdesign-kassel the anchor idiom is a "Bureau
+              specimen" rail system; on /landingpages-kassel it is a
+              "Focal Axis" split caption. Each page gets its own.
+          ════════════════════════════════════════════════════════════ */}
+        <section
+          aria-label="Studio-Blick"
+          className="relative overflow-hidden bg-[#09090B] px-5 py-28 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16 lg:py-48"
+        >
+          <div className="layout-max relative">
+            <div className="mx-auto max-w-[54rem]">
+              {/* Opening folio — centered ruled rail, ceremonial cadence */}
+              <div
+                data-ab-reveal
+                className="mb-10 flex items-center justify-center gap-5 sm:mb-12 md:mb-14"
+              >
+                <span aria-hidden className="h-px w-10 bg-white/24 sm:w-14" />
+                <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.44em] text-white/54 sm:text-[10.5px]">
+                  § Interludium &nbsp;·&nbsp; Plate
+                </span>
+                <span aria-hidden className="h-px w-10 bg-white/24 sm:w-14" />
+              </div>
+
+              <EditorialAnchor
+                src="/media/pages/ueber-uns/studio.webp"
+                alt="Dunkler Arbeitstisch aus Eiche mit aufgeschlagenem Notizbuch voller handgeschriebener Typografie- und Rasterstudien, einer Espresso-Tasse, einer Messlupe, Papierproben und einem matten Laptop im weichen Seitenlicht."
+                aspect="16/9"
+                align="center"
+                maxWidth="54rem"
+                revealAttr="data-ab-reveal"
+              />
+
+              {/* Colophon line — single italic serif pull, quiet, restrained.
+                  Mirrors the typographic register of § Statement. No
+                  descriptive copy; the plate speaks for itself. */}
+              <p
+                data-ab-reveal
+                className="font-instrument mt-8 text-center text-[1.1rem] italic leading-[1.45] tracking-[-0.012em] text-white/58 sm:mt-10 sm:text-[1.22rem] md:mt-12 md:text-[1.32rem]"
+              >
+                — Kein Pitch. Nur der Arbeitstisch. —
+              </p>
             </div>
           </div>
         </section>
@@ -931,7 +1203,11 @@ function VerticalCredit({ label }: { label: string }) {
  */
 function HeroTexture() {
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div
+      aria-hidden
+      data-ab-hero-texture
+      className="pointer-events-none absolute inset-0 overflow-hidden"
+    >
       <div
         className="absolute inset-0"
         style={{

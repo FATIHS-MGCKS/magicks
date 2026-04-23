@@ -44,6 +44,7 @@ export function Hero() {
       const bottomFade = root.querySelector<HTMLElement>("[data-hero-bottomfade]");
       const wipe = root.querySelector<HTMLElement>("[data-hero-wipe]");
       const copy = root.querySelector<HTMLElement>("[data-hero-copy]");
+      const depth = root.querySelector<HTMLElement>("[data-hero-depth]");
 
       if (reduced) {
         gsap.set(
@@ -51,6 +52,7 @@ export function Hero() {
           { opacity: 1, y: 0, yPercent: 0, letterSpacing: "-0.032em", scaleX: 1 },
         );
         gsap.set(wipe, { opacity: 0 });
+        gsap.set(depth, { opacity: 0 });
         return;
       }
 
@@ -132,39 +134,87 @@ export function Hero() {
       tl.to(cue, { opacity: 1, duration: 1.0, ease: "power2.out" }, 2.25)
         .to(cueLabel, { opacity: 0.6, y: 0, duration: 0.9 }, 2.4);
 
-      // Scroll-linked camera push + copy exhale.
+      // ─── Scroll-coupled cinematic step-back ──────────────────────────
+      // The hero never "snaps" away. Instead it recedes in layered depth
+      // as the user scrolls toward the Value Statement. Every layer scrubs,
+      // which means scrolling back up reverses the entire composition and
+      // the frame reclaims its dominance.
+
+      // 01 — video plane gently pushes and drifts. `scrub: 1.1` adds a
+      // film-magazine inertia so the push never feels UI-like.
       gsap.to(scaler, {
-        scale: 1.12,
-        yPercent: -4,
+        scale: 1.14,
+        yPercent: -5,
+        filter: "blur(2px)",
         ease: "none",
         scrollTrigger: {
           trigger: root,
           start: "top top",
           end: "bottom top",
-          scrub: true,
+          scrub: 1.1,
+          invalidateOnRefresh: true,
         },
       });
 
+      // 02 — the depth layer darkens in two beats: a soft cool grade
+      // first, then a stronger mid-frame falloff as the copy clears.
+      gsap.fromTo(
+        depth,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: root,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.9,
+          },
+        },
+      );
+
+      // 03 — vignette tightens toward the end of the scroll, pulling the
+      // eye off the hero and priming the next section.
+      gsap.fromTo(
+        vignette,
+        { opacity: 1 },
+        {
+          opacity: 1.25,
+          ease: "none",
+          scrollTrigger: {
+            trigger: root,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.0,
+          },
+        },
+      );
+
+      // 04 — copy exhale: lifts, softens, and loses contrast before the
+      // frame goes. No opacity wall — blur+y carries most of the farewell.
       gsap.to(copy, {
-        yPercent: -18,
+        yPercent: -14,
         opacity: 0,
+        filter: "blur(3px)",
         ease: "none",
         scrollTrigger: {
           trigger: root,
           start: "top top",
-          end: "bottom 20%",
-          scrub: true,
+          end: "bottom 8%",
+          scrub: 0.9,
         },
       });
 
+      // 05 — marginalia (cue + credit) dissolve earlier than the copy so
+      // the core headline holds the longest.
       gsap.to([cue, cueLabel, credit], {
         opacity: 0,
         ease: "none",
         scrollTrigger: {
           trigger: root,
           start: "top top",
-          end: "bottom 75%",
-          scrub: true,
+          end: "bottom 72%",
+          scrub: 0.6,
         },
       });
     }, root);
@@ -227,6 +277,20 @@ export function Hero() {
         }}
       />
 
+      {/* 5 — scroll-coupled depth layer: invisible at rest, grades the
+             frame ~18% darker as the user scrolls, so the hero "steps back"
+             cinematically without ever going off. Sits below the UI copy
+             but above the static overlays so it can keyframe cleanly. */}
+      <div
+        data-hero-depth
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(7,7,9,0.12) 0%, rgba(7,7,9,0.32) 50%, rgba(7,7,9,0.58) 100%)",
+        }}
+      />
+
       {/* Pre-roll wipe — solid black that dissolves with the intro timeline */}
       <div
         data-hero-wipe
@@ -281,7 +345,11 @@ export function Hero() {
               </span>
             </h1>
 
-            {/* Text-link CTA — dual-underline magazine style, no glass pill */}
+            {/* Text-link CTA — magazine-style dual underline, no glass pill.
+                Hover is deliberately slow + deep: the sweep rule draws in
+                over ~900ms, the arrow lifts on a symmetric curve, the copy
+                picks up a hair of tracking — all on a single cubic-bezier
+                so the whole word feels like it "opens" rather than pops. */}
             <div data-hero-cta className="mt-14 inline-block sm:mt-16 md:mt-20">
               <Link
                 to="/kontakt"
@@ -289,7 +357,9 @@ export function Hero() {
                 aria-label="Projekt besprechen"
               >
                 <span className="relative pb-3">
-                  <span className="font-ui">Ein Projekt besprechen</span>
+                  <span className="font-ui magicks-hero-cta-label inline-block transition-[letter-spacing,color] duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:tracking-[0.01em] group-focus-visible:tracking-[0.01em]">
+                    Ein Projekt besprechen
+                  </span>
 
                   {/* Static baseline rule — always present, restrained */}
                   <span
@@ -298,16 +368,23 @@ export function Hero() {
                     className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left bg-white/28"
                   />
 
-                  {/* Hover sweep — draws a 100% white line across, then releases */}
+                  {/* Hover sweep — draws 100% across on a long cinematic curve */}
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white transition-transform duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white/92 transition-transform duration-[920ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
+                  />
+
+                  {/* Second underline — sub-hairline below, slower, so the
+                      word carries a quiet double-rule after hover settles. */}
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 -bottom-[3px] block h-px origin-left scale-x-0 bg-white/30 transition-transform duration-[1180ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
                   />
                 </span>
 
                 <span
                   aria-hidden
-                  className="font-instrument text-[1.05em] italic text-white/85 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
+                  className="font-instrument text-[1.05em] italic text-white/85 transition-transform duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[4px] group-focus-visible:-translate-y-[3px] group-focus-visible:translate-x-[4px]"
                 >
                   ↗
                 </span>

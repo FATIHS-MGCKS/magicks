@@ -13,6 +13,11 @@ import {
 } from "../data/projects";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { registerGsap } from "../lib/gsap";
+import {
+  breathingScale,
+  parallaxDrift,
+  presenceEnvelope,
+} from "../lib/scrollMotion";
 import { SEO } from "../seo/SEO";
 
 /* ------------------------------------------------------------------
@@ -95,7 +100,10 @@ function ProjectDetail({ project }: { project: Project }) {
         return;
       }
 
-      // Hero cover — gentle scale + fade.
+      /* Hero cover — gentle scale + fade on first load (justified
+       * page-intro moment) layered with a slow scroll-linked parallax
+       * and breathing scale so it feels spatial rather than static
+       * once the reader starts scrolling. */
       if (heroCover) {
         gsap.set(heroCover, { opacity: 0, scale: 1.015 });
         gsap.to(heroCover, {
@@ -105,20 +113,91 @@ function ProjectDetail({ project }: { project: Project }) {
           ease: "power2.out",
           delay: 0.12,
         });
+
+        parallaxDrift(heroCover, {
+          from: 0,
+          to: -8,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        });
+
+        breathingScale(heroCover, {
+          from: 1,
+          peak: 1.014,
+          to: 1.005,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1.1,
+        });
       }
 
-      // Section reveals.
-      reveals.forEach((el, i) => {
-        gsap.set(el, { opacity: 0, y: 22 });
-        gsap.to(el, {
+      /* Section reveals — bidirectional case-section envelope.
+       *
+       * Each block gains presence on entry, holds across its reading
+       * zone, then gently releases as the next block arrives. Because
+       * every block is its own trigger, long prose paragraphs breathe
+       * over their own height while compact meta rows resolve quickly.
+       * Nothing latches, so scrolling up re-engages the gallery and
+       * case chapters as the reader returns. */
+      presenceEnvelope(reveals, {
+        start: "top 90%",
+        end: "bottom 10%",
+        yFrom: 20,
+        yTo: -14,
+        blur: 4,
+        holdRatio: 0.52,
+        scrub: 0.95,
+      });
+
+      /* ---- Hero masthead release — binds the typographic opening together ----
+       * Individual masthead elements already envelope in/out, but they can
+       * feel disconnected on exit because each one times independently. A
+       * shared parallax on the masthead wrapper gives the whole composition
+       * one unified release gesture without doubling the visual motion of
+       * any single element. */
+      const heroSection = root.querySelector<HTMLElement>("[data-cs-hero]");
+      const heroMasthead = root.querySelector<HTMLElement>("[data-cs-hero-copy]");
+      if (heroSection && heroMasthead) {
+        parallaxDrift(heroMasthead, {
+          trigger: heroSection,
+          from: 0,
+          to: -16,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        });
+      }
+
+      /* ---- Final CTA head — cinematic arrival ----
+       * The closing headline of the project case settles into focus:
+       * letter-spacing tightens while blur releases, scroll-coupled so
+       * the end of the case feels like a movement resolving rather than
+       * a block fading up. */
+      const finalSection = root.querySelector<HTMLElement>("[data-cs-final]");
+      const finalHead = root.querySelector<HTMLElement>("[data-cs-final-head]");
+      if (finalSection && finalHead) {
+        gsap.set(finalHead, {
+          opacity: 0,
+          y: 18,
+          letterSpacing: "0.034em",
+          filter: "blur(5px)",
+        });
+        gsap.to(finalHead, {
           opacity: 1,
           y: 0,
-          duration: 0.95,
-          ease: "power3.out",
-          delay: i < 4 ? 0.08 * i : 0,
-          scrollTrigger: { trigger: el, start: "top 84%", once: true },
+          letterSpacing: "-0.036em",
+          filter: "blur(0px)",
+          ease: "none",
+          scrollTrigger: {
+            trigger: finalSection,
+            start: "top 78%",
+            end: "top 28%",
+            scrub: 1.1,
+            invalidateOnRefresh: true,
+          },
         });
-      });
+      }
     }, root);
 
     return () => ctx.revert();
@@ -140,8 +219,11 @@ function ProjectDetail({ project }: { project: Project }) {
         {/* =========================================================
            § 00 — HERO · TYPOGRAPHIC MASTHEAD
         ========================================================= */}
-        <section className="relative overflow-hidden px-5 pb-16 sm:px-8 sm:pb-20 md:px-12 md:pb-24 lg:px-16 lg:pb-28">
-          <div className="relative layout-max">
+        <section
+          data-cs-hero
+          className="relative overflow-hidden px-5 pb-16 sm:px-8 sm:pb-20 md:px-12 md:pb-24 lg:px-16 lg:pb-28"
+        >
+          <div data-cs-hero-copy className="relative layout-max">
             {/* Top masthead */}
             <div className="mb-10 flex flex-col gap-5 sm:mb-14 md:mb-16">
               <div className="flex items-start justify-between gap-6">
@@ -606,7 +688,10 @@ function ProjectDetail({ project }: { project: Project }) {
         {/* =========================================================
            § END — FINAL CTA
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
+        <section
+          data-cs-final
+          className="relative overflow-hidden bg-[#070708] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56"
+        >
           <div aria-hidden className="section-top-rule" />
 
           <div
@@ -649,7 +734,7 @@ function ProjectDetail({ project }: { project: Project }) {
               </div>
 
               <h2
-                data-cs-reveal
+                data-cs-final-head
                 className="font-instrument text-[2.15rem] leading-[1.02] tracking-[-0.036em] text-white sm:text-[2.95rem] md:text-[3.85rem] lg:text-[4.6rem] xl:text-[5.15rem]"
               >
                 Du willst einen Auftritt, der sichtbar wird{" "}

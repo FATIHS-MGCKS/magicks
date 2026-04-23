@@ -4,6 +4,7 @@ import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { ChapterMarker } from "../../components/home/ChapterMarker";
 import { ContextualCrossLink } from "../../components/service/ContextualCrossLink";
+import { EditorialAnchor } from "../../components/service/EditorialAnchor";
 import { SectionTransition } from "../../components/service/SectionTransition";
 import { RouteSEO } from "../../seo/RouteSEO";
 
@@ -611,6 +612,25 @@ export default function WebSoftwarePage() {
                 </p>
               </div>
             </div>
+
+            {/* First editorial anchor — a calm, architectural portal scene.
+                Aligned left to read as "system-first" rather than "sales-
+                front": pairs with the § 01 Grenze argument about structure
+                over standard tools. */}
+            <div className="mt-20 sm:mt-24 md:mt-28">
+              <EditorialAnchor
+                src="/media/services/web-software/hero-portal.webp"
+                alt="Monitor auf einem dunklen Studiotisch zeigt ein internes Einsatzplanungs-Portal: links Seitennavigation mit Dashboard, Ressourcen, Einsätze, Berichte; Mittelteil eine Wochenplanung für Kalenderwoche 18 mit Teammitgliedern als Zeilen; rechts ein Detail-Panel zu einem ausgewählten Einsatz mit Status-Zeitleiste."
+                folio="Mod. 01"
+                context="Plattform"
+                leftCaption="Einsatzplanung · Portal"
+                rightCaption="Kalenderwoche 18"
+                aspect="16/9"
+                align="left"
+                maxWidth="48rem"
+                revealAttr="data-ws-reveal"
+              />
+            </div>
           </div>
         </section>
 
@@ -816,6 +836,25 @@ export default function WebSoftwarePage() {
                   die Tiefe hat, die sie braucht.
                 </p>
               </div>
+            </div>
+
+            {/* Second editorial anchor — an interface-plate crop showing
+                real operational structure (status workflow, filter chips,
+                assignment rows). A view into the "internal depth" the
+                paragraph above refers to — not a marketing shot. */}
+            <div className="mt-20 sm:mt-24 md:mt-28">
+              <EditorialAnchor
+                src="/media/services/web-software/detail-workflow.webp"
+                alt="Enger UI-Ausschnitt einer Web-Software: links ein Status-Workflow mit vier Schritten von ‚Eingereicht‘ bis ‚Archiviert‘, Mitte eine Filterleiste mit Chips ‚Alle‘, ‚Meine‘, ‚Überfällig‘, ‚Heute fällig‘ mit Zählern, rechts eine Datentabelle mit vier Zeilen mit Aufträgen, Zuständigen und Status-Chips."
+                folio="Mod. 02"
+                context="Ablauf-Logik"
+                leftCaption="Status · Filter · Tabelle"
+                rightCaption="Freigabe-Workflow"
+                aspect="16/9"
+                align="right"
+                maxWidth="48rem"
+                revealAttr="data-ws-reveal"
+              />
             </div>
           </div>
         </section>

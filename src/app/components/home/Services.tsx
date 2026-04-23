@@ -2,6 +2,13 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { Link } from "react-router-dom";
 import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import {
+  breathingScale,
+  focusEnvelope,
+  parallaxDrift,
+  presenceEnvelope,
+  sectionFarewell,
+} from "../../lib/scrollMotion";
 import { ChapterMarker } from "./ChapterMarker";
 
 type Service = {
@@ -13,7 +20,9 @@ type Service = {
   teaser: string;
   metric: string;
   href: string;
-  video: string;
+  /** Hero visual for the service — image-first, subtle motion applied in CSS. */
+  image: string;
+  imageAlt: string;
 };
 
 const SERVICES: Service[] = [
@@ -27,8 +36,9 @@ const SERVICES: Service[] = [
       "Markenauftritte und Leadstrecken als zusammenhängendes System — nicht als Einzelseiten.",
     metric: "Von Auftritt bis Conversion",
     href: "/websites-landingpages",
-    video:
-      "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4",
+    image: "/media/home/service-websites.png",
+    imageAlt:
+      "Editorial-Website auf einem Laptop, daneben ein Messinglineal und ein gefalteter Print-Proof auf dunklem Walnut-Desk.",
   },
   {
     index: 1,
@@ -39,8 +49,9 @@ const SERVICES: Service[] = [
     teaser: "Komplexe Produkte führbar machen — vom ersten Klick bis zur sauberen Übergabe.",
     metric: "Shopware · Shopify · Custom",
     href: "/shops-produktkonfiguratoren",
-    video:
-      "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260324_151826_c7218672-6e92-402c-9e45-f1e0f454bdc4.mp4",
+    image: "/media/home/service-shops.png",
+    imageAlt:
+      "Produktkonfigurator für eine moderne Terrassenüberdachung auf einem Laptop, darunter ein architektonischer Bauplan.",
   },
   {
     index: 2,
@@ -51,8 +62,9 @@ const SERVICES: Service[] = [
     teaser: "Interne Systeme, die Arbeit bündeln, statt neue manuelle Schleifen zu eröffnen.",
     metric: "Intern · Multi-Tenant · API",
     href: "/web-software",
-    video:
-      "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260307_083826_e938b29f-a43a-41ec-a153-3d4730578ab8.mp4",
+    image: "/media/home/service-software.png",
+    imageAlt:
+      "Mehrpaneel-Plattform mit Projekttabelle, Statuschips und Timeline-Drawer auf einem Wide-Monitor vor einer Betonwand.",
   },
   {
     index: 3,
@@ -63,8 +75,9 @@ const SERVICES: Service[] = [
     teaser: "Wiederkehrende Last aus dem Team holen — nachvollziehbar und wartbar.",
     metric: "n8n · Agents · LLM-Integration",
     href: "/ki-automationen-integrationen",
-    video:
-      "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260402_054547_9875cfc5-155a-4229-8ec8-b7ba7125cbf8.mp4",
+    image: "/media/home/service-automation.png",
+    imageAlt:
+      "Drei verbundene UI-Fragmente — Anfrage, Verarbeitung, CRM-Eintrag — auf einer dunklen Gitterplatte, verbunden durch feine Flusslinien.",
   },
 ];
 
@@ -83,50 +96,48 @@ function useCanHover(): boolean {
   return v;
 }
 
-/** Preloaded cross-fade video stack — only the active one plays. */
+/**
+ * Image-first preview stack. All four visuals are rendered up-front so
+ * the cross-fade is a pure opacity swap (no layout thrash). The active
+ * image additionally gets a slow Ken-Burns move via `.preview-stack__image`
+ * so the still has just enough life to feel cinematic without ever
+ * pulling attention away from the type on the left column.
+ */
 function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; className?: string }) {
-  const refs = useRef<(HTMLVideoElement | null)[]>([]);
-
-  useEffect(() => {
-    refs.current.forEach((v, i) => {
-      if (!v) return;
-      if (i === activeIdx) {
-        const p = v.play();
-        if (p) void p.catch(() => {});
-      } else {
-        v.pause();
-      }
-    });
-  }, [activeIdx]);
-
   return (
     <div className={`relative overflow-hidden ${className}`.trim()}>
-      {SERVICES.map((s, i) => (
-        <video
-          key={s.slug}
-          ref={(el) => {
-            refs.current[i] = el;
-          }}
-          className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[750ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] ${
-            activeIdx === i ? "opacity-100" : "opacity-0"
-          }`}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          aria-hidden
-        >
-          <source src={s.video} type="video/mp4" />
-        </video>
-      ))}
+      {SERVICES.map((s, i) => {
+        const isActive = activeIdx === i;
+        return (
+          <img
+            key={s.slug}
+            src={s.image}
+            alt={isActive ? s.imageAlt : ""}
+            aria-hidden={!isActive}
+            loading={i === 0 ? "eager" : "lazy"}
+            decoding="async"
+            draggable={false}
+            className={`preview-stack__image absolute inset-0 h-full w-full object-cover object-center ${
+              isActive ? "preview-stack__image--active" : ""
+            }`}
+          />
+        );
+      })}
 
+      {/* Studio-air — a very slow diagonal light pass. Non-looping perception
+          (cycle is 34s and travels edge-to-edge only at the midpoint). */}
+      <div aria-hidden className="preview-sweep" />
+
+      {/* Overlays tuned for intentionally dark-composed still images —
+          lighter than the original video-era values so the composition
+          reads through while the meta-text at top/bottom stays legible. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_120%,rgba(10,10,10,0.68),transparent_60%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_120%,rgba(10,10,10,0.45),transparent_62%)]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0B]/60 via-transparent to-[#0A0A0B]/28"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0B]/48 via-transparent to-[#0A0A0B]/14"
       />
 
       {/* Preview chapter-meta overlay */}
@@ -234,35 +245,141 @@ export function Services() {
       const caption = root.querySelector<HTMLElement>("[data-services-caption]");
       const entries = gsap.utils.toArray<HTMLElement>("[data-service-entry]");
       const preview = root.querySelector<HTMLElement>("[data-services-preview]");
+      const previewSticky = root.querySelector<HTMLElement>("[data-services-preview-sticky]");
+      const farewell = root.querySelector<HTMLElement>("[data-services-farewell]");
+      const ambient = root.querySelector<HTMLElement>("[data-services-ambient]");
 
       if (reduced) {
-        gsap.set([chapter, headline, caption, ...entries, preview], { opacity: 1, y: 0 });
+        gsap.set([chapter, headline, caption, ...entries, preview, farewell, ambient], {
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          scale: 1,
+        });
+        if (farewell) gsap.set(farewell, { opacity: 0 });
         return;
       }
 
-      gsap.set(chapter, { opacity: 0, y: 14 });
-      gsap.set(headline, { opacity: 0, y: 22 });
-      gsap.set(caption, { opacity: 0, y: 14 });
-      gsap.set(entries, { opacity: 0, y: 28 });
-      gsap.set(preview, { opacity: 0, scale: 0.98 });
+      // ─── Ambient studio-light: behind the list ────────────────────────
+      // A wide radial light that slowly drifts as the user reads through
+      // the four clusters. Registers as depth, not as decoration.
+      if (ambient) {
+        gsap.set(ambient, { opacity: 0 });
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: root,
+              start: "top 82%",
+              end: "bottom 25%",
+              scrub: 1.2,
+              invalidateOnRefresh: true,
+            },
+            defaults: { ease: "none" },
+          })
+          .to(ambient, { opacity: 0.8, duration: 0.32, ease: "power2.out" }, 0)
+          .to(ambient, { opacity: 1, duration: 0.36, ease: "none" }, 0.32)
+          .to(ambient, { opacity: 0.42, duration: 0.32, ease: "power2.in" }, 0.68);
+        parallaxDrift(ambient, { trigger: root, from: -4, to: 6, scrub: true });
+      }
 
-      gsap
-        .timeline({
-          defaults: { ease: "power3.out" },
-          scrollTrigger: { trigger: root, start: "top 75%", once: true },
-        })
-        .to(chapter, { opacity: 1, y: 0, duration: 0.75 }, 0)
-        .to(headline, { opacity: 1, y: 0, duration: 1.0 }, 0.1)
-        .to(caption, { opacity: 1, y: 0, duration: 0.8 }, 0.35)
-        .to(preview, { opacity: 1, scale: 1, duration: 1.2, ease: "power2.out" }, 0.45);
+      // ─── Section header ──────────────────────────────────────────────
+      // Wider entry triggers (top 98% → top ~30%) so chapter+headline+
+      // caption begin building the instant the section peeks — no cold
+      // frame between Value and Services.
+      presenceEnvelope(chapter, {
+        trigger: root,
+        start: "top 98%",
+        end: "top 34%",
+        yFrom: 16,
+        yTo: -8,
+        blur: 3,
+        holdRatio: 0.58,
+      });
 
-      gsap.to(entries, {
-        opacity: 1,
-        y: 0,
-        duration: 0.85,
-        ease: "power3.out",
-        stagger: 0.11,
-        scrollTrigger: { trigger: entries[0], start: "top 82%", once: true },
+      presenceEnvelope(headline, {
+        trigger: root,
+        start: "top 96%",
+        end: "top 26%",
+        yFrom: 28,
+        yTo: -12,
+        blur: 5,
+        holdRatio: 0.6,
+      });
+
+      presenceEnvelope(caption, {
+        trigger: root,
+        start: "top 90%",
+        end: "top 22%",
+        yFrom: 20,
+        yTo: -10,
+        blur: 3.5,
+        holdRatio: 0.58,
+      });
+
+      // ─── Preview frame: entry + hold-breathing + exit ────────────────
+      // The preview is sticky, so it lives on screen for the entire list.
+      // It builds presence with the section entry, BREATHES softly during
+      // the hold so the frame never feels frozen, and releases as the
+      // user exits the section.
+      if (preview) {
+        const triggerEl = previewSticky ?? root;
+        gsap.set(preview, { opacity: 0, scale: 0.955, filter: "blur(7px)" });
+
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: triggerEl,
+              start: "top 90%",
+              end: "top 32%",
+              scrub: 0.95,
+              invalidateOnRefresh: true,
+            },
+            defaults: { ease: "none" },
+          })
+          .to(preview, {
+            opacity: 1,
+            scale: 1,
+            filter: "blur(0px)",
+            ease: "power2.out",
+          });
+
+        breathingScale(preview, { trigger: root, from: 0.996, peak: 1.008, to: 1.0, scrub: 1.6 });
+
+        gsap.to(preview, {
+          opacity: 0,
+          scale: 0.988,
+          filter: "blur(5px)",
+          ease: "none",
+          scrollTrigger: {
+            trigger: root,
+            start: "bottom 60%",
+            end: "bottom 12%",
+            scrub: 0.95,
+          },
+        });
+      }
+
+      // ─── Service entries: per-entry focus envelope ───────────────────
+      // Each entry gains clarity as it reaches its own viewport sweet
+      // spot and softens as the next one takes over. Slightly stronger
+      // floor-opacity than other sections so the list reads as a
+      // continuous index rather than fade-pairs.
+      focusEnvelope(entries as HTMLElement[], {
+        start: "top 86%",
+        end: "bottom 16%",
+        blur: 4,
+        opacityFloor: 0.3,
+        focusOpacity: 1,
+        holdRatio: 0.5,
+      });
+
+      // ─── Section farewell: deepens into Why MAGICKS ──────────────────
+      sectionFarewell(farewell, {
+        trigger: root,
+        peak: 1,
+        start: "bottom 80%",
+        end: "bottom 0%",
+        scrub: 1.0,
       });
     }, root);
 
@@ -277,6 +394,19 @@ export function Services() {
       aria-labelledby="services-heading"
     >
       <div aria-hidden className="section-top-rule" />
+
+      {/* Ambient studio-light: wide radial field behind the list.
+          Scroll-coupled intensity + slow lateral drift so the background
+          never sits flat. Pure depth — never a focal element. */}
+      <div
+        data-services-ambient
+        aria-hidden
+        className="pointer-events-none absolute inset-0 will-change-[opacity,transform]"
+        style={{
+          backgroundImage:
+            "radial-gradient(ellipse 60% 50% at 28% 38%, rgba(255,255,255,0.025), transparent 72%)",
+        }}
+      />
 
       <div className="layout-max">
         <div className="mb-16 grid gap-5 md:mb-24 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20">
@@ -370,20 +500,17 @@ export function Services() {
 
                         {/* Inline media — mobile/tablet only */}
                         <div className="relative mt-6 aspect-[16/10] w-full overflow-hidden rounded-[0.85rem] border border-white/[0.08] lg:hidden">
-                          <video
-                            className="absolute inset-0 h-full w-full object-cover object-center"
-                            muted
-                            loop
-                            playsInline
-                            preload="metadata"
-                            autoPlay
-                            aria-hidden
-                          >
-                            <source src={s.video} type="video/mp4" />
-                          </video>
+                          <img
+                            src={s.image}
+                            alt={s.imageAlt}
+                            loading={i === 0 ? "eager" : "lazy"}
+                            decoding="async"
+                            draggable={false}
+                            className="preview-stack__image preview-stack__image--active absolute inset-0 h-full w-full object-cover object-center"
+                          />
                           <div
                             aria-hidden
-                            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0B]/70 via-transparent to-[#0A0A0B]/25"
+                            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0B]/45 via-transparent to-[#0A0A0B]/12"
                           />
                         </div>
 
@@ -423,6 +550,7 @@ export function Services() {
 
           {/* Right — sticky preview (desktop only) */}
           <aside
+            data-services-preview-sticky
             aria-hidden
             className="relative hidden lg:block"
           >
@@ -446,6 +574,18 @@ export function Services() {
           </aside>
         </div>
       </div>
+
+      {/* Section farewell — ink shadow that deepens as Services hands off
+          to Why MAGICKS. Reads as a printed spread ending, not a cut. */}
+      <div
+        data-services-farewell
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-44 will-change-[opacity]"
+        style={{
+          background:
+            "linear-gradient(180deg, transparent 0%, rgba(8,8,10,0.32) 58%, rgba(8,8,10,0.58) 100%)",
+        }}
+      />
     </section>
   );
 }

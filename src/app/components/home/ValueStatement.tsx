@@ -1,29 +1,36 @@
 import { useLayoutEffect, useRef } from "react";
 import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import {
+  breathingScale,
+  focusEnvelope,
+  presenceEnvelope,
+  rackFocusTrack,
+  sectionFarewell,
+} from "../../lib/scrollMotion";
 import { ChapterMarker } from "./ChapterMarker";
 
 /**
- * Three sentences. Each reveals at its own tempo — fast/slow/fast —
- * so the meaning lands like pacing in a well-written paragraph.
+ * Three sentences. The lens rack-pulls down the paragraph as the user
+ * scrolls — each sentence exists in layout from the start as soft-focused
+ * ghost text, and every sentence's clarity is a direct function of scroll
+ * position. Scrolling back up reverses the pull cleanly.
+ *
+ * A luminous focus band (a thin horizontal light) rides beside the
+ * active sentence as a physical "lens carriage" — it's never called out,
+ * but the eye registers that something is *moving with the read*.
  */
-const SENTENCES: { text: string; tone: "strong" | "soft"; tempo: "fast" | "slow" }[] = [
+const SENTENCES: { text: string }[] = [
   {
     // Drop-cap "W" is rendered separately — sentence continues with "ir …"
     text: "ir sind MAGICKS Studio — und Standard war noch nie unser Anspruch.",
-    tone: "strong",
-    tempo: "fast",
   },
   {
     text:
       "Wir entwickeln digitale Lösungen, die auffallen und sauber funktionieren — und setzen sie schneller um, als man es gewohnt ist.",
-    tone: "soft",
-    tempo: "slow",
   },
   {
     text: "Und wir haben keine Lust auf langweilige Web-Projekte.",
-    tone: "strong",
-    tempo: "fast",
   },
 ];
 
@@ -50,46 +57,155 @@ export function ValueStatement() {
       const sentences = gsap.utils.toArray<HTMLElement>("[data-value-sentence]");
       const rule = root.querySelector<HTMLElement>("[data-value-rule]");
       const indexItems = gsap.utils.toArray<HTMLElement>("[data-value-index]");
+      const heading = root.querySelector<HTMLElement>("[data-value-heading]");
+      const focusBand = root.querySelector<HTMLElement>("[data-value-focusband]");
+      const ambient = root.querySelector<HTMLElement>("[data-value-ambient]");
+      const farewell = root.querySelector<HTMLElement>("[data-value-farewell]");
 
       if (reduced) {
-        gsap.set([chapter, dropCap, ...sentences, rule, ...indexItems], {
+        gsap.set([chapter, dropCap, ...sentences, rule, ...indexItems, focusBand, ambient, farewell], {
           opacity: 1,
           y: 0,
           scale: 1,
           scaleX: 1,
+          filter: "blur(0px)",
         });
+        if (focusBand) gsap.set(focusBand, { opacity: 0 });
+        if (farewell) gsap.set(farewell, { opacity: 0 });
         return;
       }
 
-      gsap.set(chapter, { opacity: 0, y: 12 });
-      gsap.set(dropCap, { opacity: 0, y: 24, scale: 0.95, transformOrigin: "left bottom" });
-      gsap.set(sentences, { opacity: 0, y: 14, filter: "blur(6px)" });
-      gsap.set(rule, { scaleX: 0, transformOrigin: "left center" });
-      gsap.set(indexItems, { opacity: 0, y: 8 });
-
-      const tl = gsap.timeline({
-        defaults: { ease: "power3.out" },
-        scrollTrigger: { trigger: root, start: "top 72%", once: true },
+      // ─── Chapter: presence envelope, enters as hero finishes dissolving ─
+      presenceEnvelope(chapter, {
+        trigger: root,
+        start: "top 96%",
+        end: "top 28%",
+        yFrom: 14,
+        yTo: -10,
+        blur: 3,
+        holdRatio: 0.58,
       });
 
-      tl.to(chapter, { opacity: 1, y: 0, duration: 0.8 }, 0);
-      tl.to(
-        dropCap,
-        { opacity: 1, y: 0, scale: 1, duration: 1.5, ease: "power2.out" },
-        0.1,
+      // ─── Drop-cap: presence envelope + scroll-coupled breathing ───────
+      // The "W" is a fixed typographic anchor. It arrives cleanly, holds
+      // through the section, releases late. While it holds it also
+      // breathes at a different rate — the scale-pulse is so small it
+      // reads as *paper / eye settling*, not motion.
+      presenceEnvelope(dropCap, {
+        trigger: root,
+        start: "top 90%",
+        end: "bottom 40%",
+        yFrom: 28,
+        yTo: -12,
+        blur: 4.5,
+        holdRatio: 0.68,
+      });
+      breathingScale(dropCap, {
+        trigger: root,
+        from: 0.992,
+        peak: 1.014,
+        to: 0.998,
+        scrub: 1.5,
+      });
+
+      // ─── Ambient field: a wide radial light follows the focus pull ────
+      // Anchored behind the paragraph. Builds as sentence 1 reaches focus,
+      // peaks through sentence 2, softens as sentence 3 lands its punch.
+      if (ambient) {
+        gsap.set(ambient, { opacity: 0 });
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: heading ?? root,
+              start: "top 78%",
+              end: "bottom 30%",
+              scrub: 1.1,
+              invalidateOnRefresh: true,
+            },
+            defaults: { ease: "none" },
+          })
+          .to(ambient, { opacity: 0.9, duration: 0.35, ease: "power2.out" }, 0)
+          .to(ambient, { opacity: 1, duration: 0.3, ease: "none" }, 0.35)
+          .to(ambient, { opacity: 0.55, duration: 0.35, ease: "power2.in" }, 0.65);
+      }
+
+      // ─── Rack-focus sentence track ───────────────────────────────────
+      // Wider hold ratio → each sentence reads sharply for longer before
+      // handing off. Emits an `onProgress` signal so the luminous band can
+      // track which sentence currently holds the lens.
+      rackFocusTrack(sentences, {
+        trigger: heading ?? root,
+        start: "top 74%",
+        end: "bottom 38%",
+        scrub: 0.95,
+        blur: 5.5,
+        softOpacity: 0.32,
+        reachOpacity: 1,
+        holdRatio: 0.58,
+        onProgress: (_idx, progress) => {
+          if (!focusBand || !sentences.length) return;
+          // Position the band along the paragraph height. We interpolate
+          // through the three sentence centers so the band moves
+          // continuously, not in steps — even the "between" positions
+          // read as the lens traversing space.
+          const rects = sentences.map((s) => (s as HTMLElement).getBoundingClientRect());
+          const parentRect = (heading ?? root).getBoundingClientRect();
+          const centers = rects.map((r) => r.top + r.height / 2 - parentRect.top);
+          const indexFloat = Math.max(0, Math.min(centers.length - 1, progress * centers.length - 0.5));
+          const lo = Math.floor(indexFloat);
+          const hi = Math.min(centers.length - 1, lo + 1);
+          const t = indexFloat - lo;
+          const y = centers[lo] + (centers[hi] - centers[lo]) * t;
+          gsap.set(focusBand, { y, opacity: 0.85 });
+        },
+      });
+
+      // ─── Rule: scrubbed draw + gentle release ────────────────────────
+      gsap.fromTo(
+        rule,
+        { scaleX: 0, transformOrigin: "left center" },
+        {
+          scaleX: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: rule,
+            start: "top 90%",
+            end: "top 58%",
+            scrub: 0.9,
+          },
+        },
       );
-
-      // Variable tempo — the core art-direction move.
-      sentences.forEach((s, i) => {
-        const tempo = SENTENCES[i].tempo;
-        const duration = tempo === "fast" ? 0.75 : 1.35;
-        const ease = tempo === "fast" ? "power2.out" : "power1.out";
-        const offset = i === 0 ? 0.45 : i === 1 ? 1.05 : 2.15;
-        tl.to(s, { opacity: 1, y: 0, filter: "blur(0px)", duration, ease }, offset);
+      gsap.to(rule, {
+        scaleX: 0.5,
+        ease: "none",
+        scrollTrigger: {
+          trigger: rule,
+          start: "top 35%",
+          end: "bottom -20%",
+          scrub: 1.0,
+        },
       });
 
-      tl.to(rule, { scaleX: 1, duration: 1.2, ease: "power2.inOut" }, 2.6);
-      tl.to(indexItems, { opacity: 1, y: 0, duration: 0.7, stagger: 0.09 }, 2.9);
+      // ─── Index items: focus envelope with slight stagger ─────────────
+      focusEnvelope(indexItems, {
+        trigger: rule ?? root,
+        start: "top 85%",
+        end: "bottom -10%",
+        blur: 3,
+        opacityFloor: 0.2,
+        focusOpacity: 1,
+        holdRatio: 0.56,
+        stagger: 0.02,
+      });
+
+      // ─── Section farewell: ink-shadow bottom fade ────────────────────
+      sectionFarewell(farewell, {
+        trigger: root,
+        peak: 1,
+        start: "bottom 80%",
+        end: "bottom 0%",
+        scrub: 1.0,
+      });
     }, root);
 
     return () => ctx.revert();
@@ -104,35 +220,66 @@ export function ValueStatement() {
     >
       <div aria-hidden className="section-top-rule" />
 
+      {/* Ambient field — wide radial light anchored behind the paragraph.
+          Never claims focus; registers as room-light moving with the read. */}
+      <div
+        data-value-ambient
+        aria-hidden
+        className="pointer-events-none absolute inset-0 will-change-[opacity]"
+        style={{
+          backgroundImage:
+            "radial-gradient(ellipse 56% 42% at 62% 46%, rgba(255,255,255,0.028), transparent 68%)",
+        }}
+      />
+
       <div className="layout-max">
         <div className="grid gap-10 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20">
           <div data-value-chapter className="md:pt-2">
             <ChapterMarker num="01" label="Denken" />
           </div>
 
-          <div className="max-w-[56rem]">
+          <div className="relative max-w-[56rem]">
+            {/* Luminous focus band — thin horizontal light that rides along
+                the sentence currently in focus. Its Y is driven by the
+                rack-focus track's onProgress callback, so position and
+                sharpness always belong to the same scroll frame. */}
+            <div
+              data-value-focusband
+              aria-hidden
+              className="pointer-events-none absolute left-[-2rem] top-0 hidden h-[1.2em] w-[calc(100%+4rem)] will-change-[transform,opacity] md:block"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 22%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.05) 78%, transparent 100%)",
+                mixBlendMode: "screen",
+                transform: "translateY(0) translateZ(0)",
+              }}
+            />
+
             <h2
               id="value-heading"
-              className="font-instrument text-[1.9rem] leading-[1.22] tracking-[-0.025em] text-white sm:text-[2.35rem] md:text-[2.9rem] lg:text-[3.3rem]"
+              data-value-heading
+              className="relative font-instrument text-[1.9rem] leading-[1.22] tracking-[-0.025em] text-white sm:text-[2.35rem] md:text-[2.9rem] lg:text-[3.3rem]"
             >
-              <span data-value-dropcap className="drop-cap">W</span>
+              <span data-value-dropcap className="drop-cap will-change-[opacity,transform,filter]">
+                W
+              </span>
               <span
                 data-value-sentence
-                className="block will-change-[opacity,transform,filter]"
+                className="block will-change-[opacity,filter]"
               >
                 {SENTENCES[0].text}
               </span>
 
               <span
                 data-value-sentence
-                className="mt-10 block text-white/55 will-change-[opacity,transform,filter] sm:mt-12"
+                className="mt-10 block text-white/55 will-change-[opacity,filter] sm:mt-12"
               >
                 {SENTENCES[1].text}
               </span>
 
               <span
                 data-value-sentence
-                className="mt-10 block will-change-[opacity,transform,filter] sm:mt-12"
+                className="mt-10 block will-change-[opacity,filter] sm:mt-12"
               >
                 {SENTENCES[2].text}
               </span>
@@ -151,7 +298,7 @@ export function ValueStatement() {
                   <li
                     key={it.label}
                     data-value-index
-                    className="flex items-baseline gap-2"
+                    className="flex items-baseline gap-2 will-change-[opacity,filter]"
                   >
                     <span className="font-instrument text-[15px] italic text-white/55">
                       {it.n}
@@ -166,6 +313,19 @@ export function ValueStatement() {
           </div>
         </div>
       </div>
+
+      {/* Section farewell — a thin ink-shadow at the bottom of the spread
+          that deepens as the section exits and lifts on return. Hands off
+          to Services as material, not as a cut. */}
+      <div
+        data-value-farewell
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-40 will-change-[opacity]"
+        style={{
+          background:
+            "linear-gradient(180deg, transparent 0%, rgba(8,8,10,0.35) 55%, rgba(8,8,10,0.62) 100%)",
+        }}
+      />
     </section>
   );
 }

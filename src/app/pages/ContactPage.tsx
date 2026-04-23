@@ -5,6 +5,7 @@ import { RouteSEO } from "../seo/RouteSEO";
 import { SectionTransition } from "../components/service/SectionTransition";
 import { ProjectIntakeForm } from "../components/contact/ProjectIntakeForm";
 import { registerGsap, MAGICKS_EASE, MAGICKS_EASE_SMOOTH } from "../lib/gsap";
+import { parallaxDrift, presenceEnvelope } from "../lib/scrollMotion";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 
 /* ---------------------------------------------------------------
@@ -163,6 +164,7 @@ export default function ContactPage() {
   const processRef = useRef<HTMLElement | null>(null);
   const expectRef = useRef<HTMLElement | null>(null);
   const statementRef = useRef<HTMLElement | null>(null);
+  const formRef = useRef<HTMLElement | null>(null);
 
   const reduced = useReducedMotion();
 
@@ -213,11 +215,63 @@ export default function ContactPage() {
             { opacity: 0, duration: 0.9 },
             "-=0.6",
           );
+
+        /* ---- Hero scroll-exit — gives the opening page a cinematic release ----
+         * The hero copy parallaxes up and softens as the reader moves on,
+         * the texture drifts at its own gentler rate to create depth, and
+         * the vertical credit fades as soon as we've clearly left the frame.
+         * All motion is scroll-coupled and fully bidirectional — scrolling
+         * back up re-composes the hero exactly as it started. */
+        const heroCopy = heroEl.querySelector<HTMLElement>("[data-kon-hero-copy]");
+        const heroTexture = heroEl.querySelector<HTMLElement>("[data-kon-hero-texture]");
+        const heroCredit = heroEl.querySelector<HTMLElement>("[data-kon-credit]");
+
+        if (heroCopy) {
+          gsap.to(heroCopy, {
+            yPercent: -5,
+            opacity: 0.46,
+            ease: "none",
+            scrollTrigger: {
+              trigger: heroEl,
+              start: "top top",
+              end: "bottom top",
+              scrub: true,
+            },
+          });
+        }
+
+        if (heroTexture) {
+          parallaxDrift(heroTexture, {
+            trigger: heroEl,
+            from: 0,
+            to: -20,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          });
+        }
+
+        if (heroCredit) {
+          gsap.to(heroCredit, {
+            opacity: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: heroEl,
+              start: "center top",
+              end: "bottom top",
+              scrub: true,
+            },
+          });
+        }
       }, heroEl);
       cleanups.push(() => ctx.revert());
     }
 
-    /* ---------- Process rail draw-in ---------- */
+    /* ---------- Process rail — scrubbed draw-in + bidirectional steps ----------
+     * The vertical rail still draws as you enter the section (scrub 0.6,
+     * preserved). The step cards are now scroll-coupled so they build
+     * presence on entry, hold clarity across the reading zone, and
+     * release as the next section arrives. */
     const processEl = processRef.current;
     if (processEl) {
       const ctx = gsap.context(() => {
@@ -234,59 +288,179 @@ export default function ContactPage() {
           },
         });
 
-        gsap.from("[data-kon-step]", {
-          y: 26,
-          opacity: 0,
-          duration: 0.85,
-          ease: MAGICKS_EASE,
-          stagger: 0.13,
-          scrollTrigger: {
-            trigger: processEl,
-            start: "top 76%",
-            once: true,
-          },
-        });
+        const steps = gsap.utils.toArray<HTMLElement>("[data-kon-step]");
+        if (steps.length) {
+          presenceEnvelope(steps, {
+            start: "top 88%",
+            end: "bottom 12%",
+            yFrom: 24,
+            yTo: -14,
+            blur: 4,
+            holdRatio: 0.52,
+            stagger: 0.08,
+            scrub: 0.95,
+          });
+        }
       }, processEl);
       cleanups.push(() => ctx.revert());
     }
 
-    /* ---------- Expect stanza cascade ---------- */
+    /* ---------- Expect stanza — bidirectional focus track ----------
+     * The "Was du erwartest" vows gather as the section enters focus
+     * and soften as the reader scrolls past, so nothing latches. */
     const expectEl = expectRef.current;
     if (expectEl) {
       const ctx = gsap.context(() => {
-        gsap.from("[data-kon-vow]", {
-          y: 16,
-          opacity: 0,
-          duration: 0.95,
-          ease: MAGICKS_EASE,
-          stagger: 0.11,
-          scrollTrigger: {
-            trigger: expectEl,
-            start: "top 70%",
-            once: true,
-          },
-        });
+        const vows = gsap.utils.toArray<HTMLElement>("[data-kon-vow]");
+        if (vows.length) {
+          gsap.set(vows, { opacity: 0, y: 16, filter: "blur(5px)" });
+          gsap.to(vows, {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            ease: "none",
+            stagger: 0.1,
+            scrollTrigger: {
+              trigger: expectEl,
+              start: "top 80%",
+              end: "top 22%",
+              scrub: 1.0,
+              invalidateOnRefresh: true,
+            },
+          });
+          // Quiet release so the stanza doesn't stay at full weight
+          // after the reader has moved on.
+          gsap.to(vows, {
+            opacity: 0.3,
+            filter: "blur(3px)",
+            ease: "none",
+            stagger: 0.04,
+            scrollTrigger: {
+              trigger: expectEl,
+              start: "bottom 55%",
+              end: "bottom 5%",
+              scrub: 1.0,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
       }, expectEl);
       cleanups.push(() => ctx.revert());
     }
 
-    /* ---------- Statement — word-by-word, deliberate cadence ---------- */
+    /* ---------- Statement — scroll-coupled word cadence ----------
+     * Masked word lifts are preserved (parent overflow handles the
+     * clipping) but their progress is now scroll-driven. Reverses as
+     * the reader scrolls back up — no once:true latch. */
     const statementEl = statementRef.current;
     if (statementEl) {
       const ctx = gsap.context(() => {
-        gsap.from("[data-kon-stm-word]", {
-          y: "102%",
-          opacity: 0,
-          duration: 1.4,
-          ease: MAGICKS_EASE,
-          stagger: 0.09,
-          scrollTrigger: {
-            trigger: statementEl,
-            start: "top 68%",
-            once: true,
-          },
-        });
+        const words = gsap.utils.toArray<HTMLElement>("[data-kon-stm-word]");
+        if (words.length) {
+          gsap.set(words, { yPercent: 102, opacity: 0 });
+          gsap.to(words, {
+            yPercent: 0,
+            opacity: 1,
+            ease: "none",
+            stagger: 0.08,
+            scrollTrigger: {
+              trigger: statementEl,
+              start: "top 78%",
+              end: "top 26%",
+              scrub: 1.1,
+              invalidateOnRefresh: true,
+            },
+          });
+          // Gentle softening on exit — the statement does not snap out.
+          gsap.to(words, {
+            opacity: 0.3,
+            ease: "none",
+            stagger: 0.02,
+            scrollTrigger: {
+              trigger: statementEl,
+              start: "bottom 52%",
+              end: "bottom 0%",
+              scrub: 1.0,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
       }, statementEl);
+      cleanups.push(() => ctx.revert());
+    }
+
+    /* ---------- Form — page's visual anchor ----------
+     * The intake form is the centre of gravity of /kontakt. We treat
+     * the whole form section as an anchor that:
+     *   · entry  — gathers presence and lifts softly into place
+     *   · focus  — sits at full clarity while the user is reading/typing
+     *   · exit   — gently softens as the page moves on to direct
+     *              contact and orientation, never yanking attention
+     *
+     * Input fields get no motion — they must feel trustworthy, not
+     * gimmicky. Only the surrounding frontispiece block is animated. */
+    const formEl = formRef.current;
+    if (formEl) {
+      const ctx = gsap.context(() => {
+        const frontispiece = formEl.querySelector<HTMLElement>(
+          "[data-kon-form-frontispiece]",
+        );
+        const form = formEl.querySelector<HTMLElement>(
+          "[data-kon-form-container]",
+        );
+
+        if (frontispiece) {
+          gsap.set(frontispiece, {
+            opacity: 0,
+            y: 24,
+            filter: "blur(5px)",
+          });
+          gsap.to(frontispiece, {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            ease: "none",
+            scrollTrigger: {
+              trigger: formEl,
+              start: "top 82%",
+              end: "top 38%",
+              scrub: 1.0,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
+
+        if (form) {
+          gsap.set(form, { opacity: 0, y: 26 });
+          gsap.to(form, {
+            opacity: 1,
+            y: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: formEl,
+              start: "top 72%",
+              end: "top 22%",
+              scrub: 1.0,
+              invalidateOnRefresh: true,
+            },
+          });
+          // Gentle exit softening. Opacity only (no y displacement)
+          // so focus/scroll targets stay stable for inputs. The
+          // floor is deliberately high — the form never feels
+          // abandoned once the user moves past it.
+          gsap.to(form, {
+            opacity: 0.78,
+            ease: "none",
+            scrollTrigger: {
+              trigger: formEl,
+              start: "bottom 60%",
+              end: "bottom 0%",
+              scrub: 1.0,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
+      }, formEl);
       cleanups.push(() => ctx.revert());
     }
 
@@ -323,7 +497,7 @@ export default function ContactPage() {
             </span>
           </div>
 
-          <div className="layout-max relative">
+          <div data-kon-hero-copy className="layout-max relative">
             {/* Top folio */}
             <div data-kon-folio className="flex items-center gap-4">
               <span aria-hidden className="h-px w-10 bg-white/28 sm:w-14" />
@@ -759,13 +933,19 @@ export default function ContactPage() {
            This gives the form maximum presence instead of relegating it
            to a right-hand column — the intent is "this is the work."
            ============================================================ */}
-        <section className="relative overflow-hidden bg-[#08080A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16 lg:py-52">
+        <section
+          ref={formRef}
+          className="relative overflow-hidden bg-[#08080A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16 lg:py-52"
+        >
           <span aria-hidden className="section-top-rule" />
           <FormTexture />
 
           <div className="layout-max relative">
             {/* Title page — centered, acts as the form's frontispiece */}
-            <div className="mx-auto max-w-[48rem] text-center">
+            <div
+              data-kon-form-frontispiece
+              className="mx-auto max-w-[48rem] text-center"
+            >
               <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.48em] text-white/44 sm:text-[10.5px]">
                 § Anfrage — Formular
               </p>
@@ -814,7 +994,10 @@ export default function ContactPage() {
 
             {/* Form — constrained to a comfortable reading/typing width
                 so it doesn't stretch edge-to-edge, but clearly dominant. */}
-            <div className="mx-auto mt-16 max-w-[58rem] sm:mt-20 md:mt-24">
+            <div
+              data-kon-form-container
+              className="mx-auto mt-16 max-w-[58rem] sm:mt-20 md:mt-24"
+            >
               <ProjectIntakeForm />
             </div>
           </div>
@@ -1121,7 +1304,11 @@ function UnderlineAnchor({ href, label }: { href: string; label: string }) {
 
 function HeroTexture() {
   return (
-    <>
+    <div
+      aria-hidden
+      data-kon-hero-texture
+      className="pointer-events-none absolute inset-0"
+    >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_78%_58%_at_50%_102%,rgba(255,255,255,0.06),transparent_62%)]"
@@ -1130,7 +1317,7 @@ function HeroTexture() {
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_45%_35%_at_8%_10%,rgba(255,255,255,0.04),transparent_60%)]"
       />
-    </>
+    </div>
   );
 }
 

@@ -4,8 +4,10 @@ import { Link } from "react-router-dom";
 import { ChapterMarker } from "../../components/home/ChapterMarker";
 import { ContextualCrossLink } from "../../components/service/ContextualCrossLink";
 import { SectionTransition } from "../../components/service/SectionTransition";
+import { EditorialAnchor } from "../../components/service/EditorialAnchor";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { registerGsap } from "../../lib/gsap";
+import { presenceEnvelope, rackFocusTrack } from "../../lib/scrollMotion";
 import { RouteSEO } from "../../seo/RouteSEO";
 
 /* ------------------------------------------------------------------
@@ -372,64 +374,154 @@ export default function WebdesignKasselPage() {
         });
       }
 
-      // -------- Generic scroll reveals --------
-      reveals.forEach((el) => {
-        gsap.set(el, { opacity: 0, y: 22 });
-        gsap.to(el, {
-          opacity: 1,
-          y: 0,
-          duration: 1.0,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 82%", once: true },
-        });
+      /* -------- Generic scroll reveals — bidirectional envelope --------
+       * Each block on /webdesign-kassel gains presence on entry, holds
+       * clarity across its reading zone, then releases as the next
+       * section arrives. Works cleanly in both scroll directions. */
+      presenceEnvelope(reveals, {
+        start: "top 90%",
+        end: "bottom 10%",
+        yFrom: 22,
+        yTo: -14,
+        blur: 4,
+        holdRatio: 0.5,
+        scrub: 0.95,
       });
 
-      // -------- Ceremonial positioning pull --------
+      /* -------- Ceremonial positioning pull --------
+       * The positioning stanza rises into focus as the reader engages
+       * and softens as they move on. Letter-spacing on the heading
+       * settles across the focus zone. Reversible — scrolling back up
+       * re-engages the statement rather than leaving it latched. */
       if (positioningLines.length) {
-        gsap.set(positioningLines, { yPercent: 110, opacity: 0 });
-        if (positioningHeading) gsap.set(positioningHeading, { letterSpacing: "0.008em" });
-        const tl = gsap
-          .timeline({
-            scrollTrigger: { trigger: positioningLines[0], start: "top 78%", once: true },
-          })
-          .to(positioningLines, {
-            yPercent: 0,
-            opacity: 1,
-            duration: 1.45,
-            ease: "power4.out",
-            stagger: 0.12,
-          });
+        const positioningSection =
+          (positioningLines[0] as HTMLElement).closest("section") ??
+          positioningLines[0];
+
+        gsap.set(positioningLines, {
+          yPercent: 22,
+          opacity: 0,
+          filter: "blur(5px)",
+        });
+        gsap.to(positioningLines, {
+          yPercent: 0,
+          opacity: 1,
+          filter: "blur(0px)",
+          ease: "none",
+          stagger: 0.15,
+          scrollTrigger: {
+            trigger: positioningSection,
+            start: "top 80%",
+            end: "top 28%",
+            scrub: 1.1,
+            invalidateOnRefresh: true,
+          },
+        });
+        // Exit softening — keeps the stanza present but no longer
+        // demanding once the reader has moved past it.
+        gsap.to(positioningLines, {
+          opacity: 0.28,
+          filter: "blur(4px)",
+          yPercent: -14,
+          ease: "none",
+          stagger: 0.06,
+          scrollTrigger: {
+            trigger: positioningSection,
+            start: "bottom 55%",
+            end: "bottom 5%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
+        });
+
         if (positioningHeading) {
-          tl.to(
-            positioningHeading,
-            { letterSpacing: "-0.035em", duration: 1.8, ease: "power2.out" },
-            0.2,
-          );
+          gsap.set(positioningHeading, { letterSpacing: "0.008em" });
+          gsap.to(positioningHeading, {
+            letterSpacing: "-0.035em",
+            ease: "none",
+            scrollTrigger: {
+              trigger: positioningSection,
+              start: "top 76%",
+              end: "top 30%",
+              scrub: 1.1,
+              invalidateOnRefresh: true,
+            },
+          });
         }
       }
 
-      // -------- Final CTA choreography --------
+      /* -------- Final CTA — scroll-coupled sign-off --------
+       * The final block assembles as the reader arrives (lines lift,
+       * centre rule draws, CTA and ledger settle) and softens on exit.
+       * All scrub-driven. No back.out spring, no once:true latch. */
       if (finalLineA.length || finalLineB.length) {
-        gsap.set([...finalLineA, ...finalLineB], { yPercent: 118, opacity: 0 });
-        gsap.set(finalRule, { scaleX: 0, transformOrigin: "center" });
-        gsap.set(finalLedger, { opacity: 0, y: 14 });
-        gsap.set(finalCta, { opacity: 0, y: 18, scale: 0.96 });
-        const trigger =
-          (finalLineA[0] as HTMLElement | undefined)?.closest("section") ?? finalLineA[0];
-        gsap
-          .timeline({
-            scrollTrigger: { trigger, start: "top 72%", once: true },
-            defaults: { ease: "power4.out" },
-          })
-          .to(finalLineA, { yPercent: 0, opacity: 1, duration: 1.15, stagger: 0.07 }, 0)
-          .to(finalLineB, { yPercent: 0, opacity: 1, duration: 1.25, stagger: 0.07 }, 0.25)
-          .to(finalRule, { scaleX: 1, duration: 1.3, ease: "power2.inOut" }, 0.7)
-          .to(
-            finalCta,
-            { opacity: 1, y: 0, scale: 1, duration: 0.95, ease: "back.out(1.2)" },
-            0.95,
-          )
-          .to(finalLedger, { opacity: 1, y: 0, duration: 0.95, stagger: 0.1 }, 1.1);
+        const finalSection =
+          (finalLineA[0] as HTMLElement | undefined)?.closest("section") ??
+          (finalLineB[0] as HTMLElement | undefined)?.closest("section") ??
+          finalLineA[0] ??
+          finalLineB[0];
+
+        gsap.set([...finalLineA, ...finalLineB], {
+          yPercent: 36,
+          opacity: 0,
+          filter: "blur(6px)",
+        });
+        gsap.to([...finalLineA, ...finalLineB], {
+          yPercent: 0,
+          opacity: 1,
+          filter: "blur(0px)",
+          ease: "none",
+          stagger: 0.09,
+          scrollTrigger: {
+            trigger: finalSection,
+            start: "top 84%",
+            end: "top 38%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        if (finalRule) {
+          gsap.set(finalRule, { scaleX: 0, transformOrigin: "center" });
+          gsap.to(finalRule, {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: finalSection,
+              start: "top 66%",
+              end: "top 34%",
+              scrub: 0.9,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
+
+        if (finalCta) {
+          gsap.set(finalCta, { opacity: 0, y: 16 });
+          gsap.to(finalCta, {
+            opacity: 1,
+            y: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: finalSection,
+              start: "top 60%",
+              end: "top 30%",
+              scrub: 0.9,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
+
+        if (finalLedger.length) {
+          rackFocusTrack(finalLedger, {
+            trigger: finalSection,
+            start: "top 58%",
+            end: "top 22%",
+            blur: 3,
+            opacityFloor: 0.24,
+            scrub: 1.0,
+          });
+        }
       }
     }, root);
 
@@ -750,6 +842,76 @@ export default function WebdesignKasselPage() {
           to="§ 02  Auftrag"
           tone="darker"
         />
+
+        {/* =========================================================
+           § INTERLUDIUM — BUREAU SPECIMEN
+           Page-specific idiom. This page carries a Studio Bureau
+           dateline system (coordinate gutter 51°N · 9°E, masthead
+           dateline strip, vertical credits). The anchor joins that
+           vocabulary rather than using a generic 2-column formula:
+           a full-measure specimen plate with a top rail carrying the
+           bureau dateline (studio · exhibit · coordinates) and a
+           bottom rail carrying the dispatch metadata (year · subject).
+           The photograph has no internal folio overlay — the rails
+           do all the captioning, treating the image as a single
+           exhibited specimen rather than a decorated figure.
+        ========================================================= */}
+        <section
+          aria-label="Bureau · Exhibit I · Webpräsenz"
+          className="relative overflow-hidden px-5 py-24 sm:px-8 sm:py-28 md:px-12 md:py-32 lg:px-16 lg:py-36"
+        >
+          <div className="layout-max">
+            <figure className="relative">
+              {/* Top dateline rail — matches the hero bureau dateline */}
+              <div
+                data-wk-reveal
+                className="mb-6 flex items-center gap-4 border-t border-white/[0.1] pt-4 sm:mb-7 sm:gap-5 md:mb-8"
+              >
+                <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/58 sm:text-[10.5px]">
+                  Studio · Bureau
+                </span>
+                <span aria-hidden className="h-px flex-1 bg-white/14" />
+                <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.38em] text-white/46 sm:text-[10.5px]">
+                  Exhibit · I
+                </span>
+                <span aria-hidden className="hidden h-px w-14 bg-white/14 sm:block" />
+                <span className="font-mono hidden whitespace-nowrap text-[10px] font-medium uppercase leading-none tracking-[0.4em] text-white/46 sm:inline-block sm:text-[10.5px]">
+                  51°&nbsp;19′&nbsp;N &nbsp;·&nbsp; 9°&nbsp;29′&nbsp;E
+                </span>
+              </div>
+
+              {/* Specimen plate — chromeless; the rails above/below
+                  carry all caption metadata so the image reads as
+                  a pure bureau exhibit. */}
+              <EditorialAnchor
+                src="/media/pages/webdesign-kassel/anchor.webp"
+                alt="Dunkel gestaltete deutschsprachige Unternehmenswebsite (Wortmarke Nordwerk) auf einem mattschwarzen Laptop in einer ruhigen Studio-Umgebung: zentrierte Serifentitel „Arbeit mit Haltung.“, feine Navigationszeile und ein einzelner unterstrichener Call-to-Action."
+                aspect="16/9"
+                align="center"
+                maxWidth="64rem"
+                revealAttr="data-wk-reveal"
+              />
+
+              {/* Bottom dispatch rail — dispatch metadata */}
+              <figcaption
+                data-wk-reveal
+                className="mt-6 flex items-center gap-4 border-b border-white/[0.08] pb-4 sm:mt-7 sm:gap-5 md:mt-8"
+              >
+                <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/52 sm:text-[10.5px]">
+                  Dispatch
+                </span>
+                <span aria-hidden className="h-px flex-1 bg-white/12" />
+                <span className="font-instrument text-[0.92rem] italic leading-none tracking-[-0.008em] text-white/62 sm:text-[0.98rem]">
+                  Ein ruhiges, vollmessbares Beispiel. Keine Bühne, keine Effekte.
+                </span>
+                <span aria-hidden className="hidden h-px w-14 bg-white/12 sm:block" />
+                <span className="font-mono hidden whitespace-nowrap text-[10px] font-medium uppercase leading-none tracking-[0.38em] text-white/44 sm:inline-block sm:text-[10.5px]">
+                  Kassel · MMXXVI
+                </span>
+              </figcaption>
+            </figure>
+          </div>
+        </section>
 
         {/* =========================================================
            § 02 — AUFTRAG (Includes register)

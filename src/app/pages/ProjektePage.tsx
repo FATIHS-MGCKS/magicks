@@ -6,6 +6,7 @@ import { SectionTransition } from "../components/service/SectionTransition";
 import { featuredProjects, type Project } from "../data/projects";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { registerGsap } from "../lib/gsap";
+import { parallaxDrift, presenceEnvelope } from "../lib/scrollMotion";
 import { RouteSEO } from "../seo/RouteSEO";
 
 /* ------------------------------------------------------------------
@@ -113,20 +114,31 @@ export default function ProjektePage() {
         return;
       }
 
-      // Scroll-triggered reveals — calm, editorial, no overlap with
-      // the hero entrance.
-      reveals.forEach((el) => {
-        gsap.set(el, { opacity: 0, y: 22 });
-        gsap.to(el, {
-          opacity: 1,
-          y: 0,
-          duration: 1.0,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 84%", once: true },
-        });
+      /* Project-entry motion — curated catalogue rhythm.
+       *
+       * Each [data-pj-reveal] block is now treated as a catalogue entry
+       * that passes through three zones as the reader scrolls:
+       *   · entry — entry gathers presence, drifts into the reading band
+       *   · focus — entry sits at full clarity, slightly forward
+       *   · exit  — entry gently recedes, so the next one can speak
+       *
+       * Because each element uses itself as a trigger with a wide
+       * envelope, long project rows and short meta lines both behave
+       * coherently: short items breathe quickly, long items breathe
+       * across their own height. Scrolling back up re-engages focus. */
+      presenceEnvelope(reveals, {
+        start: "top 90%",
+        end: "bottom 10%",
+        yFrom: 22,
+        yTo: -14,
+        blur: 4,
+        holdRatio: 0.5,
+        scrub: 0.95,
       });
 
-      // Hero intro — focal axis draws in once, subtle.
+      // Hero intro — focal axis draws in on first load (justified
+      // page-intro moment). No back.out spring on the stops: the
+      // axis is a composed editorial element, not a UI toast.
       if (heroAxisRule) {
         gsap.set(heroAxisRule, { scaleY: 0, transformOrigin: "top center" });
         gsap.to(heroAxisRule, {
@@ -137,14 +149,77 @@ export default function ProjektePage() {
         });
       }
       if (heroAxisStops.length) {
-        gsap.set(heroAxisStops, { opacity: 0, scale: 0.5 });
+        gsap.set(heroAxisStops, { opacity: 0, scale: 0.82 });
         gsap.to(heroAxisStops, {
           opacity: 1,
           scale: 1,
-          duration: 0.7,
-          ease: "back.out(1.4)",
+          duration: 0.9,
+          ease: "power3.out",
           stagger: 0.1,
           delay: 1.1,
+        });
+      }
+
+      /* ---- Hero scroll-exit — curated catalogue opening releases gracefully ----
+       * The masthead and focal axis were static once loaded; now the whole
+       * hero composition drifts up and softens as the reader advances into
+       * the catalogue. Grain plate parallaxes at a gentler rate to separate
+       * backdrop from copy plane — subtle spatial depth, no gimmick. */
+      const heroSection = root.querySelector<HTMLElement>("[data-pj-hero]");
+      const heroCopy = root.querySelector<HTMLElement>("[data-pj-hero-copy]");
+      const heroTexture = root.querySelector<HTMLElement>("[data-pj-hero-texture]");
+
+      if (heroCopy && heroSection) {
+        gsap.to(heroCopy, {
+          yPercent: -5,
+          opacity: 0.5,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroSection,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+      }
+
+      if (heroTexture && heroSection) {
+        parallaxDrift(heroTexture, {
+          trigger: heroSection,
+          from: 0,
+          to: -28,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        });
+      }
+
+      /* ---- Final CTA head — cinematic arrival ----
+       * The closing headline settles in place: letter-spacing tightens
+       * while blur releases and y resolves, scrub-driven so the final
+       * movement of the catalogue feels earned, not dropped in. */
+      const finalSection = root.querySelector<HTMLElement>("[data-pj-final]");
+      const finalHead = root.querySelector<HTMLElement>("[data-pj-final-head]");
+      if (finalSection && finalHead) {
+        gsap.set(finalHead, {
+          opacity: 0,
+          y: 18,
+          letterSpacing: "0.034em",
+          filter: "blur(5px)",
+        });
+        gsap.to(finalHead, {
+          opacity: 1,
+          y: 0,
+          letterSpacing: "-0.036em",
+          filter: "blur(0px)",
+          ease: "none",
+          scrollTrigger: {
+            trigger: finalSection,
+            start: "top 78%",
+            end: "top 28%",
+            scrub: 1.1,
+            invalidateOnRefresh: true,
+          },
         });
       }
     }, root);
@@ -172,6 +247,7 @@ export default function ProjektePage() {
           {/* Grain plate */}
           <div
             aria-hidden
+            data-pj-hero-texture
             className="pointer-events-none absolute inset-0 opacity-[0.2]"
             style={{
               backgroundImage:
@@ -183,7 +259,7 @@ export default function ProjektePage() {
             }}
           />
 
-          <div className="relative layout-max">
+          <div data-pj-hero-copy className="relative layout-max">
             {/* Top masthead */}
             <div className="mb-10 flex flex-col gap-5 sm:mb-14 md:mb-16">
               <div className="flex items-start justify-between gap-6">
@@ -609,7 +685,10 @@ export default function ProjektePage() {
         {/* =========================================================
            § END — FINAL CTA
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
+        <section
+          data-pj-final
+          className="relative overflow-hidden bg-[#070708] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56"
+        >
           <div aria-hidden className="section-top-rule" />
 
           <div
@@ -650,7 +729,7 @@ export default function ProjektePage() {
               </div>
 
               <h2
-                data-pj-reveal
+                data-pj-final-head
                 className="font-instrument text-[2.2rem] leading-[1.02] tracking-[-0.036em] text-white sm:text-[3rem] md:text-[3.95rem] lg:text-[4.75rem] xl:text-[5.3rem]"
               >
                 {FINAL_CTA_HEADLINE}

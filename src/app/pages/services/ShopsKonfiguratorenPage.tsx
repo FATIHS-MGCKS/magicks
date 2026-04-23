@@ -4,6 +4,7 @@ import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { ChapterMarker } from "../../components/home/ChapterMarker";
 import { ContextualCrossLink } from "../../components/service/ContextualCrossLink";
+import { EditorialAnchor } from "../../components/service/EditorialAnchor";
 import { SectionTransition } from "../../components/service/SectionTransition";
 import { RouteSEO } from "../../seo/RouteSEO";
 
@@ -608,6 +609,24 @@ export default function ShopsKonfiguratorenPage() {
                 </p>
               </div>
             </div>
+
+            {/* First editorial visual anchor — a premium configurator scene.
+                Closes the § 01 argument with a concrete picture of what a
+                high-end digital sales experience looks like. */}
+            <div className="mt-20 sm:mt-24 md:mt-28">
+              <EditorialAnchor
+                src="/media/services/shops/hero-pergola.webp"
+                alt="Pergola-Konfigurator auf einem Laptop: Produktansicht einer freistehenden Aluminium-Pergola mit Lamellendach, rechts Konfigurator-UI mit Material-Auswahl, Dimensionen und ‚Anfrage senden‘."
+                folio="Plate 01"
+                context="Konfigurator"
+                leftCaption="Pergola Linea · Desktop"
+                rightCaption="Konfiguration · ab 11.940 €"
+                aspect="16/9"
+                align="right"
+                maxWidth="46rem"
+                revealAttr="data-ss-reveal"
+              />
+            </div>
           </div>
         </section>
 
@@ -810,6 +829,25 @@ export default function ShopsKonfiguratorenPage() {
                 </p>
               </div>
             </div>
+
+            {/* Second editorial anchor — a close configurator crop showing
+                decision logic in practice. Different product (Fenster) than
+                the hero anchor on purpose — signals breadth of configurator
+                work without repeating the same device-mockup formula. */}
+            <div className="mt-20 sm:mt-24 md:mt-28">
+              <EditorialAnchor
+                src="/media/services/shops/detail-fenster.webp"
+                alt="Enger UI-Ausschnitt eines Fenster-Konfigurators: großes 3D-Fenster links, rechts Material-Swatches in Anthrazit, Rahmenprofil-Optionen, Verglasung 2-fach, Öffnungsart Dreh-Kipp, Maße Breite und Höhe in Millimetern."
+                folio="Plate 02"
+                context="Entscheidungsführung"
+                leftCaption="Fenster · Material & Maße"
+                rightCaption="Anthrazit RAL 7016"
+                aspect="16/9"
+                align="left"
+                maxWidth="48rem"
+                revealAttr="data-ss-reveal"
+              />
+            </div>
           </div>
         </section>
 
@@ -951,6 +989,29 @@ export default function ShopsKonfiguratorenPage() {
                 <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* =========================================================
+           THIRD EDITORIAL ANCHOR — mobile "Anfrage senden" moment
+           Portrait 4:5 crop, centered — deliberately different format
+           to signal responsive quality and to pair with the upcoming
+           Final CTA without duplicating its language.
+        ========================================================= */}
+        <section className="relative px-5 pb-20 pt-4 sm:px-8 sm:pb-28 md:px-12 md:pb-32 lg:px-16">
+          <div className="layout-max">
+            <EditorialAnchor
+              src="/media/services/shops/mobile-summary.webp"
+              alt="Smartphone auf einem dunklen Studiotisch zeigt eine Konfigurator-Zusammenfassung: Modell Pergola Linea, Anthrazit RAL 7016, 4.000 mm × 4.000 mm, 14 variable Dachlamellen, Gesamtpreis 11.940 €, darunter ein Button ‚Anfrage senden‘."
+              folio="Plate 03"
+              context="Abschluss"
+              leftCaption="Mobile · Zusammenfassung"
+              rightCaption="Anfrage · 11.940 €"
+              aspect="16/9"
+              align="center"
+              maxWidth="34rem"
+              revealAttr="data-ss-reveal"
+            />
           </div>
         </section>
 

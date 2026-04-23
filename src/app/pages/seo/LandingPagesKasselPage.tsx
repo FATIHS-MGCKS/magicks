@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 
 import { ChapterMarker } from "../../components/home/ChapterMarker";
 import { SectionTransition } from "../../components/service/SectionTransition";
+import { EditorialAnchor } from "../../components/service/EditorialAnchor";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { registerGsap } from "../../lib/gsap";
+import { presenceEnvelope, rackFocusTrack } from "../../lib/scrollMotion";
 import { RouteSEO } from "../../seo/RouteSEO";
 
 /* ------------------------------------------------------------------
@@ -247,6 +249,54 @@ const FOCAL_AXIS_STOPS: { label: string; tone: "outline" | "filled" }[] = [
   { label: "Anfrage", tone: "outline" },
 ];
 
+/* =======  PAGE-LOCAL HELPERS  ======= */
+
+/**
+ * AnatomyLabel — a single caption cell under the Focal-Axis specimen
+ * plate. Three of these sit side-by-side, naming the three conversion
+ * elements visible on the mockup (Überschrift · CTA · Argumente).
+ * Each cell carries a small lowercase Latin tag (a/b/c), a head
+ * serif label, and a tail register line in monospace.
+ *
+ * Kept local to this page — the anatomy caption is idiom-specific
+ * to the Focal Axis plate and does not repeat anywhere else in the
+ * site. Lives here to stay co-located with the section that uses it.
+ */
+function AnatomyLabel({
+  tag,
+  head,
+  tail,
+  align = "start",
+}: {
+  tag: string;
+  head: string;
+  tail: string;
+  align?: "start" | "center" | "end";
+}) {
+  const alignClass =
+    align === "center"
+      ? "items-center text-center"
+      : align === "end"
+        ? "items-end text-right"
+        : "items-start text-left";
+  return (
+    <div className={`flex flex-col gap-2 ${alignClass}`}>
+      <div className="flex items-baseline gap-2">
+        <span className="font-instrument text-[0.9rem] italic leading-none tracking-[-0.01em] text-white/46 sm:text-[0.95rem]">
+          {tag}
+        </span>
+        <span aria-hidden className="h-px w-4 bg-white/22" />
+        <span className="font-instrument text-[0.98rem] leading-none tracking-[-0.012em] text-white/82 sm:text-[1.05rem]">
+          {head}
+        </span>
+      </div>
+      <span className="font-mono text-[9.5px] font-medium uppercase leading-[1.5] tracking-[0.32em] text-white/42 sm:text-[10px]">
+        {tail}
+      </span>
+    </div>
+  );
+}
+
 /* =======  PAGE  ======= */
 
 export default function LandingPagesKasselPage() {
@@ -349,7 +399,7 @@ export default function LandingPagesKasselPage() {
       gsap.set(heroCtaRule, { scaleX: 0, transformOrigin: "left center" });
       gsap.set(heroMeta, { opacity: 0, y: 8 });
       gsap.set(heroAxisRule, { scaleY: 0, transformOrigin: "top center" });
-      gsap.set(heroAxisStops, { opacity: 0, scale: 0.5 });
+      gsap.set(heroAxisStops, { opacity: 0, scale: 0.82 });
       gsap.set(heroCredit, { opacity: 0, y: 8 });
 
       gsap
@@ -386,90 +436,181 @@ export default function LandingPagesKasselPage() {
           {
             opacity: 1,
             scale: 1,
-            duration: 0.7,
+            duration: 0.9,
             stagger: 0.09,
-            ease: "back.out(1.4)",
+            ease: "power3.out",
           },
           2.2,
         )
         .to(heroCredit, { opacity: 1, y: 0, duration: 0.8 }, 2.4);
 
-      // -------- Generic scroll reveals --------
-      reveals.forEach((el) => {
-        gsap.set(el, { opacity: 0, y: 22 });
-        gsap.to(el, {
-          opacity: 1,
-          y: 0,
-          duration: 1.0,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 82%", once: true },
-        });
+      /* -------- Generic scroll reveals — bidirectional envelope --------
+       * /landingpages-kassel is conversion-focused, so the reveals are
+       * a touch tighter than /webdesign-kassel: entry starts a bit
+       * later and releases a bit sooner, giving each block a crisper
+       * focus window without becoming aggressive. */
+      presenceEnvelope(reveals, {
+        start: "top 88%",
+        end: "bottom 14%",
+        yFrom: 22,
+        yTo: -14,
+        blur: 4,
+        holdRatio: 0.52,
+        scrub: 0.95,
       });
 
-      // -------- § 02 Vokabular — noun-register stagger --------
+      /* -------- § 02 Vokabular — scroll-coupled noun register -------- */
       if (vokabularTokens.length) {
-        gsap.set(vokabularTokens, { opacity: 0, y: 14 });
+        const vSection =
+          (vokabularTokens[0] as HTMLElement).closest("section") ?? vokabularTokens[0];
+        gsap.set(vokabularTokens, { opacity: 0, y: 14, filter: "blur(4px)" });
         gsap.to(vokabularTokens, {
           opacity: 1,
           y: 0,
-          duration: 0.95,
-          ease: "power3.out",
+          filter: "blur(0px)",
+          ease: "none",
           stagger: 0.1,
-          scrollTrigger: { trigger: vokabularTokens[0], start: "top 82%", once: true },
+          scrollTrigger: {
+            trigger: vSection,
+            start: "top 82%",
+            end: "top 30%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
         });
       }
 
-      // -------- § 05 Fokus — two-line H2 reveal --------
+      /* -------- § 05 Fokus — two-line H2 rising into focus --------
+       * Masked line lifts, scroll-driven, fully bidirectional. The
+       * reader pulls the focus into place rather than receiving a
+       * flash reveal. Gentle release on exit keeps the statement
+       * legible but no longer demanding once the next section
+       * arrives. */
       if (fokusLineA.length || fokusLineB.length) {
-        gsap.set([...fokusLineA, ...fokusLineB], { yPercent: 118, opacity: 0 });
-        gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: (fokusLineA[0] as HTMLElement | undefined) ?? fokusLineB[0],
-              start: "top 78%",
-              once: true,
-            },
-            defaults: { ease: "power4.out" },
-          })
-          .to(fokusLineA, { yPercent: 0, opacity: 1, duration: 1.3, stagger: 0.08 }, 0)
-          .to(fokusLineB, { yPercent: 0, opacity: 1, duration: 1.3, stagger: 0.08 }, 0.22);
-      }
+        const fokusSection =
+          (fokusLineA[0] as HTMLElement | undefined)?.closest("section") ??
+          (fokusLineB[0] as HTMLElement | undefined)?.closest("section") ??
+          fokusLineA[0] ??
+          fokusLineB[0];
 
-      // -------- § 06 Triptych — three-column stagger --------
-      if (triptych.length) {
-        gsap.set(triptych, { opacity: 0, y: 24 });
-        gsap.to(triptych, {
+        const fokusAll = [...fokusLineA, ...fokusLineB];
+        gsap.set(fokusAll, { yPercent: 118, opacity: 0 });
+        gsap.to(fokusAll, {
+          yPercent: 0,
           opacity: 1,
-          y: 0,
-          duration: 1.1,
-          ease: "power3.out",
-          stagger: 0.14,
-          scrollTrigger: { trigger: triptych[0], start: "top 82%", once: true },
+          ease: "none",
+          stagger: 0.09,
+          scrollTrigger: {
+            trigger: fokusSection,
+            start: "top 82%",
+            end: "top 30%",
+            scrub: 1.05,
+            invalidateOnRefresh: true,
+          },
+        });
+        gsap.to(fokusAll, {
+          opacity: 0.3,
+          ease: "none",
+          stagger: 0.03,
+          scrollTrigger: {
+            trigger: fokusSection,
+            start: "bottom 52%",
+            end: "bottom 0%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
         });
       }
 
-      // -------- § END Final CTA choreography --------
+      /* -------- § 06 Triptych — three-column focus track --------
+       * Each of the three statements now receives its own envelope,
+       * staggered through the entry zone so they read as a paced
+       * triad rather than a single stagger. */
+      if (triptych.length) {
+        presenceEnvelope(triptych, {
+          start: "top 88%",
+          end: "bottom 14%",
+          yFrom: 22,
+          yTo: -14,
+          blur: 4,
+          holdRatio: 0.54,
+          stagger: 0.14,
+          scrub: 1.0,
+        });
+      }
+
+      /* -------- § END Final CTA — scroll-coupled sign-off --------
+       * Lines lift, centre rule draws, CTA gathers presence, ledger
+       * details hold in a focus track. All scrub-driven; no spring
+       * easing; reversible throughout. */
       if (finalLineA.length || finalLineB.length) {
-        gsap.set([...finalLineA, ...finalLineB], { yPercent: 118, opacity: 0 });
-        gsap.set(finalRule, { scaleX: 0, transformOrigin: "center" });
-        gsap.set(finalCta, { opacity: 0, y: 18, scale: 0.96 });
-        gsap.set(finalLedger, { opacity: 0, y: 14 });
-        const trigger =
-          (finalLineA[0] as HTMLElement | undefined)?.closest("section") ?? finalLineA[0];
-        gsap
-          .timeline({
-            scrollTrigger: { trigger, start: "top 72%", once: true },
-            defaults: { ease: "power4.out" },
-          })
-          .to(finalLineA, { yPercent: 0, opacity: 1, duration: 1.15, stagger: 0.07 }, 0)
-          .to(finalLineB, { yPercent: 0, opacity: 1, duration: 1.2, stagger: 0.07 }, 0.25)
-          .to(finalRule, { scaleX: 1, duration: 1.25, ease: "power2.inOut" }, 0.7)
-          .to(
-            finalCta,
-            { opacity: 1, y: 0, scale: 1, duration: 0.95, ease: "back.out(1.2)" },
-            0.95,
-          )
-          .to(finalLedger, { opacity: 1, y: 0, duration: 0.9, stagger: 0.1 }, 1.1);
+        const finalSection =
+          (finalLineA[0] as HTMLElement | undefined)?.closest("section") ??
+          (finalLineB[0] as HTMLElement | undefined)?.closest("section") ??
+          finalLineA[0] ??
+          finalLineB[0];
+
+        gsap.set([...finalLineA, ...finalLineB], {
+          yPercent: 36,
+          opacity: 0,
+          filter: "blur(6px)",
+        });
+        gsap.to([...finalLineA, ...finalLineB], {
+          yPercent: 0,
+          opacity: 1,
+          filter: "blur(0px)",
+          ease: "none",
+          stagger: 0.09,
+          scrollTrigger: {
+            trigger: finalSection,
+            start: "top 84%",
+            end: "top 38%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        if (finalRule) {
+          gsap.set(finalRule, { scaleX: 0, transformOrigin: "center" });
+          gsap.to(finalRule, {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: finalSection,
+              start: "top 66%",
+              end: "top 34%",
+              scrub: 0.9,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
+
+        if (finalCta) {
+          gsap.set(finalCta, { opacity: 0, y: 16 });
+          gsap.to(finalCta, {
+            opacity: 1,
+            y: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: finalSection,
+              start: "top 60%",
+              end: "top 30%",
+              scrub: 0.9,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
+
+        if (finalLedger.length) {
+          rackFocusTrack(finalLedger, {
+            trigger: finalSection,
+            start: "top 58%",
+            end: "top 22%",
+            blur: 3,
+            opacityFloor: 0.24,
+            scrub: 1.0,
+          });
+        }
       }
     }, root);
 
@@ -853,6 +994,80 @@ export default function LandingPagesKasselPage() {
         </section>
 
         <SectionTransition from="§ 01  Prinzip" to="§ 02  Vokabular" tone="darker" />
+
+        {/* =========================================================
+           § INTERLUDIUM — FOCAL AXIS PLATE
+           Page-specific idiom. This page's rhetorical register is the
+           "Focal Axis": one principle, one vertical line of attention,
+           one conversion moment. The anchor makes that idiom visible:
+           a centered specimen plate with a thin vertical axis rule
+           that enters the frame from above and exits below, plus a
+           split anatomy caption beneath that names exactly the three
+           elements visible on the mockup — Überschrift · CTA · Argumente.
+           The reader sees the *shape* of a landing page AND the
+           vocabulary the rest of the page uses to discuss it.
+           Deliberately unlike the /webdesign-kassel Bureau rail idiom.
+        ========================================================= */}
+        <section
+          aria-label="Focal Axis · Konversionsblatt · Beispiel"
+          className="relative overflow-hidden px-5 py-24 sm:px-8 sm:py-28 md:px-12 md:py-32 lg:px-16 lg:py-36"
+        >
+          <div className="layout-max">
+            <div className="relative mx-auto max-w-[60rem]">
+              {/* Vertical axis rule — enters above the plate, crosses
+                  the caption band, exits below. It is the page's
+                  Focal Axis made literal. Extremely restrained — a
+                  single 1-px line at 10% opacity with a feathered
+                  mask so it reads as architecture, not decoration. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 bg-white/18"
+                style={{
+                  maskImage:
+                    "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
+                  WebkitMaskImage:
+                    "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",
+                }}
+              />
+
+              {/* Opening folio — centered on the axis */}
+              <div
+                data-lp-reveal
+                className="mb-10 flex items-center justify-center gap-4 sm:mb-12 md:mb-14"
+              >
+                <span aria-hidden className="h-px w-10 bg-white/20 sm:w-14" />
+                <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.44em] text-white/58 sm:text-[10.5px]">
+                  § Ax. &nbsp;·&nbsp; Focal Axis
+                </span>
+                <span aria-hidden className="h-px w-10 bg-white/20 sm:w-14" />
+              </div>
+
+              {/* Specimen plate — chromeless; the axis and anatomy
+                  caption below carry all the metadata. */}
+              <EditorialAnchor
+                src="/media/pages/landingpages-kassel/anchor.webp"
+                alt="Fokussierte deutschsprachige Landing Page in Dark-Mode auf einem mattschwarzen Laptop: Serif-Headline „Schneller sichtbar werden.“, einziger dominanter Call-to-Action-Button „Jetzt anfragen“ und darunter eine dreispaltige Argument-Leiste (Tempo · Klarheit · Wirkung)."
+                aspect="16/9"
+                align="center"
+                maxWidth="60rem"
+                revealAttr="data-lp-reveal"
+              />
+
+              {/* Anatomy caption — three labels at fixed horizontal
+                  positions corresponding to the LP elements visible
+                  on the mockup. Makes the conversion logic legible
+                  via typography rather than over-explanation. */}
+              <div
+                data-lp-reveal
+                className="mt-8 grid grid-cols-3 items-start gap-3 border-t border-white/[0.07] pt-5 sm:mt-10 sm:pt-6 md:mt-12"
+              >
+                <AnatomyLabel tag="a" head="Überschrift" tail="H1 · Seriftitel" />
+                <AnatomyLabel tag="b" head="Call-to-Action" tail="Ein einziger" align="center" />
+                <AnatomyLabel tag="c" head="Argumente" tail="Tempo · Klarheit · Wirkung" align="end" />
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* =========================================================
            § 02 — VOKABULAR (semantic-SEO reprise, elegant)

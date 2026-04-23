@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+import { useLayoutEffect, useRef, type ReactNode } from "react";
+import { registerGsap } from "../../lib/gsap";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 
 /* ---------------------------------------------------------------
  * LegalLayout — shared editorial shell for /impressum & /datenschutz.
@@ -11,9 +13,11 @@ import type { ReactNode } from "react";
  *     Generous line-height, restrained colour contrast (white/72 body
  *     on #0A0A0A), constrained measure (~44rem reading column),
  *     predictable vertical rhythm.
- *   · No animations, no liquid-glass, no gradients. Legal content
- *     does not need motion — it needs to be easy to scan, cite,
- *     and print.
+ *   · Motion budget is intentionally tiny. A single quiet page-intro
+ *     fade lifts the masthead in; the body stack stays fully static
+ *     for readability, citability, and print. No scroll reveals, no
+ *     section-level theatrics — legal content must feel trustworthy,
+ *     not choreographed.
  * --------------------------------------------------------------- */
 
 type LegalLayoutProps = {
@@ -39,33 +43,89 @@ export function LegalLayout({
   children,
   footer,
 }: LegalLayoutProps) {
+  const headerRef = useRef<HTMLElement | null>(null);
+  const reduced = useReducedMotion();
+
+  // Quiet page-intro presence build — folio rule, H1, lead and
+  // "Stand:" label lift in softly as a small cascade. One-time, on
+  // page load, because it is a true intro moment. No scroll triggers,
+  // no ornamental motion; the body stays fully static afterwards.
+  useLayoutEffect(() => {
+    if (reduced) return;
+    const el = headerRef.current;
+    if (!el) return;
+    const { gsap } = registerGsap();
+    const ctx = gsap.context(() => {
+      const rule = el.querySelector<HTMLElement>("[data-legal-rule]");
+      const folioEl = el.querySelector<HTMLElement>("[data-legal-folio]");
+      const h1El = el.querySelector<HTMLElement>("[data-legal-h1]");
+      const leadEl = el.querySelector<HTMLElement>("[data-legal-lead]");
+      const standEl = el.querySelector<HTMLElement>("[data-legal-stand]");
+
+      if (rule) {
+        gsap.set(rule, { scaleX: 0, transformOrigin: "left center" });
+      }
+      gsap.set([folioEl, h1El, leadEl, standEl], { opacity: 0, y: 10 });
+
+      const tl = gsap.timeline({
+        delay: 0.1,
+        defaults: { ease: "power3.out" },
+      });
+      if (rule) tl.to(rule, { scaleX: 1, duration: 0.95, ease: "power2.inOut" }, 0);
+      if (folioEl) tl.to(folioEl, { opacity: 1, y: 0, duration: 0.75 }, 0.12);
+      if (h1El) tl.to(h1El, { opacity: 1, y: 0, duration: 1.0 }, 0.28);
+      if (leadEl) tl.to(leadEl, { opacity: 1, y: 0, duration: 0.9 }, 0.5);
+      if (standEl) tl.to(standEl, { opacity: 1, y: 0, duration: 0.7 }, 0.68);
+    }, el);
+    return () => ctx.revert();
+  }, [reduced]);
+
   return (
     <main className="relative overflow-hidden bg-[#0A0A0A] text-white">
       {/* ============================================================
          Header
          ============================================================ */}
-      <section className="relative px-5 pt-28 pb-8 sm:px-8 sm:pt-32 sm:pb-10 md:px-12 md:pt-36 md:pb-12 lg:px-16 lg:pt-44">
+      <section
+        ref={headerRef}
+        className="relative px-5 pt-28 pb-8 sm:px-8 sm:pt-32 sm:pb-10 md:px-12 md:pt-36 md:pb-12 lg:px-16 lg:pt-44"
+      >
         <div className="layout-max">
           <div className="max-w-[48rem]">
             {/* Top folio — matches the convention on /kontakt & /ueber-uns */}
             <div className="flex items-center gap-4">
               <span aria-hidden className="h-px w-10 bg-white/28 sm:w-14" />
-              <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/50 sm:text-[10.5px]">
+              <span
+                data-legal-folio
+                className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/50 sm:text-[10.5px]"
+              >
                 {folio}
               </span>
-              <span aria-hidden className="h-px flex-1 bg-white/10" />
+              <span
+                aria-hidden
+                data-legal-rule
+                className="h-px flex-1 bg-white/10"
+              />
             </div>
 
-            <h1 className="mt-10 font-instrument text-[2.35rem] leading-[1.04] tracking-[-0.032em] text-white sm:mt-12 sm:text-[3rem] md:mt-14 md:text-[3.5rem] lg:text-[3.95rem]">
+            <h1
+              data-legal-h1
+              className="mt-10 font-instrument text-[2.35rem] leading-[1.04] tracking-[-0.032em] text-white sm:mt-12 sm:text-[3rem] md:mt-14 md:text-[3.5rem] lg:text-[3.95rem]"
+            >
               {h1}
             </h1>
 
-            <p className="font-ui mt-8 max-w-[44rem] text-[16px] leading-[1.7] text-white/68 sm:mt-10 sm:text-[16.5px] md:text-[17px]">
+            <p
+              data-legal-lead
+              className="font-ui mt-8 max-w-[44rem] text-[16px] leading-[1.7] text-white/68 sm:mt-10 sm:text-[16.5px] md:text-[17px]"
+            >
               {lead}
             </p>
 
             {stand && (
-              <p className="font-mono mt-7 text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/40 sm:text-[10.5px]">
+              <p
+                data-legal-stand
+                className="font-mono mt-7 text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/40 sm:text-[10.5px]"
+              >
                 · {stand} ·
               </p>
             )}

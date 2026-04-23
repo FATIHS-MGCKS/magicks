@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { registerGsap } from "../lib/gsap";
+import { presenceEnvelope, rackFocusTrack } from "../lib/scrollMotion";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { ChapterMarker } from "../components/home/ChapterMarker";
 import { ContextualCrossLink } from "../components/service/ContextualCrossLink";
@@ -392,32 +393,40 @@ export default function LeistungenPage() {
         });
       }
 
-      /* ——— Generic scroll reveals ——— */
-      reveals.forEach((el) => {
-        gsap.set(el, { opacity: 0, y: 22 });
-        gsap.to(el, {
-          opacity: 1,
-          y: 0,
-          duration: 1.0,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 82%", once: true },
-        });
+      /* ——— Generic scroll reveals ———
+       * Bidirectional: each [data-leis-reveal] block gains presence
+       * on entry, holds through its focus zone, then gently releases
+       * as the reader moves on. Replaces the old once:true fade-up. */
+      presenceEnvelope(reveals, {
+        start: "top 92%",
+        end: "bottom 10%",
+        yFrom: 22,
+        yTo: -14,
+        blur: 4,
+        opacityFloor: 0,
+        holdRatio: 0.48,
+        scrub: 0.9,
       });
 
       /*
-       * Service plate reveals.
+       * Service plate motion — bidirectional editorial envelope.
        *
-       * Tightened choreography: 5 beats instead of 8 so the motion
-       * reads as deliberate, not busy. Each plate gets a per-motif
-       * signature on its points register so the four disciplines
-       * read distinctly even in motion:
+       * Each plate passes through three zones as the reader scrolls
+       * past it:
+       *   · entry  — plate gathers presence from soft/blurred state
+       *   · focus  — plate sits at full clarity across its reading zone
+       *   · exit   — plate gently steps back, letting the next plate
+       *              take over
        *
-       *   · masthead  — points fade-up in pairs (2-col layout)
-       *   · catalog   — points fade-up sequentially, top-down
-       *   · blueprint — points fade-in with a brief x-drift from
-       *                 the coordinate gutter
-       *   · flow      — points fade-in left-to-right as a flow
-       *                 propagating along the rail
+       * Distinct per-motif micro-accents remain, but they are now all
+       * scroll-coupled rather than once:true reveals:
+       *   · masthead  — heading letter-spacing settles into focus
+       *   · catalog   — points cascade top-down across the entry zone
+       *   · blueprint — points drift in from the coordinate gutter
+       *   · flow      — points propagate left-to-right along the rail
+       *
+       * Because each inner timeline is scrub-driven, it re-plays in
+       * reverse when the reader scrolls back up — nothing "latches".
        */
       plates.forEach((plate) => {
         const motifId =
@@ -426,126 +435,244 @@ export default function LeistungenPage() {
             | "catalog"
             | "blueprint"
             | "flow";
-        const folio = plate.querySelector<HTMLElement>("[data-plate-folio]");
-        const roman = plate.querySelector<HTMLElement>("[data-plate-roman]");
         const heading = plate.querySelector<HTMLElement>("[data-plate-heading]");
-        const body = plate.querySelector<HTMLElement>("[data-plate-body]");
         const points = Array.from(
           plate.querySelectorAll<HTMLElement>("[data-plate-point]"),
         );
-        const cta = plate.querySelector<HTMLElement>("[data-plate-cta]");
         const ctaRule = plate.querySelector<HTMLElement>("[data-plate-ctarule]");
 
-        gsap.set(folio, { opacity: 0, y: 14 });
-        if (roman)
-          gsap.set(roman, { opacity: 0, scale: 0.9, transformOrigin: "left center" });
-        if (heading) gsap.set(heading, { opacity: 0, y: 22, letterSpacing: "0.006em" });
-        gsap.set(body, { opacity: 0, y: 14 });
+        // Plate envelope — gain presence on entry, hold, release on exit.
+        presenceEnvelope(plate as Element, {
+          start: "top 86%",
+          end: "bottom 14%",
+          yFrom: 20,
+          yTo: -14,
+          blur: 4,
+          holdRatio: 0.54,
+          scrub: 0.95,
+        });
 
-        /* Per-motif points setup + reveal */
-        const pointsFrom: gsap.TweenVars = { opacity: 0 };
-        const pointsTo: gsap.TweenVars = {
-          opacity: 1,
-          duration: 0.85,
-          ease: "power3.out",
-        };
-        switch (motifId) {
-          case "masthead":
-            pointsFrom.y = 10;
-            pointsTo.y = 0;
-            pointsTo.stagger = { each: 0.07, from: "start" };
-            break;
-          case "catalog":
-            pointsFrom.y = 12;
-            pointsTo.y = 0;
-            pointsTo.stagger = 0.08;
-            break;
-          case "blueprint":
-            pointsFrom.x = -10;
-            pointsTo.x = 0;
-            pointsTo.stagger = 0.07;
-            break;
-          case "flow":
-            pointsFrom.x = -14;
-            pointsTo.x = 0;
-            pointsTo.duration = 0.75;
-            pointsTo.stagger = { each: 0.11, from: "start" };
-            break;
-        }
-        gsap.set(points, pointsFrom);
-        gsap.set(cta, { opacity: 0, y: 10 });
-        gsap.set(ctaRule, { scaleX: 0, transformOrigin: "left center" });
-
-        gsap
-          .timeline({
-            scrollTrigger: { trigger: plate, start: "top 72%", once: true },
-            defaults: { ease: "power3.out" },
-          })
-          .to(folio, { opacity: 1, y: 0, duration: 0.95 }, 0)
-          .to(
-            roman,
-            { opacity: 1, scale: 1, duration: 1.1, ease: "power3.out" },
-            0.05,
-          )
-          .to(
-            heading,
-            {
-              opacity: 1,
-              y: 0,
-              letterSpacing: "-0.03em",
-              duration: 1.3,
-              ease: "power4.out",
+        // Heading letter-spacing settle — scrubbed across the entry zone
+        // so the display weight tightens as the plate moves into focus.
+        if (heading) {
+          gsap.set(heading, { letterSpacing: "0.006em" });
+          gsap.to(heading, {
+            letterSpacing: "-0.03em",
+            ease: "none",
+            scrollTrigger: {
+              trigger: plate,
+              start: "top 82%",
+              end: "top 34%",
+              scrub: 1.1,
+              invalidateOnRefresh: true,
             },
-            0.2,
-          )
-          .to(body, { opacity: 1, y: 0, duration: 0.95 }, 0.55)
-          .to(points, pointsTo, 0.78)
-          .to(cta, { opacity: 1, y: 0, duration: 0.85 }, 1.15)
-          .to(ctaRule, { scaleX: 1, duration: 0.95, ease: "power2.inOut" }, 1.2);
+          });
+        }
+
+        // Per-motif point accents — scrub-driven, fully bidirectional.
+        if (points.length) {
+          const pointsFrom: gsap.TweenVars = { opacity: 0.34 };
+          const pointsTo: gsap.TweenVars = {
+            opacity: 1,
+            ease: "power2.out",
+          };
+          switch (motifId) {
+            case "masthead":
+              pointsFrom.y = 8;
+              pointsTo.y = 0;
+              break;
+            case "catalog":
+              pointsFrom.y = 10;
+              pointsTo.y = 0;
+              break;
+            case "blueprint":
+              pointsFrom.x = -8;
+              pointsTo.x = 0;
+              break;
+            case "flow":
+              pointsFrom.x = -10;
+              pointsTo.x = 0;
+              break;
+          }
+          gsap.set(points, pointsFrom);
+          gsap.to(points, {
+            ...pointsTo,
+            stagger: {
+              each: motifId === "flow" ? 0.14 : 0.08,
+              from: "start",
+            },
+            scrollTrigger: {
+              trigger: plate,
+              start: "top 76%",
+              end: "top 30%",
+              scrub: 1.0,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
+
+        // CTA rule — hairline draws in during entry, retracts on exit.
+        if (ctaRule) {
+          gsap.set(ctaRule, { scaleX: 0, transformOrigin: "left center" });
+          gsap.fromTo(
+            ctaRule,
+            { scaleX: 0 },
+            {
+              scaleX: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger: plate,
+                start: "top 60%",
+                end: "top 26%",
+                scrub: 0.9,
+                invalidateOnRefresh: true,
+              },
+            },
+          );
+        }
       });
 
-      /* ——— Ceremonial statement ——— */
+      /* ——— Ceremonial statement ———
+       * The pull quote now rides the scroll: the three lines build
+       * presence during the entry zone, reach their sharpest clarity
+       * in focus, and ease back out as the next section approaches.
+       * Letter-spacing on the heading tightens into focus, loosens
+       * on release — no once:true, no latched state. */
       if (pullLines.length) {
-        gsap.set(pullLines, { yPercent: 110, opacity: 0 });
-        if (pullHeading) gsap.set(pullHeading, { letterSpacing: "0.008em" });
-        const tl = gsap
-          .timeline({
-            scrollTrigger: { trigger: pullLines[0], start: "top 78%", once: true },
-          })
-          .to(pullLines, {
-            yPercent: 0,
-            opacity: 1,
-            duration: 1.5,
-            ease: "power4.out",
-            stagger: 0.16,
-          });
+        const pullSection =
+          (pullLines[0] as HTMLElement).closest("section") ?? pullLines[0];
+
+        // Line-by-line presence, driven by the section as a whole so
+        // each line reads in sequence rather than snapping together.
+        gsap.set(pullLines, {
+          yPercent: 26,
+          opacity: 0,
+          filter: "blur(6px)",
+        });
+        gsap.to(pullLines, {
+          yPercent: 0,
+          opacity: 1,
+          filter: "blur(0px)",
+          ease: "none",
+          stagger: 0.18,
+          scrollTrigger: {
+            trigger: pullSection,
+            start: "top 82%",
+            end: "top 32%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        // Release on exit — gentle, symmetric.
+        gsap.to(pullLines, {
+          opacity: 0.22,
+          filter: "blur(5px)",
+          yPercent: -16,
+          ease: "none",
+          stagger: 0.08,
+          scrollTrigger: {
+            trigger: pullSection,
+            start: "bottom 60%",
+            end: "bottom 10%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
+        });
+
         if (pullHeading) {
-          tl.to(
-            pullHeading,
-            { letterSpacing: "-0.036em", duration: 1.75, ease: "power2.out" },
-            0.2,
-          );
+          gsap.set(pullHeading, { letterSpacing: "0.008em" });
+          gsap.to(pullHeading, {
+            letterSpacing: "-0.036em",
+            ease: "none",
+            scrollTrigger: {
+              trigger: pullSection,
+              start: "top 76%",
+              end: "top 30%",
+              scrub: 1.1,
+              invalidateOnRefresh: true,
+            },
+          });
         }
       }
 
-      /* ——— Final CTA ——— */
+      /* ——— Final CTA ———
+       * The sign-off gathers presence as it enters, holds full
+       * clarity across the reading focus, and softens (never fully
+       * disappears) as the footer approaches. All scrub-driven —
+       * no spring easing, no once:true. */
       if (finalLineA.length || finalLineB.length) {
-        gsap.set([...finalLineA, ...finalLineB], { yPercent: 118, opacity: 0 });
-        gsap.set(finalRule, { scaleX: 0, transformOrigin: "center" });
-        gsap.set(finalLedger, { opacity: 0, y: 14 });
-        gsap.set(finalCta, { opacity: 0, y: 18, scale: 0.96 });
-        const trigger =
-          (finalLineA[0] as HTMLElement | undefined)?.closest("section") ?? finalLineA[0];
-        gsap
-          .timeline({
-            scrollTrigger: { trigger, start: "top 72%", once: true },
-            defaults: { ease: "power4.out" },
-          })
-          .to(finalLineA, { yPercent: 0, opacity: 1, duration: 1.15, stagger: 0.07 }, 0)
-          .to(finalLineB, { yPercent: 0, opacity: 1, duration: 1.25, stagger: 0.07 }, 0.25)
-          .to(finalRule, { scaleX: 1, duration: 1.3, ease: "power2.inOut" }, 0.7)
-          .to(finalCta, { opacity: 1, y: 0, scale: 1, duration: 0.95, ease: "back.out(1.2)" }, 0.95)
-          .to(finalLedger, { opacity: 1, y: 0, duration: 0.95, stagger: 0.1 }, 1.1);
+        const finalSection =
+          (finalLineA[0] as HTMLElement | undefined)?.closest("section") ??
+          (finalLineB[0] as HTMLElement | undefined)?.closest("section") ??
+          finalLineA[0] ??
+          finalLineB[0];
+
+        // Lines lift into focus with the section's entry zone.
+        gsap.set([...finalLineA, ...finalLineB], {
+          yPercent: 36,
+          opacity: 0,
+          filter: "blur(6px)",
+        });
+        gsap.to([...finalLineA, ...finalLineB], {
+          yPercent: 0,
+          opacity: 1,
+          filter: "blur(0px)",
+          ease: "none",
+          stagger: 0.09,
+          scrollTrigger: {
+            trigger: finalSection,
+            start: "top 84%",
+            end: "top 38%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        // Centre-rule draws across the focus zone.
+        if (finalRule) {
+          gsap.set(finalRule, { scaleX: 0, transformOrigin: "center" });
+          gsap.to(finalRule, {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: finalSection,
+              start: "top 66%",
+              end: "top 34%",
+              scrub: 0.9,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
+
+        // CTA gathers presence — restrained, no springy scale-up.
+        if (finalCta) {
+          gsap.set(finalCta, { opacity: 0, y: 16 });
+          gsap.to(finalCta, {
+            opacity: 1,
+            y: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: finalSection,
+              start: "top 60%",
+              end: "top 30%",
+              scrub: 0.9,
+              invalidateOnRefresh: true,
+            },
+          });
+        }
+
+        // Ledger details — quiet focus track beneath the CTA.
+        if (finalLedger.length) {
+          rackFocusTrack(finalLedger, {
+            trigger: finalSection,
+            start: "top 58%",
+            end: "top 22%",
+            blur: 3,
+            opacityFloor: 0.22,
+            scrub: 1.0,
+          });
+        }
       }
     }, root);
 

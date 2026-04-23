@@ -4,6 +4,7 @@ import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { ChapterMarker } from "../../components/home/ChapterMarker";
 import { ContextualCrossLink } from "../../components/service/ContextualCrossLink";
+import { EditorialAnchor } from "../../components/service/EditorialAnchor";
 import { SectionTransition } from "../../components/service/SectionTransition";
 import { RouteSEO } from "../../seo/RouteSEO";
 
@@ -771,6 +772,25 @@ export default function KiAutomationenPage() {
                 </p>
               </div>
             </div>
+
+            {/* First editorial anchor — a restrained workflow-canvas scene.
+                Three clean nodes (Formular · Logik · CRM) with a single
+                travelling pulse. A quiet, operational picture — not a
+                sci-fi AI visual. */}
+            <div className="mt-20 sm:mt-24 md:mt-28">
+              <EditorialAnchor
+                src="/media/services/ki-automation/hero-canvas.webp"
+                alt="Laptop auf dunklem Studiotisch mit einer Workflow-Canvas in dunklem UI: drei verbundene Knoten Formular, Logik und CRM, dünne Hairline-Verbindungslinien mit einem wandernden Signal-Punkt, Header ‚Lead-Eingang · v3 · Aktiv‘."
+                folio="Hop 01"
+                context="Ablauf"
+                leftCaption="Lead-Eingang · Canvas"
+                rightCaption="Formular → Logik → CRM"
+                aspect="16/9"
+                align="right"
+                maxWidth="46rem"
+                revealAttr="data-ki-reveal"
+              />
+            </div>
           </div>
         </section>
 
@@ -997,6 +1017,26 @@ export default function KiAutomationenPage() {
                   Systems.
                 </p>
               </div>
+            </div>
+
+            {/* Second editorial anchor — a single handoff moment in detail.
+                Form entry on the left, CRM record on the right, with a
+                measured "Validierung ✓ — 218 ms" indicator between them.
+                Shows "funktionierender Teil eines sauberen Systems" as a
+                concrete picture, not as a claim. */}
+            <div className="mt-20 sm:mt-24 md:mt-28">
+              <EditorialAnchor
+                src="/media/services/ki-automation/detail-handoff.webp"
+                alt="Enger Ausschnitt eines Automations-Handoffs: links eine Formular-Karte mit Name, Unternehmen, Anfrage und Budget, rechts ein daraus erzeugter CRM-Datensatz mit Kontakt, Firma, Projekt, Quelle Webformular und Status Neu, dazwischen ein Indikator ‚Validierung ✓ — 218 ms‘."
+                folio="Hop 02"
+                context="Übergabe"
+                leftCaption="Formular → CRM"
+                rightCaption="Validierung · 218 ms"
+                aspect="16/9"
+                align="left"
+                maxWidth="48rem"
+                revealAttr="data-ki-reveal"
+              />
             </div>
           </div>
         </section>

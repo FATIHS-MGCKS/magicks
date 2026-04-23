@@ -200,14 +200,34 @@ export const PROJECTS: Project[] = [
 
     featured: true,
 
-    // cover: intentionally absent — the overview + detail pages render
-    // a premium empty-state plate so MAGICKS can drop a real cover in
-    // later with zero layout change.
+    /* Cover image — not a literal screenshot of the Renova website but
+     * a material-first editorial crop that carries the project's theme
+     * (fresh epoxy resin patch on weathered concrete, raking light, a
+     * precision trowel at the frame edge). It signals the *subject* of
+     * the case study rather than pretending to be a product shot, which
+     * is far more honest until real screenshots are supplied manually. */
+    cover: {
+      src: "/media/projects/renova-strassensanierung/cover.webp",
+      alt: "Frisch aufgetragener Epoxidharz-Reparaturmörtel auf Beton — Makroaufnahme mit schräger Lichtführung und einer Präzisionskelle am rechten Bildrand.",
+      caption: "Material · Epoxidharz-Reparaturmörtel",
+      aspect: "16/9",
+    },
 
-    // gallery: intentionally empty — the detail page renders staged
-    // empty plates so the "Projekt-Einblicke" section has composed
-    // rhythm today and simply fills with images later.
-    gallery: [],
+    /* Gallery — two editorial material plates before the staged
+     * empty-state slots. Together with the cover these form a three-
+     * stop photo essay about the craft itself (macro · context · …)
+     * rather than pretending to be a full screenshot portfolio. The
+     * detail page auto-pads remaining slots with premium empty plates
+     * so future MAGICKS screenshots drop in without layout work. */
+    gallery: [
+      {
+        src: "/media/projects/renova-strassensanierung/detail-01.webp",
+        alt: "Weiter Kontextblick auf eine frisch mit Epoxidharz versiegelte Dehnungsfuge auf einem industriellen Betonbelag bei warmem, flach einfallendem Abendlicht; im Hintergrund unscharfe Industriekulisse in Dämmerung.",
+        caption: "Kontext · Versiegelte Fuge · Abendlicht",
+        aspect: "16/9",
+        span: 8,
+      },
+    ],
 
     case: [
       {
