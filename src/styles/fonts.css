@@ -1,33 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap");
 
-@font-face {
-  font-family: 'SF Pro Display';
-  src: url('https://applesocial.s3.amazonaws.com/assets/typography/fonts/sanfrancisco/sf-pro-display_regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SF Pro Display';
-  src: url('https://applesocial.s3.amazonaws.com/assets/typography/fonts/sanfrancisco/sf-pro-display_medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SF Pro Display';
-  src: url('https://applesocial.s3.amazonaws.com/assets/typography/fonts/sanfrancisco/sf-pro-display_semibold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SF Pro Display';
-  src: url('https://applesocial.s3.amazonaws.com/assets/typography/fonts/sanfrancisco/sf-pro-display_bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+/* SF Pro Display is intentionally not loaded as a webfont. The font stack uses
+   `-apple-system` / `BlinkMacSystemFont` so iOS and macOS resolve directly to
+   SF Pro Display without any network round-trip, and Windows/Android fall back
+   to Segoe UI / Manrope (Google Font, loaded above). This keeps typography
+   consistent on Apple devices, removes prior 403 errors from a third-party
+   Apple S3 mirror, and avoids licence questions around hosting Apple webfonts. */

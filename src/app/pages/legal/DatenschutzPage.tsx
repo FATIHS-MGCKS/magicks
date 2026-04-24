@@ -18,9 +18,9 @@ import {
  *   · Externe Schriften    Google Fonts (Instrument Serif, Manrope)
  *                          geladen über fonts.googleapis.com und
  *                          fonts.gstatic.com
- *   · Externe Schriften    Apple "SF Pro Display" über Apples
- *                          öffentliches CDN auf AWS S3
- *                          (applesocial.s3.amazonaws.com)
+ *   · System­schriften     SF Pro Display / Segoe UI werden lokal
+ *                          vom Endgerät bereitgestellt (kein
+ *                          externer Anbieter, kein Drittland-Transfer)
  *   · Externe Medien       Video-Assets (MP4) über
  *                          AWS CloudFront (d8j0ntlcm91z4.cloudfront.net)
  *   · Kontaktformular      mailto-basiert (kein eigener Backend-
@@ -243,29 +243,20 @@ export default function DatenschutzPage() {
           </p>
 
           <p className="text-white/82">
-            <strong className="text-white">SF Pro Display</strong> — Apples
-            System­schriftart wird über das öffentliche Content-Delivery-
-            Netzwerk von Apple auf Amazon S3 (
-            <code className="font-mono rounded bg-white/[0.05] px-1.5 py-0.5 text-[0.88em] text-white/78">
-              applesocial.s3.amazonaws.com
-            </code>
-            ) bezogen. Die Auslieferung erfolgt über Amazon Web Services, Inc.,
-            410 Terry Avenue North, Seattle, WA 98109-5210, USA.{" "}
-            <a
-              href="https://aws.amazon.com/privacy/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/88 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
-            >
-              Datenschutz­hinweise von AWS
-            </a>
-            .
+            <strong className="text-white">System­schriften</strong> — Auf
+            Apple-Geräten wird zusätzlich die System­schriftart{" "}
+            <em>SF Pro Display</em>, auf Windows-Geräten <em>Segoe UI</em>{" "}
+            verwendet. Diese Schriften liegen bereits lokal auf Ihrem Endgerät
+            vor und werden <strong>nicht</strong> über einen externen Anbieter
+            nachgeladen. Es findet keinerlei Daten­übermittlung an Dritte und
+            kein Drittland-Transfer statt.
           </p>
 
           <p>
-            Rechts­grundlage ist jeweils Art. 6 Abs. 1 lit. f DSGVO; unser
-            berechtigtes Interesse liegt in einer einheitlichen, schnellen und
-            typografisch hochwertigen Darstellung der Website.
+            Rechts­grundlage für die Einbindung von Google Fonts ist Art. 6
+            Abs. 1 lit. f DSGVO; unser berechtigtes Interesse liegt in einer
+            einheitlichen, schnellen und typografisch hochwertigen Darstellung
+            der Website.
           </p>
         </LegalSection>
 

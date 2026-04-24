@@ -362,12 +362,11 @@ export function WhyMagicks() {
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
         <div
-          className="absolute left-1/2 top-[-20%] h-[140%] w-[42%] -translate-x-1/2 will-change-transform"
+          className="absolute left-1/2 top-[-20%] h-[140%] w-[42%] -translate-x-1/2 [filter:blur(14px)] will-change-transform sm:[filter:blur(24px)] md:[filter:blur(40px)]"
           style={{
             background:
               "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.018) 28%, rgba(255,255,255,0.045) 50%, rgba(255,255,255,0.018) 72%, transparent 100%)",
             transform: "translateX(-50%) rotate(12deg)",
-            filter: "blur(40px)",
           }}
         />
       </div>

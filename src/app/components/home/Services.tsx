@@ -462,8 +462,8 @@ export function Services() {
 
                     <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-x-5 gap-y-1.5 sm:gap-x-7 md:grid-cols-[52px_minmax(0,1fr)_auto] md:gap-x-10">
                       <span
-                        className={`font-mono pt-[0.55rem] text-[11px] font-medium leading-none tracking-[0.28em] magicks-duration-hover magicks-ease-out transition-colors sm:text-[12px] ${
-                          active ? "text-white" : "text-white/35"
+                        className={`font-mono pt-[0.55rem] text-[12px] font-medium leading-none tracking-[0.18em] magicks-duration-hover magicks-ease-out transition-colors sm:text-[12px] sm:tracking-[0.28em] ${
+                          active ? "text-white" : "text-white/45"
                         }`}
                       >
                         {s.number}
@@ -472,8 +472,8 @@ export function Services() {
                       <div>
                         <div className="mb-2 flex items-center gap-3">
                           <span
-                            className={`font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.3em] magicks-duration-hover magicks-ease-out transition-colors sm:text-[10.5px] ${
-                              active ? "text-white/70" : "text-white/32"
+                            className={`font-mono text-[11px] font-medium uppercase leading-none tracking-[0.2em] magicks-duration-hover magicks-ease-out transition-colors sm:text-[10.5px] sm:tracking-[0.3em] ${
+                              active ? "text-white/72" : "text-white/40"
                             }`}
                           >
                             {s.kicker}
@@ -515,8 +515,8 @@ export function Services() {
                         </div>
 
                         <span
-                          className={`mt-5 inline-flex items-center gap-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] magicks-duration-hover magicks-ease-out transition-colors sm:text-[11px] ${
-                            active ? "text-white" : "text-white/50"
+                          className={`mt-5 inline-flex min-h-[40px] items-center gap-2 font-mono text-[11.5px] font-medium uppercase leading-none tracking-[0.16em] magicks-duration-hover magicks-ease-out transition-colors sm:min-h-0 sm:text-[11px] sm:tracking-[0.24em] ${
+                            active ? "text-white" : "text-white/55"
                           }`}
                         >
                           Ansehen

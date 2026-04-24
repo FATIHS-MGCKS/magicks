@@ -433,17 +433,17 @@ export function About() {
                     Reads like a caption on an archival contact sheet. */}
                 <div
                   aria-hidden
-                  className="font-mono pointer-events-none absolute left-4 top-4 flex items-center gap-2 text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/58 sm:left-5 sm:top-5"
+                  className="font-mono pointer-events-none absolute left-3 top-3 flex items-center gap-2 text-[11px] font-medium uppercase leading-none tracking-[0.18em] text-white/62 sm:left-5 sm:top-5 sm:text-[9.5px] sm:tracking-[0.32em] sm:text-white/58"
                 >
                   <span>Fig. 04</span>
-                  <span aria-hidden className="h-px w-5 bg-white/28" />
+                  <span aria-hidden className="h-px w-4 bg-white/28 sm:w-5" />
                   <span>Arbeitsplatz</span>
                 </div>
               </div>
 
-              <figcaption className="font-mono mt-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-[10px] font-medium uppercase leading-none tracking-[0.32em] text-white/42">
-                <span className="flex items-center gap-3">
-                  <span aria-hidden className="h-px w-8 bg-white/26" />
+              <figcaption className="font-mono mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-[11px] font-medium uppercase leading-none tracking-[0.22em] text-white/45 sm:text-[10px] sm:gap-x-6 sm:tracking-[0.32em] sm:text-white/42">
+                <span className="flex items-center gap-2 sm:gap-3">
+                  <span aria-hidden className="h-px w-6 bg-white/26 sm:w-8" />
                   <span>Studio · Kassel</span>
                 </span>
                 <span className="text-white/34">N51°19′ · E9°29′</span>
@@ -452,11 +452,11 @@ export function About() {
 
             <div
               data-about-cta
-              className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-5 will-change-[opacity,transform,filter] sm:mt-16"
+              className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 will-change-[opacity,transform,filter] sm:mt-16"
             >
               <Link
                 to="/ueber-uns"
-                className="font-ui group inline-flex items-center gap-3 text-[15px] text-white no-underline magicks-duration-hover magicks-ease-out transition-colors"
+                className="font-ui group inline-flex min-h-11 items-center gap-3 py-1.5 text-[15px] text-white no-underline magicks-duration-hover magicks-ease-out transition-colors lg:min-h-0 lg:py-0"
               >
                 <span className="underline decoration-white/22 decoration-[0.5px] underline-offset-[6px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color] group-hover:decoration-white/80">
                   Mehr über das Studio
@@ -471,7 +471,7 @@ export function About() {
                 </span>
               </Link>
 
-              <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.3em] text-white/38">
+              <span className="font-mono text-[11px] font-medium uppercase leading-snug tracking-[0.18em] text-white/42 sm:text-[10.5px] sm:leading-none sm:tracking-[0.3em] sm:text-white/38">
                 Kassel · Nordhessen · Remote bundesweit
               </span>
             </div>
@@ -482,11 +482,11 @@ export function About() {
                 inner content is swapped for the GSAP signature reveal. */}
             <div
               data-about-sign
-              className="mt-20 flex items-center justify-end gap-4 will-change-[opacity,transform,filter] sm:mt-24"
+              className="mt-16 flex items-center justify-center gap-3 will-change-[opacity,transform,filter] sm:mt-24 sm:justify-end sm:gap-4"
             >
               <span aria-hidden className="hidden h-px w-16 bg-white/22 sm:block" />
-              <MagicksSignatureReveal className="w-[200px] sm:w-[240px] md:w-[280px]" />
-              <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/35">
+              <MagicksSignatureReveal className="w-[180px] sm:w-[240px] md:w-[280px]" />
+              <span className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.18em] text-white/45 sm:text-[9.5px] sm:tracking-[0.32em] sm:text-white/35">
                 · Studio
               </span>
             </div>

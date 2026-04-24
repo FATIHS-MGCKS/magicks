@@ -34,27 +34,31 @@ export function Navbar() {
         className="liquid-glass liquid-glass-nav pointer-events-auto layout-max flex items-center justify-between rounded-full px-3 py-2.5 sm:px-5 sm:py-3"
         aria-label="Hauptnavigation"
       >
-        <Link to="/" className="flex items-center pl-3 text-white no-underline sm:pl-4">
-          <MagicksLogo className="h-[2.8rem] w-auto sm:h-12" />
+        <Link
+          to="/"
+          aria-label="MAGICKS Studio Startseite"
+          className="inline-flex h-11 items-center pl-3 text-white no-underline sm:pl-4"
+        >
+          <MagicksLogo className="h-[2.4rem] w-auto sm:h-12" />
         </Link>
 
-        <div className="hidden items-center gap-2 md:flex lg:gap-4">
+        <div className="hidden items-center gap-2 lg:flex lg:gap-4">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className="font-ui text-[11px] font-medium text-white/68 magicks-duration-hover magicks-ease-out transition-colors hover:text-white lg:text-[13px]"
+              className="font-ui inline-flex min-h-[44px] items-center text-[11px] font-medium text-white/68 magicks-duration-hover magicks-ease-out transition-colors hover:text-white lg:text-[13px]"
             >
               {link.label}
             </Link>
           ))}
         </div>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={transitionMicro}>
             <Link
               to="/kontakt"
-              className="font-ui liquid-glass inline-block rounded-full px-5 py-2 text-[14px] font-semibold text-white no-underline lg:text-[15px]"
+              className="font-ui liquid-glass inline-flex min-h-[44px] items-center rounded-full px-5 py-2 text-[14px] font-semibold text-white no-underline lg:text-[15px]"
             >
               Unverbindlich anfragen
             </Link>
@@ -63,7 +67,7 @@ export function Navbar() {
 
         <button
           type="button"
-          className="flex h-11 w-11 items-center justify-center rounded-full text-white md:hidden"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-white lg:hidden"
           onClick={() => setMenuOpen((o) => !o)}
           aria-expanded={menuOpen}
           aria-label={menuOpen ? "Menü schließen" : "Menü öffnen"}
@@ -76,11 +80,11 @@ export function Navbar() {
         <>
           <button
             type="button"
-            className="pointer-events-auto fixed inset-0 z-40 bg-[#0A0A0A]/72 backdrop-blur-sm md:hidden"
+            className="pointer-events-auto fixed inset-0 z-40 bg-[#0A0A0A]/72 backdrop-blur-sm lg:hidden"
             aria-label="Menü schließen"
             onClick={() => setMenuOpen(false)}
           />
-          <div className="liquid-glass liquid-glass-nav pointer-events-auto relative z-50 layout-max mt-2 rounded-2xl p-3 md:hidden">
+          <div className="liquid-glass liquid-glass-nav pointer-events-auto relative z-50 layout-max mt-2 rounded-2xl p-3 lg:hidden">
             <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link

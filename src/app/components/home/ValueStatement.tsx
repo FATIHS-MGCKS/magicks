@@ -303,7 +303,7 @@ export function ValueStatement() {
                     <span className="font-instrument text-[15px] italic text-white/55">
                       {it.n}
                     </span>
-                    <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.26em] text-white/55 sm:text-[11px]">
+                    <span className="font-mono text-[11.5px] font-medium uppercase leading-none tracking-[0.18em] text-white/60 sm:text-[11px] sm:tracking-[0.26em]">
                       {it.label}
                     </span>
                   </li>

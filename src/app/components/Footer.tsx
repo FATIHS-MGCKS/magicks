@@ -30,7 +30,7 @@ const locationNav = [
 ];
 
 const linkClass =
-  "font-ui inline-flex min-h-[36px] items-center text-[14.5px] text-white/50 magicks-duration-hover magicks-ease-out transition-colors hover:text-white";
+  "font-ui inline-flex min-h-[44px] items-center text-[14.5px] text-white/50 magicks-duration-hover magicks-ease-out transition-colors hover:text-white lg:min-h-[40px]";
 
 export function Footer() {
   return (
@@ -39,7 +39,11 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] md:gap-10 lg:gap-14">
           {/* Brand column */}
           <div className="max-w-sm">
-            <Link to="/" className="inline-block no-underline">
+            <Link
+              to="/"
+              className="inline-flex min-h-[44px] items-center no-underline lg:min-h-[40px]"
+              aria-label="MAGICKS Studio Startseite"
+            >
               <MagicksLogo className="h-8 w-auto md:h-9" />
             </Link>
             <p className="font-ui mt-4 text-[14.5px] leading-relaxed text-white/46">
@@ -51,12 +55,12 @@ export function Footer() {
             </p>
 
             {/* Secondary location / SEO links — quiet, restrained */}
-            <ul className="mt-8 space-y-2 border-t border-white/[0.05] pt-6">
+            <ul className="mt-8 space-y-1 border-t border-white/[0.05] pt-6 sm:space-y-2">
               {locationNav.map((item) => (
                 <li key={item.to}>
                   <Link
                     to={item.to}
-                    className="font-ui text-[12.5px] text-white/36 magicks-duration-hover magicks-ease-out transition-colors hover:text-white/72"
+                    className="font-ui inline-flex min-h-[44px] items-center text-[12.5px] text-white/36 magicks-duration-hover magicks-ease-out transition-colors hover:text-white/72 lg:min-h-[36px]"
                   >
                     {item.label}
                   </Link>
@@ -114,14 +118,14 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-8 sm:flex-row md:mt-16">
-          <p className="font-ui text-[13px] text-white/40">
+        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/[0.06] pt-8 text-center sm:flex-row sm:gap-4 sm:text-left md:mt-16">
+          <p className="font-ui text-[12.5px] leading-relaxed text-white/40 sm:text-[13px]">
             © {new Date().getFullYear()} MAGICKS Studio. Alle Rechte vorbehalten.
           </p>
           <p className="font-ui text-[12.5px] text-white/34">
             <a
               href="mailto:hello@magicks.de"
-              className="magicks-duration-hover magicks-ease-out transition-colors hover:text-white/70"
+              className="inline-flex min-h-[44px] items-center break-all magicks-duration-hover magicks-ease-out transition-colors hover:text-white/70 lg:min-h-[32px]"
             >
               hello@magicks.de
             </a>

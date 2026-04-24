@@ -21,7 +21,7 @@
     min-height: 100vh;
     background-color: var(--magicks-base);
     color: #fafafa;
-    font-family: "SF Pro Display", "Manrope", ui-sans-serif, system-ui, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Manrope", ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-size: 16px;
@@ -48,5 +48,5 @@
 }
 
 .font-ui {
-  font-family: "SF Pro Display", "Manrope", ui-sans-serif, system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Manrope", ui-sans-serif, system-ui, sans-serif;
 }

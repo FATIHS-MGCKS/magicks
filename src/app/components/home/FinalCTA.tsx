@@ -290,12 +290,12 @@ export function FinalCTA() {
             <div data-fc-cta className="flex justify-center will-change-[opacity,transform,filter] sm:justify-start">
               <Link
                 to="/kontakt"
-                className="group relative inline-flex items-center gap-3 rounded-full border border-white/22 bg-white py-4 pl-8 pr-3 text-[15px] font-medium tracking-wide text-[#0A0A0A] no-underline shadow-[0_2px_4px_-1px_rgba(0,0,0,0.35),0_34px_80px_-32px_rgba(0,0,0,0.92),inset_0_1px_0_rgba(255,255,255,0.48)] magicks-ease-out [transition:transform_640ms_cubic-bezier(0.22,1,0.36,1),box-shadow_640ms_cubic-bezier(0.22,1,0.36,1),letter-spacing_640ms_cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:tracking-[0.03em] hover:shadow-[0_3px_6px_-1px_rgba(0,0,0,0.42),0_56px_120px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.6)] active:translate-y-0 active:scale-[0.99] md:text-[16px]"
+                className="group relative inline-flex max-w-full items-center gap-2.5 whitespace-nowrap rounded-full border border-white/22 bg-white py-3 pl-5 pr-2 text-[14px] font-medium tracking-wide text-[#0A0A0A] no-underline shadow-[0_2px_4px_-1px_rgba(0,0,0,0.35),0_34px_80px_-32px_rgba(0,0,0,0.92),inset_0_1px_0_rgba(255,255,255,0.48)] magicks-ease-out [transition:transform_640ms_cubic-bezier(0.22,1,0.36,1),box-shadow_640ms_cubic-bezier(0.22,1,0.36,1),letter-spacing_640ms_cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:tracking-[0.03em] hover:shadow-[0_3px_6px_-1px_rgba(0,0,0,0.42),0_56px_120px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.6)] active:translate-y-0 active:scale-[0.99] sm:gap-3 sm:py-4 sm:pl-8 sm:pr-3 sm:text-[15px] md:text-[16px]"
               >
                 <span>Unverbindlich anfragen</span>
                 <span
                   aria-hidden
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0A0A0A] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] [transition:transform_720ms_cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0A0A0A] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] [transition:transform_720ms_cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-[2px] group-hover:-translate-y-[1px] sm:h-9 sm:w-9"
                 >
                   <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.4">
                     <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />
@@ -306,19 +306,19 @@ export function FinalCTA() {
 
             <div className="flex flex-col gap-4 border-l border-white/[0.08] pl-6 sm:pl-10 md:pl-12">
               <div data-fc-ledger className="flex flex-col gap-1 will-change-[opacity,filter]">
-                <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/40 sm:text-[10.5px]">
+                <span className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.2em] text-white/45 sm:text-[10.5px] sm:tracking-[0.32em] sm:text-white/40">
                   Direkt
                 </span>
                 <a
                   href="mailto:hello@magicks.de"
-                  className="font-instrument text-[1.25rem] italic text-white no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white/82 sm:text-[1.45rem] md:text-[1.6rem]"
+                  className="font-instrument inline-flex min-h-11 items-center break-all text-[1.2rem] italic text-white no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white/82 sm:text-[1.45rem] md:text-[1.6rem] lg:min-h-0"
                 >
                   hello@magicks.de
                 </a>
               </div>
 
               <div data-fc-ledger className="flex flex-col gap-1.5 will-change-[opacity,filter]">
-                <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/40 sm:text-[10.5px]">
+                <span className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.2em] text-white/45 sm:text-[10.5px] sm:tracking-[0.32em] sm:text-white/40">
                   Antwort
                 </span>
                 <span className="font-ui text-[13.5px] leading-[1.5] text-white/62 sm:text-[14.5px]">
@@ -343,12 +343,12 @@ export function FinalCTA() {
       />
 
       {/* Bottom-edge run-end — cinema colophon */}
-        <div className="mt-24 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-7 sm:mt-32 sm:flex-row">
-          <span data-fc-runend className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/45 will-change-[opacity,filter] sm:text-[10.5px]">
+        <div className="mt-20 flex flex-col items-center justify-between gap-3 border-t border-white/[0.06] pt-7 text-center sm:mt-32 sm:flex-row sm:gap-4 sm:text-left">
+          <span data-fc-runend className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.2em] text-white/50 will-change-[opacity,filter] sm:text-[10.5px] sm:tracking-[0.34em] sm:text-white/45">
             § End — Magicks · MMXXVI
           </span>
           <span data-fc-runend aria-hidden className="hidden h-px w-20 bg-white/14 will-change-[opacity,filter] sm:block" />
-          <span data-fc-runend className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/45 will-change-[opacity,filter] sm:text-[10.5px]">
+          <span data-fc-runend className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.2em] text-white/50 will-change-[opacity,filter] sm:text-[10.5px] sm:tracking-[0.34em] sm:text-white/45">
             Kassel / DE · DE & EN
           </span>
         </div>
