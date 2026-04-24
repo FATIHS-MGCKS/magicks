@@ -11,6 +11,7 @@ import {
   sectionFarewell,
 } from "../../lib/scrollMotion";
 import { ChapterMarker } from "./ChapterMarker";
+import { MagicksSignatureReveal } from "./MagicksSignatureReveal";
 
 /**
  * About breathes as the user scrolls. Each element has its own envelope:
@@ -475,13 +476,16 @@ export function About() {
               </span>
             </div>
 
-            {/* Signature line — bottom-right, ultra-small */}
+            {/* Signature line — bottom-right, handwritten reveal.
+                The outer wrapper keeps its existing presenceEnvelope
+                choreography (driven in the effect above); only the
+                inner content is swapped for the GSAP signature reveal. */}
             <div
               data-about-sign
               className="mt-20 flex items-center justify-end gap-4 will-change-[opacity,transform,filter] sm:mt-24"
             >
-              <span aria-hidden className="h-px w-16 bg-white/22" />
-              <span className="font-instrument text-[0.95rem] italic text-white/55">Magicks</span>
+              <span aria-hidden className="hidden h-px w-16 bg-white/22 sm:block" />
+              <MagicksSignatureReveal className="w-[200px] sm:w-[240px] md:w-[280px]" />
               <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/35">
                 · Studio
               </span>
