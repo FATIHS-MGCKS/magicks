@@ -239,27 +239,33 @@ export function About() {
         });
       }
 
-      // ─── Editorial signature: clean once-only entry ──────────────────
+      // ─── Editorial signature: scroll-coupled in/out envelope ─────────
       // The handwritten signature is the section's compositional anchor.
-      // We deliberately drive it with a single once-only tween (no scrub,
-      // no fade-out, no lateral drift) so its own internal reveal owns
-      // the choreography end-to-end. Scrub-tied parents previously made
-      // the figure feel "ghosted" on mobile as the user scrolled past;
-      // now it fades in cleanly and stays.
+      // The wrapper plays a clean opacity + y + blur entry on enter
+      // and reverses on leave (in either scroll direction). This stays
+      // perfectly in sync with the inner MagicksSignatureReveal, which
+      // uses the same toggleActions semantics on its own ScrollTrigger.
+      // No scrub: the choreography keeps its premium pacing regardless
+      // of scroll velocity.
       if (sign) {
         gsap.set(sign, { opacity: 0, y: 14, filter: "blur(3px)" });
-        gsap.to(sign, {
-          opacity: 1,
-          y: 0,
-          filter: "blur(0px)",
-          duration: 0.85,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: sign,
-            start: "top 88%",
-            once: true,
+        gsap.fromTo(
+          sign,
+          { opacity: 0, y: 14, filter: "blur(3px)" },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.85,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: sign,
+              start: "top 88%",
+              end: "bottom 12%",
+              toggleActions: "play reverse play reverse",
+            },
           },
-        });
+        );
       }
 
       // ─── CTA: tail-end envelope ─────────────────────────────────────

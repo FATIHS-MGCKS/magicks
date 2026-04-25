@@ -36,8 +36,9 @@ type Props = {
  *   • The trigger fires earlier on small viewports so the user sees
  *     the full reveal as the figure enters from the bottom rather
  *     than after they've already scrolled past it.
- *   • The host wrapper handles its own one-time fade-in; this
- *     component doesn't drive parent opacity.
+ *   • Scroll-coupled: the same choreography plays forward on enter
+ *     and reverses on leave (and vice versa when scrolling back),
+ *     so the signature feels alive both directions.
  */
 export function MagicksSignatureReveal({
   className = "",
@@ -117,7 +118,12 @@ export function MagicksSignatureReveal({
           // Fire earlier on small viewports so the reveal aligns with
           // the figure entering the bottom of the screen.
           start: startTrigger ?? (isMobile ? "top 92%" : "top 82%"),
-          once: true,
+          // The figure leaves when its bottom passes 15% of viewport top.
+          // Combined with toggleActions below, this means the timeline
+          // reverses elegantly as the user scrolls past, then plays
+          // forward again on the way back.
+          end: "bottom 15%",
+          toggleActions: "play reverse play reverse",
           invalidateOnRefresh: true,
         },
       });
