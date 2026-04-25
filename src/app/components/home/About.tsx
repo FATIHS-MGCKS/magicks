@@ -39,7 +39,6 @@ export function About() {
       const line1 = gsap.utils.toArray<HTMLElement>("[data-about-l1]");
       const line2 = gsap.utils.toArray<HTMLElement>("[data-about-l2]");
       const body = root.querySelector<HTMLElement>("[data-about-body]");
-      const visual = root.querySelector<HTMLElement>("[data-about-visual]");
       const cta = root.querySelector<HTMLElement>("[data-about-cta]");
       const sign = root.querySelector<HTMLElement>("[data-about-sign]");
       const rule = root.querySelector<HTMLElement>("[data-about-rule]");
@@ -49,7 +48,7 @@ export function About() {
 
       if (reduced) {
         gsap.set(
-          [chapter, quote, ...line1, ...line2, body, visual, cta, sign, rule, farewell, ...emphasis],
+          [chapter, quote, ...line1, ...line2, body, cta, sign, rule, farewell, ...emphasis],
           {
             opacity: 1,
             y: 0,
@@ -240,14 +239,16 @@ export function About() {
         });
       }
 
-      // ─── Editorial visual: gentle drift + envelope ───────────────────
-      // Builds in with a restrained scale + blur release. Drifts very
-      // subtly across the full scroll — never a Ken-Burns, just enough
-      // to read as "a live photograph," not a static card.
-      if (visual) {
-        gsap.set(visual, { opacity: 0, y: 26, scale: 0.99, filter: "blur(5px)" });
+      // ─── Editorial signature: gentle scale-blur arrival + sub-drift ──
+      // The handwritten signature is now the section's compositional
+      // anchor (replacing the earlier studio photograph). It arrives
+      // with a restrained scale + blur release and softens on the way
+      // out, leaving the GSAP-driven signature reveal inside it free
+      // to run its own once-only writing animation.
+      if (sign) {
+        gsap.set(sign, { opacity: 0, y: 26, scale: 0.99, filter: "blur(5px)" });
         gsap.fromTo(
-          visual,
+          sign,
           { opacity: 0, y: 26, scale: 0.99, filter: "blur(5px)" },
           {
             opacity: 1,
@@ -256,33 +257,30 @@ export function About() {
             filter: "blur(0px)",
             ease: "none",
             scrollTrigger: {
-              trigger: visual,
+              trigger: sign,
               start: "top 85%",
               end: "top 45%",
               scrub: 0.9,
             },
           },
         );
-        gsap.to(visual, {
-          opacity: 0.55,
+        gsap.to(sign, {
+          opacity: 0.62,
           y: -12,
           filter: "blur(2px)",
           ease: "none",
           scrollTrigger: {
-            trigger: visual,
+            trigger: sign,
             start: "bottom 45%",
             end: "bottom 8%",
             scrub: 0.9,
           },
         });
-
-        const visualImg = visual.querySelector<HTMLElement>("img");
-        if (visualImg) {
-          parallaxDrift(visualImg, { trigger: visual, from: -4, to: 4, scrub: true });
-        }
+        // Tiny lateral drift so the anchor never reads as pinned.
+        horizontalDrift(sign, { trigger: sign, from: -0.8, to: 0.8, scrub: true });
       }
 
-      // ─── CTA + signature: tail-end envelopes ─────────────────────────
+      // ─── CTA: tail-end envelope ─────────────────────────────────────
       presenceEnvelope(cta, {
         trigger: cta ?? root,
         start: "top 94%",
@@ -292,20 +290,6 @@ export function About() {
         blur: 2.5,
         holdRatio: 0.62,
       });
-
-      presenceEnvelope(sign, {
-        trigger: sign ?? root,
-        start: "top 92%",
-        end: "bottom -12%",
-        yFrom: 12,
-        yTo: -4,
-        blur: 2,
-        opacityFloor: 0,
-        holdRatio: 0.7,
-      });
-      // Signature drifts very slightly laterally — it's a handwritten
-      // sign-off, not a pinned footer tag. Keep amplitude under 0.8%.
-      horizontalDrift(sign, { trigger: sign ?? root, from: -0.8, to: 0.8, scrub: true });
 
       // ─── Section farewell ────────────────────────────────────────────
       sectionFarewell(farewell, {
@@ -409,39 +393,19 @@ export function About() {
               </div>
             </div>
 
-            {/* Editorial visual — single compositional anchor for the section. */}
+            {/* Editorial signature — single compositional anchor for the
+                section. The handwritten reveal replaces the previous
+                studio photograph: it carries the same editorial weight
+                and frames the section's tail without competing with the
+                heading. Sized large, centred in the right column,
+                surrounded by quiet whitespace. */}
             <figure
-              data-about-visual
-              className="mt-16 ml-auto max-w-[34rem] will-change-[opacity,transform,filter] sm:mt-20 md:mt-24"
+              data-about-sign
+              className="mt-20 ml-auto flex w-full max-w-[36rem] flex-col items-center will-change-[opacity,transform,filter] sm:mt-24 md:mt-28 md:max-w-[42rem]"
             >
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[0.95rem] border border-white/[0.08] bg-[#0A0A0A] shadow-[0_2px_6px_-1px_rgba(0,0,0,0.55),0_44px_130px_-60px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.06)]">
-                <img
-                  src="/media/home/about-studio.webp"
-                  alt="Ruhiger Studio-Arbeitsplatz: Leinen-Notizbuch, Messinglineal, gefaltete Print-Proofs, Olivenzweig und ein matter Laptop bei weichem Seitenlicht."
-                  loading="lazy"
-                  decoding="async"
-                  draggable={false}
-                  className="absolute inset-0 h-full w-full object-cover object-center will-change-transform"
-                  style={{ filter: "saturate(0.95) contrast(1.03)" }}
-                />
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0B0A09]/55 via-transparent to-[#0B0A09]/10"
-                />
+              <MagicksSignatureReveal className="w-full max-w-[26rem] sm:max-w-[32rem] md:max-w-[38rem]" />
 
-                {/* Tiny editorial folio marker — top-left, inside the frame.
-                    Reads like a caption on an archival contact sheet. */}
-                <div
-                  aria-hidden
-                  className="font-mono pointer-events-none absolute left-3 top-3 flex items-center gap-2 text-[11px] font-medium uppercase leading-none tracking-[0.18em] text-white/62 sm:left-5 sm:top-5 sm:text-[9.5px] sm:tracking-[0.32em] sm:text-white/58"
-                >
-                  <span>Fig. 04</span>
-                  <span aria-hidden className="h-px w-4 bg-white/28 sm:w-5" />
-                  <span>Arbeitsplatz</span>
-                </div>
-              </div>
-
-              <figcaption className="font-mono mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-[11px] font-medium uppercase leading-none tracking-[0.22em] text-white/45 sm:text-[10px] sm:gap-x-6 sm:tracking-[0.32em] sm:text-white/42">
+              <figcaption className="font-mono mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 self-stretch text-[11px] font-medium uppercase leading-none tracking-[0.22em] text-white/45 sm:mt-8 sm:text-[10px] sm:gap-x-6 sm:tracking-[0.32em] sm:text-white/42">
                 <span className="flex items-center gap-2 sm:gap-3">
                   <span aria-hidden className="h-px w-6 bg-white/26 sm:w-8" />
                   <span>Studio · Kassel</span>
@@ -452,7 +416,7 @@ export function About() {
 
             <div
               data-about-cta
-              className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 will-change-[opacity,transform,filter] sm:mt-16"
+              className="mt-16 flex flex-wrap items-center gap-x-8 gap-y-4 will-change-[opacity,transform,filter] sm:mt-20"
             >
               <Link
                 to="/ueber-uns"
@@ -473,21 +437,6 @@ export function About() {
 
               <span className="font-mono text-[11px] font-medium uppercase leading-snug tracking-[0.18em] text-white/42 sm:text-[10.5px] sm:leading-none sm:tracking-[0.3em] sm:text-white/38">
                 Kassel · Nordhessen · Remote bundesweit
-              </span>
-            </div>
-
-            {/* Signature line — bottom-right, handwritten reveal.
-                The outer wrapper keeps its existing presenceEnvelope
-                choreography (driven in the effect above); only the
-                inner content is swapped for the GSAP signature reveal. */}
-            <div
-              data-about-sign
-              className="mt-16 flex items-center justify-center gap-3 will-change-[opacity,transform,filter] sm:mt-24 sm:justify-end sm:gap-4"
-            >
-              <span aria-hidden className="hidden h-px w-16 bg-white/22 sm:block" />
-              <MagicksSignatureReveal className="w-[180px] sm:w-[240px] md:w-[280px]" />
-              <span className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.18em] text-white/45 sm:text-[9.5px] sm:tracking-[0.32em] sm:text-white/35">
-                · Studio
               </span>
             </div>
           </div>
