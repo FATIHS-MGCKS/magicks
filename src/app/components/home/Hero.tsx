@@ -416,9 +416,15 @@ export function Hero() {
 
                 <span
                   aria-hidden
+                  // U+FE0E (VARIATION SELECTOR-15) forces text-style
+                  // rendering of U+2197. Without it, iOS/Android route
+                  // the arrow through the system emoji font and the
+                  // glyph looks different from the desktop italic
+                  // serif rendering. The selector is invisible.
                   className="font-instrument text-[1.05em] italic text-white/85 transition-transform duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[4px] group-focus-visible:-translate-y-[3px] group-focus-visible:translate-x-[4px]"
+                  style={{ fontVariantEmoji: "text" }}
                 >
-                  ↗
+                  {"\u2197\uFE0E"}
                 </span>
               </Link>
             </div>
