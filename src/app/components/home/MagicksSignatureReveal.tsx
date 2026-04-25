@@ -22,17 +22,27 @@ type Props = {
  * MagicksSignatureReveal
  * ---------------------------------------------------------------------
  * Premium cinematic reveal for the MAGICKS wordmark.
- * 
- * Instead of a literal "pen writing" clip-path (which looks cheap on 
- * filled outline SVGs), this uses a high-end "photographic exposure" 
- * effect. The logo emerges from the shadows via a combination of a 
- * soft-sweeping gradient mask, deep blur resolution, gentle upward 
- * scale, and an atmospheric silver bloom.
+ *
+ * Instead of a literal "pen writing" clip-path (which looks cheap on
+ * filled outline SVGs), this uses a high-end "photographic exposure"
+ * effect. The logo emerges from the shadows via a soft-sweeping
+ * gradient mask, deep blur resolution, and an atmospheric silver bloom.
+ *
+ * Mobile/perf notes:
+ *   • No scale/y transform on the layers — the mask sweep + blur
+ *     resolve + opacity snap carry the entire choreography. Removing
+ *     transforms eliminates GPU pressure on low-end mobile chips and
+ *     prevents jitter during touch scroll.
+ *   • The trigger fires earlier on small viewports so the user sees
+ *     the full reveal as the figure enters from the bottom rather
+ *     than after they've already scrolled past it.
+ *   • The host wrapper handles its own one-time fade-in; this
+ *     component doesn't drive parent opacity.
  */
 export function MagicksSignatureReveal({
   className = "",
-  duration = 3.6,
-  startTrigger = "top 82%",
+  duration = 3.4,
+  startTrigger,
 }: Props) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const reduced = useReducedMotion();
@@ -82,51 +92,52 @@ export function MagicksSignatureReveal({
       }
 
       // ─── Initial state ────────────────────────────────────────────────
-      // Deep blur, dropped slightly down, fully transparent, and the
-      // mask gradient is pushed entirely off the left edge.
-      // We use a slight 3D rotation and translateZ to force hardware 
-      // anti-aliasing and prevent rasterization artifacts during scale.
-      gsap.set([magicks, studio], { 
-        opacity: 0.01, 
-        filter: "blur(8px)", 
-        scale: 0.98,
-        y: 8,
-        z: 0,
-        rotationZ: 0.01,
-        "--m-end": "-40%" 
+      // Layers start invisible (opacity ~0), softly out of focus, with
+      // the mask gradient parked off the left edge. No scale/y/3D
+      // transforms — they cause sub-pixel jitter on mobile during
+      // touch-scroll and don't add to the cinematic feel here.
+      const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+      const startBlur = isMobile ? 6 : 8;
+
+      gsap.set([magicks, studio], {
+        opacity: 0.01,
+        filter: `blur(${startBlur}px)`,
+        "--m-end": "-30%",
       });
       gsap.set(glow, { opacity: 0 });
 
       // ─── Timing ───────────────────────────────────────────────────────
-      const magicksDur = duration * 0.65; 
-      const studioDur = duration * 0.65; 
+      const magicksDur = duration * 0.62;
+      const studioDur = duration * 0.62;
       const stagger = duration * 0.3;
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: root,
-          start: startTrigger,
+          // Fire earlier on small viewports so the reveal aligns with
+          // the figure entering the bottom of the screen.
+          start: startTrigger ?? (isMobile ? "top 92%" : "top 82%"),
           once: true,
           invalidateOnRefresh: true,
         },
       });
 
-      // 1. Ambient glow breathes in heavily, then settles to a subtle halo.
-      tl.to(glow, { opacity: 1, duration: duration * 0.45, ease: "power2.out" }, 0);
-      tl.to(glow, { opacity: 0.25, duration: duration * 0.55, ease: "power2.inOut" }, duration * 0.45);
+      // 1. Ambient glow breathes in, then settles to a quiet halo.
+      tl.to(glow, { opacity: 1, duration: duration * 0.42, ease: "power2.out" }, 0);
+      tl.to(glow, { opacity: 0.22, duration: duration * 0.58, ease: "power2.inOut" }, duration * 0.42);
 
       // 2. Magicks emerges.
-      // Opacity snaps to 1 almost instantly so the mask gradient alone drives the light.
-      tl.to(magicks, { "--m-end": "120%", duration: magicksDur, ease: "power1.inOut" }, 0);
-      tl.to(magicks, { opacity: 1, duration: 0.2, ease: "none" }, 0);
-      tl.to(magicks, { filter: "blur(0px)", duration: magicksDur * 0.7, ease: "power2.out" }, 0);
-      tl.to(magicks, { scale: 1, y: 0, rotationZ: 0, duration: magicksDur, ease: "expo.out" }, 0);
+      // Opacity snaps to 1 almost instantly so the mask gradient alone
+      // drives the visible light — the mark stays bright and sharp the
+      // entire time the sweep is moving across it.
+      tl.to(magicks, { opacity: 1, duration: 0.18, ease: "none" }, 0);
+      tl.to(magicks, { "--m-end": "120%", duration: magicksDur, ease: "power2.inOut" }, 0);
+      tl.to(magicks, { filter: "blur(0px)", duration: magicksDur * 0.75, ease: "power3.out" }, 0);
 
-      // 3. Studio staggers in shortly after, following the exact same physics.
-      tl.to(studio, { "--m-end": "120%", duration: studioDur, ease: "power1.inOut" }, stagger);
-      tl.to(studio, { opacity: 1, duration: 0.2, ease: "none" }, stagger);
-      tl.to(studio, { filter: "blur(0px)", duration: studioDur * 0.7, ease: "power2.out" }, stagger);
-      tl.to(studio, { scale: 1, y: 0, rotationZ: 0, duration: studioDur, ease: "expo.out" }, stagger);
+      // 3. Studio staggers in shortly after, identical physics.
+      tl.to(studio, { opacity: 1, duration: 0.18, ease: "none" }, stagger);
+      tl.to(studio, { "--m-end": "120%", duration: studioDur, ease: "power2.inOut" }, stagger);
+      tl.to(studio, { filter: "blur(0px)", duration: studioDur * 0.75, ease: "power3.out" }, stagger);
 
     }, root);
 
@@ -139,14 +150,17 @@ export function MagicksSignatureReveal({
       backgroundRepeat: "no-repeat",
       backgroundPosition: "center",
       "--m-end": "100%",
-      // The mask creates a 30% wide gradient sweep edge for an ultra-smooth but bright reveal.
-      maskImage: "linear-gradient(to right, black var(--m-end), transparent calc(var(--m-end) + 30%))",
-      WebkitMaskImage: "linear-gradient(to right, black var(--m-end), transparent calc(var(--m-end) + 30%))",
-      transformOrigin: "center center",
-      // Force hardware acceleration and high-res rasterization
+      // 28% wide gradient sweep edge — wide enough to feel like soft
+      // light, narrow enough to keep the mark bright and crisp.
+      maskImage:
+        "linear-gradient(to right, black var(--m-end), transparent calc(var(--m-end) + 28%))",
+      WebkitMaskImage:
+        "linear-gradient(to right, black var(--m-end), transparent calc(var(--m-end) + 28%))",
+      // Promote to its own GPU layer so the only animated properties
+      // (opacity, filter, mask-image) compose without re-layout.
       transform: "translateZ(0)",
       backfaceVisibility: "hidden",
-      willChange: "opacity, filter, transform, mask-image",
+      willChange: "opacity, filter, mask-image",
     };
     if (mediaReady) {
       base.backgroundImage = `url(${url})`;

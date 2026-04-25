@@ -239,45 +239,27 @@ export function About() {
         });
       }
 
-      // ─── Editorial signature: gentle scale-blur arrival + sub-drift ──
-      // The handwritten signature is now the section's compositional
-      // anchor (replacing the earlier studio photograph). It arrives
-      // with a restrained scale + blur release and softens on the way
-      // out, leaving the GSAP-driven signature reveal inside it free
-      // to run its own once-only writing animation.
+      // ─── Editorial signature: clean once-only entry ──────────────────
+      // The handwritten signature is the section's compositional anchor.
+      // We deliberately drive it with a single once-only tween (no scrub,
+      // no fade-out, no lateral drift) so its own internal reveal owns
+      // the choreography end-to-end. Scrub-tied parents previously made
+      // the figure feel "ghosted" on mobile as the user scrolled past;
+      // now it fades in cleanly and stays.
       if (sign) {
-        gsap.set(sign, { opacity: 0, y: 26, scale: 0.99, filter: "blur(5px)" });
-        gsap.fromTo(
-          sign,
-          { opacity: 0, y: 26, scale: 0.99, filter: "blur(5px)" },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            filter: "blur(0px)",
-            ease: "none",
-            scrollTrigger: {
-              trigger: sign,
-              start: "top 85%",
-              end: "top 45%",
-              scrub: 0.9,
-            },
-          },
-        );
+        gsap.set(sign, { opacity: 0, y: 14, filter: "blur(3px)" });
         gsap.to(sign, {
-          opacity: 0.62,
-          y: -12,
-          filter: "blur(2px)",
-          ease: "none",
+          opacity: 1,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 0.85,
+          ease: "power2.out",
           scrollTrigger: {
             trigger: sign,
-            start: "bottom 45%",
-            end: "bottom 8%",
-            scrub: 0.9,
+            start: "top 88%",
+            once: true,
           },
         });
-        // Tiny lateral drift so the anchor never reads as pinned.
-        horizontalDrift(sign, { trigger: sign, from: -0.8, to: 0.8, scrub: true });
       }
 
       // ─── CTA: tail-end envelope ─────────────────────────────────────
@@ -401,13 +383,13 @@ export function About() {
                 surrounded by quiet whitespace. */}
             <figure
               data-about-sign
-              className="mt-20 ml-auto flex w-full max-w-[36rem] flex-col items-center will-change-[opacity,transform,filter] sm:mt-24 md:mt-28 md:max-w-[42rem]"
+              className="mx-auto mt-14 flex w-full max-w-[34rem] flex-col items-center will-change-[opacity,transform,filter] sm:mt-20 sm:ml-auto sm:mr-0 sm:max-w-[36rem] md:mt-28 md:max-w-[42rem]"
             >
-              <MagicksSignatureReveal className="w-full max-w-[26rem] sm:max-w-[32rem] md:max-w-[38rem]" />
+              <MagicksSignatureReveal className="w-full max-w-[28rem] sm:max-w-[32rem] md:max-w-[38rem]" />
 
-              <figcaption className="font-mono mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 self-stretch text-[11px] font-medium uppercase leading-none tracking-[0.22em] text-white/45 sm:mt-8 sm:text-[10px] sm:gap-x-6 sm:tracking-[0.32em] sm:text-white/42">
+              <figcaption className="font-mono mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 self-stretch text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-white/45 sm:mt-7 sm:gap-x-6 sm:text-[10px] sm:tracking-[0.32em] sm:text-white/42">
                 <span className="flex items-center gap-2 sm:gap-3">
-                  <span aria-hidden className="h-px w-6 bg-white/26 sm:w-8" />
+                  <span aria-hidden className="h-px w-5 bg-white/26 sm:w-8" />
                   <span>Studio · Kassel</span>
                 </span>
                 <span className="text-white/34">N51°19′ · E9°29′</span>
