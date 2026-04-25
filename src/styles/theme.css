@@ -43,7 +43,7 @@
 }
 
 .font-instrument {
-  font-family: "Instrument Serif", ui-serif, Georgia, serif;
+  font-family: "Instrument Serif", "Instrument Serif Fallback", ui-serif, Georgia, serif;
   letter-spacing: -0.02em;
 }
 

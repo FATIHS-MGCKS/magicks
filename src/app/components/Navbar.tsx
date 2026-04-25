@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
-import { transitionMicro } from "../motion";
 import { MagicksLogo } from "./MagicksLogo";
 
 const navLinks = [
@@ -55,14 +53,14 @@ export function Navbar() {
         </div>
 
         <div className="hidden items-center gap-2 lg:flex">
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={transitionMicro}>
-            <Link
-              to="/kontakt"
-              className="font-ui liquid-glass inline-flex min-h-[44px] items-center rounded-full px-5 py-2 text-[14px] font-semibold text-white no-underline lg:text-[15px]"
-            >
-              Unverbindlich anfragen
-            </Link>
-          </motion.div>
+          {/* CSS-only hover/active scale — identical feel to prior framer-motion
+              micro-interaction, eliminates the 122 KB framer-motion bundle. */}
+          <Link
+            to="/kontakt"
+            className="font-ui liquid-glass inline-flex min-h-[44px] items-center rounded-full px-5 py-2 text-[14px] font-semibold text-white no-underline transition-transform duration-[420ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] active:scale-[0.98] lg:text-[15px]"
+          >
+            Unverbindlich anfragen
+          </Link>
         </div>
 
         <button

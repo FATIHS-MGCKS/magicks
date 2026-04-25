@@ -206,7 +206,7 @@ export default function DatenschutzPage() {
         </LegalSection>
 
         {/* ============================================================
-           § 05 — Externe Schriftarten (Google Fonts & SF Pro über AWS S3)
+           § 05 — Externe Schriftarten (Google Fonts; Systemschriften lokal)
            ============================================================ */}
         <LegalSection folio="§ 05" title={<>Externe Schriftarten</>}>
           <p>

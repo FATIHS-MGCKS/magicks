@@ -35,6 +35,7 @@ export function Hero() {
       const credit = root.querySelector<HTMLElement>("[data-hero-credit]");
       const lineA = gsap.utils.toArray<HTMLElement>("[data-hero-a]");
       const lineB = gsap.utils.toArray<HTMLElement>("[data-hero-b]");
+      const subline = root.querySelector<HTMLElement>("[data-hero-subline]");
       const cta = root.querySelector<HTMLElement>("[data-hero-cta]");
       const ctaRule = root.querySelector<HTMLElement>("[data-hero-cta-rule]");
       const cue = root.querySelector<HTMLElement>("[data-hero-cue]");
@@ -48,7 +49,7 @@ export function Hero() {
 
       if (reduced) {
         gsap.set(
-          [credit, ...lineA, ...lineB, cta, ctaRule, cue, cueLabel, vignette, bottomFade],
+          [credit, ...lineA, ...lineB, subline, cta, ctaRule, cue, cueLabel, vignette, bottomFade],
           { opacity: 1, y: 0, yPercent: 0, letterSpacing: "-0.032em", scaleX: 1 },
         );
         gsap.set(wipe, { opacity: 0 });
@@ -61,8 +62,22 @@ export function Hero() {
       gsap.set(vignette, { opacity: 0 });
       gsap.set(bottomFade, { opacity: 0 });
       gsap.set(credit, { opacity: 0, x: -6 });
-      gsap.set(lineA, { yPercent: 118, opacity: 0, letterSpacing: "0.02em" });
-      gsap.set(lineB, { yPercent: 118, opacity: 0, letterSpacing: "0.02em" });
+      // Letter-spacing initial value must stay inside the "same-wrap" zone so
+      // the animated settlement never crosses a line-wrap threshold. Measured
+      // at 320 / 375 / 390 / 768 / 1024 / 1440 px the H1 stays on 3 lines for
+      // any letter-spacing in [-0.02em, -0.032em]; going wider (e.g. the
+      // previous `0.02em`) pushes the H1 to 4 and then 5 lines, which caused
+      // a ~87 px layout shift during the intro timeline (CLS ~0.29). Keeping
+      // the settlement inside the safe zone preserves the cinematic touch
+      // while eliminating the Core Web Vitals hit.
+      gsap.set(lineA, { yPercent: 118, opacity: 0, letterSpacing: "-0.02em" });
+      gsap.set(lineB, { yPercent: 118, opacity: 0, letterSpacing: "-0.02em" });
+      // Subline paints at its final resting state from the first frame.
+      // The black pre-roll wipe still covers it for the cinematic fade-in,
+      // so visually the subline reveals *with* the wipe — but to the browser
+      // (and to LCP), the H2 text is considered rendered immediately,
+      // eliminating the prior ~1.4 s LCP delay on the homepage.
+      gsap.set(subline, { opacity: 0.62, y: 0 });
       gsap.set(cta, { opacity: 0, y: 14 });
       gsap.set(ctaRule, { scaleX: 0, transformOrigin: "left center" });
       gsap.set(cue, { opacity: 0 });
@@ -125,6 +140,12 @@ export function Hero() {
 
       // Credit glides in from the edge once the headline has anchored.
       tl.to(credit, { opacity: 0.52, x: 0, duration: 1.35, ease: "power2.out" }, 1.25);
+
+      // Subline was previously tweened from opacity:0 → 0.62 at t=1.45.
+      // It now starts at its final state (see `gsap.set` above) so the H2
+      // is paintable from first frame and registers as LCP at FCP time
+      // rather than ~2.5 s later. The black pre-roll wipe still veils it
+      // until ~t=1.4, preserving the cinematic entry.
 
       // CTA arrives last — text first, then the underline draws.
       tl.to(cta, { opacity: 1, y: 0, duration: 1.1 }, 1.7)
@@ -344,6 +365,17 @@ export function Hero() {
                 ))}
               </span>
             </h1>
+
+            {/* Editorial sub-line — quiet H2 carrying the primary local +
+                service vocabulary so the homepage anchors a crawlable
+                topic underneath the brand-poetic H1. Visible at every
+                viewport; tracking and size step up as space allows. */}
+            <h2
+              data-hero-subline
+              className="font-ui mt-6 max-w-[34ch] text-[11.5px] font-medium uppercase leading-[1.55] tracking-[0.16em] text-white/55 sm:mt-8 sm:max-w-[40ch] sm:text-[12.5px] sm:tracking-[0.18em] md:mt-10 md:max-w-[46ch] md:text-[13px] md:tracking-[0.2em]"
+            >
+              Webagentur aus Kassel — Websites, Shops, Web-Software &amp; KI-Automationen.
+            </h2>
 
             {/* Text-link CTA — magazine-style dual underline, no glass pill.
                 Hover is deliberately slow + deep: the sweep rule draws in

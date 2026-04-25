@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import tailwindcss from "@tailwindcss/vite";
@@ -9,13 +9,18 @@ import { defineConfig, type Plugin } from "vite";
  * Sitemap generator — single source of truth at build time.
  *
  * Rationale:
- *   Before this plugin, the sitemap lived in two places (config.ts'
- *   SITEMAP_PATHS and a committed public/sitemap.xml). Adding a page
- *   meant editing both and hoping they stayed in sync. Instead, this
- *   plugin parses the same TypeScript sources the app uses — the route
- *   list in `src/app/seo/config.ts` and the featured project slugs in
- *   `src/app/data/projects.ts` — and emits a fresh sitemap.xml into
- *   `dist/` on every build. The committed tree only stores the inputs.
+ *   The sitemap is generated from the same TypeScript sources the app
+ *   uses — the route list in `src/app/seo/config.ts` and the featured
+ *   project slugs in `src/app/data/projects.ts`. Output is written to
+ *   `public/sitemap.xml` at the start of every `vite build`; Vite's
+ *   normal pipeline then copies that into `dist/`, so the deployed
+ *   `/sitemap.xml` always matches the one in the source tree.
+ *
+ *   Writing into `public/` (instead of `emitFile`-ing into the bundle)
+ *   has a single, deliberate effect: the artifact is committable. A
+ *   stale CI deploy that didn't run a fresh build still ships the last
+ *   known-good sitemap, removing the 404 risk on the canonical URL
+ *   advertised by `robots.txt`.
  *
  * Parsing approach:
  *   The two source files are stable, hand-maintained, and follow a
@@ -134,49 +139,49 @@ function buildSitemapXml(entries: SitemapEntry[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
 
+function generateSitemapXml(): { xml: string; count: number } {
+  const configSrc = stripComments(readSource(SOURCE_CONFIG));
+  const projectsSrc = stripComments(readSource(SOURCE_PROJECTS));
+
+  const siteUrl = extractSiteUrl(configSrc);
+  const staticPaths = extractStaticPaths(configSrc);
+  const featuredSlugs = extractFeaturedProjectSlugs(projectsSrc);
+
+  // Merge in featured projects that the static list may not yet
+  // reference, then dedupe while preserving the manual order in
+  // SITEMAP_PATHS for any static entries and appending new slugs
+  // at the end.
+  const merged: string[] = [...staticPaths];
+  for (const slug of featuredSlugs) {
+    const route = `/projekte/${slug}`;
+    if (!merged.includes(route)) merged.push(route);
+  }
+
+  const lastmod = new Date().toISOString().slice(0, 10);
+  const entries: SitemapEntry[] = merged.map((p) => {
+    const { changefreq, priority } = metaForPath(p);
+    const canonicalPath = p === "/" ? "/" : p.replace(/\/$/, "");
+    return {
+      loc: `${siteUrl}${canonicalPath}`,
+      lastmod,
+      changefreq,
+      priority,
+    };
+  });
+
+  return { xml: buildSitemapXml(entries), count: entries.length };
+}
+
 function magicksSitemapPlugin(): Plugin {
   return {
     name: "magicks-sitemap",
     apply: "build",
-    generateBundle() {
-      const configSrc = stripComments(readSource(SOURCE_CONFIG));
-      const projectsSrc = stripComments(readSource(SOURCE_PROJECTS));
-
-      const siteUrl = extractSiteUrl(configSrc);
-      const staticPaths = extractStaticPaths(configSrc);
-      const featuredSlugs = extractFeaturedProjectSlugs(projectsSrc);
-
-      // Merge in featured projects that the static list may not yet
-      // reference, then dedupe while preserving the manual order in
-      // SITEMAP_PATHS for any static entries and appending new slugs
-      // at the end.
-      const merged: string[] = [...staticPaths];
-      for (const slug of featuredSlugs) {
-        const route = `/projekte/${slug}`;
-        if (!merged.includes(route)) merged.push(route);
-      }
-
-      const lastmod = new Date().toISOString().slice(0, 10);
-      const entries: SitemapEntry[] = merged.map((p) => {
-        const { changefreq, priority } = metaForPath(p);
-        const canonicalPath = p === "/" ? "/" : p.replace(/\/$/, "");
-        return {
-          loc: `${siteUrl}${canonicalPath}`,
-          lastmod,
-          changefreq,
-          priority,
-        };
-      });
-
-      const xml = buildSitemapXml(entries);
-      this.emitFile({
-        type: "asset",
-        fileName: "sitemap.xml",
-        source: xml,
-      });
-
+    buildStart() {
+      const { xml, count } = generateSitemapXml();
+      const target = path.resolve(__dirname, "public/sitemap.xml");
+      writeFileSync(target, xml);
       // eslint-disable-next-line no-console
-      console.log(`[sitemap] emitted dist/sitemap.xml (${entries.length} urls)`);
+      console.log(`[sitemap] wrote public/sitemap.xml (${count} urls)`);
     },
   };
 }
@@ -184,12 +189,31 @@ function magicksSitemapPlugin(): Plugin {
 export default defineConfig({
   plugins: [react(), tailwindcss(), magicksSitemapPlugin()],
   build: {
+    // Bump the warning threshold — react-vendor (~180 KB) is an intentional
+    // vendor split we control and the default 500 KB ceiling is already far
+    // above every route chunk we ship.
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
+        // Keep framework + animation engine split out so route-level chunks
+        // stay lean. `framer-motion` was removed — no `motion` chunk needed.
+        //
+        // GSAP is paired with its ScrollTrigger plugin on every route that
+        // animates (which is every route). Previously only the bare `gsap`
+        // package was listed here, which pushed ScrollTrigger + Observer
+        // into a misleadingly-named shared chunk (Rollup picked the first
+        // co-bundled module — `useReducedMotion` — as the chunk name).
+        // Bundling the plugins together with the core:
+        //   · consolidates ~44 KB / 18 KB-gzip into the existing `gsap`
+        //     chunk so there is ONE cacheable file for the whole animation
+        //     engine (saves a second HTTP request on cold navigations),
+        //   · removes the confusing `useReducedMotion-*.js` filename from
+        //     dist/ — the tiny hook falls back into the app entry,
+        //   · keeps long-term caching boundaries aligned with how the
+        //     code actually ships (always loaded together in practice).
         manualChunks: {
           "react-vendor": ["react", "react-dom", "react-router-dom"],
-          motion: ["framer-motion"],
-          gsap: ["gsap"],
+          gsap: ["gsap", "gsap/ScrollTrigger"],
         },
       },
     },

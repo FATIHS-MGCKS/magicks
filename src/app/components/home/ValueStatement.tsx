@@ -27,10 +27,11 @@ const SENTENCES: { text: string }[] = [
   },
   {
     text:
-      "Wir entwickeln digitale Lösungen, die auffallen und sauber funktionieren — und setzen sie schneller um, als man es gewohnt ist.",
+      "Wir entwickeln Websites, Web-Software und Automationen, die auffallen und sauber funktionieren — und setzen sie schneller um, als man es gewohnt ist.",
   },
   {
-    text: "Und wir haben keine Lust auf langweilige Web-Projekte.",
+    text:
+      "Studio-Qualität in Wochen, nicht Monaten — KI-gestützt, ohne Umwege.",
   },
 ];
 

@@ -33,7 +33,7 @@ const SERVICES: Service[] = [
     kicker: "Marke",
     title: "Websites & Landing Pages",
     teaser:
-      "Markenauftritte und Leadstrecken als zusammenhängendes System — nicht als Einzelseiten.",
+      "Markenwebsites, Landing Pages und Relaunches als zusammenhängendes System — geführt, schnell, conversion-orientiert.",
     metric: "Von Auftritt bis Conversion",
     href: "/websites-landingpages",
     image: "/media/home/service-websites.webp",
@@ -46,7 +46,8 @@ const SERVICES: Service[] = [
     number: "02",
     kicker: "Commerce",
     title: "Shops & Konfiguratoren",
-    teaser: "Komplexe Produkte führbar machen — vom ersten Klick bis zur sauberen Übergabe.",
+    teaser:
+      "Online-Shops und 2D/3D-Produktkonfiguratoren, die komplexe Produkte erklären und Anfragen sauber qualifizieren.",
     metric: "Shopware · Shopify · Custom",
     href: "/shops-produktkonfiguratoren",
     image: "/media/home/service-shops.webp",
@@ -59,7 +60,8 @@ const SERVICES: Service[] = [
     number: "03",
     kicker: "System",
     title: "Web-Software & Dashboards",
-    teaser: "Interne Systeme, die Arbeit bündeln, statt neue manuelle Schleifen zu eröffnen.",
+    teaser:
+      "Dashboards, Portale und individuelle Web-Software — Prozesse bündeln statt Tabs sammeln.",
     metric: "Intern · Multi-Tenant · API",
     href: "/web-software",
     image: "/media/home/service-software.webp",
@@ -72,7 +74,8 @@ const SERVICES: Service[] = [
     number: "04",
     kicker: "Automation & KI",
     title: "Automation & KI",
-    teaser: "Wiederkehrende Last aus dem Team holen — nachvollziehbar und wartbar.",
+    teaser:
+      "KI-Workflows, Automationen und Integrationen — wiederkehrende Arbeit aus dem Team holen, nachvollziehbar und wartbar.",
     metric: "n8n · Agents · LLM-Integration",
     href: "/ki-automationen-integrationen",
     image: "/media/home/service-automation.webp",
@@ -114,8 +117,11 @@ function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; classN
             src={s.image}
             alt={isActive ? s.imageAlt : ""}
             aria-hidden={!isActive}
-            loading={i === 0 ? "eager" : "lazy"}
+            width={1440}
+            height={1800}
+            loading="lazy"
             decoding="async"
+            fetchPriority="low"
             draggable={false}
             className={`preview-stack__image absolute inset-0 h-full w-full object-cover object-center ${
               isActive ? "preview-stack__image--active" : ""
@@ -426,9 +432,9 @@ export function Services() {
               data-services-caption
               className="font-ui max-w-md text-[14px] leading-[1.66] text-white/52 md:text-[15px]"
             >
-              Vier Cluster. Jedes für einen klaren unternehmerischen Einsatz — keines davon als
-              Standard-Produkt, alle als Arbeit mit Absicht. Auswahl während des Scrolls; Vorschau
-              läuft rechts mit.
+              Vier Cluster, jeder mit klarem Einsatz im Unternehmen — keine Standard-Pakete,
+              jedes Projekt als Arbeit mit Absicht. KI-gestützt umgesetzt, ohne Verlust an
+              Substanz.
             </p>
           </div>
         </div>
@@ -503,8 +509,11 @@ export function Services() {
                           <img
                             src={s.image}
                             alt={s.imageAlt}
-                            loading={i === 0 ? "eager" : "lazy"}
+                            width={1440}
+                            height={900}
+                            loading="lazy"
                             decoding="async"
+                            fetchPriority="low"
                             draggable={false}
                             className="preview-stack__image preview-stack__image--active absolute inset-0 h-full w-full object-cover object-center"
                           />

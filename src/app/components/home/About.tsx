@@ -399,12 +399,12 @@ export function About() {
                 className="mt-8 max-w-[40rem] will-change-[opacity,filter] sm:mt-10"
               >
                 <p className="font-instrument text-[1.15rem] leading-[1.68] tracking-[-0.005em] text-white/78 sm:text-[1.25rem] md:text-[1.35rem]">
-                  MAGICKS arbeitet als kleines, fokussiertes Studio aus Kassel. Wenige Projekte pro
-                  Jahr — dafür mit voller Aufmerksamkeit. Gestaltung, Web und Software laufen hier
-                  als <em data-about-emphasis className="italic text-white">eine Arbeit</em>, nicht als getrennte
-                  Abteilungen. Wir glauben, dass gute digitale Arbeit sichtbar wird — nicht durch
-                  Effekte, sondern durch Substanz, Ruhe und Systeme, die auch in zwei Jahren noch
-                  Sinn ergeben.
+                  MAGICKS ist ein kleines, fokussiertes Studio aus Kassel. Wenige Projekte pro
+                  Jahr — dafür mit voller Aufmerksamkeit. Design, Code und Automation laufen hier
+                  als <em data-about-emphasis className="italic text-white">eine Arbeit</em>, nicht als
+                  getrennte Abteilungen. KI-Assistenz nimmt uns die Routine ab; Substanz, Ruhe und
+                  Systeme, die auch in zwei Jahren noch Sinn ergeben, bleiben Handarbeit. Direkter
+                  Kontakt zu den Menschen, die bauen — keine Key-Account-Ebene dazwischen.
                 </p>
               </div>
             </div>

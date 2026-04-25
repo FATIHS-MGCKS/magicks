@@ -1,9 +1,72 @@
-# MAGICKS Studio — crawler directives.
+# MAGICKS Studio - crawler directives.
+#
 # Public site, fully indexable. Legal pages carry their own noindex
-# meta (Impressum, Datenschutz) — blocking them here would prevent
-# that signal from being read, so they're left crawlable on purpose.
+# meta (Impressum, Datenschutz) - blocking them here would prevent
+# that signal from being read, so they are left crawlable on purpose.
+#
+# AI search crawlers are explicitly allowed so that ChatGPT, Gemini,
+# Claude, Copilot and Perplexity can cite this site as a source.
+# Common Crawl (CCBot) is blocked - it is used for bulk training
+# datasets, not for live citation, and we prefer not to be in that
+# corpus by default.
 
 User-agent: *
 Allow: /
+
+# AI search and answer engines - explicit allow.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: BraveBot
+Allow: /
+
+User-agent: MistralAI-User
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+# Bulk training-only crawlers - disallow.
+User-agent: CCBot
+Disallow: /
 
 Sitemap: https://magicks.studio/sitemap.xml

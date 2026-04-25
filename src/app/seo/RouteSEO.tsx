@@ -29,7 +29,11 @@ export function RouteSEO({ path }: RouteSEOProps) {
       twitterTitle={cfg.twitterTitle}
       twitterDescription={cfg.twitterDescription}
       ogImage={cfg.ogImage}
+      ogImageAlt={cfg.ogImageAlt}
+      ogType={cfg.ogType}
       robots={cfg.robots}
+      service={cfg.service}
+      breadcrumbs={cfg.breadcrumbs}
     />
   );
 }

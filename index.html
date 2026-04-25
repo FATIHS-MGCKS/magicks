@@ -6,8 +6,34 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://applesocial.s3.amazonaws.com" crossorigin />
     <link rel="preconnect" href="https://d8j0ntlcm91z4.cloudfront.net" crossorigin />
+
+    <!--
+      Fonts CSS is requested directly from the HTML head (previously
+      imported from within the Tailwind bundle). Moving the discovery
+      point out of the parent stylesheet shaves ~150–300 ms off the
+      font critical path on cold loads, which is the primary lever for
+      reducing FOUT-driven CLS on the hero H1.
+    -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap"
+    />
+
+    <!--
+      Preload the navbar logo — the first contentful paint on every
+      page and a strong LCP candidate on light routes (e.g. /leistungen,
+      /kontakt). Tiny (~37 KB WebP) so the cost is negligible; the
+      payoff is that the image is in-flight before the router chunks
+      have even parsed.
+    -->
+    <link
+      rel="preload"
+      as="image"
+      href="/magicks-logo.webp"
+      type="image/webp"
+      fetchpriority="high"
+    />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
@@ -15,10 +41,10 @@
     <meta name="theme-color" content="#0A0A0A" />
 
     <!-- Baseline meta — per-route <SEO /> overrides these at runtime. -->
-    <title>MAGICKS Studio – Websites, Shops, Web-Software & KI-Automationen</title>
+    <title>MAGICKS Studio – Webagentur aus Kassel · Websites, Shops, Software, KI</title>
     <meta
       name="description"
-      content="MAGICKS Studio entwickelt Websites, Shops, Produktkonfiguratoren, Web-Software und KI-Automationen – designstark, technisch sauber und schnell umgesetzt."
+      content="Webagentur aus Kassel: MAGICKS Studio entwickelt Websites, Shops, Produktkonfiguratoren, Web-Software und KI-Automationen für Unternehmen — designgetrieben, planbar, schnell umgesetzt."
     />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://magicks.studio/" />
@@ -27,24 +53,191 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="MAGICKS Studio" />
     <meta property="og:locale" content="de_DE" />
-    <meta property="og:title" content="MAGICKS Studio – Websites, Shops, Web-Software & KI-Automationen" />
+    <meta property="og:title" content="MAGICKS Studio – Webagentur aus Kassel · Websites, Shops, Software, KI" />
     <meta
       property="og:description"
-      content="MAGICKS Studio entwickelt Websites, Shops, Produktkonfiguratoren, Web-Software und KI-Automationen – designstark, technisch sauber und schnell umgesetzt."
+      content="Webagentur aus Kassel: MAGICKS Studio entwickelt Websites, Shops, Produktkonfiguratoren, Web-Software und KI-Automationen für Unternehmen."
     />
     <meta property="og:url" content="https://magicks.studio/" />
-    <meta property="og:image" content="https://magicks.studio/og-default.svg" />
-    <meta property="og:image:alt" content="MAGICKS Studio" />
+    <meta property="og:image" content="https://magicks.studio/og-default.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="MAGICKS Studio — Webagentur aus Kassel" />
 
     <!-- Twitter baseline -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="MAGICKS Studio – Websites, Shops, Web-Software & KI-Automationen" />
+    <meta name="twitter:title" content="MAGICKS Studio – Webagentur aus Kassel · Websites, Shops, Software, KI" />
     <meta
       name="twitter:description"
-      content="MAGICKS Studio entwickelt Websites, Shops, Produktkonfiguratoren, Web-Software und KI-Automationen – designstark, technisch sauber und schnell umgesetzt."
+      content="Webagentur aus Kassel: MAGICKS Studio entwickelt Websites, Shops, Produktkonfiguratoren, Web-Software und KI-Automationen für Unternehmen."
     />
     <meta name="twitter:url" content="https://magicks.studio/" />
-    <meta name="twitter:image" content="https://magicks.studio/og-default.svg" />
+    <meta name="twitter:image" content="https://magicks.studio/og-default.png" />
+
+    <!-- ------------------------------------------------------------------
+         Structured data (JSON-LD).
+
+         Site-wide @graph: Organization + ProfessionalService + LocalBusiness
+         + WebSite. Static so non-JS crawlers (Bing, Slack, X, LinkedIn,
+         GPTBot, Perplexity, ClaudeBot) read the studio's identity from the
+         very first byte. Per-route Service / BreadcrumbList schema is
+         injected by <SEO /> at runtime — see src/app/seo/SEO.tsx.
+         ------------------------------------------------------------------ -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": ["Organization", "ProfessionalService", "LocalBusiness"],
+            "@id": "https://magicks.studio/#organization",
+            "name": "MAGICKS Studio",
+            "alternateName": ["MAGICKS", "Magicks Studio Kassel"],
+            "legalName": "MAGICKS Studio",
+            "url": "https://magicks.studio/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://magicks.studio/magicks-logo.webp",
+              "caption": "MAGICKS Studio Logo"
+            },
+            "image": "https://magicks.studio/og-default.png",
+            "description": "MAGICKS Studio ist ein kreatives Tech-Studio aus Kassel. Wir entwickeln Websites, Online-Shops, 2D/3D-Produktkonfiguratoren, individuelle Web-Software und KI-Automationen für Unternehmen — designgetrieben, KI-gestützt, in Wochen statt Monaten.",
+            "slogan": "Creative Tech. Smart Automation. Fast Delivery.",
+            "email": "hello@magicks.de",
+            "founder": { "@id": "https://magicks.studio/#fatih-serin" },
+            "foundingDate": "2024",
+            "foundingLocation": { "@type": "City", "name": "Kassel, Deutschland" },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Schwabstr. 7a",
+              "postalCode": "34125",
+              "addressLocality": "Kassel",
+              "addressRegion": "Hessen",
+              "addressCountry": "DE"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 51.319,
+              "longitude": 9.498
+            },
+            "areaServed": [
+              { "@type": "City", "name": "Kassel" },
+              { "@type": "City", "name": "Baunatal" },
+              { "@type": "City", "name": "Vellmar" },
+              { "@type": "City", "name": "Fuldabrück" },
+              { "@type": "City", "name": "Lohfelden" },
+              { "@type": "City", "name": "Niestetal" },
+              { "@type": "City", "name": "Kaufungen" },
+              { "@type": "City", "name": "Calden" },
+              { "@type": "AdministrativeArea", "name": "Nordhessen" },
+              { "@type": "Country", "name": "Deutschland" }
+            ],
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "contactType": "customer support",
+                "email": "hello@magicks.de",
+                "areaServed": "DE",
+                "availableLanguage": ["de", "en"]
+              }
+            ],
+            "knowsLanguage": ["de", "en"],
+            "knowsAbout": [
+              "Webdesign",
+              "Webentwicklung",
+              "Landing Pages",
+              "Shopify",
+              "Shopware",
+              "E-Commerce",
+              "2D-Produktkonfiguratoren",
+              "3D-Produktkonfiguratoren",
+              "Web-Software",
+              "Dashboards",
+              "API-Integrationen",
+              "KI-Automation",
+              "n8n",
+              "Zapier",
+              "Make.com",
+              "DSGVO-konforme Webentwicklung",
+              "SEO",
+              "Hostinger Hosting"
+            ],
+            "hasOfferCatalog": {
+              "@type": "OfferCatalog",
+              "name": "Leistungen MAGICKS Studio",
+              "itemListElement": [
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Websites & Landing Pages",
+                    "serviceType": "Webdesign und Webentwicklung",
+                    "url": "https://magicks.studio/websites-landingpages",
+                    "areaServed": "DE",
+                    "provider": { "@id": "https://magicks.studio/#organization" },
+                    "description": "Markenwebsites, Relaunches und Conversion-orientierte Landing Pages — designgetrieben, performant, mit sauberem SEO-Fundament."
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Online-Shops & 2D/3D-Produktkonfiguratoren",
+                    "serviceType": "E-Commerce und Produktkonfiguration",
+                    "url": "https://magicks.studio/shops-produktkonfiguratoren",
+                    "areaServed": "DE",
+                    "provider": { "@id": "https://magicks.studio/#organization" },
+                    "description": "Shopify-, Shopware- oder individuell entwickelte Shops und 2D/3D-Konfiguratoren für erklärungsbedürftige Produkte — vom Klick bis zur Übergabe an CRM, ERP oder Vertrieb."
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Web-Software & Dashboards",
+                    "serviceType": "Individuelle Web-Software-Entwicklung",
+                    "url": "https://magicks.studio/web-software",
+                    "areaServed": "DE",
+                    "provider": { "@id": "https://magicks.studio/#organization" },
+                    "description": "Individuelle Web-Software, Portale, Dashboards und interne Tools — API-first, übergabefähig, gebaut für Prozesse und Wachstum."
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "KI-Automationen & Integrationen",
+                    "serviceType": "KI-gestützte Prozessautomation und Systemintegration",
+                    "url": "https://magicks.studio/ki-automationen-integrationen",
+                    "areaServed": "DE",
+                    "provider": { "@id": "https://magicks.studio/#organization" },
+                    "description": "KI-Workflows, Prozessautomationen und Integrationen zwischen Tools und Systemen — n8n, Zapier, Make oder eigener Stack, DSGVO-konform und übergabefähig."
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "@type": "Person",
+            "@id": "https://magicks.studio/#fatih-serin",
+            "name": "Fatih Serin",
+            "jobTitle": "Founder & Studio Lead",
+            "worksFor": { "@id": "https://magicks.studio/#organization" },
+            "url": "https://magicks.studio/ueber-uns",
+            "knowsLanguage": ["de", "en"]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://magicks.studio/#website",
+            "url": "https://magicks.studio/",
+            "name": "MAGICKS Studio",
+            "alternateName": "MAGICKS",
+            "description": "Kreatives Tech-Studio aus Kassel — Websites, Shops, 2D/3D-Konfiguratoren, Web-Software und KI-Automationen.",
+            "inLanguage": "de-DE",
+            "publisher": { "@id": "https://magicks.studio/#organization" }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

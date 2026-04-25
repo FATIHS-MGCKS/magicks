@@ -8,6 +8,7 @@ import { ContextualCrossLink } from "../components/service/ContextualCrossLink";
 import { SectionTransition } from "../components/service/SectionTransition";
 import { ServicePlate } from "../components/service/ServicePlate";
 import type { ServicePlateMotif, ServicePlateAnchor } from "../components/service/ServicePlate";
+import { FaqJsonLd, type FaqItem } from "../seo/FaqJsonLd";
 import { RouteSEO } from "../seo/RouteSEO";
 
 /* ------------------------------------------------------------------
@@ -59,13 +60,13 @@ const PLATES: PlateCopy[] = [
     caption: "Werk · Website & Landing",
     title: "Websites & Landing Pages",
     body:
-      "Websites und Landing Pages, die nicht nur gut aussehen, sondern klar führen, schnell laden und Ergebnisse liefern.",
+      "Markenwebsites, Relaunches und Landing Pages, die nicht nur gut aussehen, sondern klar führen, schnell laden und Anfragen erzeugen.",
     points: [
-      "starke digitale Markenauftritte",
-      "Landing Pages mit klarem Ziel",
-      "hochwertige Gestaltung",
-      "saubere Entwicklung",
-      "Performance, Struktur und Nutzerführung",
+      "Markenwebsites und digitale Auftritte",
+      "Landing Pages mit klarem Conversion-Ziel",
+      "Relaunch bestehender Seiten — mit sauberem Redirect-Konzept",
+      "hochwertige Gestaltung, saubere Entwicklung",
+      "Performance, Struktur und SEO-Grundlagen",
     ],
     ctaLabel: "Mehr zu Websites & Landing Pages",
     to: "/websites-landingpages",
@@ -79,13 +80,13 @@ const PLATES: PlateCopy[] = [
     caption: "Werk · Shop & Konfigurator",
     title: "Shops & Produktkonfiguratoren",
     body:
-      "Digitale Verkaufslösungen, die Produkte überzeugend präsentieren, Auswahl verständlich machen und Nutzer sauber zum nächsten Schritt führen.",
+      "Online-Shops und 2D/3D-Produktkonfiguratoren, die komplexe oder erklärungsbedürftige Produkte verständlich machen und Anfragen sauber ins CRM qualifizieren.",
     points: [
-      "moderne Shops mit Anspruch",
-      "interaktive Produktkonfiguratoren",
-      "3D-Konfiguratoren für erklärungsbedürftige Produkte",
-      "bessere Nutzerführung im Vertrieb",
-      "technische Integration in echte Prozesse",
+      "moderne Online-Shops mit Anspruch",
+      "interaktive 2D/3D-Produktkonfiguratoren",
+      "Visualisierung für erklärungsbedürftige Produkte",
+      "klare Nutzerführung von Auswahl bis Anfrage",
+      "Integration in CRM, ERP und Vertriebsprozess",
     ],
     ctaLabel: "Mehr zu Shops & Produktkonfiguratoren",
     to: "/shops-produktkonfiguratoren",
@@ -119,19 +120,76 @@ const PLATES: PlateCopy[] = [
     caption: "Werk · Protokoll & Fluss",
     title: "KI-Automationen & Integrationen",
     body:
-      "Automationen und intelligente Systemverbindungen, die manuelle Arbeit reduzieren, Abläufe sauber verbinden und Teams spürbar entlasten.",
+      "KI-Workflows, Prozessautomationen und Integrationen, die manuelle Arbeit aus dem Team holen — nachvollziehbar, wartbar und ohne neue Insellösungen.",
     points: [
-      "Prozessautomationen",
-      "KI-gestützte Workflows",
+      "Prozessautomationen für wiederkehrende Arbeit",
+      "KI-Workflows mit klarer Verantwortung",
       "Integrationen zwischen Tools und Systemen",
-      "Datenflüsse und Übergaben",
-      "weniger Reibung im Alltag",
+      "saubere Datenflüsse und Übergaben",
+      "messbare Entlastung im Alltag",
     ],
     ctaLabel: "Mehr zu KI-Automationen & Integrationen",
     to: "/ki-automationen-integrationen",
     motif: "flow",
     anchor: "right",
     hook: "plate-04",
+  },
+];
+
+/* ------------------------------------------------------------------
+ * FAQ — answer-first block for AI search engines and human readers.
+ *
+ * Rendered as a visible § 06 chapter on /leistungen and mirrored to
+ * a JSON-LD FAQPage block via <FaqJsonLd />. Answers are short,
+ * self-contained and citation-ready (Google AI Overviews, ChatGPT
+ * search, Perplexity, Gemini, Claude, Copilot all pull from FAQPage
+ * and visible Q/A patterns).
+ *
+ * Discipline:
+ *   · No invented facts (no client names, ratings, awards, prices).
+ *   · Every answer reads on its own without page context.
+ *   · Hello@magicks.de + Kassel are surfaced where natural.
+ * ------------------------------------------------------------------ */
+const FAQ_ITEMS: ReadonlyArray<FaqItem> = [
+  {
+    question: "Was macht MAGICKS Studio?",
+    answer:
+      "MAGICKS Studio ist ein kreatives Tech-Studio aus Kassel. Wir entwickeln Websites, Online-Shops, 2D/3D-Produktkonfiguratoren, individuelle Web-Software und KI-Automationen für Unternehmen — designgetrieben, KI-gestützt und schneller umgesetzt als bei einer klassischen Agentur.",
+  },
+  {
+    question: "Welche Leistungen bietet MAGICKS Studio konkret an?",
+    answer:
+      "Vier Disziplinen aus einer Hand: (I) Websites & Landing Pages, (II) Online-Shops & 2D/3D-Produktkonfiguratoren, (III) individuelle Web-Software & Dashboards, (IV) KI-Automationen & Integrationen. Design, Code und Automation kommen vom selben Team.",
+  },
+  {
+    question: "Für welche Unternehmen arbeitet MAGICKS Studio?",
+    answer:
+      "Für Inhaber·innen, Geschäftsführungen und Marketing-Leads aus dem Mittelstand — Hersteller mit erklärungsbedürftigen Produkten, Dienstleister mit Qualitätsanspruch und Founder, die Studio-Qualität in Founder-Tempo brauchen. Wir nehmen pro Jahr bewusst nur wenige Mandate an.",
+  },
+  {
+    question: "Baut MAGICKS auch Shops, Konfiguratoren und Web-Software?",
+    answer:
+      "Ja. Wir setzen Online-Shops auf Shopify, Shopware oder individueller Basis um, entwickeln 2D/3D-Produktkonfiguratoren für erklärungsbedürftige Produkte und bauen individuelle Web-Software, Portale und Dashboards. Schnittstellen zu CRM, ERP oder Vertriebsprozess gehören dazu.",
+  },
+  {
+    question: "Was genau sind KI-Automationen bei MAGICKS?",
+    answer:
+      "Praktische, wartbare KI-Workflows und Prozessautomationen: zum Beispiel automatisierte Angebots- oder Rechnungsläufe, KI-gestützte Anfragequalifizierung, Daten-Synchronisation zwischen Tools oder eigene KI-Agenten. Umgesetzt mit n8n, Zapier, Make oder eigenem Stack — DSGVO-konform und an dein Team übergebbar.",
+  },
+  {
+    question: "Wo sitzt das Studio — und arbeitet ihr auch remote?",
+    answer:
+      "Das Studio sitzt in Kassel (Schwabstr. 7a, 34125 Kassel). Vor-Ort-Termine in Kassel, Baunatal, Vellmar, Fuldabrück und Umgebung sind kurzfristig möglich. Mandate bundesweit laufen remote — das ist seit Tag eins der Normalfall.",
+  },
+  {
+    question: "Was unterscheidet MAGICKS von einer klassischen Webagentur?",
+    answer:
+      "Drei Punkte: (1) direkter Kontakt zu den Menschen, die bauen — keine Key-Account-Ebene dazwischen. (2) KI-gestützte Entwicklung verkürzt Time-to-Launch ohne Qualitätsverlust. (3) wenige Mandate pro Jahr, dafür mit voller Aufmerksamkeit. Studio-Qualität in Wochen statt Monaten.",
+  },
+  {
+    question: "Wie schnell ist eine Erstauskunft realistisch?",
+    answer:
+      "In der Regel binnen 24 Stunden, werktags. Schreib uns an hello@magicks.de oder über das Kontaktformular — die Erstauskunft ist unverbindlich und kostet nichts.",
   },
 ];
 
@@ -1338,6 +1396,103 @@ export default function LeistungenPage() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* =========================================================
+           § 06 — HÄUFIGE FRAGEN
+           Visible answer-first block. The same Q/A pairs are mirrored
+           into FAQPage JSON-LD via <FaqJsonLd /> below — both visible
+           AND structured, never hidden. Built as a chapter beat (not
+           a footer accordion) so it carries editorial weight: chapter
+           rail, italic display heading, native <details>/<summary>
+           per item, hairline rules between answers.
+        ========================================================= */}
+        <section className="relative bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+          <div className="layout-max">
+            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
+              <div data-leis-reveal className="md:pt-2">
+                <div className="flex flex-col gap-4">
+                  <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
+                    § 06 — Häufige Fragen
+                  </p>
+                  <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/34 sm:text-[10.5px]">
+                    08 Antworten · in 30 Sekunden
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <h2
+                  data-leis-reveal
+                  className="font-instrument max-w-[44rem] text-[2.05rem] leading-[1.04] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]"
+                >
+                  Was Unternehmen vor einer Anfrage{" "}
+                  <em className="italic text-white/58">wissen wollen.</em>
+                </h2>
+
+                <p
+                  data-leis-reveal
+                  className="font-ui mt-7 max-w-[42rem] text-[15px] leading-[1.7] text-white/58 md:mt-9 md:text-[16px]"
+                >
+                  Direkte Antworten auf das, was am häufigsten in Erstgesprächen
+                  und in Suchmaschinen gefragt wird. Wenn deine Frage hier nicht
+                  steht — schreib uns an{" "}
+                  <a
+                    href="mailto:hello@magicks.de"
+                    className="text-white/92 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color,color] hover:text-white hover:underline hover:decoration-white/60"
+                  >
+                    hello@magicks.de
+                  </a>
+                  .
+                </p>
+
+                <ol className="mt-12 border-t border-white/[0.08] md:mt-16">
+                  {FAQ_ITEMS.map((item, i) => (
+                    <li
+                      key={item.question}
+                      data-leis-reveal
+                      className="border-b border-white/[0.08]"
+                    >
+                      <details className="group/faq">
+                        <summary className="grid cursor-pointer list-none grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-6 py-7 outline-none [&::-webkit-details-marker]:hidden md:gap-x-9 md:py-9">
+                          <span className="font-mono pt-[0.32rem] text-[10.5px] font-medium leading-none tracking-[0.28em] text-white/48 md:text-[11.5px]">
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          <h3 className="font-instrument text-[1.22rem] leading-[1.22] tracking-[-0.014em] text-white md:text-[1.45rem] lg:text-[1.55rem]">
+                            {item.question}
+                          </h3>
+                          <span
+                            aria-hidden
+                            className="font-instrument self-center text-[1.4rem] italic leading-none text-white/56 magicks-duration-hover magicks-ease-out transition-transform group-open/faq:rotate-45 md:text-[1.55rem]"
+                          >
+                            +
+                          </span>
+                        </summary>
+                        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-6 pb-8 md:gap-x-9 md:pb-10">
+                          <span aria-hidden className="block" />
+                          <p className="font-ui max-w-[44rem] text-[14.5px] leading-[1.72] text-white/64 md:text-[15.5px] md:leading-[1.74]">
+                            {item.answer}
+                          </p>
+                          <span aria-hidden className="block" />
+                        </div>
+                      </details>
+                    </li>
+                  ))}
+                </ol>
+
+                <div
+                  data-leis-reveal
+                  className="font-mono mt-6 flex items-center justify-between gap-4 text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/32 md:mt-8"
+                >
+                  <span>Register · Antworten</span>
+                  <span aria-hidden className="h-px flex-1 bg-white/[0.07]" />
+                  <span className="tabular-nums">08 · MMXXVI</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <FaqJsonLd id="leistungen" items={FAQ_ITEMS} />
         </section>
 
         {/* =========================================================

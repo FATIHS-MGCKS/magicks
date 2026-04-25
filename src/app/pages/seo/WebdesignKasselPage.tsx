@@ -8,6 +8,7 @@ import { EditorialAnchor } from "../../components/service/EditorialAnchor";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { registerGsap } from "../../lib/gsap";
 import { presenceEnvelope, rackFocusTrack } from "../../lib/scrollMotion";
+import { FaqJsonLd, type FaqItem } from "../../seo/FaqJsonLd";
 import { RouteSEO } from "../../seo/RouteSEO";
 
 /* ------------------------------------------------------------------
@@ -174,6 +175,39 @@ const APPROACH: {
 
 const CLOSING =
   "Eine Website aus Kassel, die Ihrem Unternehmen überregional gerecht wird — und regional den Eindruck hinterlässt, den Ihre Arbeit verdient.";
+
+/* ------------------------------------------------------------------
+ * Local-intent FAQ. Five short, citation-ready answers focused on the
+ * questions Kassel-region buyers actually ask before reaching out.
+ * Mirrored to FAQPage JSON-LD; never hidden.
+ * ------------------------------------------------------------------ */
+const FAQ_ITEMS: ReadonlyArray<FaqItem> = [
+  {
+    question: "Macht MAGICKS Webdesign in Kassel auch vor Ort?",
+    answer:
+      "Ja. Das Studio sitzt in Kassel (Schwabstr. 7a, 34125 Kassel). Erstgespräche und Projektworkshops finden auf Wunsch direkt vor Ort statt — in Kassel, Baunatal, Vellmar, Fuldabrück, Lohfelden, Niestetal und Umgebung in der Regel kurzfristig. Ansonsten arbeiten wir bundesweit remote.",
+  },
+  {
+    question: "Was kostet eine professionelle Website in Kassel?",
+    answer:
+      "Der Investitionsrahmen hängt vom Umfang ab — Markenwebsite, Relaunch, Landing Page oder größerer Internetauftritt. Wir nennen einen klaren Festpreis nach einem Erstgespräch, damit du planbar entscheiden kannst. Für laufende Kosten gibt es zusätzlich das Modell Website im Abo.",
+  },
+  {
+    question: "Wie lange dauert eine Website in Kassel von der Idee bis zum Launch?",
+    answer:
+      "Eine fokussierte Markenwebsite oder Landing Page geht häufig in 4 bis 8 Wochen live, größere Auftritte mit mehreren Templates und Integrationen entsprechend länger. KI-gestützte Entwicklung verkürzt die Time-to-Launch ohne Qualitätsverlust.",
+  },
+  {
+    question: "Kümmert ihr euch auch um SEO, Hosting und Pflege?",
+    answer:
+      "Ja. Saubere SEO-Grundlagen (Struktur, Performance, strukturierte Daten, lokale Sichtbarkeit) sind Teil jedes Projekts. Hosting läuft auf Hostinger in Deutschland; auf Wunsch übernehmen wir laufende Pflege, Updates und redaktionelle Erweiterungen.",
+  },
+  {
+    question: "Arbeitet ihr nur in Kassel oder auch bundesweit?",
+    answer:
+      "Beides. Sitz ist Kassel, Schwerpunkt ist Nordhessen — direkt erreichbar in unter 30 Minuten Fahrzeit für die meisten Unternehmen der Region. Mandate aus dem gesamten DACH-Raum laufen remote, mit denselben Tools, demselben Team und denselben kurzen Wegen.",
+  },
+];
 
 const RELATED: {
   to: string;
@@ -1332,6 +1366,123 @@ export default function WebdesignKasselPage() {
             </div>
           </div>
         </section>
+
+        {/* =========================================================
+           § 07 — BUREAU · HÄUFIGE FRAGEN
+           Five citation-ready answers for buyers in Kassel and
+           Nordhessen. Visible on the page AND mirrored to FAQPage
+           JSON-LD via <FaqJsonLd /> below — both signals, never
+           hidden. Built in the page's bureau register so it reads
+           as a chapter beat, not a footer accordion.
+        ========================================================= */}
+        <section className="relative px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+          <div className="layout-max">
+            <div
+              data-wk-reveal
+              className="mb-12 flex items-center gap-5 sm:mb-16"
+            >
+              <span aria-hidden className="h-px w-14 bg-white/24 sm:w-20" />
+              <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/48 sm:text-[10.5px]">
+                § 07 — Bureau · Häufige Fragen
+              </span>
+              <span aria-hidden className="h-px flex-1 bg-white/12" />
+              <span className="font-mono hidden whitespace-nowrap text-[9.5px] font-medium uppercase leading-none tracking-[0.38em] text-white/36 sm:inline-block sm:text-[10px]">
+                05 Antworten · Kassel
+              </span>
+            </div>
+
+            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
+              <div data-wk-reveal className="md:pt-2">
+                <div className="flex flex-col gap-4">
+                  <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
+                    Dispatch · Antworten
+                  </p>
+                  <ChapterMarker num="07" label="Antworten" />
+                  <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/34 sm:text-[10.5px]">
+                    Studio · Kassel · MMXXVI
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <h2
+                  data-wk-reveal
+                  className="font-instrument max-w-[48rem] text-[2rem] leading-[1.05] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
+                >
+                  Was Unternehmen aus Kassel{" "}
+                  <em className="italic text-white/60">vor einer Anfrage fragen</em>.
+                </h2>
+
+                <p
+                  data-wk-reveal
+                  className="font-ui mt-7 max-w-[42rem] text-[15px] leading-[1.7] text-white/58 md:mt-9 md:text-[15.5px]"
+                >
+                  Kurze, direkte Antworten auf das, was wir am häufigsten in
+                  Erstgesprächen aus der Region hören. Wenn Ihre Frage hier nicht
+                  steht, schreiben Sie uns an{" "}
+                  <a
+                    href="mailto:hello@magicks.de"
+                    className="text-white/92 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color,color] hover:text-white hover:underline hover:decoration-white/60"
+                  >
+                    hello@magicks.de
+                  </a>
+                  .
+                </p>
+
+                <ol className="mt-12 border-t border-white/[0.08] md:mt-16">
+                  {FAQ_ITEMS.map((item, i) => (
+                    <li
+                      key={item.question}
+                      data-wk-reveal
+                      className="border-b border-white/[0.08]"
+                    >
+                      <details className="group/wkfaq">
+                        <summary className="grid cursor-pointer list-none grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-6 py-7 outline-none [&::-webkit-details-marker]:hidden md:gap-x-9 md:py-8">
+                          <span className="font-mono pt-[0.32rem] text-[10.5px] font-medium leading-none tracking-[0.28em] text-white/48 md:text-[11.5px]">
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          <h3 className="font-instrument text-[1.18rem] leading-[1.22] tracking-[-0.014em] text-white md:text-[1.4rem] lg:text-[1.5rem]">
+                            {item.question}
+                          </h3>
+                          <span
+                            aria-hidden
+                            className="font-instrument self-center text-[1.4rem] italic leading-none text-white/56 magicks-duration-hover magicks-ease-out transition-transform group-open/wkfaq:rotate-45 md:text-[1.55rem]"
+                          >
+                            +
+                          </span>
+                        </summary>
+                        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-6 pb-8 md:gap-x-9 md:pb-9">
+                          <span aria-hidden className="block" />
+                          <p className="font-ui max-w-[42rem] text-[14.5px] leading-[1.7] text-white/64 md:text-[15px] md:leading-[1.74]">
+                            {item.answer}
+                          </p>
+                          <span aria-hidden className="block" />
+                        </div>
+                      </details>
+                    </li>
+                  ))}
+                </ol>
+
+                <div
+                  data-wk-reveal
+                  className="font-mono mt-6 flex items-center justify-between gap-4 text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/32 md:mt-8"
+                >
+                  <span>Register · Antworten</span>
+                  <span aria-hidden className="h-px flex-1 bg-white/[0.07]" />
+                  <span className="tabular-nums">05 · Kassel · MMXXVI</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <FaqJsonLd id="webdesign-kassel" items={FAQ_ITEMS} />
+        </section>
+
+        <SectionTransition
+          from="§ 07  Antworten"
+          to="§ END  Projekt"
+          tone="darker"
+        />
 
         {/* =========================================================
            § END — FINAL CTA (bureau cartouche)

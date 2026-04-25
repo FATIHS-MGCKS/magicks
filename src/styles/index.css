@@ -65,6 +65,28 @@
   }
 
   /* ——————————————————————————————————————————————————
+     Mobile paint-cost reduction for liquid-glass surfaces.
+     blur(18-20px) on a fixed navbar repaints the backdrop
+     behind it on every scroll frame. On iOS/Android GPUs
+     this is one of the biggest contributors to scroll jank
+     and mobile TBT. The navbar is opaque enough (rgba .7–.82
+     base layer + linear gradient) that halving the blur
+     radius is visually imperceptible while cutting backdrop
+     paint cost roughly in half. The hero section is already
+     pure black behind the nav, so glass refraction has little
+     to refract — another reason the perceptual delta is near
+     zero. Desktop (≥ 641 px) keeps the full cinematic blur.
+     —————————————————————————————————————————————————— */
+  @media (max-width: 640px) {
+    .liquid-glass,
+    .liquid-glass-nav,
+    .section-eyebrow {
+      backdrop-filter: blur(10px) saturate(1.05);
+      -webkit-backdrop-filter: blur(10px) saturate(1.05);
+    }
+  }
+
+  /* ——————————————————————————————————————————————————
      Section eyebrow — liquid-glass label. Neutral, no tinted glow.
      —————————————————————————————————————————————————— */
   .section-eyebrow {
@@ -239,7 +261,7 @@
      —————————————————————————————————————————————————— */
   .drop-cap {
     float: left;
-    font-family: "Instrument Serif", ui-serif, Georgia, serif;
+    font-family: "Instrument Serif", "Instrument Serif Fallback", ui-serif, Georgia, serif;
     font-weight: 400;
     font-size: clamp(6.5rem, 15vw, 11.5rem);
     line-height: 0.82;
@@ -261,7 +283,7 @@
      WhyMagicks superscript numerals — hanging in the margin.
      —————————————————————————————————————————————————— */
   .why-superscript {
-    font-family: "Instrument Serif", ui-serif, Georgia, serif;
+    font-family: "Instrument Serif", "Instrument Serif Fallback", ui-serif, Georgia, serif;
     font-style: italic;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.78);

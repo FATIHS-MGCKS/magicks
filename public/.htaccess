@@ -1,0 +1,109 @@
+# ------------------------------------------------------------------
+# MAGICKS Studio — Hostinger / Apache directives.
+#
+# Three responsibilities:
+#   1) Permanent (301) redirects for legacy slugs so search engines
+#      consolidate history on the canonical URL.
+#   2) SPA fallback — every unknown path that does not resolve to a
+#      real file is served the built index.html so React Router can
+#      render the right route (including /404).
+#   3) Cache + security headers for static assets and HTML.
+#
+# Evaluated top-to-bottom; specific rules first, SPA catch-all last.
+# Hostinger Business / Premium and most cPanel hosts run mod_rewrite,
+# mod_headers and mod_expires — all directives below degrade gracefully
+# if a module is missing.
+# ------------------------------------------------------------------
+
+Options -MultiViews
+RewriteEngine On
+
+# ------------------------------------------------------------------
+# 1) Force HTTPS (Hostinger issues a free TLS cert per domain).
+# ------------------------------------------------------------------
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# ------------------------------------------------------------------
+# 2) Force apex/canonical host.
+#    Uncomment + adjust once a non-www vs. www decision is locked in.
+# ------------------------------------------------------------------
+# RewriteCond %{HTTP_HOST} ^www\.magicks\.studio$ [NC]
+# RewriteRule ^(.*)$ https://magicks.studio/$1 [L,R=301]
+
+# ------------------------------------------------------------------
+# 3) Legacy slug redirects — permanent (301).
+# ------------------------------------------------------------------
+RewriteRule ^ueber-magicks/?$ /ueber-uns [R=301,L]
+
+# ------------------------------------------------------------------
+# 4) SPA fallback.
+#    If the request is not a real file or directory, hand it to
+#    /index.html so React Router can resolve the route. Without this
+#    rule, refreshing /webdesign-kassel returns Apache's stock 404.
+# ------------------------------------------------------------------
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteRule ^ /index.html [L]
+
+# ------------------------------------------------------------------
+# 5) Caching headers.
+#    Long-cache fingerprinted assets (Vite emits hashed filenames
+#    under /assets/) and short-cache HTML so deploys propagate fast.
+# ------------------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 hour"
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType application/json "access plus 1 hour"
+  ExpiresByType application/xml "access plus 1 hour"
+</IfModule>
+
+<IfModule mod_headers.c>
+  # Long-cache fingerprinted assets.
+  <FilesMatch "\.(js|css|woff2|webp|png|jpg|jpeg|svg)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Never cache HTML — deploys must propagate immediately.
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+
+  # Short-cache the sitemap and robots so corrections propagate.
+  <FilesMatch "(robots\.txt|sitemap\.xml)$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+
+  # Security headers — minimal and conservative.
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set Permissions-Policy "interest-cohort=()"
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# ------------------------------------------------------------------
+# 6) Compression — Hostinger usually enables this globally, but the
+#    fallback declaration here costs nothing and helps if it isn't on.
+# ------------------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE application/xml application/rss+xml
+  AddOutputFilterByType DEFLATE image/svg+xml font/ttf font/otf
+</IfModule>
+
+# ------------------------------------------------------------------
+# 7) MIME hints (Hostinger auto-detects these, but be explicit).
+# ------------------------------------------------------------------
+AddType image/webp .webp
+AddType application/manifest+json .webmanifest
+AddType image/svg+xml .svg

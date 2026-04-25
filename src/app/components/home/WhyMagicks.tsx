@@ -50,7 +50,7 @@ const PRINCIPLES: {
     line2: "Verantwortung.",
     tone: "strong",
     note:
-      "Wir automatisieren dort, wo die Entlastung nachweisbar ist — mit Regeln, die Ihr Team versteht.",
+      "KI-Workflows und Automation dort, wo die Entlastung nachweisbar ist — mit Regeln, die Ihr Team versteht.",
   },
   {
     sup: "04",
