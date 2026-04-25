@@ -385,7 +385,11 @@ export function Hero() {
             <div data-hero-cta className="mt-14 inline-block sm:mt-16 md:mt-20">
               <Link
                 to="/kontakt"
-                className="group relative inline-flex min-h-11 items-end gap-3 py-1 text-[15px] font-medium tracking-[-0.005em] text-white no-underline sm:text-[16px] md:text-[17px] lg:min-h-0 lg:items-baseline lg:py-0"
+                // Baseline-aligned at every viewport: the arrow's text
+                // baseline locks onto the label's baseline so it never
+                // drifts low on mobile. min-h-11 + py-1 keep the touch
+                // target ≥ 44 px below lg without affecting alignment.
+                className="group relative inline-flex min-h-11 items-baseline gap-3 py-1 text-[15px] font-medium tracking-[-0.005em] text-white no-underline sm:text-[16px] md:text-[17px] lg:min-h-0 lg:py-0"
                 aria-label="Projekt besprechen"
               >
                 <span className="relative pb-3">
