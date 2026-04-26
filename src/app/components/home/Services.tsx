@@ -160,7 +160,7 @@ function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; classN
                   className="absolute origin-top-left"
                   style={{
                     // Hand-calibrated to match the provided laptop image perspective
-                    transform: "translate3d(16.5%, 19.5%, 0) rotateX(10deg) rotateY(-7.5deg) rotateZ(-1.5deg) scale(0.385)",
+                    transform: "translate3d(5.2%, 19.3%, 0) rotateX(8.5deg) rotateY(-1.0deg) rotateZ(-0.8deg) scale(0.505)",
                     width: "1440px",
                     height: "900px",
                     // Fix clipping/rendering issues on Safari
