@@ -10,7 +10,6 @@ import {
   sectionFarewell,
 } from "../../lib/scrollMotion";
 import { quadToQuadMatrix3d, type V2 } from "../../lib/perspective";
-import { HERO_VIDEO_SRC } from "../../heroMedia";
 import { ChapterMarker } from "./ChapterMarker";
 
 type Service = {
@@ -268,50 +267,40 @@ function LaptopScreenIframe() {
   }, [ready]);
 
   // Mount gating:
-  //  · Only mount on lg+ viewports (the desktop aside is `lg:block`).
-  //  · Only mount when the laptop preview is approaching the viewport
-  //    (IntersectionObserver with 600 px rootMargin). This stops the
+  //  · Mounts on every viewport — the live hero (eyebrow, headline,
+  //    CTA, video) is the whole point on mobile too.
+  //  · Only when the laptop preview is approaching the viewport
+  //    (IntersectionObserver with 500 px rootMargin). This stops the
   //    iframe from booting a full second React app + GSAP + the hero
   //    video while the user is still at the top of the page —
-  //    primary cause of the perceived performance dip.
+  //    the primary cause of the perceived performance dip.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
-    const mq = window.matchMedia("(min-width: 1024px)");
-    let near = false;
     let timer: ReturnType<typeof setTimeout> | null = null;
-
-    const evaluate = () => {
-      if (!mq.matches || !near) {
-        setReady(false);
-        if (timer) {
-          clearTimeout(timer);
-          timer = null;
-        }
-        return;
-      }
-      // Tiny defer so the in-page paint isn't competing with the
-      // iframe's hero boot.
-      if (!timer) timer = setTimeout(() => setReady(true), 250);
-    };
 
     const io = new IntersectionObserver(
       ([entry]) => {
-        near = entry.isIntersecting;
-        evaluate();
+        if (entry.isIntersecting) {
+          // Tiny defer so the in-page paint isn't competing with the
+          // iframe's hero boot.
+          if (!timer) timer = setTimeout(() => setReady(true), 200);
+        } else {
+          setReady(false);
+          if (timer) {
+            clearTimeout(timer);
+            timer = null;
+          }
+        }
       },
-      { rootMargin: "600px 0px", threshold: 0 },
+      { rootMargin: "500px 0px", threshold: 0 },
     );
     io.observe(wrapper);
 
-    const onMq = () => evaluate();
-    mq.addEventListener("change", onMq);
-
     return () => {
       io.disconnect();
-      mq.removeEventListener("change", onMq);
       if (timer) clearTimeout(timer);
     };
   }, []);
@@ -347,145 +336,6 @@ function LaptopScreenIframe() {
           // video stays on its first frame and the section reads as a
           // static screenshot instead of the live animated hero.
           allow="autoplay; encrypted-media; fullscreen"
-        />
-      )}
-    </div>
-  );
-}
-
-/**
- * Pre-computed `clip-path: polygon(...)` string for the laptop screen.
- * Each point is a percentage relative to the wrapper, derived from the
- * native alpha-channel corners over the native image size. Since the
- * mobile container's aspect ratio matches the native image (16:10),
- * the percentages remain accurate regardless of the actual rendered
- * size — no JS measurement needed.
- */
-const LAPTOP_SCREEN_CLIP_PATH = (() => {
-  const pts = SCREEN_CORNERS_NATIVE.map(
-    ([nx, ny]) =>
-      `${((nx / LAPTOP_PNG_W) * 100).toFixed(3)}% ${((ny / LAPTOP_PNG_H) * 100).toFixed(3)}%`,
-  );
-  return `polygon(${pts.join(", ")})`;
-})();
-
-/**
- * Axis-aligned bounding box of the screen polygon, in % of the wrapper.
- * The video element is sized to this bbox and positioned at its top-
- * left so `object-fit: cover` zooms into the source's visually
- * meaningful centre — without this, a full-wrapper video would only
- * show the dark upper-half of the hero through the polygon mask.
- */
-const LAPTOP_SCREEN_BBOX = (() => {
-  const xs = SCREEN_CORNERS_NATIVE.map(([x]) => x);
-  const ys = SCREEN_CORNERS_NATIVE.map(([, y]) => y);
-  const minX = Math.min(...xs);
-  const maxX = Math.max(...xs);
-  const minY = Math.min(...ys);
-  const maxY = Math.max(...ys);
-  return {
-    left: (minX / LAPTOP_PNG_W) * 100,
-    top: (minY / LAPTOP_PNG_H) * 100,
-    width: ((maxX - minX) / LAPTOP_PNG_W) * 100,
-    height: ((maxY - minY) / LAPTOP_PNG_H) * 100,
-  };
-})();
-
-/**
- * Mobile counterpart to `LaptopScreenIframe`. Instead of perspective-
- * warping the video with `matrix3d` (which Chrome composites strangely
- * for `<video>` elements — the iframe equivalent renders correctly,
- * but a `<video>` with the same matrix only paints a thin sliver),
- * we use a `clip-path: polygon(...)` matching the screen shape and let
- * the video play behind that mask via `object-cover`. The polygon
- * boundary preserves the laptop's perspective; only the *content*
- * inside the polygon is non-warped — visually indistinguishable on a
- * small mobile screen.
- *
- * No second React app, no GSAP boot, no iframe — just one cheap
- * `<video>` element with `object-cover`.
- */
-function LaptopScreenVideo() {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [ready, setReady] = useState(false);
-
-  // Force the muted attribute pre-paint (React only sets the property
-  // post-mount, but Chrome's autoplay heuristic reads the *attribute*).
-  // Then kick playback — the IntersectionObserver gate above guarantees
-  // the wrapper is in the viewport, so user activation usually carries.
-  useLayoutEffect(() => {
-    if (!ready) return;
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = true;
-    v.setAttribute("muted", "");
-    const p = v.play();
-    if (p && typeof p.then === "function") p.catch(() => {});
-  }, [ready]);
-
-  // Lazy-mount when the card approaches the viewport. Tighter
-  // rootMargin than the iframe (300 px vs. 600 px) because a `<video>`
-  // is far cheaper to spin up — we can afford to defer harder.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
-
-    let timer: ReturnType<typeof setTimeout> | null = null;
-
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          if (!timer) timer = setTimeout(() => setReady(true), 120);
-        } else {
-          setReady(false);
-          if (timer) {
-            clearTimeout(timer);
-            timer = null;
-          }
-        }
-      },
-      { rootMargin: "300px 0px", threshold: 0 },
-    );
-    io.observe(wrapper);
-
-    return () => {
-      io.disconnect();
-      if (timer) clearTimeout(timer);
-    };
-  }, []);
-
-  return (
-    <div
-      ref={wrapperRef}
-      aria-hidden
-      className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#0A0A0B]"
-      style={{ clipPath: LAPTOP_SCREEN_CLIP_PATH, WebkitClipPath: LAPTOP_SCREEN_CLIP_PATH }}
-    >
-      {ready && (
-        <video
-          ref={videoRef}
-          src={HERO_VIDEO_SRC}
-          className="absolute"
-          style={{
-            // Sized to the screen-polygon bbox so `object-cover` zooms
-            // into the source's hero composition rather than showing
-            // mostly dark sky. The clip-path on the wrapper still
-            // shapes the visible region to the parallelogram screen.
-            left: `${LAPTOP_SCREEN_BBOX.left.toFixed(3)}%`,
-            top: `${LAPTOP_SCREEN_BBOX.top.toFixed(3)}%`,
-            width: `${LAPTOP_SCREEN_BBOX.width.toFixed(3)}%`,
-            height: `${LAPTOP_SCREEN_BBOX.height.toFixed(3)}%`,
-            objectFit: "cover",
-            objectPosition: "center 70%",
-          }}
-          muted
-          loop
-          playsInline
-          autoPlay
-          preload="metadata"
-          tabIndex={-1}
         />
       )}
     </div>
@@ -939,12 +789,14 @@ export function Services() {
                         </p>
 
                         {/* Inline media — mobile/tablet only. The
-                            websites slide gets a live <video> behind the
-                            laptop's alpha hole (no iframe, just a raw
-                            video element — far cheaper on mobile).
-                            Other slides stay as plain images. */}
+                            websites slide gets the live hero (eyebrow,
+                            title, CTA, video) inside the laptop screen,
+                            same as desktop — perspective-mapped via
+                            `matrix3d`. Lazy-mounted by IntersectionObserver
+                            so it costs nothing until the card approaches
+                            the viewport. Other slides stay as plain images. */}
                         <div className="relative mt-6 aspect-[16/10] w-full overflow-hidden rounded-[0.85rem] border border-white/[0.08] lg:hidden">
-                          {s.slug === "websites" && <LaptopScreenVideo />}
+                          {s.slug === "websites" && <LaptopScreenIframe />}
                           <img
                             src={s.image}
                             alt={s.imageAlt}

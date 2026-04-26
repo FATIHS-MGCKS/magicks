@@ -1,0 +1,18 @@
+Run live animated hero in laptop screen on mobile and tablet
+
+The mobile/tablet path previously used a clip-path masked video so the
+hero video played but the eyebrow, headline and CTA were missing — only
+desktop got the full live hero. This collapses both paths onto a single
+iframe-based component:
+
+- LaptopScreenIframe now mounts on every viewport (the lg+ matchMedia
+  gate is gone). It is still IntersectionObserver-gated so the second
+  React app + GSAP boot only happens once the card approaches the
+  viewport.
+- LaptopScreenVideo and its clip-path bbox helpers are removed.
+- The mobile inline media block uses LaptopScreenIframe for the
+  websites slide, behind the laptop's alpha hole with the same matrix3d
+  perspective mapping as desktop.
+
+Verified on 390 / 768 / 1440 px: video plays, eyebrow + headline + CTA
+animate in and settle, no extra iframe mounts on desktop.
