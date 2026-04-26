@@ -9,6 +9,7 @@ import {
   presenceEnvelope,
   sectionFarewell,
 } from "../../lib/scrollMotion";
+import { quadToQuadMatrix3d, type V2 } from "../../lib/perspective";
 import { ChapterMarker } from "./ChapterMarker";
 
 type Service = {
@@ -36,7 +37,7 @@ const SERVICES: Service[] = [
       "Markenwebsites, Landing Pages und Relaunches als zusammenhängendes System — geführt, schnell, conversion-orientiert.",
     metric: "Von Auftritt bis Conversion",
     href: "/websites-landingpages",
-    image: "/media/home/service-websites-alpha.png", // <== Correctly using the newly prepared alpha image
+    image: "/media/home/service-websites-alpha-hires.webp",
     imageAlt:
       "Editorial-Website auf einem Laptop, daneben ein Messinglineal und ein gefalteter Print-Proof auf dunklem Walnut-Desk.",
   },
@@ -84,6 +85,261 @@ const SERVICES: Service[] = [
   },
 ];
 
+// ─── Laptop-screen perspective ───────────────────────────────────────────
+//
+// The laptop photo (2400 × 1500 px WebP, alpha preserved) has a TRUE
+// alpha hole in the shape of the screen. The four corners of that hole
+// — measured directly from the alpha channel — are the source of truth
+// for projecting the iframe onto the screen with correct perspective.
+//
+// We render the iframe *behind* the photo at a fixed desktop resolution
+// (1440 × 900) and apply a `matrix3d()` 4-point homography that maps the
+// iframe's rectangle onto the screen quadrilateral. The alpha hole acts
+// as the natural mask — no clip-path needed.
+//
+// The corners below were detected via the alpha channel and then
+// expanded outward by 1 % L, 1 % top, 3 % R, 1 % bottom (relative to
+// the screen-quad bbox) so the iframe edges sit a hair past the alpha
+// edge — eliminates the hairline white sliver that would otherwise
+// appear at the screen's right and top edges.
+
+/** Screen-corner positions in the native 2400×1500 WebP, clockwise from TL. */
+const SCREEN_CORNERS_NATIVE: readonly [V2, V2, V2, V2] = [
+  [538, 290],
+  [1390, 217],
+  [1502, 862],
+  [662, 1047],
+];
+
+const LAPTOP_PNG_W = 2400;
+const LAPTOP_PNG_H = 1500;
+
+/**
+ * Horizontal `object-position` percentage on the laptop image. The
+ * native image is 16:10 inside a 4:5 (taller) container — so half of
+ * the width is cropped off at default `object-position: center`. We
+ * shift slightly left of center so the screen's left edge isn't lost.
+ */
+const LAPTOP_OBJECT_POSITION_X = 35; // %
+
+/** Native iframe resolution that gets perspective-mapped onto the screen. */
+const HERO_IFRAME_W = 1440;
+const HERO_IFRAME_H = 900;
+
+/**
+ * Computes the 4 screen-corner positions in CONTAINER pixel coordinates
+ * for the given container size, accounting for `object-cover` cropping
+ * and the configured `object-position`.
+ */
+function projectCornersToContainer(
+  containerW: number,
+  containerH: number,
+): [V2, V2, V2, V2] {
+  // object-cover scales the image so it covers the container, keeping
+  // aspect ratio. The image is wider than the container (16:10 in 4:5),
+  // so its HEIGHT is the limiting axis: image scales by H_c / png_h.
+  const scale = containerH / LAPTOP_PNG_H;
+  const scaledImageW = LAPTOP_PNG_W * scale;
+
+  // How far the scaled image overflows horizontally — split by
+  // object-position. For object-position: X% center, X% of the
+  // overflow ends up on the left side (cropped).
+  const overflow = scaledImageW - containerW;
+  const cropLeft = (LAPTOP_OBJECT_POSITION_X / 100) * overflow;
+
+  // Native (nx, ny) → container px:
+  //   container_x = nx * scale - cropLeft
+  //   container_y = ny * scale
+  const map = ([nx, ny]: V2): V2 => [nx * scale - cropLeft, ny * scale];
+
+  return [
+    map(SCREEN_CORNERS_NATIVE[0]),
+    map(SCREEN_CORNERS_NATIVE[1]),
+    map(SCREEN_CORNERS_NATIVE[2]),
+    map(SCREEN_CORNERS_NATIVE[3]),
+  ];
+}
+
+/**
+ * Renders the live hero inside the laptop screen with correct
+ * perspective. The wrapper observes its own size and recomputes the
+ * `matrix3d` transform whenever the container resizes.
+ */
+function LaptopScreenIframe() {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [ready, setReady] = useState(false);
+
+  // (Re)apply the perspective matrix whenever the wrapper resizes OR
+  // the iframe gets mounted (gated behind `ready`).
+  useLayoutEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    const apply = () => {
+      const iframe = iframeRef.current;
+      if (!iframe) return;
+      const rect = wrapper.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+
+      const corners = projectCornersToContainer(rect.width, rect.height);
+      const matrix = quadToQuadMatrix3d(
+        HERO_IFRAME_W,
+        HERO_IFRAME_H,
+        corners,
+      );
+      iframe.style.transform = matrix;
+      iframe.style.transformOrigin = "0 0";
+      // Reveal once the matrix has landed so the user never sees the
+      // pre-transform 1440×900 rectangle in the wrong spot.
+      iframe.style.opacity = "1";
+    };
+
+    apply();
+
+    const ro = new ResizeObserver(apply);
+    ro.observe(wrapper);
+
+    // Same-origin iframe: drive autoplay from the parent, which retains
+    // the user-activation transferred during navigation. Calls from
+    // inside the iframe's own scripts (the hero's useEffect) are
+    // silently rejected by Chrome's autoplay heuristic when there is
+    // no explicit user gesture in the iframe document, even though the
+    // iframe element has `allow="autoplay"`. Driving from the parent
+    // — which DOES have activation — works reliably.
+    const iframeEl = iframeRef.current;
+    let retryTimer: ReturnType<typeof setInterval> | null = null;
+    const tryPlay = () => {
+      const doc = iframeEl?.contentDocument;
+      const video = doc?.querySelector("video");
+      if (!video) return false;
+      video.muted = true;
+      video.setAttribute("muted", "");
+      const p = video.play();
+      if (p && typeof p.then === "function") {
+        p.then(() => {
+          if (retryTimer) {
+            clearInterval(retryTimer);
+            retryTimer = null;
+          }
+          if (iframeEl) iframeEl.dataset.heroPlaying = "true";
+        }).catch(() => {});
+      }
+      return !video.paused;
+    };
+
+    if (iframeEl) {
+      iframeEl.addEventListener("load", tryPlay);
+      // Best-effort retry: poll every 250 ms for up to 4 s. Catches
+      // races where the iframe load event fired before the listener
+      // attached, and gives Chrome a chance to grant autoplay once
+      // the iframe gets composited.
+      tryPlay();
+      let elapsed = 0;
+      retryTimer = setInterval(() => {
+        elapsed += 250;
+        if (tryPlay() || elapsed >= 4000) {
+          if (retryTimer) {
+            clearInterval(retryTimer);
+            retryTimer = null;
+          }
+        }
+      }, 250);
+    }
+
+    return () => {
+      ro.disconnect();
+      iframeEl?.removeEventListener("load", tryPlay);
+      if (retryTimer) clearInterval(retryTimer);
+    };
+  }, [ready]);
+
+  // Mount gating:
+  //  · Only mount on lg+ viewports (the desktop aside is `lg:block`).
+  //  · Only mount when the laptop preview is approaching the viewport
+  //    (IntersectionObserver with 600 px rootMargin). This stops the
+  //    iframe from booting a full second React app + GSAP + the hero
+  //    video while the user is still at the top of the page —
+  //    primary cause of the perceived performance dip.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    const mq = window.matchMedia("(min-width: 1024px)");
+    let near = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const evaluate = () => {
+      if (!mq.matches || !near) {
+        setReady(false);
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        return;
+      }
+      // Tiny defer so the in-page paint isn't competing with the
+      // iframe's hero boot.
+      if (!timer) timer = setTimeout(() => setReady(true), 250);
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        near = entry.isIntersecting;
+        evaluate();
+      },
+      { rootMargin: "600px 0px", threshold: 0 },
+    );
+    io.observe(wrapper);
+
+    const onMq = () => evaluate();
+    mq.addEventListener("change", onMq);
+
+    return () => {
+      io.disconnect();
+      mq.removeEventListener("change", onMq);
+      if (timer) clearTimeout(timer);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={wrapperRef}
+      aria-hidden
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#0A0A0B]"
+    >
+      {ready && (
+        <iframe
+          ref={iframeRef}
+          src="/?hero-only=true"
+          title="Magicks Hero Preview"
+          className="absolute left-0 top-0 border-0 bg-[#0a0a0a]"
+          style={{
+            width: `${HERO_IFRAME_W}px`,
+            height: `${HERO_IFRAME_H}px`,
+            // Initial opacity hides the iframe before matrix3d lands —
+            // we don't translate it off-screen because Chrome's
+            // autoplay heuristic refuses to start the video unless
+            // the iframe is at least conceptually "visible". The
+            // layout effect flips opacity to 1 the moment matrix3d
+            // is applied (single frame).
+            opacity: 0,
+            transformOrigin: "0 0",
+          }}
+          loading="lazy"
+          tabIndex={-1}
+          // Same-origin iframe but the browser still requires explicit
+          // `allow` permissions for autoplay. Without these, the hero
+          // video stays on its first frame and the section reads as a
+          // static screenshot instead of the live animated hero.
+          allow="autoplay; encrypted-media; fullscreen"
+        />
+      )}
+    </div>
+  );
+}
+
 function useCanHover(): boolean {
   const [v, setV] = useState<boolean>(() =>
     typeof window === "undefined"
@@ -107,16 +363,6 @@ function useCanHover(): boolean {
  * pulling attention away from the type on the left column.
  */
 function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; className?: string }) {
-  const [loadIframe, setLoadIframe] = useState(false);
-  
-  // Only load the iframe after mount to avoid initial layout thrash,
-  // and ideally only when the user is somewhat near the services section.
-  useEffect(() => {
-    // A simple timer is usually enough for a fast hero component
-    const timer = setTimeout(() => setLoadIframe(true), 1500);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <div className={`relative overflow-hidden ${className}`.trim()}>
       {SERVICES.map((s, i) => {
@@ -131,7 +377,19 @@ function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; classN
               isActive ? "opacity-100 z-10" : "opacity-0 z-0"
             }`}
           >
-            {/* Laptop photograph — sits as the visual frame. */}
+            {/*
+              For the websites slide we render the live hero BEHIND
+              the laptop photo. The photo has a true alpha hole at the
+              screen, so the iframe naturally appears only inside the
+              screen area — no clip-path needed. The iframe itself is
+              perspective-mapped via matrix3d (see LaptopScreenIframe).
+            */}
+            {isWebsites && <LaptopScreenIframe />}
+
+            {/* Laptop photograph — sits ABOVE the iframe so the alpha
+                hole reveals the hero. object-position is shifted left
+                of center because the screen sits left of the image
+                center; default centering would crop the screen edge. */}
             <img
               src={s.image}
               alt={isActive ? s.imageAlt : ""}
@@ -141,66 +399,15 @@ function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; classN
               decoding="async"
               fetchPriority="low"
               draggable={false}
-              className={`preview-stack__image absolute inset-0 h-full w-full object-cover object-center ${
-                isActive ? "preview-stack__image--active" : ""
-              }`}
+              className={`preview-stack__image absolute inset-0 h-full w-full object-cover ${
+                isWebsites ? "z-10" : ""
+              } ${isActive ? "preview-stack__image--active" : ""}`}
+              style={
+                isWebsites
+                  ? { objectPosition: `${LAPTOP_OBJECT_POSITION_X}% center` }
+                  : undefined
+              }
             />
-
-            {/*
-              Live hero embedded into the laptop screen.
-
-              The laptop photograph has an opaque black screen, so we
-              don't punch a hole into the PNG. Instead the iframe sits
-              ABOVE the photo, is clipped to the visible screen
-              quadrilateral via clip-path: polygon(...), and is rendered
-              at desktop resolution then scaled down so the hero
-              composition reads as a polished desktop layout — not as
-              a cramped mobile fragment.
-
-              All four polygon corners are expressed as percentages of
-              the preview container — they were measured against the
-              actual displayed photo and will track resizes as long as
-              the image keeps using object-cover with object-center.
-            */}
-            {isWebsites && loadIframe && (
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 z-20 overflow-hidden"
-                style={{
-                  // Polygon corners (TL, TR, BR, BL) measured against
-                  // the displayed photo. The screen's right edge tilts
-                  // outward as it descends and the bottom is slightly
-                  // wider than the top — matching the laptop's natural
-                  // perspective tilt in the photograph.
-                  clipPath:
-                    "polygon(17.8% 11.3%, 92.0% 13.0%, 97.7% 56.3%, 13.2% 54.6%)",
-                  WebkitClipPath:
-                    "polygon(17.8% 11.3%, 92.0% 13.0%, 97.7% 56.3%, 13.2% 54.6%)",
-                }}
-              >
-                {/* Iframe is rendered at desktop resolution (1440×900)
-                    and then transform-scaled down so the hero looks
-                    like a real desktop screenshot inside the laptop —
-                    not a cramped mobile rendering. Scale deliberately
-                    overshoots the clip area; clip-path crops the
-                    excess and the perspective tilt is implied. */}
-                <iframe
-                  src="/?hero-only=true"
-                  title="Magicks Hero Preview"
-                  className="absolute border-0 bg-[#0a0a0a]"
-                  style={{
-                    top: "11.3%",
-                    left: "17.8%",
-                    width: "1440px",
-                    height: "900px",
-                    transformOrigin: "top left",
-                    transform: "scale(0.30)",
-                  }}
-                  loading="lazy"
-                  tabIndex={-1}
-                />
-              </div>
-            )}
           </div>
         );
       })}
