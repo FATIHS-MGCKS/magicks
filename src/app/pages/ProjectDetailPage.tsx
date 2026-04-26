@@ -500,6 +500,7 @@ function ProjectDetail({ project }: { project: Project }) {
                   slot={slot}
                   index={i}
                   projectTitle={project.title}
+                  publicUrl={project.publicUrl}
                 />
               ))}
             </div>
@@ -1290,10 +1291,12 @@ function GalleryTile({
   slot,
   index,
   projectTitle,
+  publicUrl,
 }: {
   slot: ProjectImage | null;
   index: number;
   projectTitle: string;
+  publicUrl?: string;
 }) {
   // Cinematic opening sequence for the first 5 slots; repeating 6+6
   // pairs thereafter so extra gallery entries stay editorial.
@@ -1327,27 +1330,68 @@ function GalleryTile({
       ? "Akzent · Fragment"
       : "Ansicht · Paar";
 
+  // Each populated plate is a deep-link into the actual live site
+  // (publicUrl) when one is available — every gallery image is a real
+  // screenshot of that page, so clicking through opens the section
+  // visitors are already looking at. Empty plates stay non-interactive.
+  const linked = Boolean(slot && publicUrl);
+
+  const plate = slot ? (
+    <div
+      className={`relative w-full overflow-hidden border border-white/[0.08] bg-[#08080A] ${aspectClass} ${
+        linked ? "transition-colors duration-[480ms] group-hover/plate:border-white/[0.18]" : ""
+      }`}
+    >
+      <img
+        src={slot.src}
+        alt={slot.alt}
+        className={`h-full w-full object-cover brightness-[0.9] saturate-[0.94] ${
+          linked
+            ? "magicks-duration-media magicks-ease-out transition-[transform,filter] group-hover/plate:scale-[1.012] group-hover/plate:brightness-[0.98]"
+            : ""
+        }`}
+        loading="lazy"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/40 via-transparent to-transparent"
+      />
+      {linked ? (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute right-5 top-5 flex items-center gap-2 opacity-0 transition-opacity duration-[420ms] group-hover/plate:opacity-100 group-focus-visible/plate:opacity-100 md:right-7 md:top-7"
+        >
+          <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/72 md:text-[10px]">
+            Live
+          </span>
+          <span className="font-instrument text-[1rem] italic text-white/82 transition-transform duration-[480ms] group-hover/plate:-translate-y-[2px] group-hover/plate:translate-x-[2px] md:text-[1.05rem]">
+            ↗
+          </span>
+        </span>
+      ) : null}
+      <GalleryTileCaption index={index} label={slot.caption ?? slot.alt} />
+    </div>
+  ) : null;
+
   return (
     <figure
       data-cs-reveal
       className={`relative ${colSpan} col-span-1`}
     >
       {slot ? (
-        <div
-          className={`relative w-full overflow-hidden border border-white/[0.08] bg-[#08080A] ${aspectClass}`}
-        >
-          <img
-            src={slot.src}
-            alt={slot.alt}
-            className="h-full w-full object-cover brightness-[0.9] saturate-[0.94]"
-            loading="lazy"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/40 via-transparent to-transparent"
-          />
-          <GalleryTileCaption index={index} label={slot.caption ?? slot.alt} />
-        </div>
+        linked ? (
+          <a
+            href={publicUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group/plate block no-underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]"
+            aria-label={`${projectTitle} live ansehen — ${slot.caption ?? slot.alt}`}
+          >
+            {plate}
+          </a>
+        ) : (
+          plate
+        )
       ) : (
         <div
           className={`relative w-full overflow-hidden border border-white/[0.08] bg-[#08080A] ${aspectClass}`}

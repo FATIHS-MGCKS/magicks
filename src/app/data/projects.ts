@@ -232,6 +232,13 @@ export const PROJECTS: Project[] = [
         aspect: "4/3",
         span: 6,
       },
+      {
+        src: "/media/projects/renova-strassensanierung/detail-03.webp",
+        alt: "Renova-Website Sektion „Typische Einsatzbereiche“: Übersichtsraster aus sechs Anwendungs-Karten — Industrieböden, Werkstatt/Produktion, Parkhaus/Parkdeck, Rampen/Verladerampen, Kommunale Betonflächen und Bunkersanierung — jeweils mit Beton-Fotografie und gelb akzentuiertem Label, eingerahmt von der Headline „Typische Einsatzbereiche“ und der Erklärung, dass Epoxidharz-Systeme überall dort zum Einsatz kommen, wo Beton dauerhaft repariert werden muss.",
+        caption: "Einsatzbereiche · Sechs Anwendungsfelder",
+        aspect: "4/3",
+        span: 6,
+      },
     ],
 
     case: [
