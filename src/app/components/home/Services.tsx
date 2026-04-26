@@ -10,6 +10,7 @@ import {
   sectionFarewell,
 } from "../../lib/scrollMotion";
 import { quadToQuadMatrix3d, type V2 } from "../../lib/perspective";
+import { HERO_VIDEO_SRC } from "../../heroMedia";
 import { ChapterMarker } from "./ChapterMarker";
 
 type Service = {
@@ -127,30 +128,51 @@ const HERO_IFRAME_W = 1440;
 const HERO_IFRAME_H = 900;
 
 /**
+ * Native size of the standalone `<video>` element used on mobile (no
+ * iframe). 16:10 to roughly match the screen quad — content inside is
+ * `object-cover` so absolute dimensions don't matter for fidelity, only
+ * that they're picked up by `quadToQuadMatrix3d` as the source rect.
+ */
+const HERO_VIDEO_W = 1280;
+const HERO_VIDEO_H = 800;
+
+/**
  * Computes the 4 screen-corner positions in CONTAINER pixel coordinates
  * for the given container size, accounting for `object-cover` cropping
- * and the configured `object-position`.
+ * and the configured `object-position`. Handles both axes — the desktop
+ * 4:5 container crops horizontally (height-limited), the mobile 16:10
+ * container matches the image ratio exactly (no crop). A future taller
+ * container would crop vertically (width-limited).
  */
 function projectCornersToContainer(
   containerW: number,
   containerH: number,
+  objectPositionX: number = LAPTOP_OBJECT_POSITION_X,
+  objectPositionY: number = 50,
 ): [V2, V2, V2, V2] {
-  // object-cover scales the image so it covers the container, keeping
-  // aspect ratio. The image is wider than the container (16:10 in 4:5),
-  // so its HEIGHT is the limiting axis: image scales by H_c / png_h.
-  const scale = containerH / LAPTOP_PNG_H;
-  const scaledImageW = LAPTOP_PNG_W * scale;
+  const containerRatio = containerW / containerH;
+  const imageRatio = LAPTOP_PNG_W / LAPTOP_PNG_H;
 
-  // How far the scaled image overflows horizontally — split by
-  // object-position. For object-position: X% center, X% of the
-  // overflow ends up on the left side (cropped).
-  const overflow = scaledImageW - containerW;
-  const cropLeft = (LAPTOP_OBJECT_POSITION_X / 100) * overflow;
+  let scale: number;
+  let cropLeft: number;
+  let cropTop: number;
 
-  // Native (nx, ny) → container px:
-  //   container_x = nx * scale - cropLeft
-  //   container_y = ny * scale
-  const map = ([nx, ny]: V2): V2 => [nx * scale - cropLeft, ny * scale];
+  if (imageRatio >= containerRatio) {
+    // Image is at least as wide as the container — height fills, width
+    // overflows (or matches exactly when ratios are equal).
+    scale = containerH / LAPTOP_PNG_H;
+    const overflow = LAPTOP_PNG_W * scale - containerW;
+    cropLeft = (objectPositionX / 100) * overflow;
+    cropTop = 0;
+  } else {
+    // Container is wider than the image — width fills, height overflows.
+    scale = containerW / LAPTOP_PNG_W;
+    cropLeft = 0;
+    const overflow = LAPTOP_PNG_H * scale - containerH;
+    cropTop = (objectPositionY / 100) * overflow;
+  }
+
+  const map = ([nx, ny]: V2): V2 => [nx * scale - cropLeft, ny * scale - cropTop];
 
   return [
     map(SCREEN_CORNERS_NATIVE[0]),
@@ -334,6 +356,123 @@ function LaptopScreenIframe() {
           // video stays on its first frame and the section reads as a
           // static screenshot instead of the live animated hero.
           allow="autoplay; encrypted-media; fullscreen"
+        />
+      )}
+    </div>
+  );
+}
+
+/**
+ * Mobile counterpart to `LaptopScreenIframe`. Instead of mounting an
+ * entire second React app inside an iframe, we render a plain `<video>`
+ * element and perspective-map it onto the laptop screen quad. Cuts the
+ * runtime cost dramatically (no second GSAP boot, no second hero
+ * component tree) while still showing live motion through the alpha
+ * hole. Used inside the per-card mobile inline preview.
+ *
+ * The video element is the same source as the homepage hero, so on
+ * cached navigations the file is already in the browser cache.
+ */
+function LaptopScreenVideo() {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [ready, setReady] = useState(false);
+
+  useLayoutEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    const apply = () => {
+      const video = videoRef.current;
+      if (!video) return;
+      const rect = wrapper.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+
+      // Mobile container is `aspect-[16/10]` — same ratio as the image
+      // — and uses default `object-position: center`, so we pass 50%.
+      const corners = projectCornersToContainer(rect.width, rect.height, 50, 50);
+      const matrix = quadToQuadMatrix3d(HERO_VIDEO_W, HERO_VIDEO_H, corners);
+      video.style.transform = matrix;
+      video.style.transformOrigin = "0 0";
+      video.style.opacity = "1";
+    };
+
+    apply();
+
+    const ro = new ResizeObserver(apply);
+    ro.observe(wrapper);
+
+    // Force the muted attribute pre-paint (React only sets the
+    // property), then kick playback. iOS Safari additionally requires
+    // playsInline (set on the JSX) for inline autoplay.
+    const v = videoRef.current;
+    if (v) {
+      v.muted = true;
+      v.setAttribute("muted", "");
+      const p = v.play();
+      if (p && typeof p.then === "function") p.catch(() => {});
+    }
+
+    return () => {
+      ro.disconnect();
+    };
+  }, [ready]);
+
+  // Lazy-mount when the card approaches the viewport. Tighter
+  // rootMargin than the iframe (300 px vs. 600 px) because a `<video>`
+  // is far cheaper to spin up — we can afford to defer harder.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!timer) timer = setTimeout(() => setReady(true), 120);
+        } else {
+          setReady(false);
+          if (timer) {
+            clearTimeout(timer);
+            timer = null;
+          }
+        }
+      },
+      { rootMargin: "300px 0px", threshold: 0 },
+    );
+    io.observe(wrapper);
+
+    return () => {
+      io.disconnect();
+      if (timer) clearTimeout(timer);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={wrapperRef}
+      aria-hidden
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#0A0A0B]"
+    >
+      {ready && (
+        <video
+          ref={videoRef}
+          src={HERO_VIDEO_SRC}
+          className="absolute left-0 top-0 object-cover object-center"
+          style={{
+            width: `${HERO_VIDEO_W}px`,
+            height: `${HERO_VIDEO_H}px`,
+            opacity: 0,
+            transformOrigin: "0 0",
+          }}
+          muted
+          loop
+          playsInline
+          autoPlay
+          preload="metadata"
+          tabIndex={-1}
         />
       )}
     </div>
@@ -786,8 +925,13 @@ export function Services() {
                           {s.teaser}
                         </p>
 
-                        {/* Inline media — mobile/tablet only */}
+                        {/* Inline media — mobile/tablet only. The
+                            websites slide gets a live <video> behind the
+                            laptop's alpha hole (no iframe, just a raw
+                            video element — far cheaper on mobile).
+                            Other slides stay as plain images. */}
                         <div className="relative mt-6 aspect-[16/10] w-full overflow-hidden rounded-[0.85rem] border border-white/[0.08] lg:hidden">
+                          {s.slug === "websites" && <LaptopScreenVideo />}
                           <img
                             src={s.image}
                             alt={s.imageAlt}
@@ -797,11 +941,13 @@ export function Services() {
                             decoding="async"
                             fetchPriority="low"
                             draggable={false}
-                            className="preview-stack__image preview-stack__image--active absolute inset-0 h-full w-full object-cover object-center"
+                            className={`preview-stack__image preview-stack__image--active absolute inset-0 h-full w-full object-cover object-center ${
+                              s.slug === "websites" ? "z-10" : ""
+                            }`}
                           />
                           <div
                             aria-hidden
-                            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0B]/45 via-transparent to-[#0A0A0B]/12"
+                            className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-[#0A0A0B]/45 via-transparent to-[#0A0A0B]/12"
                           />
                         </div>
 
