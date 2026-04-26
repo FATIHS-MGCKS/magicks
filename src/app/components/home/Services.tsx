@@ -131,7 +131,7 @@ function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; classN
               isActive ? "opacity-100 z-10" : "opacity-0 z-0"
             }`}
           >
-            {/* The transparent alpha-laptop image goes ON TOP */}
+            {/* Laptop photograph — sits as the visual frame. */}
             <img
               src={s.image}
               alt={isActive ? s.imageAlt : ""}
@@ -143,39 +143,62 @@ function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; classN
               draggable={false}
               className={`preview-stack__image absolute inset-0 h-full w-full object-cover object-center ${
                 isActive ? "preview-stack__image--active" : ""
-              } ${isWebsites ? "z-20 relative pointer-events-none" : ""}`}
+              }`}
             />
-            
-            {/* For the websites service, render the 3D-transformed iframe BEHIND the laptop image */}
+
+            {/*
+              Live hero embedded into the laptop screen.
+
+              The laptop photograph has an opaque black screen, so we
+              don't punch a hole into the PNG. Instead the iframe sits
+              ABOVE the photo, is clipped to the visible screen
+              quadrilateral via clip-path: polygon(...), and is rendered
+              at desktop resolution then scaled down so the hero
+              composition reads as a polished desktop layout — not as
+              a cramped mobile fragment.
+
+              All four polygon corners are expressed as percentages of
+              the preview container — they were measured against the
+              actual displayed photo and will track resizes as long as
+              the image keeps using object-cover with object-center.
+            */}
             {isWebsites && loadIframe && (
-              <div 
-                className="absolute inset-0 z-0 overflow-hidden pointer-events-none"
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 z-20 overflow-hidden"
                 style={{
-                  // These values will need to be calibrated to exactly match the screen
-                  // hole in your specific service-websites-alpha.png
-                  perspective: "1000px",
+                  // Polygon corners (TL, TR, BR, BL) measured against
+                  // the displayed photo. The screen's right edge tilts
+                  // outward as it descends and the bottom is slightly
+                  // wider than the top — matching the laptop's natural
+                  // perspective tilt in the photograph.
+                  clipPath:
+                    "polygon(17.8% 11.3%, 92.0% 13.0%, 97.7% 56.3%, 13.2% 54.6%)",
+                  WebkitClipPath:
+                    "polygon(17.8% 11.3%, 92.0% 13.0%, 97.7% 56.3%, 13.2% 54.6%)",
                 }}
               >
-                <div
-                  className="absolute origin-top-left"
+                {/* Iframe is rendered at desktop resolution (1440×900)
+                    and then transform-scaled down so the hero looks
+                    like a real desktop screenshot inside the laptop —
+                    not a cramped mobile rendering. Scale deliberately
+                    overshoots the clip area; clip-path crops the
+                    excess and the perspective tilt is implied. */}
+                <iframe
+                  src="/?hero-only=true"
+                  title="Magicks Hero Preview"
+                  className="absolute border-0 bg-[#0a0a0a]"
                   style={{
-                    // Hand-calibrated to match the provided laptop image perspective
-                    transform: "translate3d(5.2%, 19.3%, 0) rotateX(8.5deg) rotateY(-1.0deg) rotateZ(-0.8deg) scale(0.505)",
+                    top: "11.3%",
+                    left: "17.8%",
                     width: "1440px",
                     height: "900px",
-                    // Fix clipping/rendering issues on Safari
-                    transformStyle: "preserve-3d",
-                    backfaceVisibility: "hidden"
+                    transformOrigin: "top left",
+                    transform: "scale(0.30)",
                   }}
-                >
-                  <iframe 
-                    src="/?hero-only=true" 
-                    title="Magicks Hero Preview"
-                    className="w-full h-full border-0 bg-[#0a0a0a]"
-                    loading="lazy"
-                    tabIndex={-1}
-                  />
-                </div>
+                  loading="lazy"
+                  tabIndex={-1}
+                />
               </div>
             )}
           </div>
