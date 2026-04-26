@@ -36,7 +36,7 @@ const SERVICES: Service[] = [
       "Markenwebsites, Landing Pages und Relaunches als zusammenhängendes System — geführt, schnell, conversion-orientiert.",
     metric: "Von Auftritt bis Conversion",
     href: "/websites-landingpages",
-    image: "/media/home/service-websites.png", // <== Prepared PNG with transparent screen
+    image: "/media/home/service-websites-alpha.png", // <== Correctly using the newly prepared alpha image
     imageAlt:
       "Editorial-Website auf einem Laptop, daneben ein Messinglineal und ein gefalteter Print-Proof auf dunklem Walnut-Desk.",
   },
