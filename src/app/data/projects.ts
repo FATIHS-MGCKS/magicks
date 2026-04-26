@@ -200,16 +200,15 @@ export const PROJECTS: Project[] = [
 
     featured: true,
 
-    /* Cover image — not a literal screenshot of the Renova website but
-     * a material-first editorial crop that carries the project's theme
-     * (fresh epoxy resin patch on weathered concrete, raking light, a
-     * precision trowel at the frame edge). It signals the *subject* of
-     * the case study rather than pretending to be a product shot, which
-     * is far more honest until real screenshots are supplied manually. */
+    /* Cover image — actual hero composition of the live Renova site:
+     * a Bauarbeiter in safety gear repairing a concrete deck with a
+     * trowel, framed under the headline "Wenn Beton aufgibt, übernimmt
+     * Epox 130 Pro". The shot makes the project read as a real launch
+     * rather than a stock material plate. */
     cover: {
       src: "/media/projects/renova-strassensanierung/cover.webp",
-      alt: "Frisch aufgetragener Epoxidharz-Reparaturmörtel auf Beton — Makroaufnahme mit schräger Lichtführung und einer Präzisionskelle am rechten Bildrand.",
-      caption: "Material · Epoxidharz-Reparaturmörtel",
+      alt: "Renova-Website Hero: Bauarbeiter mit Helm und Warnkleidung repariert mit einer Spachtel eine Betonfahrbahn auf einer Brücke; Headline „Wenn Beton aufgibt, übernimmt Epox 130 Pro“ links im Bild, primäre und sekundäre CTA darunter.",
+      caption: "Hero · Renova Website",
       aspect: "16/9",
     },
 
