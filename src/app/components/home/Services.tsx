@@ -36,7 +36,7 @@ const SERVICES: Service[] = [
       "Markenwebsites, Landing Pages und Relaunches als zusammenhängendes System — geführt, schnell, conversion-orientiert.",
     metric: "Von Auftritt bis Conversion",
     href: "/websites-landingpages",
-    image: "/media/home/service-websites.webp",
+    image: "/media/home/service-websites.png", // <== Prepared PNG with transparent screen
     imageAlt:
       "Editorial-Website auf einem Laptop, daneben ein Messinglineal und ein gefalteter Print-Proof auf dunklem Walnut-Desk.",
   },
@@ -107,47 +107,99 @@ function useCanHover(): boolean {
  * pulling attention away from the type on the left column.
  */
 function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; className?: string }) {
+  const [loadIframe, setLoadIframe] = useState(false);
+  
+  // Only load the iframe after mount to avoid initial layout thrash,
+  // and ideally only when the user is somewhat near the services section.
+  useEffect(() => {
+    // A simple timer is usually enough for a fast hero component
+    const timer = setTimeout(() => setLoadIframe(true), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className={`relative overflow-hidden ${className}`.trim()}>
       {SERVICES.map((s, i) => {
         const isActive = activeIdx === i;
+        const isWebsites = s.slug === "websites";
+
         return (
-          <img
+          <div
             key={s.slug}
-            src={s.image}
-            alt={isActive ? s.imageAlt : ""}
             aria-hidden={!isActive}
-            width={1440}
-            height={1800}
-            loading="lazy"
-            decoding="async"
-            fetchPriority="low"
-            draggable={false}
-            className={`preview-stack__image absolute inset-0 h-full w-full object-cover object-center ${
-              isActive ? "preview-stack__image--active" : ""
+            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+              isActive ? "opacity-100 z-10" : "opacity-0 z-0"
             }`}
-          />
+          >
+            {/* The transparent alpha-laptop image goes ON TOP */}
+            <img
+              src={s.image}
+              alt={isActive ? s.imageAlt : ""}
+              width={1440}
+              height={1800}
+              loading="lazy"
+              decoding="async"
+              fetchPriority="low"
+              draggable={false}
+              className={`preview-stack__image absolute inset-0 h-full w-full object-cover object-center ${
+                isActive ? "preview-stack__image--active" : ""
+              } ${isWebsites ? "z-20 relative pointer-events-none" : ""}`}
+            />
+            
+            {/* For the websites service, render the 3D-transformed iframe BEHIND the laptop image */}
+            {isWebsites && loadIframe && (
+              <div 
+                className="absolute inset-0 z-0 overflow-hidden pointer-events-none"
+                style={{
+                  // These values will need to be calibrated to exactly match the screen
+                  // hole in your specific service-websites-alpha.png
+                  perspective: "1000px",
+                }}
+              >
+                <div
+                  className="absolute origin-top-left"
+                  style={{
+                    // Hand-calibrated to match the provided laptop image perspective
+                    transform: "translate3d(16.5%, 19.5%, 0) rotateX(10deg) rotateY(-7.5deg) rotateZ(-1.5deg) scale(0.385)",
+                    width: "1440px",
+                    height: "900px",
+                    // Fix clipping/rendering issues on Safari
+                    transformStyle: "preserve-3d",
+                    backfaceVisibility: "hidden"
+                  }}
+                >
+                  <iframe 
+                    src="/?hero-only=true" 
+                    title="Magicks Hero Preview"
+                    className="w-full h-full border-0 bg-[#0a0a0a]"
+                    loading="lazy"
+                    tabIndex={-1}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         );
       })}
 
       {/* Studio-air — a very slow diagonal light pass. Non-looping perception
           (cycle is 34s and travels edge-to-edge only at the midpoint). */}
-      <div aria-hidden className="preview-sweep" />
+      <div aria-hidden className="preview-sweep z-30 relative pointer-events-none" />
 
       {/* Overlays tuned for intentionally dark-composed still images —
           lighter than the original video-era values so the composition
           reads through while the meta-text at top/bottom stays legible. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_120%,rgba(10,10,10,0.45),transparent_62%)]"
+        className="pointer-events-none absolute inset-0 z-30 bg-[radial-gradient(ellipse_120%_80%_at_50%_120%,rgba(10,10,10,0.45),transparent_62%)]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0B]/48 via-transparent to-[#0A0A0B]/14"
+        className="pointer-events-none absolute inset-0 z-30 bg-gradient-to-t from-[#0A0A0B]/48 via-transparent to-[#0A0A0B]/14"
       />
 
       {/* Preview chapter-meta overlay */}
-      <div className="pointer-events-none absolute left-5 top-5 flex items-center gap-3 sm:left-6 sm:top-6">
+      <div className="pointer-events-none absolute left-5 top-5 z-40 flex items-center gap-3 sm:left-6 sm:top-6">
         <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/68 sm:text-[10.5px]">
           §{" "}
           {SERVICES[activeIdx]?.number}
