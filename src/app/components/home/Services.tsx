@@ -128,15 +128,6 @@ const HERO_IFRAME_W = 1440;
 const HERO_IFRAME_H = 900;
 
 /**
- * Native size of the standalone `<video>` element used on mobile (no
- * iframe). 16:10 to roughly match the screen quad — content inside is
- * `object-cover` so absolute dimensions don't matter for fidelity, only
- * that they're picked up by `quadToQuadMatrix3d` as the source rect.
- */
-const HERO_VIDEO_W = 1280;
-const HERO_VIDEO_H = 800;
-
-/**
  * Computes the 4 screen-corner positions in CONTAINER pixel coordinates
  * for the given container size, accounting for `object-cover` cropping
  * and the configured `object-position`. Handles both axes — the desktop
@@ -363,59 +354,74 @@ function LaptopScreenIframe() {
 }
 
 /**
- * Mobile counterpart to `LaptopScreenIframe`. Instead of mounting an
- * entire second React app inside an iframe, we render a plain `<video>`
- * element and perspective-map it onto the laptop screen quad. Cuts the
- * runtime cost dramatically (no second GSAP boot, no second hero
- * component tree) while still showing live motion through the alpha
- * hole. Used inside the per-card mobile inline preview.
+ * Pre-computed `clip-path: polygon(...)` string for the laptop screen.
+ * Each point is a percentage relative to the wrapper, derived from the
+ * native alpha-channel corners over the native image size. Since the
+ * mobile container's aspect ratio matches the native image (16:10),
+ * the percentages remain accurate regardless of the actual rendered
+ * size — no JS measurement needed.
+ */
+const LAPTOP_SCREEN_CLIP_PATH = (() => {
+  const pts = SCREEN_CORNERS_NATIVE.map(
+    ([nx, ny]) =>
+      `${((nx / LAPTOP_PNG_W) * 100).toFixed(3)}% ${((ny / LAPTOP_PNG_H) * 100).toFixed(3)}%`,
+  );
+  return `polygon(${pts.join(", ")})`;
+})();
+
+/**
+ * Axis-aligned bounding box of the screen polygon, in % of the wrapper.
+ * The video element is sized to this bbox and positioned at its top-
+ * left so `object-fit: cover` zooms into the source's visually
+ * meaningful centre — without this, a full-wrapper video would only
+ * show the dark upper-half of the hero through the polygon mask.
+ */
+const LAPTOP_SCREEN_BBOX = (() => {
+  const xs = SCREEN_CORNERS_NATIVE.map(([x]) => x);
+  const ys = SCREEN_CORNERS_NATIVE.map(([, y]) => y);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  return {
+    left: (minX / LAPTOP_PNG_W) * 100,
+    top: (minY / LAPTOP_PNG_H) * 100,
+    width: ((maxX - minX) / LAPTOP_PNG_W) * 100,
+    height: ((maxY - minY) / LAPTOP_PNG_H) * 100,
+  };
+})();
+
+/**
+ * Mobile counterpart to `LaptopScreenIframe`. Instead of perspective-
+ * warping the video with `matrix3d` (which Chrome composites strangely
+ * for `<video>` elements — the iframe equivalent renders correctly,
+ * but a `<video>` with the same matrix only paints a thin sliver),
+ * we use a `clip-path: polygon(...)` matching the screen shape and let
+ * the video play behind that mask via `object-cover`. The polygon
+ * boundary preserves the laptop's perspective; only the *content*
+ * inside the polygon is non-warped — visually indistinguishable on a
+ * small mobile screen.
  *
- * The video element is the same source as the homepage hero, so on
- * cached navigations the file is already in the browser cache.
+ * No second React app, no GSAP boot, no iframe — just one cheap
+ * `<video>` element with `object-cover`.
  */
 function LaptopScreenVideo() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [ready, setReady] = useState(false);
 
+  // Force the muted attribute pre-paint (React only sets the property
+  // post-mount, but Chrome's autoplay heuristic reads the *attribute*).
+  // Then kick playback — the IntersectionObserver gate above guarantees
+  // the wrapper is in the viewport, so user activation usually carries.
   useLayoutEffect(() => {
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
-
-    const apply = () => {
-      const video = videoRef.current;
-      if (!video) return;
-      const rect = wrapper.getBoundingClientRect();
-      if (rect.width <= 0 || rect.height <= 0) return;
-
-      // Mobile container is `aspect-[16/10]` — same ratio as the image
-      // — and uses default `object-position: center`, so we pass 50%.
-      const corners = projectCornersToContainer(rect.width, rect.height, 50, 50);
-      const matrix = quadToQuadMatrix3d(HERO_VIDEO_W, HERO_VIDEO_H, corners);
-      video.style.transform = matrix;
-      video.style.transformOrigin = "0 0";
-      video.style.opacity = "1";
-    };
-
-    apply();
-
-    const ro = new ResizeObserver(apply);
-    ro.observe(wrapper);
-
-    // Force the muted attribute pre-paint (React only sets the
-    // property), then kick playback. iOS Safari additionally requires
-    // playsInline (set on the JSX) for inline autoplay.
+    if (!ready) return;
     const v = videoRef.current;
-    if (v) {
-      v.muted = true;
-      v.setAttribute("muted", "");
-      const p = v.play();
-      if (p && typeof p.then === "function") p.catch(() => {});
-    }
-
-    return () => {
-      ro.disconnect();
-    };
+    if (!v) return;
+    v.muted = true;
+    v.setAttribute("muted", "");
+    const p = v.play();
+    if (p && typeof p.then === "function") p.catch(() => {});
   }, [ready]);
 
   // Lazy-mount when the card approaches the viewport. Tighter
@@ -455,17 +461,24 @@ function LaptopScreenVideo() {
       ref={wrapperRef}
       aria-hidden
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#0A0A0B]"
+      style={{ clipPath: LAPTOP_SCREEN_CLIP_PATH, WebkitClipPath: LAPTOP_SCREEN_CLIP_PATH }}
     >
       {ready && (
         <video
           ref={videoRef}
           src={HERO_VIDEO_SRC}
-          className="absolute left-0 top-0 object-cover object-center"
+          className="absolute"
           style={{
-            width: `${HERO_VIDEO_W}px`,
-            height: `${HERO_VIDEO_H}px`,
-            opacity: 0,
-            transformOrigin: "0 0",
+            // Sized to the screen-polygon bbox so `object-cover` zooms
+            // into the source's hero composition rather than showing
+            // mostly dark sky. The clip-path on the wrapper still
+            // shapes the visible region to the parallelogram screen.
+            left: `${LAPTOP_SCREEN_BBOX.left.toFixed(3)}%`,
+            top: `${LAPTOP_SCREEN_BBOX.top.toFixed(3)}%`,
+            width: `${LAPTOP_SCREEN_BBOX.width.toFixed(3)}%`,
+            height: `${LAPTOP_SCREEN_BBOX.height.toFixed(3)}%`,
+            objectFit: "cover",
+            objectPosition: "center 70%",
           }}
           muted
           loop
