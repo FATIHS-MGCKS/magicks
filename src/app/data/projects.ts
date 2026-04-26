@@ -212,10 +212,9 @@ export const PROJECTS: Project[] = [
       aspect: "16/9",
     },
 
-    /* Gallery — two editorial material plates before the staged
-     * empty-state slots. Together with the cover these form a three-
-     * stop photo essay about the craft itself (macro · context · …)
-     * rather than pretending to be a full screenshot portfolio. The
+    /* Gallery — editorial material plates plus a process plate from
+     * the live site. Together with the cover these read as a photo
+     * essay about the craft (macro · context · process · …). The
      * detail page auto-pads remaining slots with premium empty plates
      * so future MAGICKS screenshots drop in without layout work. */
     gallery: [
@@ -225,6 +224,13 @@ export const PROJECTS: Project[] = [
         caption: "Kontext · Versiegelte Fuge · Abendlicht",
         aspect: "16/9",
         span: 8,
+      },
+      {
+        src: "/media/projects/renova-strassensanierung/detail-02.webp",
+        alt: "Renova-Website Sektion „Vom Schaden zum Ergebnis“: drei Schritt-Karten (01 Vorher · Beschädigter Beton, 02 Bearbeitung · Epox 130 Pro auftragen, 03 Ergebnis · Dauerhafte Reparatur) mit nummerierten Bildern und kurzen Beschreibungstexten, darunter ein Panel mit den technischen Eigenschaften des Reparaturmörtels.",
+        caption: "Anwendungsbeispiel · Vom Schaden zum Ergebnis",
+        aspect: "4/3",
+        span: 6,
       },
     ],
 
