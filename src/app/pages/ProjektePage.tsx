@@ -227,8 +227,6 @@ export default function ProjektePage() {
     return () => ctx.revert();
   }, [reduced]);
 
-  const [featured, ...rest] = projects;
-
   return (
     <>
       <RouteSEO path="/projekte" />
@@ -479,7 +477,7 @@ export default function ProjektePage() {
         <SectionTransition from="§ 01  Credo" to="§ 02  Auswahl" tone="darker" />
 
         {/* =========================================================
-           § 02 — PROJEKTE (featured + rest)
+           § 02 — PROJEKTE (unified editorial list)
         ========================================================= */}
         <section className="relative overflow-hidden bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div className="relative layout-max">
@@ -495,18 +493,17 @@ export default function ProjektePage() {
               <span aria-hidden className="h-px flex-1 bg-white/12" />
             </div>
 
-            {featured ? (
-              <FeaturedProjectSplit
-                project={featured}
-                index={0}
-                total={projects.length}
-              />
-            ) : null}
-
-            {rest.length > 0 ? (
-              <ul className="mt-16 grid grid-cols-1 gap-0 border-t border-white/[0.08] md:mt-24">
-                {rest.map((p, i) => (
-                  <CompactProjectRow key={p.slug} project={p} index={i + 2} />
+            {projects.length > 0 ? (
+              /* Unified editorial row list — every project renders with
+                 the same compact, typographic register. No privileged
+                 "featured split"; the catalogue reads as one continuous
+                 sheet so the eye moves down the page without a stylistic
+                 break between entries. The top hairline + per-row
+                 bottom hairlines give the list its printed-spread
+                 rhythm. */
+              <ul className="grid grid-cols-1 gap-0 border-t border-white/[0.08]">
+                {projects.map((p, i) => (
+                  <CompactProjectRow key={p.slug} project={p} index={i + 1} />
                 ))}
               </ul>
             ) : (
@@ -810,155 +807,10 @@ export default function ProjektePage() {
 }
 
 /* ------------------------------------------------------------------
- * FeaturedProjectSplit — the large editorial split composition used
- * for the first project on the overview page.
- * ------------------------------------------------------------------ */
-
-function FeaturedProjectSplit({
-  project,
-  index,
-  total,
-}: {
-  project: Project;
-  index: number;
-  total: number;
-}) {
-  const folio = String(index + 1).padStart(2, "0");
-  const totalLabel = String(total).padStart(2, "0");
-
-  return (
-    <article
-      data-pj-reveal
-      className="grid grid-cols-1 gap-10 md:grid-cols-[minmax(0,1.22fr)_minmax(0,1fr)] md:gap-14 lg:gap-20"
-    >
-      <Link
-        to={`/projekte/${project.slug}`}
-        className="group relative block overflow-hidden rounded-[2px] no-underline"
-        aria-label={`${project.title} – Fallstudie lesen`}
-      >
-        <CoverPlate cover={project.cover} title={project.title} folio={folio} />
-      </Link>
-
-      <div className="flex flex-col justify-between gap-12 md:py-1">
-        <div>
-          {/* Plate header — dossier frame with live tell pinned right. */}
-          <div className="flex items-baseline justify-between gap-4 border-b border-white/[0.1] pb-5">
-            <span className="font-mono tabular-nums text-[10.5px] font-medium uppercase leading-none tracking-[0.4em] text-white/64 sm:text-[11px]">
-              Plate · {folio} &nbsp;/&nbsp; {totalLabel}
-            </span>
-            {project.publicUrl ? (
-              <a
-                href={project.publicUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group/live font-mono inline-flex items-center gap-2 text-[10px] font-medium uppercase leading-none tracking-[0.32em] text-white/56 no-underline transition-colors duration-[420ms] hover:text-white/88 sm:text-[10.5px]"
-                aria-label={`${project.title} live öffnen`}
-              >
-                <span
-                  aria-hidden
-                  className="h-[5px] w-[5px] rounded-full bg-white/78 tick-breathing"
-                />
-                <span>Live</span>
-                <span aria-hidden className="text-white/70">↗</span>
-              </a>
-            ) : (
-              <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/44 sm:text-[10.5px]">
-                {project.category}
-              </span>
-            )}
-          </div>
-
-          {/* Category · Industry · Year — single editorial register line. */}
-          <p className="font-mono mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/52 sm:text-[10.5px]">
-            <span className="text-white/72">{project.category}</span>
-            {project.industry ? (
-              <>
-                <span aria-hidden className="text-white/28">·</span>
-                <span>{project.industry}</span>
-              </>
-            ) : null}
-            {project.year ? (
-              <>
-                <span aria-hidden className="text-white/28">·</span>
-                <span className="tabular-nums text-white/44">{project.year}</span>
-              </>
-            ) : null}
-          </p>
-
-          {/* H3 — scaled up for cinematic presence. */}
-          <h3 className="font-instrument mt-5 text-[2.1rem] leading-[1.02] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.05rem] lg:text-[3.55rem] xl:text-[3.85rem]">
-            {project.title}
-          </h3>
-
-          <p className="font-instrument mt-8 max-w-[38rem] text-[1.18rem] italic leading-[1.4] tracking-[-0.01em] text-white/88 md:mt-10 md:text-[1.32rem]">
-            {project.intro}
-          </p>
-
-          {/* Umfang — editorial register line, not chips.
-              Reads as a delivered-scope ledger. */}
-          {project.services && project.services.length > 0 ? (
-            <div className="mt-10 border-t border-white/[0.06] pt-5 md:mt-12">
-              <p className="font-mono mb-3 text-[9.5px] font-medium uppercase leading-none tracking-[0.4em] text-white/42 sm:text-[10px]">
-                Umfang
-              </p>
-              <p className="font-instrument text-[1.02rem] italic leading-[1.5] tracking-[-0.008em] text-white/80 md:text-[1.12rem]">
-                {project.services.map((s, i) => (
-                  <span key={s}>
-                    {i > 0 ? (
-                      <span
-                        aria-hidden
-                        className="mx-[0.75em] not-italic text-white/26"
-                      >
-                        ·
-                      </span>
-                    ) : null}
-                    {s}
-                  </span>
-                ))}
-              </p>
-            </div>
-          ) : null}
-        </div>
-
-        {/* Primary CTA bar — confident Fallstudie link, plate folio right. */}
-        <div className="flex items-center gap-4 border-t border-white/[0.08] pt-7">
-          <Link
-            to={`/projekte/${project.slug}`}
-            className="group relative inline-flex items-baseline gap-3 text-[15px] font-medium tracking-[-0.005em] text-white no-underline sm:text-[16px] md:text-[17px]"
-            aria-label={`Fallstudie: ${project.title}`}
-          >
-            <span className="relative pb-2">
-              <span className="font-ui">Fallstudie lesen</span>
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 bottom-0 block h-px bg-white/42"
-              />
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white transition-transform duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
-              />
-            </span>
-            <span
-              aria-hidden
-              className="font-instrument text-[1.05em] italic text-white/84 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
-            >
-              ↗
-            </span>
-          </Link>
-          <span aria-hidden className="h-px flex-1 bg-white/[0.06]" />
-          <span className="font-mono tabular-nums text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/36 sm:text-[10px]">
-            F · {folio}
-          </span>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-/* ------------------------------------------------------------------
- * CompactProjectRow — horizontal editorial row for projects beyond
- * the featured slot. Kept thin so the overview scales to many
- * entries without becoming a card wall.
+ * CompactProjectRow — horizontal editorial row, used for every
+ * project on the overview page. Kept thin so the catalogue scales
+ * cleanly to many entries without becoming a card wall and so all
+ * projects read with the same editorial weight.
  * ------------------------------------------------------------------ */
 
 function CompactProjectRow({
@@ -1000,108 +852,3 @@ function CompactProjectRow({
   );
 }
 
-/* ------------------------------------------------------------------
- * CoverPlate — shared cover composition for the featured split.
- *
- * If a cover image is present it is displayed with a restrained
- * gradient vignette. If not, a premium empty-state plate renders —
- * hairline framed, textured, and labelled so the overview slot never
- * looks like a broken image card. Swapping in a real image later is
- * a pure data change.
- * ------------------------------------------------------------------ */
-
-function CoverPlate({
-  cover,
-  title,
-  folio,
-}: {
-  cover?: Project["cover"];
-  title: string;
-  folio: string;
-}) {
-  if (cover) {
-    return (
-      <div className="relative aspect-[4/3] w-full overflow-hidden border border-white/[0.08] bg-[#08080A] md:aspect-[5/4]">
-        <img
-          src={cover.src}
-          alt={cover.alt}
-          className="h-full w-full object-cover brightness-[0.82] saturate-[0.9] magicks-duration-media magicks-ease-out transition-[transform,filter] group-hover:scale-[1.015] group-hover:brightness-[0.9]"
-          loading="lazy"
-        />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/55 via-transparent to-transparent" />
-        <CoverCaption folio={folio} label={title} />
-      </div>
-    );
-  }
-
-  // Premium empty-state plate — no broken images, no cheesy icons.
-  return (
-    <div
-      className="relative aspect-[4/3] w-full overflow-hidden border border-white/[0.08] bg-[#08080A] md:aspect-[5/4]"
-      role="img"
-      aria-label={`${title} — Bildmaterial folgt`}
-    >
-      {/* Grain rail */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.24]"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(255,255,255,0.014) 0 1px, transparent 1px 96px), repeating-linear-gradient(0deg, rgba(255,255,255,0.01) 0 1px, transparent 1px 96px)",
-          maskImage:
-            "radial-gradient(ellipse 70% 62% at 50% 50%, black, transparent)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 70% 62% at 50% 50%, black, transparent)",
-        }}
-      />
-      {/* Center halo */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 42% 36% at 50% 46%, rgba(255,255,255,0.06), transparent 62%)",
-        }}
-      />
-      {/* Hairline inset frame */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-6 border border-white/[0.07] md:inset-9"
-      />
-      {/* Center diamond marker */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-1/2 flex h-[18px] w-[18px] -translate-x-1/2 -translate-y-1/2 items-center justify-center"
-      >
-        <span className="absolute inset-0 block rotate-45 border border-white/60 bg-[#08080A]" />
-        <span className="absolute h-[6px] w-[6px] rotate-45 bg-white/82" />
-      </div>
-      <CoverCaption folio={folio} label={title} empty />
-    </div>
-  );
-}
-
-function CoverCaption({
-  folio,
-  label,
-  empty = false,
-}: {
-  folio: string;
-  label: string;
-  empty?: boolean;
-}) {
-  return (
-    <div className="pointer-events-none absolute inset-x-6 bottom-6 flex items-end justify-between gap-5 md:inset-x-9 md:bottom-9">
-      <span className="font-mono tabular-nums text-[9.5px] font-medium uppercase leading-none tracking-[0.38em] text-white/46 md:text-[10px]">
-        Projekt · {folio}
-      </span>
-      <span
-        className={`font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] md:text-[10px] ${
-          empty ? "text-white/34" : "text-white/54"
-        }`}
-      >
-        {empty ? `${label} · Bildmaterial folgt` : label}
-      </span>
-    </div>
-  );
-}

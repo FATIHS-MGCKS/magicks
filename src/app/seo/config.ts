@@ -304,6 +304,46 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
       { name: "KI-Automation für Unternehmen", path: "/ki-automation-unternehmen" },
     ],
   },
+
+  "/seo-sichtbarkeit": {
+    path: "/seo-sichtbarkeit",
+    title: "SEO & Sichtbarkeit — MAGICKS Studio",
+    description:
+      "Suchmaschinenoptimierung, lokale Sichtbarkeit und saubere Seitenstruktur für Websites, die nicht nur gut aussehen, sondern gefunden und verstanden werden sollen.",
+    ogType: "article",
+    ogImageAlt: "SEO & Sichtbarkeit — MAGICKS Studio",
+    service: {
+      name: "SEO & Sichtbarkeit",
+      serviceType: "Search Engine Optimization",
+      description:
+        "SEO-Grundlagen, Seitenstruktur, lokale Suchbegriffe und technische Sichtbarkeit als unterstützender Baustein in Web-Projekten von MAGICKS Studio.",
+      local: false,
+    },
+    breadcrumbs: [
+      { name: "Leistungen", path: "/leistungen" },
+      { name: "SEO & Sichtbarkeit", path: "/seo-sichtbarkeit" },
+    ],
+  },
+
+  "/content-bildwelt-medien": {
+    path: "/content-bildwelt-medien",
+    title: "Content, Bildwelt & Medien — MAGICKS Studio",
+    description:
+      "Texte, Bildwelt, Foto, Bildbearbeitung, Video, Motion Design und 3D-Visuals für digitale Auftritte, die nicht wie Templates wirken.",
+    ogType: "article",
+    ogImageAlt: "Content, Bildwelt & Medien — MAGICKS Studio",
+    service: {
+      name: "Content, Bildwelt & Medien",
+      serviceType: "Content & Visual Production",
+      description:
+        "Content, Bildwelt, Foto, Video, Motion Design und 3D-Visuals als unterstützender Baustein in Web-Projekten von MAGICKS Studio.",
+      local: false,
+    },
+    breadcrumbs: [
+      { name: "Leistungen", path: "/leistungen" },
+      { name: "Content, Bildwelt & Medien", path: "/content-bildwelt-medien" },
+    ],
+  },
 };
 
 /**
@@ -334,4 +374,6 @@ export const SITEMAP_PATHS: string[] = [
   "/landingpages-kassel",
   "/produktkonfigurator-erstellen",
   "/ki-automation-unternehmen",
+  "/seo-sichtbarkeit",
+  "/content-bildwelt-medien",
 ];

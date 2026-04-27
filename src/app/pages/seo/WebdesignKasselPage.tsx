@@ -56,7 +56,7 @@ const HERO_LEAD_SENTENCE_2 =
  * sits below the two-sentence lead as a supporting breath.
  */
 const HERO_LEAD_SUPPORT =
-  "Ob als moderne Homepage, professionelle Webseite oder Internetauftritt für Ihr Unternehmen — das Ergebnis soll zum Anspruch Ihrer Arbeit passen.";
+  "Ob moderne Homepage, professionelle Webseite oder kompletter Internetauftritt — wir verbinden Design, Inhalt, lokale Sichtbarkeit und eine Bildwelt, die zum Unternehmen passt.";
 
 /**
  * POSITIONING (rendered in § 01 split at the em-dash for rhythm):
@@ -94,9 +94,14 @@ const INCLUDES: { title: string; body: string }[] = [
       "Für Kampagnen, Services oder einzelne Geschäftsbereiche — klar geführt, schnell und auf Conversion angelegt.",
   },
   {
-    title: "Regionale Positionierung",
+    title: "Regionale Sichtbarkeit & SEO",
     body:
-      "SEO-Grundlagen inkl. lokaler Sichtbarkeit, strukturierter Daten und sauberer URL-Architektur — damit Kassel Sie findet, wenn sie suchen.",
+      "SEO-Grundlagen, lokale Suchbegriffe, strukturierte Daten, saubere URL-Architektur und Inhalte, die für Kassel und Nordhessen relevant sind.",
+  },
+  {
+    title: "Content & Bildwelt",
+    body:
+      "Texte, Bildauswahl, Bildbearbeitung oder eigene Medien, wenn der Auftritt nicht mit Platzhaltern oder generischer Stock-Optik starten soll.",
   },
   {
     title: "Redaktionelle Pflege",
@@ -106,7 +111,7 @@ const INCLUDES: { title: string; body: string }[] = [
   {
     title: "Direkter Ansprechpartner",
     body:
-      "Sie sprechen mit den Menschen, die bauen. Keine Key-Account-Ebene, keine internationalen Umleitungen.",
+      "Direkter Kontakt, klare Abstimmung und kurze Wege — vom ersten Gespräch bis zum Launch.",
   },
 ];
 
@@ -240,6 +245,24 @@ const RELATED: {
     eyebrow: "Kampagne",
     folio: "Bureau · Landing Pages Kassel",
     linkLabel: "Landing Page in Kassel erstellen lassen",
+  },
+  {
+    to: "/seo-sichtbarkeit",
+    label: "SEO & Sichtbarkeit",
+    description:
+      "Wenn der Auftritt nicht nur lokal stark wirken, sondern auch gefunden, verstanden und sauber aufgebaut sein soll.",
+    eyebrow: "Sichtbarkeit",
+    folio: "Plate · SEO & Sichtbarkeit",
+    linkLabel: "Mehr zu SEO & Sichtbarkeit",
+  },
+  {
+    to: "/content-bildwelt-medien",
+    label: "Content, Bildwelt & Medien",
+    description:
+      "Texte, Bildwelt, Foto, Bildbearbeitung und Medien — wenn der Auftritt nicht mit Platzhaltern starten soll.",
+    eyebrow: "Inhalt",
+    folio: "Plate · Content & Medien",
+    linkLabel: "Mehr zu Content, Bildwelt & Medien",
   },
   {
     to: "/website-im-abo",

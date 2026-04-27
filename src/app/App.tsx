@@ -23,6 +23,8 @@ const WebdesignKasselPage = lazy(() => import("./pages/seo/WebdesignKasselPage")
 const LandingPagesKasselPage = lazy(() => import("./pages/seo/LandingPagesKasselPage"));
 const ProduktkonfiguratorErstellenPage = lazy(() => import("./pages/seo/ProduktkonfiguratorErstellenPage"));
 const KiAutomationUnternehmenPage = lazy(() => import("./pages/seo/KiAutomationUnternehmenPage"));
+const SeoSichtbarkeitPage = lazy(() => import("./pages/seo/SeoSichtbarkeitPage"));
+const ContentBildweltMedienPage = lazy(() => import("./pages/seo/ContentBildweltMedienPage"));
 
 export default function App() {
   return (
@@ -53,6 +55,10 @@ export default function App() {
           <Route path="/landingpages-kassel" element={<LandingPagesKasselPage />} />
           <Route path="/produktkonfigurator-erstellen" element={<ProduktkonfiguratorErstellenPage />} />
           <Route path="/ki-automation-unternehmen" element={<KiAutomationUnternehmenPage />} />
+
+          {/* Supporting capability landings */}
+          <Route path="/seo-sichtbarkeit" element={<SeoSichtbarkeitPage />} />
+          <Route path="/content-bildwelt-medien" element={<ContentBildweltMedienPage />} />
 
           {/*
            * Legacy routes.

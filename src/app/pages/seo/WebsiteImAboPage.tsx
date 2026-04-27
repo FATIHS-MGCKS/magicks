@@ -45,13 +45,23 @@ const INCLUDES: { title: string; body: string }[] = [
     body: "Responsive, schnell und modern aufgebaut.",
   },
   {
+    title: "SEO-Basis & Seitenstruktur",
+    body:
+      "Saubere Überschriftenlogik, Meta-Grundlagen und technische Basis — damit die Seite von Anfang an gut auffindbar bleibt.",
+  },
+  {
+    title: "Text- und Bildpflege",
+    body:
+      "Kleinere Texte, Bildwechsel oder Bereichsanpassungen werden im Modell mitbetreut, ohne jedes Mal ein eigenes Projekt zu werden.",
+  },
+  {
     title: "Hosting & Wartung",
     body: "Die technische Betreuung kann direkt mitgedacht werden.",
   },
   {
-    title: "Kleinere Anpassungen",
+    title: "Laufende kleine Optimierungen",
     body:
-      "Texte, Bilder, Bereiche oder kleinere Änderungen müssen nicht jedes Mal ein eigenes Projekt werden.",
+      "Inhalte, Sektionen oder kleine Verbesserungen werden Schritt für Schritt nachgeschärft, ohne den Auftritt zu überladen.",
   },
   {
     title: "Support & Weiterentwicklung",
@@ -602,7 +612,8 @@ export default function WebsiteImAboPage() {
                     aria-hidden
                     className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/34 sm:text-[10.5px]"
                   >
-                    06 / 06 Bausteine
+                    {String(INCLUDES.length).padStart(2, "0")} /{" "}
+                    {String(INCLUDES.length).padStart(2, "0")} Bausteine
                   </span>
                 </div>
               </div>
@@ -638,6 +649,24 @@ export default function WebsiteImAboPage() {
                     </li>
                   ))}
                 </ul>
+
+                {/* Restrained scope note — keeps the offer commercially safe.
+                    Explicitly separates ongoing care from larger productions
+                    or campaign-scale SEO work, so nothing in the model
+                    implies unlimited scope. */}
+                <div
+                  data-wa-reveal
+                  className="mt-12 max-w-[44rem] border-l border-white/[0.1] pl-5 md:mt-16 md:pl-7"
+                >
+                  <p className="font-ui text-[14.5px] leading-[1.7] text-white/58 md:text-[15px]">
+                    Je nach Modell können auch{" "}
+                    <em className="italic text-white/86">
+                      SEO-Grundlagen, Textanpassungen und einfache Bildpflege
+                    </em>{" "}
+                    Teil der laufenden Betreuung sein. Größere Medienproduktionen, Kampagnen oder
+                    umfangreiche SEO-Arbeit werden separat geplant.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

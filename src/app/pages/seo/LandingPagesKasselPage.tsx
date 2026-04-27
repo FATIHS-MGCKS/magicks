@@ -82,6 +82,20 @@ const PRINZIP_P2_A =
   "Deshalb entwickeln wir Landing Pages nicht wie eine normale Webseite oder Homepage.";
 const PRINZIP_P2_B =
   "Wir strukturieren sie auf Conversion, Klarheit, Tempo und Wirkung — damit aus Besuchern deutlich eher echte Anfragen oder qualifizierte Leads werden.";
+/* New, restrained framing line — added without changing the
+ * existing two-paragraph rhythm. Reads as a closing note that
+ * frames a Landing Page as a focused enquiry/sales system rather
+ * than a single subpage. */
+const PRINZIP_P3_A =
+  "Eine Landing Page funktioniert nur dann gut, wenn Angebot, Text, Bildwelt, CTA und Technik zusammenarbeiten.";
+const PRINZIP_P3_B =
+  "Deshalb betrachten wir sie nicht als einzelne Unterseite, sondern als fokussiertes Verkaufs- oder Anfrage-System.";
+
+/* Campaign-vs-local-search clarifier — used as a quiet note above
+ * the § 04 Leistung deliverables ledger. Keeps the brief's
+ * wording verbatim. */
+const LEISTUNG_INTRO =
+  "Je nach Ziel wird die Landing Page für Kampagnen, lokale Suche oder beides aufgebaut.";
 
 /* -- § 02 Vokabular (semantic-SEO reprise) -- */
 const VOKABULAR_TOKENS = ["Landing Page", "Landingpage", "Webseite", "Homepage"] as const;
@@ -111,7 +125,7 @@ const BEZUG_ITEMS: string[] = [
   "eine bestehende Website hast, aber für Conversion eine eigenständige Seite brauchst",
 ];
 
-/* -- § 04 Leistung (6-item deliverables ledger) -- */
+/* -- § 04 Leistung (deliverables ledger) -- */
 const LEISTUNG_HEADLINE = "Was wir für dich umsetzen";
 const LEISTUNG_ITEMS: { title: string; body: string }[] = [
   {
@@ -123,6 +137,16 @@ const LEISTUNG_ITEMS: { title: string; body: string }[] = [
     title: "Design mit Wirkung",
     body:
       "Hochwertige Gestaltung, die Vertrauen aufbaut und dein Angebot professionell transportiert.",
+  },
+  {
+    title: "Content, Bildwelt & Medien",
+    body:
+      "Texte, Bildbearbeitung, Hero-Visuals oder kurze Medienbausteine, wenn die Landing Page nicht nur technisch funktionieren, sondern sofort wirken soll.",
+  },
+  {
+    title: "SEO- oder Kampagnenlogik",
+    body:
+      "Je nach Einsatz wird die Seite auf lokale Suchanfragen, Anzeigenkampagnen, klare Kontaktanfragen oder eine konkrete Angebotslogik ausgerichtet.",
   },
   {
     title: "Technische Umsetzung",
@@ -205,16 +229,28 @@ const EINBETTUNG_LINKS: {
     position: "LP-B",
   },
   {
+    to: "/seo-sichtbarkeit",
+    eyebrow: "Verwandt · Sichtbarkeit",
+    label: "SEO & Sichtbarkeit",
+    position: "LP-C",
+  },
+  {
+    to: "/content-bildwelt-medien",
+    eyebrow: "Verwandt · Inhalt",
+    label: "Content, Bildwelt & Medien",
+    position: "LP-D",
+  },
+  {
     to: "/leistungen",
     eyebrow: "Studio · Übersicht",
     label: "Leistungen",
-    position: "LP-C",
+    position: "LP-E",
   },
   {
     to: "/kontakt",
     eyebrow: "Studio · Direkt",
     label: "Kontakt",
-    position: "LP-D",
+    position: "LP-F",
   },
 ];
 
@@ -994,6 +1030,25 @@ export default function LandingPagesKasselPage() {
                     {PRINZIP_P2_B}
                   </p>
                 </div>
+
+                {/* New framing note — Landing Page als fokussiertes
+                    Verkaufs- oder Anfrage-System. Kept restrained,
+                    sits as a quiet closing register beneath the
+                    existing two-paragraph rhythm. */}
+                <div className="mt-12 max-w-[44rem] space-y-5 border-t border-white/[0.08] pt-10 md:mt-16 md:space-y-6 md:pt-12">
+                  <p
+                    data-lp-reveal
+                    className="font-instrument text-[1.16rem] italic leading-[1.4] tracking-[-0.008em] text-white/82 sm:text-[1.26rem] md:text-[1.36rem]"
+                  >
+                    {PRINZIP_P3_A}
+                  </p>
+                  <p
+                    data-lp-reveal
+                    className="font-ui text-[15.5px] leading-[1.72] text-white/66 md:text-[16.5px]"
+                  >
+                    {PRINZIP_P3_B}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -1339,6 +1394,15 @@ export default function LandingPagesKasselPage() {
                 >
                   {LEISTUNG_HEADLINE}
                 </h2>
+                {/* Quiet clarifier — campaign vs. local search, depending
+                    on goal. Sits beneath the headline so the deliverables
+                    list reads as the answer to a clearly framed question. */}
+                <p
+                  data-lp-reveal
+                  className="font-instrument mt-7 max-w-[36rem] text-[1.05rem] italic leading-[1.5] tracking-[-0.008em] text-white/72 sm:mt-9 sm:text-[1.12rem] md:text-[1.2rem]"
+                >
+                  {LEISTUNG_INTRO}
+                </p>
               </div>
 
               <div
@@ -1350,7 +1414,7 @@ export default function LandingPagesKasselPage() {
                   className="h-px w-10 bg-white/22 md:w-16"
                 />
                 <span className="font-mono whitespace-nowrap text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                  06 Positionen · Sheet
+                  {String(LEISTUNG_ITEMS.length).padStart(2, "0")} Positionen · Sheet
                 </span>
               </div>
             </div>
@@ -1383,7 +1447,9 @@ export default function LandingPagesKasselPage() {
             >
               <span>Ledger · Leistung</span>
               <span aria-hidden className="h-px flex-1 bg-white/[0.07]" />
-              <span className="tabular-nums">Positionen · 06 / 06</span>
+              <span className="tabular-nums">
+                Positionen · {String(LEISTUNG_ITEMS.length).padStart(2, "0")} / {String(LEISTUNG_ITEMS.length).padStart(2, "0")}
+              </span>
             </div>
           </div>
         </section>
@@ -1713,16 +1779,18 @@ export default function LandingPagesKasselPage() {
               </div>
             </div>
 
-            {/* 2×2 link grid — each cell a typographic anchor with eyebrow
+            {/* Link grid — each cell a typographic anchor with eyebrow
                 micro-label, large serif page name, position folio and
-                arrow. Confident, dense, editorial. */}
+                arrow. Confident, dense, editorial. Two-column desktop
+                layout with row borders that expand naturally as new
+                routes (SEO, Content) are appended. */}
             <div
               data-lp-reveal
               className="mt-20 flex items-center gap-5 sm:mt-24 md:mt-28"
             >
               <span aria-hidden className="h-px w-14 bg-white/24 sm:w-20" />
               <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/46 sm:text-[10.5px]">
-                Anschluss · 04 Routen
+                Anschluss · {String(EINBETTUNG_LINKS.length).padStart(2, "0")} Routen
               </span>
               <span aria-hidden className="h-px flex-1 bg-white/12" />
             </div>

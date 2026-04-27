@@ -716,9 +716,9 @@ export function Services() {
               data-services-caption
               className="font-ui max-w-md text-[14px] leading-[1.66] text-white/52 md:text-[15px]"
             >
-              Vier Cluster, jeder mit klarem Einsatz im Unternehmen — keine Standard-Pakete,
-              jedes Projekt als Arbeit mit Absicht. KI-gestützt umgesetzt, ohne Verlust an
-              Substanz.
+              Vier Bereiche für digitale Arbeit, die sichtbar besser wirkt und im Alltag sauber
+              funktioniert — von Websites und Konfiguratoren bis zu Web-Software und
+              Automationen.
             </p>
           </div>
         </div>

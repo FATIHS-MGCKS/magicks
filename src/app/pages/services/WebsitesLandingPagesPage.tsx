@@ -38,6 +38,16 @@ const INCLUDES: { title: string; body: string }[] = [
       "Individuelles, hochwertiges Webdesign statt Baukastenoptik oder Template-Look.",
   },
   {
+    title: "Content & Copywriting",
+    body:
+      "Texte, die führen statt füllen — Hero-Aussagen, Leistungsbeschreibungen und CTAs, die zum Auftritt passen.",
+  },
+  {
+    title: "Bildwelt & Medien",
+    body:
+      "Bildauswahl, Bildbearbeitung oder eigene Visuals, damit der Auftritt nicht mit Stock-Optik startet.",
+  },
+  {
     title: "Saubere Entwicklung",
     body:
       "Schnelle, moderne und responsive Umsetzung mit Fokus auf Performance und Stabilität.",
@@ -48,9 +58,9 @@ const INCLUDES: { title: string; body: string }[] = [
       "Seiten, die nicht nur hübsch sind, sondern gezielt auf Anfragen, Leads oder Verkäufe einzahlen.",
   },
   {
-    title: "Technische Basis",
+    title: "SEO-Grundlagen & Sichtbarkeit",
     body:
-      "Sauber aufgebaute Komponenten, gute Ladezeiten, klare Struktur und solide Foundations für SEO.",
+      "Saubere Seitenstruktur, Meta-Logik, Überschriftenhierarchie und technische Basis für gute Auffindbarkeit.",
   },
   {
     title: "Integrationen",
@@ -340,9 +350,8 @@ export default function WebsitesLandingPagesPage() {
                   Keine Templates. Kein Mittelmaß.
                 </p>
                 <p className="font-ui mt-6 text-[15px] leading-[1.72] text-white/58 md:text-[16px] md:leading-[1.72]">
-                  Wir entwickeln Websites und Landing Pages, die deine Marke stark nach außen tragen,
-                  Nutzer klar führen und im Alltag genau das tun, was sie sollen: überzeugen,
-                  Vertrauen aufbauen und Anfragen oder Verkäufe erzeugen.
+                  Websites und Landing Pages, die deine Marke stark nach außen tragen, Nutzer klar
+                  führen und mit Struktur, Inhalt, Bildwelt und Technik Vertrauen aufbauen.
                 </p>
               </div>
 
@@ -728,7 +737,97 @@ export default function WebsitesLandingPagesPage() {
         </section>
 
         {/* Transition → Positionierung */}
-        <SectionTransition from="§ 05  Absage" to="§ Positionierung" tone="darker" />
+        <SectionTransition from="§ 05  Absage" to="§ 06  Mehr als Oberfläche" tone="darker" />
+
+        {/* =========================================================
+           § 06 — "Eine Website braucht mehr als Oberfläche."
+           Frames the page as the umbrella service that pulls
+           SEO, Content/Bildwelt and conversion into one project.
+        ========================================================= */}
+        <section className="relative bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+          <div className="layout-max">
+            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
+              <div data-wl-reveal className="md:pt-2">
+                <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
+                  § 06 — Mehr als Oberfläche
+                </p>
+              </div>
+
+              <div>
+                <h2
+                  data-wl-reveal
+                  className="font-instrument max-w-[48rem] text-[2.05rem] leading-[1.04] tracking-[-0.028em] text-white sm:text-[2.6rem] md:text-[3.15rem] lg:text-[3.55rem]"
+                >
+                  Eine Website braucht{" "}
+                  <em className="italic text-white/60">mehr als Oberfläche</em>.
+                </h2>
+
+                <p
+                  data-wl-reveal
+                  className="font-ui mt-10 max-w-[44rem] text-[15px] leading-[1.72] text-white/64 md:mt-12 md:text-[16px]"
+                >
+                  Deshalb denken wir bei Websites und Landing Pages nicht nur an Design und
+                  Entwicklung, sondern auch an Inhalte, Suchstruktur, Bildwelt, Performance und
+                  die Frage, wie der Auftritt im Alltag wirklich genutzt wird.
+                </p>
+
+                <ul className="mt-12 grid gap-x-10 border-t border-white/[0.07] sm:grid-cols-2 md:mt-14">
+                  {[
+                    {
+                      to: "/seo-sichtbarkeit",
+                      title: "SEO & Sichtbarkeit",
+                      body:
+                        "Struktur, Inhalte und technische Grundlagen, damit die Seite gefunden und verstanden wird.",
+                    },
+                    {
+                      to: "/content-bildwelt-medien",
+                      title: "Content, Bildwelt & Medien",
+                      body:
+                        "Texte, Bildwelt, Foto, Bildbearbeitung, Video und Motion — wenn der Auftritt nicht mit Platzhaltern starten soll.",
+                    },
+                    {
+                      to: "/landingpages-kassel",
+                      title: "Landing Pages für Kassel",
+                      body:
+                        "Wenn die Seite stark auf eine Kampagne, ein Angebot oder lokale Anfragen ausgerichtet werden soll.",
+                    },
+                  ].map((item, i) => (
+                    <li
+                      key={item.to}
+                      data-wl-reveal
+                      className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-5 border-b border-white/[0.07] py-6 md:gap-x-7 md:py-7"
+                    >
+                      <span className="font-mono pt-[0.32rem] text-[10px] font-medium leading-none tracking-[0.28em] text-white/40 md:text-[10.5px]">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <div>
+                        <Link
+                          to={item.to}
+                          className="group inline-flex items-baseline gap-2 text-white no-underline"
+                        >
+                          <span className="font-instrument text-[1.18rem] leading-[1.22] tracking-[-0.014em] md:text-[1.32rem] lg:text-[1.4rem]">
+                            {item.title}
+                          </span>
+                          <span
+                            aria-hidden
+                            className="font-instrument text-[1em] italic text-white/72 transition-transform duration-[520ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[2px]"
+                          >
+                            ↗
+                          </span>
+                        </Link>
+                        <p className="font-ui mt-2 max-w-md text-[13.5px] leading-[1.62] text-white/56 md:text-[14px]">
+                          {item.body}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <SectionTransition from="§ 06  Mehr als Oberfläche" to="§ Positionierung" tone="darker" />
 
         {/* =========================================================
            CEREMONIAL PULL-STATEMENT — three-line declaration, own moment

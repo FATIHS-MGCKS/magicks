@@ -1114,7 +1114,136 @@ export default function LeistungenPage() {
           </div>
         </section>
 
-        <SectionTransition from="§ 02  Werk" to="§ 03  Übergänge" />
+        <SectionTransition from="§ 02  Werk" to="§ 02b  Bausteine" />
+
+        {/* =========================================================
+           § 02b — SUPPORTING CAPABILITIES
+           Strategic note: the four core disciplines above remain
+           primary. This block adds supporting capabilities that
+           strengthen those projects, deliberately rendered as a
+           lighter four-up grid (smaller folios, thinner rules) so
+           it never reads like a fifth main service block.
+        ========================================================= */}
+        <section className="relative bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+          <div className="layout-max">
+            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
+              <div data-leis-reveal className="md:pt-2">
+                <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
+                  § 02b — Bausteine
+                </p>
+              </div>
+
+              <div>
+                <h2
+                  data-leis-reveal
+                  className="font-instrument max-w-[48rem] text-[2.05rem] leading-[1.04] tracking-[-0.028em] text-white sm:text-[2.6rem] md:text-[3.15rem] lg:text-[3.55rem]"
+                >
+                  Was Projekte bei MAGICKS{" "}
+                  <em className="italic text-white/60">zusätzlich stark macht</em>.
+                </h2>
+
+                <p
+                  data-leis-reveal
+                  className="font-ui mt-8 max-w-[44rem] text-[15px] leading-[1.7] text-white/64 md:mt-10 md:text-[16px]"
+                >
+                  Nicht jedes Projekt braucht nur Design oder nur Code. Oft entsteht die Qualität in
+                  den Bausteinen dazwischen: Sichtbarkeit, Texte, Bildwelt, Medien, Performance und
+                  laufende Weiterentwicklung.
+                </p>
+
+                <ul className="mt-14 grid gap-x-10 gap-y-0 border-t border-white/[0.07] sm:grid-cols-2 md:mt-18">
+                  {[
+                    {
+                      key: "01",
+                      title: "SEO & Sichtbarkeit",
+                      body:
+                        "Struktur, Inhalte und technische Grundlagen, damit digitale Auftritte gefunden und verstanden werden können.",
+                      cta: "Mehr zu SEO & Sichtbarkeit",
+                      to: "/seo-sichtbarkeit",
+                    },
+                    {
+                      key: "02",
+                      title: "Content, Bildwelt & Medien",
+                      body:
+                        "Texte, Bilder, Videos, Motion Design und 3D-Visuals für Auftritte, die nicht wie Templates wirken.",
+                      cta: "Mehr zu Content & Medien",
+                      to: "/content-bildwelt-medien",
+                    },
+                    {
+                      key: "03",
+                      title: "Performance & Qualität",
+                      body:
+                        "Saubere Umsetzung, schnelle Ladezeiten, responsive Details und technische Stabilität.",
+                      cta: undefined,
+                      to: undefined,
+                    },
+                    {
+                      key: "04",
+                      title: "Betreuung & Weiterentwicklung",
+                      body:
+                        "Pflege, Erweiterungen, neue Seiten und Optimierungen nach dem Launch.",
+                      cta: undefined,
+                      to: undefined,
+                    },
+                  ].map((item) => (
+                    <li
+                      key={item.key}
+                      data-leis-reveal
+                      className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-5 border-b border-white/[0.07] py-7 sm:gap-x-7 md:py-9"
+                    >
+                      <span className="font-mono pt-[0.45rem] text-[10.5px] font-medium leading-none tracking-[0.28em] text-white/40 md:text-[11px]">
+                        {item.key}
+                      </span>
+                      <div>
+                        <h3 className="font-instrument text-[1.25rem] leading-[1.22] tracking-[-0.014em] text-white md:text-[1.4rem] lg:text-[1.5rem]">
+                          {item.title}
+                        </h3>
+                        <p className="font-ui mt-3 max-w-[26rem] text-[14px] leading-[1.62] text-white/56 md:text-[14.5px]">
+                          {item.body}
+                        </p>
+                        {item.cta && item.to ? (
+                          <Link
+                            to={item.to}
+                            className="group mt-5 inline-flex items-baseline gap-2 text-[13px] font-medium tracking-[-0.005em] text-white no-underline md:text-[13.5px]"
+                          >
+                            <span className="relative pb-1">
+                              <span className="font-ui">{item.cta}</span>
+                              <span
+                                aria-hidden
+                                className="pointer-events-none absolute inset-x-0 bottom-0 block h-px bg-white/30"
+                              />
+                              <span
+                                aria-hidden
+                                className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white transition-transform duration-[680ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
+                              />
+                            </span>
+                            <span
+                              aria-hidden
+                              className="font-instrument text-[1em] italic text-white/82 transition-transform duration-[520ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[2px]"
+                            >
+                              ↗
+                            </span>
+                          </Link>
+                        ) : null}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                <div
+                  data-leis-reveal
+                  className="font-mono mt-6 flex items-center gap-4 text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/32 md:mt-8"
+                >
+                  <span>Bausteine · ergänzend zu I–IV</span>
+                  <span aria-hidden className="h-px flex-1 bg-white/[0.07]" />
+                  <span className="tabular-nums">04 Bausteine · MMXXVI</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <SectionTransition from="§ 02b  Bausteine" to="§ 03  Übergänge" />
 
         {/* =========================================================
            § 03 — "Integrationen sind oft der Teil…"

@@ -23,15 +23,15 @@ import { ChapterMarker } from "./ChapterMarker";
 const SENTENCES: { text: string }[] = [
   {
     // Drop-cap "W" is rendered separately — sentence continues with "ir …"
-    text: "ir sind MAGICKS Studio — und Standard war noch nie unser Anspruch.",
+    text: "ir sind MAGICKS Studio — und Standard war nie unser Anspruch.",
   },
   {
     text:
-      "Wir entwickeln Websites, Web-Software und Automationen, die auffallen und sauber funktionieren — und setzen sie schneller um, als man es gewohnt ist.",
+      "Wir entwickeln Websites, Web-Software und Automationen, die stark aussehen, sauber funktionieren und echte Arbeit abnehmen.",
   },
   {
     text:
-      "Studio-Qualität in Wochen, nicht Monaten — KI-gestützt, ohne Umwege.",
+      "Studio-Qualität ohne lange Agenturwege — präzise umgesetzt und bereit für den Alltag.",
   },
 ];
 

@@ -14,6 +14,8 @@ const servicesNav = [
   { label: "Shops & Produktkonfiguratoren", to: "/shops-produktkonfiguratoren" },
   { label: "Web-Software", to: "/web-software" },
   { label: "KI-Automationen & Integrationen", to: "/ki-automationen-integrationen" },
+  { label: "SEO & Sichtbarkeit", to: "/seo-sichtbarkeit" },
+  { label: "Content, Bildwelt & Medien", to: "/content-bildwelt-medien" },
   { label: "Website im Abo", to: "/website-im-abo" },
 ];
 

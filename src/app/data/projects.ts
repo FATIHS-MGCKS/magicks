@@ -338,6 +338,204 @@ export const PROJECTS: Project[] = [
     // metrics: intentionally omitted. No fabricated outcome data.
     // Add verified numbers here later when available.
   },
+
+  /* ----------------------------------------------------------------
+   * FS Mobility — minimalistischer Webauftritt für einen elektrischen
+   * Fahrdienst in Kassel. Self-shot image world (Tesla in Wilhelmshöhe
+   * Orangerie, Bergpark aerial, cockpit & rear-seat editorial
+   * compositions) plus a local-SEO foundation.
+   * ---------------------------------------------------------------- */
+  {
+    slug: "fs-mobility",
+    title: "FS Mobility",
+    teaser:
+      "Minimalistischer, hochwertiger Webauftritt für einen elektrischen Fahrdienst in Kassel.",
+    intro:
+      "Ein klarer, moderner und bildstarker Webauftritt für F.S Mobility Service — einen elektrischen Fahrdienst aus Kassel.",
+    supportingIntro:
+      "Die Website positioniert FS Mobility als ruhige, komfortable und verlässliche Alternative zum klassischen Fahrdienst: lokal verwurzelt, vollelektrisch, persönlich und hochwertig im Auftritt.",
+
+    category: "Website",
+    industry: "Fahrdienst · Elektromobilität",
+    publicUrl: "https://fs-mobility.de",
+
+    featured: true,
+
+    /* Cover image — full magazine-spread hero of the live FS Mobility
+     * site: serif headline "Die moderne Art zu fahren." with the
+     * editorial photograph below (black Tesla in front of the
+     * Wilhelmshöhe Orangerie, Kassel). Same magazine-cover treatment
+     * the rest of the case studies use. */
+    cover: {
+      src: "/media/projects/fs-mobility/cover.webp",
+      alt: "FS Mobility Website Hero: serife Headline „Die moderne Art zu fahren.“ über einer editorialen Fotografie eines schwarzen Tesla Model 3 in MINICAR-Livery vor der Orangerie im Bergpark Wilhelmshöhe in Kassel; darüber Navigation mit F.S Mobility Services-Wortmarke und CTAs „Fahrt anfragen“ und „Leistungen ansehen“.",
+      caption: "Hero · FS Mobility Website",
+      aspect: "16/9",
+    },
+
+    /* Gallery — three editorial spreads from the live site:
+     *   01 wide editorial split with Bergpark/Hercules aerial
+     *   02 service register paired with cockpit & door details
+     *   03 Leistungen page with rear-seat editorial composition
+     * Aspect / span sequence mirrors Renova so the gallery rhythm
+     * stays consistent across the catalogue. */
+    gallery: [
+      {
+        src: "/media/projects/fs-mobility/detail-01.webp",
+        alt: "FS-Mobility-Website Sektion „Über FS Mobility“: serife Headline „Eine neue Art, sich in Kassel zu bewegen.“ links, kurzer Fließtext und ein Drei-Spalten-Register (Heimat · Kassel, Antrieb · Vollelektrisch, Haltung · Ruhig & pünktlich); rechts eine selbst aufgenommene Aerial-Aufnahme des Bergparks Wilhelmshöhe im Frühlicht mit der Bronzefigur des Herkules am rechten Bildrand und Blick über Kassel.",
+        caption: "Über FS Mobility · Bergpark Wilhelmshöhe",
+        aspect: "16/9",
+        span: 8,
+      },
+      {
+        src: "/media/projects/fs-mobility/detail-02.webp",
+        alt: "FS-Mobility-Website Sektion „Warum Gäste bei uns bleiben“: links zwei gestapelte selbst aufgenommene Innenraum-Bilder eines Tesla (Cockpit mit Lenkrad und Navigationsdisplay vor sommerlicher Allee · Detailaufnahme der Türverkleidung mit Spiegelung), rechts vierteiliges Service-Register „Moderne Flotte · Pünktlichkeit · Lokale Präsenz · Service-Kultur“ mit numerierten Folios und Erläuterungen.",
+        caption: "Warum Gäste bleiben · Service-Register",
+        aspect: "4/3",
+        span: 6,
+      },
+      {
+        src: "/media/projects/fs-mobility/detail-03.webp",
+        alt: "FS-Mobility-Website Sektion „Leistungen“: serife Headline „Fahrten, die zum Leben passen.“ links über einem kurzen Beschreibungstext und einer Vier-Felder-Leiste (Einsatzgebiet · Kassel & Umland, Flotte · Vollelektrisch, Abrechnung · Transparent, Anfrage · Persönlich); rechts eine ruhige Innenraum-Fotografie der Tesla-Rückbank mit Lederaktentasche, Kaffeebecher und aufgeschlagenem Buch auf einem Mitteltisch.",
+        caption: "Leistungen · Editorial Composition",
+        aspect: "16/9",
+        span: 6,
+      },
+    ],
+
+    case: [
+      {
+        folio: "01",
+        eyebrow: "Projektziel",
+        title: "Projektziel",
+        body: [
+          "Für FS Mobility sollte ein digitaler Auftritt entstehen, der den Fahrdienst nicht wie ein gewöhnliches Taxi-Unternehmen wirken lässt, sondern als moderne, elektrische und hochwertige Mobilitätslösung in Kassel positioniert.",
+          "Der Fokus lag auf einem minimalistischen, cleanen Auftritt mit starker Bildwirkung, klarer Nutzerführung und einer sauberen SEO-Grundlage für lokale Suchanfragen rund um Fahrdienst, Flughafentransfer, Krankenfahrten und Chauffeur-Service in Kassel.",
+        ],
+      },
+      {
+        folio: "02",
+        eyebrow: "Fokus",
+        title: "Worauf der Fokus lag",
+        variant: "plate",
+        items: [
+          "minimalistischer, hochwertiger Auftritt",
+          "starke selbst erstellte Bildwelt",
+          "klare lokale Positionierung in Kassel",
+          "vertrauenswürdige Präsentation der Leistungen",
+          "gute Lesbarkeit auf Desktop und Mobile",
+          "ruhige, professionelle Nutzerführung",
+          "SEO-freundliche Seitenstruktur",
+          "emotionale, aber seriöse Markenwirkung",
+          "klare Kontakt- und Anfragewege",
+        ],
+      },
+      {
+        folio: "03",
+        eyebrow: "Anspruch",
+        title: "Was die Seite leisten sollte",
+        // Centered ceremonial pivot — same editorial role as Renova § 03.
+        variant: "centered",
+        body: [
+          "Die Website sollte auf den ersten Blick vermitteln: FS Mobility ist kein austauschbarer Fahrdienst, sondern eine moderne, persönliche und komfortable Mobilitätslösung für Kassel und Umgebung.",
+          "Wichtig war, Vertrauen aufzubauen, die Leistungen verständlich zu strukturieren und den elektrischen Charakter der Marke nicht technisch, sondern emotional erlebbar zu machen: leise, ruhig, komfortabel und verlässlich.",
+          "Gleichzeitig sollte die Seite eine starke Grundlage für lokale Sichtbarkeit schaffen — mit klaren Themen, sauberer Struktur und relevanten Suchbegriffen für den regionalen Markt.",
+        ],
+      },
+      {
+        folio: "04",
+        eyebrow: "Gestaltung",
+        title: "Design & Wirkung",
+        body: [
+          "Visuell sollte der Auftritt ruhig, reduziert und hochwertig wirken.",
+          "Keine überladene Taxi-Optik, keine lauten Farben, keine generische Stockfoto-Welt — sondern ein klarer Premium-Auftritt mit viel Weißraum, starker Typografie und selbst erstellten Bildern, die den Service greifbar machen.",
+          "Gerade bei einem Fahrdienst entscheidet Vertrauen sehr schnell über die Anfrage. Deshalb sollte die Website seriös, persönlich und hochwertig wirken, ohne distanziert oder kalt zu werden.",
+        ],
+      },
+      {
+        folio: "05",
+        eyebrow: "Bildwelt",
+        title: "Medien & Bildwelt",
+        body: [
+          "Ein zentraler Teil des Projekts war die eigene Bildwelt.",
+          "Die Medien wurden nicht als beiläufiges Dekor eingesetzt, sondern als tragender Bestandteil des Auftritts: Fahrzeug, Atmosphäre, Licht, Innenraum, Stadtbezug und Servicegefühl sollten zusammen eine klare visuelle Identität bilden.",
+          "Dadurch wirkt die Seite nicht wie ein Template, sondern wie ein echter Auftritt für ein reales lokales Unternehmen.",
+        ],
+      },
+      {
+        folio: "06",
+        eyebrow: "Sichtbarkeit",
+        title: "SEO-Grundlage",
+        body: [
+          "Neben Design und Bildwirkung spielte auch lokale Sichtbarkeit eine wichtige Rolle.",
+          "Die Seite wurde so aufgebaut, dass zentrale Leistungen, Einsatzgebiet und Suchbegriffe klar auffindbar sind — von Fahrdienst Kassel über Flughafentransfer bis Krankenfahrten und Chauffeur-Service.",
+          "Nicht als künstliche SEO-Textfläche, sondern als saubere inhaltliche Grundlage, die Nutzerführung und Auffindbarkeit miteinander verbindet.",
+        ],
+      },
+      {
+        folio: "07",
+        eyebrow: "Ergebnis",
+        title: "Ergebnis",
+        // Closing centered chord — qualitative résumé, no invented metrics.
+        variant: "centered",
+        body: [
+          "Das Ergebnis ist ein moderner, ruhiger und hochwertiger Webauftritt mit klarer Positionierung als elektrischer Premium-Fahrdienst in Kassel.",
+          "Die Seite verbindet starke eigene Medien, eine übersichtliche Leistungsstruktur, lokale SEO-Grundlagen und eine professionelle Nutzerführung zu einem digitalen Auftritt, der Vertrauen aufbaut und Anfragen erleichtert.",
+        ],
+        items: [
+          "moderner, hochwertiger Webauftritt",
+          "klare Positionierung als elektrischer Fahrdienst in Kassel",
+          "starke visuelle Eigenständigkeit durch eigene Medien",
+          "übersichtliche Leistungsstruktur",
+          "lokale SEO-Grundlage für Kassel und Umgebung",
+          "professioneller Ersteindruck für Privat-, Geschäfts- und Krankenfahrten",
+          "klare Kontakt- und Anfrageführung",
+        ],
+      },
+    ],
+
+    services: [
+      "Webdesign",
+      "Konzept & Content-Struktur",
+      "eigene Bildwelt",
+      "lokale SEO-Grundlage",
+      "responsive Umsetzung",
+      "ruhige, hochwertige Gesamtwirkung",
+    ],
+
+    relatedServices: [
+      {
+        to: "/websites-landingpages",
+        eyebrow: "Verwandt · Kern",
+        label: "Websites & Landing Pages",
+      },
+      {
+        to: "/webdesign-kassel",
+        eyebrow: "Verwandt · Region",
+        label: "Webdesign Kassel",
+      },
+      {
+        to: "/leistungen",
+        eyebrow: "Studio · Übersicht",
+        label: "Leistungen",
+      },
+      {
+        to: "/kontakt",
+        eyebrow: "Studio · Direkt",
+        label: "Kontakt",
+      },
+    ],
+
+    // SEO description override — keeps the title default ({title} –
+    // Projekt von MAGICKS Studio) consistent with Renova while
+    // anchoring positioning + local entity cues for AI/search.
+    seo: {
+      description:
+        "Minimalistischer, hochwertiger Webauftritt für einen elektrischen Fahrdienst in Kassel. Projekt von MAGICKS Studio mit eigener Bildwelt, lokaler SEO-Grundlage und klarer Content-Struktur.",
+    },
+
+    // metrics: intentionally omitted. No fabricated outcome data.
+  },
 ];
 
 /* ------------------------------------------------------------------

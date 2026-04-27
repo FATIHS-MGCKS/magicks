@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import { Hero } from "../components/home/Hero";
 import { ValueStatement } from "../components/home/ValueStatement";
 import { Services } from "../components/home/Services";
+import { Bildwelt } from "../components/home/Bildwelt";
 import { WhyMagicks } from "../components/home/WhyMagicks";
 import { About } from "../components/home/About";
 import { FinalCTA } from "../components/home/FinalCTA";
@@ -26,6 +27,7 @@ export default function HomePage() {
         <Hero />
         <ValueStatement />
         <Services />
+        <Bildwelt />
         <WhyMagicks />
         <About />
         <FinalCTA />

@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { ChapterMarker } from "../components/home/ChapterMarker";
 import { SectionTransition } from "../components/service/SectionTransition";
 import {
+  PROJECTS,
   type Project,
   type ProjectCaseSection,
   type ProjectImage,
@@ -76,6 +77,16 @@ function ProjectDetail({ project }: { project: Project }) {
   const seoTitle = projectSeoTitle(project);
   const seoDescription = projectSeoDescription(project);
   const seoImage = project.seo?.ogImage ?? project.cover?.src;
+
+  /* Folio number — derived from the project's position in the master
+   * PROJECTS array so every case study renders its own number ("01",
+   * "02", …) without hardcoding. Used by the masthead label, the
+   * editorial folio cue, and the cover plate folio. */
+  const projectIndex = PROJECTS.findIndex((p) => p.slug === project.slug);
+  const folioNumber = String(
+    (projectIndex >= 0 ? projectIndex : 0) + 1
+  ).padStart(2, "0");
+  const coverFolio = `F · ${folioNumber}`;
 
   // Pre-compute the gallery slot list — real images, padded with
   // empty plates up to GALLERY_MIN_SLOTS so the section always reads
@@ -235,9 +246,11 @@ function ProjectDetail({ project }: { project: Project }) {
                   aria-hidden
                   className="font-mono hidden items-center gap-3 whitespace-nowrap text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/42 sm:flex sm:text-[10px]"
                 >
-                  <span className="tabular-nums text-white/32">F · 01</span>
+                  <span className="tabular-nums text-white/32">
+                    F · {folioNumber}
+                  </span>
                   <span aria-hidden className="h-px w-5 bg-white/24" />
-                  <span>Projektakte · Renova</span>
+                  <span>Projektakte · {project.title}</span>
                 </div>
               </div>
 
@@ -277,7 +290,7 @@ function ProjectDetail({ project }: { project: Project }) {
                   </>
                 ) : null}
                 <span aria-hidden className="text-white/28">·</span>
-                <span className="text-white/44">Projekt 01</span>
+                <span className="text-white/44">Projekt {folioNumber}</span>
               </p>
 
               <h1
@@ -384,6 +397,7 @@ function ProjectDetail({ project }: { project: Project }) {
               cover={project.cover}
               title={project.title}
               publicUrl={project.publicUrl}
+              folio={coverFolio}
             />
           </div>
         </section>
@@ -1171,10 +1185,12 @@ function HeroCoverWide({
   cover,
   title,
   publicUrl,
+  folio,
 }: {
   cover?: ProjectImage;
   title: string;
   publicUrl?: string;
+  folio: string;
 }) {
   const urlLabel = publicUrl ? prettyUrl(publicUrl) : null;
 
@@ -1190,7 +1206,7 @@ function HeroCoverWide({
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/60 via-transparent to-transparent"
         />
-        <HeroCoverCaption folio="F · 01" label={title} live={urlLabel} />
+        <HeroCoverCaption folio={folio} label={title} live={urlLabel} />
       </div>
     );
   }
@@ -1238,7 +1254,7 @@ function HeroCoverWide({
       </div>
 
       <HeroCoverCaption
-        folio="F · 01"
+        folio={folio}
         label={`${title} · Bildmaterial folgt`}
         live={urlLabel}
         empty

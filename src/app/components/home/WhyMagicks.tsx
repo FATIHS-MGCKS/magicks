@@ -388,11 +388,12 @@ export function WhyMagicks() {
               id="why-heading"
               className="font-instrument text-[1.9rem] leading-[1.05] tracking-[-0.025em] text-white sm:text-[2.4rem] md:text-[2.95rem] lg:text-[3.3rem]"
             >
-              Kern der Arbeit. <em className="italic text-white/50">Nicht Aufsatz.</em>
+              Haltung in der Arbeit. <em className="italic text-white/50">Nicht nur im Text.</em>
             </h2>
             <p className="font-ui mt-8 max-w-xl text-[14.5px] leading-[1.7] text-white/50 md:mt-10 md:text-[15.5px]">
-              Vier Prinzipien. Sie entscheiden, was wir annehmen und was wir bewusst nicht machen.
-              Sie laufen nicht als Slogan im Kopf — sie laufen als Betriebssystem.
+              Vier Prinzipien geben unserer Arbeit Richtung. Sie helfen uns, Projekte bewusst
+              auszuwählen, Entscheidungen klar zu treffen und digitale Lösungen zu entwickeln,
+              die auch langfristig Bestand haben.
             </p>
           </div>
         </div>
