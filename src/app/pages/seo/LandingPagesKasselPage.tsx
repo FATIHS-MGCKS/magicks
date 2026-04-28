@@ -884,7 +884,7 @@ export default function LandingPagesKasselPage() {
                     aria-hidden
                     className="font-instrument text-[1.05em] italic text-white/85 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
                   >
-                    ↗
+                    ↗︎
                   </span>
                 </Link>
               </div>
@@ -1284,7 +1284,7 @@ export default function LandingPagesKasselPage() {
         {/* =========================================================
            § 03 — BEZUG (Kassel use-cases · who this is for)
            Two-column register. The 5-bullet list is rendered as a
-           numbered directory of intents, each prefixed by a "↘"
+           numbered directory of intents, each prefixed by a "↘︎"
            trajectory arrow to echo the hero's focal-axis motif.
         ========================================================= */}
         <section className="relative px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
@@ -1341,7 +1341,7 @@ export default function LandingPagesKasselPage() {
                         aria-hidden
                         className="font-instrument pt-[0.15rem] text-[1.05rem] italic leading-[1.2] text-white/46 sm:text-[1.1rem] md:text-[1.15rem]"
                       >
-                        ↘
+                        ↘︎
                       </span>
                       <p className="font-instrument max-w-[44rem] text-[1.18rem] leading-[1.35] tracking-[-0.012em] text-white/94 sm:text-[1.32rem] md:text-[1.48rem]">
                         {body}
@@ -1851,7 +1851,7 @@ export default function LandingPagesKasselPage() {
                           aria-hidden
                           className="font-instrument flex-shrink-0 text-[1.35rem] italic text-white/72 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover/link:-translate-y-[3px] group-hover/link:translate-x-[3px] md:text-[1.55rem]"
                         >
-                          ↗
+                          ↗︎
                         </span>
                       </div>
                     </Link>
@@ -1969,7 +1969,7 @@ export default function LandingPagesKasselPage() {
                     aria-hidden
                     className="font-instrument text-[1.1em] italic text-white/76 magicks-duration-hover magicks-ease-out transition-transform group-hover:-translate-y-[2px] group-hover:translate-x-[2px]"
                   >
-                    ↗
+                    ↗︎
                   </span>
                 </Link>
               </div>

@@ -14,9 +14,12 @@ export default function HomePage() {
 
   if (isHeroOnly) {
     return (
-      <main className="bg-transparent h-screen w-screen overflow-hidden">
-        <Hero />
-      </main>
+      <>
+        <style>{`html, body { overflow: hidden !important; background: transparent !important; margin: 0; padding: 0; }`}</style>
+        <main className="bg-transparent h-screen w-screen overflow-hidden">
+          <Hero />
+        </main>
+      </>
     );
   }
 

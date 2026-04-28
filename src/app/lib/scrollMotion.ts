@@ -64,16 +64,24 @@ export type PresenceEnvelopeOptions = {
   holdRatio?: number;
   /** Apply to each item with a stagger offset (in timeline seconds). */
   stagger?: number;
+  /**
+   * Length of the exit phase relative to the entry phase. `1` is fully
+   * symmetric (default — preserves prior behaviour). `>1` makes the
+   * exit slower than the entry (e.g. `2` = exit covers twice as much
+   * scroll distance as the entry), so the element lingers as the next
+   * section takes over instead of vanishing on a single wheel notch.
+   */
+  exitWeight?: number;
 };
 
 /**
  * Bidirectional presence envelope.
  *
- * Builds a 2-unit scrubbed timeline where the element:
+ * Builds a scrubbed timeline where the element:
  *   · starts at opacityFloor, blurred, displaced by yFrom
- *   · ramps to 1 / no blur / 0 during the entry half
+ *   · ramps to 1 / no blur / 0 during the entry phase
  *   · holds at full focus across `holdRatio`
- *   · releases symmetrically during the exit half
+ *   · releases during the exit phase (length = entry × exitWeight)
  *
  * Everything is reversible because progress is driven by scroll.
  */
@@ -90,14 +98,20 @@ export function presenceEnvelope(
     opacityFloor = 0,
     holdRatio = 0.42,
     stagger = 0,
+    exitWeight = 1,
   }: PresenceEnvelopeOptions = {},
 ) {
   const targets = Array.isArray(target) ? target : [target];
   if (!targets.length) return;
 
-  const halfHold = holdRatio / 2;
-  const entryEnd = 0.5 - halfHold;
-  const exitStart = 0.5 + halfHold;
+  // Split the non-hold timeline between entry and exit using exitWeight.
+  // entryFraction + exitFraction = 1 - holdRatio
+  // exitFraction = entryFraction * exitWeight
+  const nonHold = Math.max(0, 1 - holdRatio);
+  const entryFraction = nonHold / (1 + exitWeight);
+  const exitFraction = nonHold - entryFraction;
+  const entryEnd = entryFraction;
+  const exitStart = entryEnd + holdRatio;
   const blurPx = adaptBlur(blur);
   const yFromPx = adaptY(yFrom);
   const yToPx = adaptY(yTo);

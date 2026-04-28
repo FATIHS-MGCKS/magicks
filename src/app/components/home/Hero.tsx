@@ -332,19 +332,19 @@ export function Hero() {
       {/* Main content column */}
       <div
         data-hero-copy
-        className="relative z-10 flex flex-1 items-center px-6 pb-28 pt-24 sm:px-10 sm:pb-32 md:px-20 md:pb-36 md:pt-32 lg:px-28 lg:pb-40"
+        className="relative z-10 flex flex-1 items-center px-6 pb-28 pt-24 sm:px-10 sm:pb-32 md:px-20 md:pb-36 md:pt-32 lg:px-20 lg:pb-40 xl:px-28"
       >
         <div className="layout-max w-full">
-          <div className="max-w-[min(44rem,82vw)]">
+          <div className="mx-auto max-w-[min(46rem,84vw)] text-center md:max-w-[min(58rem,90vw)] lg:max-w-[min(68rem,88vw)] xl:max-w-[min(76rem,86vw)]">
             <h1
               id="hero-heading"
-              className="font-instrument text-[2.9rem] leading-[0.94] tracking-[-0.038em] text-white sm:text-[4rem] md:text-[5.2rem] lg:text-[6.2rem] xl:text-[7.1rem]"
+              className="font-instrument text-[3.05rem] leading-[0.94] tracking-[-0.038em] text-white sm:text-[4.25rem] md:text-[5.5rem] lg:text-[6.55rem] xl:text-[7.5rem]"
             >
-              <span className="block">
+              <span className="block lg:whitespace-nowrap">
                 {LINE_A.map((w, i) => (
                   <span
                     key={`a-${i}`}
-                    className="mr-[0.18em] inline-block overflow-hidden align-bottom"
+                    className="mr-[0.18em] inline-block overflow-hidden align-bottom last:mr-0"
                   >
                     <span data-hero-a className="inline-block will-change-[transform,opacity]">
                       {w}
@@ -356,7 +356,7 @@ export function Hero() {
                 {LINE_B.map((w, i) => (
                   <span
                     key={`b-${i}`}
-                    className="mr-[0.18em] inline-block overflow-hidden align-bottom"
+                    className="mr-[0.18em] inline-block overflow-hidden align-bottom last:mr-0"
                   >
                     <span data-hero-b className="inline-block will-change-[transform,opacity]">
                       {w}
@@ -368,13 +368,22 @@ export function Hero() {
 
             {/* Editorial sub-line — quiet H2 carrying the primary local +
                 service vocabulary so the homepage anchors a crawlable
-                topic underneath the brand-poetic H1. Visible at every
-                viewport; tracking and size step up as space allows. */}
+                topic underneath the brand-poetic H1.
+                Type: Instrument Serif at reading size (matches the H1
+                family) with the locale ("Webagentur aus Kassel") set
+                in italic as a focal accent and the offer list rendered
+                Roman. The italic / Roman split echoes the H1's "block
+                + italic" couplet, so the trio reads as one breath
+                rather than three disconnected layers. */}
             <h2
               data-hero-subline
-              className="font-ui mt-6 max-w-[34ch] text-[11.5px] font-medium uppercase leading-[1.55] tracking-[0.16em] text-white/55 sm:mt-8 sm:max-w-[40ch] sm:text-[12.5px] sm:tracking-[0.18em] md:mt-10 md:max-w-[46ch] md:text-[13px] md:tracking-[0.2em]"
+              className="font-instrument mx-auto mt-7 max-w-[40ch] text-[15.5px] leading-[1.55] tracking-[-0.002em] text-white/82 sm:mt-9 sm:max-w-[48ch] sm:text-[17px] md:mt-11 md:max-w-[56ch] md:text-[19px] lg:max-w-[62ch] lg:text-[20.5px]"
             >
-              Webagentur aus Kassel — Websites, Shops, Web-Software &amp; KI-Automationen.
+              <em className="italic text-white/95">Webagentur aus Kassel</em>
+              <span aria-hidden className="mx-[0.45em] text-white/45">
+                —
+              </span>
+              Websites, Shops, Web-Software &amp; KI-Automationen.
             </h2>
 
             {/* Text-link CTA — magazine-style dual underline, no glass pill.
@@ -389,7 +398,7 @@ export function Hero() {
                 // baseline locks onto the label's baseline so it never
                 // drifts low on mobile. min-h-11 + py-1 keep the touch
                 // target ≥ 44 px below lg without affecting alignment.
-                className="group relative inline-flex min-h-11 items-baseline gap-3 py-1 text-[15px] font-medium tracking-[-0.005em] text-white no-underline sm:text-[16px] md:text-[17px] lg:min-h-0 lg:py-0"
+                className="group relative inline-flex min-h-11 items-baseline gap-3 py-1 text-[16px] font-medium tracking-[-0.005em] text-white no-underline sm:text-[17px] md:text-[18.5px] lg:min-h-0 lg:py-0"
                 aria-label="Projekt besprechen"
               >
                 <span className="relative pb-3">

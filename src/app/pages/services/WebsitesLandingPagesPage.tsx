@@ -381,7 +381,7 @@ export default function WebsitesLandingPagesPage() {
                     aria-hidden
                     className="font-instrument text-[1.05em] italic text-white/85 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
                   >
-                    ↗
+                    ↗︎
                   </span>
                 </Link>
               </div>
@@ -812,7 +812,7 @@ export default function WebsitesLandingPagesPage() {
                             aria-hidden
                             className="font-instrument text-[1em] italic text-white/72 transition-transform duration-[520ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[2px]"
                           >
-                            ↗
+                            ↗︎
                           </span>
                         </Link>
                         <p className="font-ui mt-2 max-w-md text-[13.5px] leading-[1.62] text-white/56 md:text-[14px]">

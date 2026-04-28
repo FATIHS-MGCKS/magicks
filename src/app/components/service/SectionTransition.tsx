@@ -2,7 +2,7 @@
  * Directional chapter transition sliver — sits between sections of a landing page.
  *
  * Replaces the generic `.section-top-rule` with an editorial pointer:
- * `—————  ↘ § 02  Substanz  ·  Zielbild  —————`
+ * `—————  ↘︎ § 02  Substanz  ·  Zielbild  —————`
  *
  * It threads the document forward without adding visual noise and without
  * duplicating any ChapterMarker that already lives inside the next section.
@@ -41,7 +41,7 @@ export function SectionTransition({
             aria-hidden
             className="font-mono flex-shrink-0 text-[10px] font-medium leading-none tracking-[0.3em] text-white/48 sm:text-[9.5px] sm:text-white/38 md:text-[10px]"
           >
-            ↘
+            ↘︎
           </span>
 
           <span className="font-mono whitespace-nowrap text-[9.5px] font-medium uppercase leading-none tracking-[0.22em] text-white/64 sm:tracking-[0.42em] sm:text-white/58 md:text-[10px]">

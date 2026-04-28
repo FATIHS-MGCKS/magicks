@@ -375,7 +375,7 @@ function ProjectDetail({ project }: { project: Project }) {
                       aria-hidden
                       className="font-instrument text-[1.05rem] italic text-white/76 transition-transform duration-[480ms] group-hover/live:-translate-y-[2px] group-hover/live:translate-x-[2px] md:text-[1.12rem]"
                     >
-                      ↗
+                      ↗︎
                     </span>
                   </a>
                 ) : null}
@@ -431,7 +431,7 @@ function ProjectDetail({ project }: { project: Project }) {
                       rel="noopener noreferrer"
                       className="font-mono tabular-nums text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-white/86 no-underline transition-colors hover:text-white sm:text-[11px]"
                     >
-                      {prettyUrl(project.publicUrl)} ↗
+                      {prettyUrl(project.publicUrl)} ↗︎
                     </a>
                   ) : (
                     "—"
@@ -688,7 +688,7 @@ function ProjectDetail({ project }: { project: Project }) {
                             aria-hidden
                             className="font-instrument flex-shrink-0 text-[1.25rem] italic text-white/72 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover/rl:-translate-y-[3px] group-hover/rl:translate-x-[3px] md:text-[1.45rem]"
                           >
-                            ↗
+                            ↗︎
                           </span>
                         </div>
                       </Link>
@@ -1381,7 +1381,7 @@ function GalleryTile({
             Live
           </span>
           <span className="font-instrument text-[1rem] italic text-white/82 transition-transform duration-[480ms] group-hover/plate:-translate-y-[2px] group-hover/plate:translate-x-[2px] md:text-[1.05rem]">
-            ↗
+            ↗︎
           </span>
         </span>
       ) : null}

@@ -34,7 +34,7 @@ export function ContextualCrossLink({
       <div className="mb-10 flex items-center gap-5 sm:mb-14 md:mb-16">
         <span aria-hidden className="h-px w-10 bg-white/24 sm:w-16" />
         <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/46 sm:text-[10.5px]">
-          ↘ {eyebrow}
+          ↘︎ {eyebrow}
         </span>
         <span aria-hidden className="h-px flex-1 bg-white/12" />
       </div>
@@ -67,7 +67,7 @@ export function ContextualCrossLink({
               aria-hidden
               className="font-instrument text-[1.1em] italic text-white/82 transition-transform duration-[560ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
             >
-              ↗
+              ↗︎
             </span>
           </Link>
 

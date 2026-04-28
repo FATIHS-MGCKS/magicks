@@ -1047,7 +1047,7 @@ export default function ContactPage() {
                     aria-hidden
                     className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.36em] text-white/0 transition-[color,transform] duration-[560ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-[2px] group-hover:text-white/62 sm:text-[10.5px]"
                   >
-                    ↘ Mail öffnen
+                    ↘︎ Mail öffnen
                   </span>
                 </a>
               </div>

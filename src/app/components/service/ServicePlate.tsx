@@ -185,7 +185,7 @@ export function ServicePlate({
                     aria-hidden
                     className="font-instrument text-[1.08em] italic text-white/88 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
                   >
-                    ↗
+                    ↗︎
                   </span>
                 </Link>
               </div>

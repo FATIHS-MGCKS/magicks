@@ -198,14 +198,22 @@ export function WhyMagicks() {
         holdRatio: 0.6,
       });
 
+      // Intro lingers on exit. Its job is to introduce the four
+      // principles, so it should still be visible (a touch hazy, a
+      // touch lifted) while the first row already claims focus —
+      // not blink out on a single wheel notch. Range pulled past
+      // the section center, exit phase weighted ~3× the entry so
+      // the release is calm rather than abrupt.
       presenceEnvelope(intro, {
         trigger: root,
         start: "top 92%",
-        end: "top 26%",
+        end: "top -10%",
         yFrom: 20,
         yTo: -10,
         blur: 4,
-        holdRatio: 0.58,
+        holdRatio: 0.42,
+        exitWeight: 3,
+        scrub: 1.1,
       });
 
       // ─── Per-row focus envelope ──────────────────────────────────────
@@ -412,12 +420,15 @@ export function WhyMagicks() {
             <li
               key={p.sup}
               data-why-row
-              className={`relative grid items-start gap-x-6 gap-y-4 py-12 sm:gap-x-10 sm:py-16 md:grid-cols-[minmax(56px,80px)_minmax(0,1fr)_minmax(220px,360px)] md:gap-x-16 md:py-24 lg:gap-x-20 lg:py-28 ${
+              className={`relative grid items-start gap-x-5 gap-y-5 py-12 [grid-template-areas:'sup_sup'_'headline_note'] [grid-template-columns:minmax(0,1fr)_minmax(0,38%)] sm:gap-x-8 sm:py-16 sm:[grid-template-columns:minmax(0,1fr)_minmax(0,40%)] md:gap-x-16 md:py-24 md:[grid-template-areas:'sup_headline_note'] md:[grid-template-columns:minmax(56px,80px)_minmax(0,1fr)_minmax(220px,360px)] lg:gap-x-20 lg:py-28 ${
                 i > 0 ? "border-t border-white/[0.06]" : ""
               }`}
             >
-              {/* Hanging superscript numeral */}
-              <span className="flex items-start justify-start md:justify-end md:pt-[0.85rem]">
+              {/* Hanging superscript numeral.
+                  On mobile this spans the full top row above the
+                  headline + note pair (grid-area "sup" defined as
+                  "sup sup"). On md+ it sits as a left-margin column. */}
+              <span className="flex items-start justify-start [grid-area:sup] md:justify-end md:pt-[0.85rem]">
                 <span
                   data-why-sup
                   className="why-superscript text-[1.4rem] will-change-[opacity,filter] sm:text-[1.65rem] md:text-[1.9rem]"
@@ -426,11 +437,15 @@ export function WhyMagicks() {
                 </span>
               </span>
 
-              {/* Statement — giant serif, two lines */}
+              {/* Statement — giant serif, two lines.
+                  Mobile size lowered (1.65rem instead of 2rem) so the
+                  display serif still breaks cleanly into its intended
+                  two lines once a marginalia column sits next to it
+                  on phone widths. */}
               <h3
-                className={`font-instrument tracking-[-0.028em] ${
+                className={`font-instrument tracking-[-0.028em] [grid-area:headline] ${
                   p.tone === "hush" ? "text-white/82" : "text-white"
-                } text-[2rem] leading-[0.98] sm:text-[2.9rem] md:text-[4rem] lg:text-[4.6rem] xl:text-[5.2rem]`}
+                } text-[1.65rem] leading-[1.02] sm:text-[2.3rem] sm:leading-[1] md:text-[4rem] md:leading-[0.98] lg:text-[4.6rem] xl:text-[5.2rem]`}
               >
                 <span className="block overflow-hidden">
                   <span data-why-line className="block will-change-transform">
@@ -449,13 +464,20 @@ export function WhyMagicks() {
                 ) : null}
               </h3>
 
-              {/* Marginalia — narrow monospace column on the right */}
-              <aside className="md:pt-[1.1rem]">
+              {/* Marginalia — narrow monospace column. Sits to the
+                  right of the headline on every viewport now (used to
+                  stack underneath on mobile). The hairline mark
+                  hides on the very narrowest widths because at that
+                  size the column is too tight for an inline rule. */}
+              <aside className="[grid-area:note] md:pt-[1.1rem]">
                 <p
                   data-why-note
-                  className="font-mono max-w-[36ch] text-[11.5px] leading-[1.7] tracking-[0.04em] text-white/58 will-change-[opacity,filter] sm:text-[12px]"
+                  className="font-mono max-w-[36ch] text-[10.5px] leading-[1.65] tracking-[0.03em] text-white/58 will-change-[opacity,filter] sm:text-[11.5px] sm:leading-[1.7] sm:tracking-[0.04em] md:text-[12px]"
                 >
-                  <span aria-hidden className="mr-2 inline-block h-px w-6 bg-white/35 align-middle" />
+                  <span
+                    aria-hidden
+                    className="mr-2 hidden h-px w-5 bg-white/35 align-middle sm:inline-block sm:w-6"
+                  />
                   {p.note}
                 </p>
               </aside>

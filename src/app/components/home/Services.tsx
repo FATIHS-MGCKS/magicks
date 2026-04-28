@@ -87,40 +87,40 @@ const SERVICES: Service[] = [
 
 // ─── Laptop-screen perspective ───────────────────────────────────────────
 //
-// The laptop photo (2400 × 1500 px WebP, alpha preserved) has a TRUE
-// alpha hole in the shape of the screen. The four corners of that hole
-// — measured directly from the alpha channel — are the source of truth
-// for projecting the iframe onto the screen with correct perspective.
+// The laptop photo (4500 × 3000 px WebP, alpha hole punched) carries a
+// TRUE alpha hole in the shape of the screen. The four corners of that
+// hole — manually picked from the source PNG to perfectly exclude the
+// black bezel — are the source of truth for projecting the iframe
+// onto the screen with correct perspective.
 //
 // We render the iframe *behind* the photo at a fixed desktop resolution
 // (1440 × 900) and apply a `matrix3d()` 4-point homography that maps the
 // iframe's rectangle onto the screen quadrilateral. The alpha hole acts
 // as the natural mask — no clip-path needed.
 //
-// The corners below were detected via the alpha channel and then
-// expanded outward by 1 % L, 1 % top, 3 % R, 1 % bottom (relative to
-// the screen-quad bbox) so the iframe edges sit a hair past the alpha
-// edge — eliminates the hairline white sliver that would otherwise
-// appear at the screen's right and top edges.
+// Keeping the iframe pixel-perfect to the polygon means the MacBook's
+// actual bezel reads correctly around the live screen.
 
-/** Screen-corner positions in the native 2400×1500 WebP, clockwise from TL. */
+/** Screen-corner positions in the native 4500×3000 WebP, clockwise from TL. */
 const SCREEN_CORNERS_NATIVE: readonly [V2, V2, V2, V2] = [
-  [538, 290],
-  [1390, 217],
-  [1502, 862],
-  [662, 1047],
+  [1446, 837],
+  [3083, 700],
+  [3080, 1852],
+  [1478, 2070],
 ];
 
-const LAPTOP_PNG_W = 2400;
-const LAPTOP_PNG_H = 1500;
+const LAPTOP_PNG_W = 4500;
+const LAPTOP_PNG_H = 3000;
 
 /**
  * Horizontal `object-position` percentage on the laptop image. The
- * native image is 16:10 inside a 4:5 (taller) container — so half of
- * the width is cropped off at default `object-position: center`. We
- * shift slightly left of center so the screen's left edge isn't lost.
+ * native image is 3:2 inside a 4:5 (taller) container — so a wide
+ * strip of the width is cropped off. The screen sits slightly right
+ * of the image center (centroid x ≈ 2294 in a 4500-wide image), so
+ * we shift just past 50 % to land the screen's centroid on the
+ * container's centre line.
  */
-const LAPTOP_OBJECT_POSITION_X = 35; // %
+const LAPTOP_OBJECT_POSITION_X = 52; // %
 
 /** Native iframe resolution that gets perspective-mapped onto the screen. */
 const HERO_IFRAME_W = 1440;
@@ -635,37 +635,46 @@ export function Services() {
       }
 
       // ─── Section header ──────────────────────────────────────────────
-      // Wider entry triggers (top 98% → top ~30%) so chapter+headline+
-      // caption begin building the instant the section peeks — no cold
-      // frame between Value and Services.
+      // Wide entry triggers (top 98% → ~mid-section) so chapter +
+      // headline + caption begin building the instant the section
+      // peeks — no cold frame between Value and Services. Exit is
+      // weighted ~2.5× the entry so the headline anchors the spread
+      // while the reader scans the four service rows underneath
+      // instead of disappearing on a single wheel notch.
       presenceEnvelope(chapter, {
         trigger: root,
         start: "top 98%",
-        end: "top 34%",
+        end: "top 4%",
         yFrom: 16,
         yTo: -8,
         blur: 3,
-        holdRatio: 0.58,
+        holdRatio: 0.5,
+        exitWeight: 2.5,
+        scrub: 1.0,
       });
 
       presenceEnvelope(headline, {
         trigger: root,
         start: "top 96%",
-        end: "top 26%",
+        end: "top 0%",
         yFrom: 28,
         yTo: -12,
         blur: 5,
-        holdRatio: 0.6,
+        holdRatio: 0.5,
+        exitWeight: 2.8,
+        scrub: 1.05,
       });
 
       presenceEnvelope(caption, {
         trigger: root,
         start: "top 90%",
-        end: "top 22%",
+        end: "top 0%",
         yFrom: 20,
         yTo: -10,
         blur: 3.5,
-        holdRatio: 0.58,
+        holdRatio: 0.48,
+        exitWeight: 2.5,
+        scrub: 1.0,
       });
 
       // ─── Preview frame: entry + hold-breathing + exit ────────────────

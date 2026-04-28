@@ -740,7 +740,7 @@ export default function KiAutomationUnternehmenPage() {
                             aria-hidden
                             className="font-instrument text-[1.05em] italic text-white/85 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
                           >
-                            ↗
+                            ↗︎
                           </span>
                         </Link>
 
@@ -1661,7 +1661,7 @@ export default function KiAutomationUnternehmenPage() {
                                   aria-hidden
                                   className="font-instrument text-[1.1em] italic text-white/82 transition-transform duration-[560ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover/plate:-translate-y-[3px] group-hover/plate:translate-x-[3px] group-hover/link:-translate-y-[3px] group-hover/link:translate-x-[3px]"
                                 >
-                                  ↗
+                                  ↗︎
                                 </span>
                               </Link>
                             </div>

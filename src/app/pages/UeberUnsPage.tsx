@@ -847,7 +847,7 @@ export default function UeberUnsPage() {
                       aria-hidden
                       className="font-instrument text-[0.9em] italic text-white/70 transition-transform duration-500 group-hover:-translate-y-[2px] group-hover:translate-x-[2px]"
                     >
-                      ↗
+                      ↗︎
                     </span>
                   </Link>
                   .
@@ -897,7 +897,7 @@ export default function UeberUnsPage() {
                           aria-hidden
                           className="font-instrument relative text-[1.25em] italic text-white/62 transition-transform duration-500 group-hover:-translate-y-[2px] group-hover:translate-x-[3px] group-hover:text-white"
                         >
-                          ↗
+                          ↗︎
                         </span>
                       </Link>
                     </li>
@@ -1062,7 +1062,7 @@ export default function UeberUnsPage() {
                         aria-hidden
                         className="font-instrument text-[1.1em] italic text-white/82 transition-transform duration-[560ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
                       >
-                        ↗
+                        ↗︎
                       </span>
                     </Link>
                   </div>

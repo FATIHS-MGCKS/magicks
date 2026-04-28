@@ -36,8 +36,9 @@ export function About() {
     const ctx = gsap.context(() => {
       const chapter = root.querySelector<HTMLElement>("[data-about-chapter]");
       const quote = root.querySelector<HTMLElement>("[data-about-quote]");
-      const line1 = gsap.utils.toArray<HTMLElement>("[data-about-l1]");
-      const line2 = gsap.utils.toArray<HTMLElement>("[data-about-l2]");
+      const left = root.querySelector<HTMLElement>("[data-about-left]");
+      const center = root.querySelector<HTMLElement>("[data-about-center]");
+      const right = root.querySelector<HTMLElement>("[data-about-right]");
       const body = root.querySelector<HTMLElement>("[data-about-body]");
       const cta = root.querySelector<HTMLElement>("[data-about-cta]");
       const sign = root.querySelector<HTMLElement>("[data-about-sign]");
@@ -48,9 +49,12 @@ export function About() {
 
       if (reduced) {
         gsap.set(
-          [chapter, quote, ...line1, ...line2, body, cta, sign, rule, farewell, ...emphasis],
+          [chapter, quote, left, center, right, body, cta, sign, rule, ...emphasis].filter(
+            Boolean,
+          ) as HTMLElement[],
           {
             opacity: 1,
+            x: 0,
             y: 0,
             yPercent: 0,
             scale: 1,
@@ -113,65 +117,77 @@ export function About() {
       // page grid, it belongs to the moment of reading.
       horizontalDrift(chapter, { trigger: root, from: -0.6, to: 0.6, scrub: true });
 
-      // ─── Two-line statement: scrubbed mask-reveal ────────────────────
-      // Each word rides a yPercent mask. The scrub ties the arrival to
-      // the scroll, and the exit softens slightly rather than holding —
-      // that extra release is what makes the section feel alive.
-      const words1 = line1;
-      const words2 = line2;
+      // ─── Heading: "precise"-style focus collapse ─────────────────────
+      // Inspiration: countdown.substraterx.com.
+      //
+      // Choreography is sequential, not parallel. Substraterx's beat:
+      //   1. "precise" appears oversized and *holds* there for a long
+      //      stretch of scrolling — the eye locks onto it.
+      //   2. Continued scrolling shrinks it to its final size.
+      //   3. Only then do the surrounding words glide in from the
+      //      sides, around the (now small) anchor.
+      //
+      // We map that onto our scroll distance as four scroll-progress
+      // bands:
+      //
+      //   0  ──── 12 % ─── fade-in (Center surfaces oversized)
+      //  12 % ─── 42 % ─── hold     (Center stays big — the dwell)
+      //  42 % ─── 72 % ─── collapse (Center scales down to 1)
+      //  68 % ─── 100% ── slides   (Left & Right glide into place)
+      //
+      // The scroll range is `top 95% → top 28%` so the dwell happens
+      // while the heading is still travelling up through the lower
+      // half of the viewport, the collapse lands at roughly the
+      // viewport mid-line, and the flanks finish a bit above mid —
+      // exactly the rhythm of the reference site.
+      //
+      // `scrub: 1.4` lerps the playhead toward the actual scroll
+      // position over 1.4 s, which is what makes the choreography
+      // feel butter-smooth even with imperfect scrolling.
       const headingTrigger = heading ?? root;
 
-      words1.forEach((w, i) => {
-        gsap.set(w, { yPercent: 100, opacity: 0 });
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: headingTrigger,
-            start: "top 82%",
-            end: "bottom 35%",
-            scrub: 0.9,
-            invalidateOnRefresh: true,
-          },
-          defaults: { ease: "none" },
+      if (left && center && right) {
+        gsap.set(center, {
+          scale: 1.55,
+          opacity: 0,
+          transformOrigin: "0% 50%",
+          willChange: "transform, opacity",
         });
-        const eStart = 0.05 + i * 0.025;
-        const eEnd = 0.28 + i * 0.02;
-        const xStart = 0.72;
-        const xEnd = 0.96;
-        tl.fromTo(
-          w,
-          { yPercent: 100, opacity: 0 },
-          { yPercent: 0, opacity: 1, duration: eEnd - eStart, ease: "power2.out" },
-          eStart,
-        );
-        tl.to(w, { yPercent: 0, opacity: 1, duration: xStart - eEnd, ease: "none" }, eEnd);
-        tl.to(w, { yPercent: -22, opacity: 0.38, duration: xEnd - xStart, ease: "power2.in" }, xStart);
-      });
+        gsap.set(left, { x: -90, opacity: 0, willChange: "transform, opacity" });
+        gsap.set(right, { x: 90, opacity: 0, willChange: "transform, opacity" });
 
-      words2.forEach((w, i) => {
-        gsap.set(w, { yPercent: 100, opacity: 0 });
+        // Total timeline length ≈ 4.0 s; ScrollTrigger maps it onto
+        // the 67 %-of-viewport scroll distance. Tween positions are
+        // chosen so the four phases above land exactly on those
+        // scroll-progress percentages.
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: headingTrigger,
-            start: "top 82%",
-            end: "bottom 35%",
-            scrub: 0.9,
+            start: "top 95%",
+            end: "top 28%",
+            scrub: 1.4,
             invalidateOnRefresh: true,
           },
-          defaults: { ease: "none" },
+          defaults: { ease: "power2.inOut" },
         });
-        const eStart = 0.22 + i * 0.04;
-        const eEnd = 0.42 + i * 0.04;
-        const xStart = 0.74;
-        const xEnd = 0.96;
-        tl.fromTo(
-          w,
-          { yPercent: 100, opacity: 0 },
-          { yPercent: 0, opacity: 1, duration: eEnd - eStart, ease: "power2.out" },
-          eStart,
-        );
-        tl.to(w, { yPercent: 0, opacity: 1, duration: xStart - eEnd, ease: "none" }, eEnd);
-        tl.to(w, { yPercent: -22, opacity: 0.38, duration: xEnd - xStart, ease: "power2.in" }, xStart);
-      });
+
+        // Phase 1 (0 → ~12 %) — Center surfaces oversized.
+        tl.to(center, { opacity: 1, duration: 0.5, ease: "power2.out" }, 0);
+
+        // Phase 2 (~12 → 42 %) — held by the absence of a tween.
+        // GSAP keeps Center at scale 1.55 / opacity 1 until the next
+        // tween starts at 1.7 s on the timeline (≈ 42 % of 4.0 s).
+
+        // Phase 3 (~42 → 72 %) — Center collapses.
+        tl.to(center, { scale: 1, duration: 1.2, ease: "power3.inOut" }, 1.7);
+
+        // Phase 4 (~68 → 100 %) — Flanks glide in around the anchor.
+        // Slight head-start vs. the collapse-end so the eye sees the
+        // wings already approaching while the centre is still
+        // settling, rather than landing in a vacuum.
+        tl.to(left, { x: 0, opacity: 1, duration: 1.3, ease: "power2.inOut" }, 2.7)
+          .to(right, { x: 0, opacity: 1, duration: 1.3, ease: "power2.inOut" }, 2.7);
+      }
 
       // ─── Rule: bidirectional scale ───────────────────────────────────
       gsap.fromTo(
@@ -304,14 +320,11 @@ export function About() {
     return () => ctx.revert();
   }, [reduced]);
 
-  const LINE_1 = ["Wir", "sind", "keine", "klassische", "Agentur."];
-  const LINE_2 = ["Zum", "Glück."];
-
   return (
     <section
       ref={rootRef}
       id="ueber"
-      className="relative overflow-hidden bg-[#0B0A09] px-5 py-36 sm:px-8 sm:py-48 md:px-12 md:py-64 lg:px-16 lg:py-72"
+      className="relative overflow-hidden bg-[#0B0A09] px-5 py-36 sm:px-8 sm:py-48 md:px-12 md:py-64 lg:px-12 lg:py-72 xl:px-16"
       aria-labelledby="about-heading"
     >
       <div aria-hidden className="section-top-rule" />
@@ -327,34 +340,50 @@ export function About() {
       </div>
 
       <div className="relative z-10 layout-max">
-        <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20">
+        <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-14 lg:gap-16">
           <div data-about-chapter className="md:pt-2">
             <ChapterMarker num="04" label="Studio" />
           </div>
 
-          <div className="max-w-[52rem]">
+          <div className="max-w-[52rem] md:max-w-none">
+            {/* "Precise"-style focus collapse heading.
+                Layout matches the original two-line composition:
+                  Line 1: "Wir sind keine klassische Agentur."
+                  Line 2: "Zum Glück."   (italic, dimmed)
+                Animation re-arranges the entry, not the layout:
+                  · "Zum Glück." starts oversized in its final spot and
+                    collapses on `expo.out` to scale 1 — the "precise"
+                    beat that anchors the heading;
+                  · "Wir sind keine" slides in from the left and
+                    "klassische Agentur." slides in from the right,
+                    both arriving slightly behind the collapse so the
+                    eye tracks the center first. */}
             <h2
               id="about-heading"
               data-about-heading
-              className="font-instrument text-[2.4rem] leading-[0.96] tracking-[-0.038em] text-white sm:text-[3.2rem] md:text-[4.2rem] lg:text-[5rem] xl:text-[5.6rem]"
+              className="font-instrument text-[2.4rem] leading-[0.96] tracking-[-0.038em] text-white sm:text-[3.2rem] md:text-[3.8rem] lg:text-[4.4rem] xl:text-[5rem]"
             >
-              <span className="block">
-                {LINE_1.map((w, i) => (
-                  <span key={i} className="mr-[0.22em] inline-block overflow-hidden align-bottom">
-                    <span data-about-l1 className="inline-block will-change-transform">
-                      {w}
-                    </span>
-                  </span>
-                ))}
+              <span className="block lg:whitespace-nowrap">
+                <span
+                  data-about-left
+                  className="mr-[0.25em] inline-block will-change-[transform,opacity]"
+                >
+                  Wir sind keine
+                </span>
+                <span
+                  data-about-right
+                  className="inline-block will-change-[transform,opacity]"
+                >
+                  klassische Agentur.
+                </span>
               </span>
               <span className="mt-2 block italic text-white/58 sm:mt-3">
-                {LINE_2.map((w, i) => (
-                  <span key={i} className="mr-[0.22em] inline-block overflow-hidden align-bottom">
-                    <span data-about-l2 className="inline-block will-change-transform">
-                      {w}
-                    </span>
-                  </span>
-                ))}
+                <span
+                  data-about-center
+                  className="inline-block will-change-[transform,opacity]"
+                >
+                  Zum Glück.
+                </span>
               </span>
             </h2>
 

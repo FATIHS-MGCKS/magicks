@@ -77,14 +77,19 @@ export function ValueStatement() {
       }
 
       // ─── Chapter: presence envelope, enters as hero finishes dissolving ─
+      // Asymmetric exit so the chapter marker still anchors the spread
+      // while the reader is mid-paragraph instead of vanishing on a
+      // single wheel notch.
       presenceEnvelope(chapter, {
         trigger: root,
         start: "top 96%",
-        end: "top 28%",
+        end: "top 0%",
         yFrom: 14,
         yTo: -10,
         blur: 3,
-        holdRatio: 0.58,
+        holdRatio: 0.5,
+        exitWeight: 2.5,
+        scrub: 1.0,
       });
 
       // ─── Drop-cap: presence envelope + scroll-coupled breathing ───────

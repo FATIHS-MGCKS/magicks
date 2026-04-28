@@ -92,24 +92,32 @@ export function Bildwelt() {
       }
 
       // ─── Header & body envelopes ────────────────────────────────────
+      // Exit weighted ~2.5–3× the entry so the chapter marker and the
+      // "Bildwelt statt Platzhalter" headline anchor the spread
+      // through the supporting paragraphs and chip list instead of
+      // dissolving after a single wheel notch.
       presenceEnvelope(chapter, {
         trigger: root,
         start: "top 96%",
-        end: "top 32%",
+        end: "top 4%",
         yFrom: 14,
         yTo: -8,
         blur: 3,
-        holdRatio: 0.58,
+        holdRatio: 0.5,
+        exitWeight: 2.5,
+        scrub: 1.0,
       });
 
       presenceEnvelope(headline, {
         trigger: root,
         start: "top 92%",
-        end: "top 26%",
+        end: "top 0%",
         yFrom: 24,
         yTo: -10,
         blur: 4.5,
-        holdRatio: 0.6,
+        holdRatio: 0.5,
+        exitWeight: 2.8,
+        scrub: 1.05,
       });
 
       focusEnvelope(main, {

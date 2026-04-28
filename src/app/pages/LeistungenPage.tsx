@@ -866,7 +866,7 @@ export default function LeistungenPage() {
                     aria-hidden
                     className="font-instrument text-[1.05em] italic text-white/85 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
                   >
-                    ↗
+                    ↗︎
                   </span>
                 </Link>
               </div>
@@ -954,7 +954,7 @@ export default function LeistungenPage() {
                 <div className="mt-10 flex items-center gap-4 md:mt-14">
                   <span aria-hidden className="h-px w-10 bg-white/22 md:w-14" />
                   <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
-                    ↘ Weiter in § 02  Werk
+                    ↘︎ Weiter in § 02  Werk
                   </span>
                 </div>
               </div>
@@ -1221,7 +1221,7 @@ export default function LeistungenPage() {
                               aria-hidden
                               className="font-instrument text-[1em] italic text-white/82 transition-transform duration-[520ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[2px]"
                             >
-                              ↗
+                              ↗︎
                             </span>
                           </Link>
                         ) : null}
@@ -1517,7 +1517,7 @@ export default function LeistungenPage() {
                         aria-hidden
                         className="font-instrument text-[1.08em] italic text-white/88 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
                       >
-                        ↗
+                        ↗︎
                       </span>
                     </Link>
                   </div>
