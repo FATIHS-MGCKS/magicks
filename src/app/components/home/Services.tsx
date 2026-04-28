@@ -182,8 +182,66 @@ function LaptopScreenIframe() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [ready, setReady] = useState(false);
 
+  // Pinch-zoom safety unmount.
+  //
+  // Pinch-zooming on mobile while a same-origin iframe (with its own
+  // React app, GSAP timelines, hero video, signature SVGs, etc.) is
+  // mounted is the single biggest memory pressure event we can
+  // create on a phone. iOS Safari's per-tab cap is ~384 MB and
+  // budget Android devices often have far less. The OS reaction is
+  // to terminate the WebView — the tab "crashes" and reloads.
+  //
+  // The cleanest fix is to keep the iframe out of the DOM for the
+  // duration of the gesture. We listen to `visualViewport` (the only
+  // reliable API for detecting pinch-zoom across iOS Safari, Chrome
+  // for Android, and Samsung Internet) and unmount as soon as the
+  // user starts to zoom. We delay the remount until the page has
+  // sat at scale ≈ 1 for 600 ms, so a quick zoom-out-zoom-in
+  // doesn't thrash mount/unmount repeatedly.
+  const [zoomedOut, setZoomedOut] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    let raf: number | null = null;
+    let restoreTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const onChange = () => {
+      if (raf !== null) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        const isZoomed = vv.scale > 1.02;
+        if (isZoomed) {
+          if (restoreTimer) {
+            clearTimeout(restoreTimer);
+            restoreTimer = null;
+          }
+          setZoomedOut(true);
+        } else {
+          if (restoreTimer) clearTimeout(restoreTimer);
+          restoreTimer = setTimeout(() => {
+            setZoomedOut(false);
+            restoreTimer = null;
+          }, 600);
+        }
+      });
+    };
+
+    vv.addEventListener("resize", onChange);
+    vv.addEventListener("scroll", onChange);
+
+    return () => {
+      vv.removeEventListener("resize", onChange);
+      vv.removeEventListener("scroll", onChange);
+      if (raf !== null) cancelAnimationFrame(raf);
+      if (restoreTimer) clearTimeout(restoreTimer);
+    };
+  }, []);
+
   // (Re)apply the perspective matrix whenever the wrapper resizes OR
-  // the iframe gets mounted (gated behind `ready`).
+  // the iframe gets mounted (gated behind `ready` and the pinch-zoom
+  // safety unmount).
   useLayoutEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
@@ -264,7 +322,11 @@ function LaptopScreenIframe() {
       iframeEl?.removeEventListener("load", tryPlay);
       if (retryTimer) clearInterval(retryTimer);
     };
-  }, [ready]);
+    // `zoomedOut` is in the dep list so the matrix re-applies after a
+    // pinch-zoom remount — without it, the freshly mounted iframe
+    // would inherit no transform and snap to the top-left of its
+    // 1440×900 source rectangle.
+  }, [ready, zoomedOut]);
 
   // Mount gating:
   //  · Mounts on every viewport — the live hero (eyebrow, headline,
@@ -311,7 +373,7 @@ function LaptopScreenIframe() {
       aria-hidden
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#0A0A0B]"
     >
-      {ready && (
+      {ready && !zoomedOut && (
         <iframe
           ref={iframeRef}
           src="/?hero-only=true"
