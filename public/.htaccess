@@ -29,7 +29,7 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 #    Uncomment + adjust once a non-www vs. www decision is locked in.
 # ------------------------------------------------------------------
 # RewriteCond %{HTTP_HOST} ^www\.magicks\.studio$ [NC]
-# RewriteRule ^(.*)$ https://magicks.studio/$1 [L,R=301]
+# RewriteRule ^(.*)$ https://magicks.de/$1 [L,R=301]
 
 # ------------------------------------------------------------------
 # 3) Legacy slug redirects — permanent (301).

@@ -15,7 +15,7 @@ import type { BreadcrumbItem, ServiceMeta } from "./schema";
  *   social platforms reject SVG previews.
  */
 
-export const SITE_URL = "https://magicks.studio";
+export const SITE_URL = "https://magicks.de";
 export const SITE_NAME = "MAGICKS Studio";
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`;
 /** Historical fallback — kept so older references still resolve. */

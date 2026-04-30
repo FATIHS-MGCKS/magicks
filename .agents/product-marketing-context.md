@@ -40,7 +40,7 @@ einer Hand. KI als Werkzeug, das Tempo und Qualität gleichzeitig hebt.
 | **Sprachen** | DE primär · EN sekundär |
 | **Hosting-Infrastruktur** | Hostinger (NICHT Vercel — bei jeder Erwähnung kontrollieren) |
 | **Kontakt-Email** | hello@magicks.de (NICHT hello@magicks.studio — überall korrigieren) |
-| **Domains** | magicks.studio (kanonisch im Code) · magicks.de (E-Mail-Domain) |
+| **Domains** | magicks.de (kanonisch in Code, SEO und E-Mail) — magicks.studio ist abgelöst |
 | **Status** | Established 2024 · aktive Mandate seit MMXXIV |
 
 ---

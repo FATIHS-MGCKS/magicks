@@ -69,4 +69,4 @@ Allow: /
 User-agent: CCBot
 Disallow: /
 
-Sitemap: https://magicks.studio/sitemap.xml
+Sitemap: https://magicks.de/sitemap.xml

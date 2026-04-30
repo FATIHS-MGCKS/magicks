@@ -418,7 +418,7 @@ export default function DatenschutzPage() {
               to="/datenschutz"
               className="text-white/88 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
             >
-              magicks.studio/datenschutz
+              magicks.de/datenschutz
             </Link>{" "}
             abgerufen werden.
           </p>
