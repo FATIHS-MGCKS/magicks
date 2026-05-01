@@ -19,8 +19,43 @@ import {
   type LeadEnrichmentResult,
   GeminiError,
 } from "../data/gemini";
-import type { Lead } from "../data/types";
+import type { Lead, WebsiteCheckBucket } from "../data/types";
 import { portalStore } from "../hooks/useStore";
+
+/**
+ * Map a free-text website check (either Gemini's suggestion or the
+ * existing `websiteCheck` string) to one of the enum buckets used by
+ * the Lead-Detail dropdown. Order matters: most specific first so
+ * "Nur Facebook/Instagram" wins over a generic "Keine Website".
+ */
+function mapWebsiteCheckToBucket(text: string): WebsiteCheckBucket | undefined {
+  const t = text.toLowerCase();
+  if (t.includes("nur facebook") || t.includes("nur instagram")) {
+    return "Nur Facebook/Instagram";
+  }
+  if (t.includes("linktree") || t.includes("profilseite")) {
+    return "Nur Linktree/Profilseite";
+  }
+  if (
+    t.includes("keine website") ||
+    t.includes("keine webseite") ||
+    t.includes("keine eigene website") ||
+    t.includes("nicht gefunden")
+  ) {
+    return "Keine Website gefunden";
+  }
+  if (t.includes("nicht passend")) return "Nicht passend";
+  if (t.includes("schwach") || t.includes("baukasten") || t.includes("site123")) {
+    return "Website schwach";
+  }
+  if (t.includes("website gut") || t.includes("modern") || t.includes("solide")) {
+    return "Website gut";
+  }
+  if (t.includes("website gefunden") || t.includes("vorhanden")) {
+    return "Website gefunden";
+  }
+  return undefined;
+}
 
 interface AutoCheckModalProps {
   lead: Lead;
@@ -248,9 +283,20 @@ export function AutoCheckModal({ lead, onClose }: AutoCheckModalProps) {
           case "ratingSignal":
             patch.ratingSignal = value;
             break;
-          case "websiteCheck":
+          case "websiteCheck": {
             patch.websiteCheck = value;
+            const bucket = mapWebsiteCheckToBucket(value);
+            if (bucket) {
+              patch.websiteCheckBucket = bucket;
+              // If Gemini explicitly says no website exists, also clear
+              // any stale URL on the lead so the UI is consistent and
+              // the next-best-step recompute reacts correctly.
+              if (bucket === "Keine Website gefunden") {
+                patch.website = undefined;
+              }
+            }
             break;
+          }
           case "social.instagram":
             social.instagram = value;
             break;
@@ -271,6 +317,19 @@ export function AutoCheckModal({ lead, onClose }: AutoCheckModalProps) {
       };
 
       for (const row of rows) setIf(row.key, row.label, row.suggested);
+
+      // If the user accepted a fresh website URL but did NOT explicitly
+      // accept a websiteCheck bucket, default the bucket to
+      // "Website gefunden" — but only when the existing bucket is still
+      // empty/Unbekannt, so we never overwrite a deliberate manual choice.
+      if (
+        picks.website &&
+        !picks.websiteCheck &&
+        patch.website &&
+        (!lead.websiteCheckBucket || lead.websiteCheckBucket === "Unbekannt")
+      ) {
+        patch.websiteCheckBucket = "Website gefunden";
+      }
 
       if (
         Object.keys(social).length > 0 &&
