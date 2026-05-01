@@ -24,6 +24,7 @@ import {
   type ProjectType,
   type WebsiteCheckBucket,
 } from "../data/types";
+import { AutoCheckModal } from "../components/AutoCheckModal";
 
 export default function LeadDetailPage() {
   const { id = "" } = useParams<{ id: string }>();
@@ -44,6 +45,9 @@ export default function LeadDetailPage() {
     };
   });
 
+  const settings = useStore((s) => s.getSettings());
+  const geminiReady = !!settings.geminiApiKey;
+
   const [activityChannel, setActivityChannel] = useState<ActivityChannel>("Anruf");
   const [activityNote, setActivityNote] = useState("");
   const [taskTitle, setTaskTitle] = useState("");
@@ -54,6 +58,7 @@ export default function LeadDetailPage() {
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [projectType, setProjectType] = useState<ProjectType>("Website");
+  const [autoCheckOpen, setAutoCheckOpen] = useState(false);
 
   if (!lead) {
     return (
@@ -137,6 +142,19 @@ export default function LeadDetailPage() {
         description={lead.city ? `${lead.city}${lead.industry ? ` · ${lead.industry}` : ""}` : lead.industry}
         actions={
           <>
+            <button
+              type="button"
+              onClick={() => setAutoCheckOpen(true)}
+              disabled={!geminiReady}
+              title={
+                geminiReady
+                  ? "Gemini-Recherche mit Google-Suche starten"
+                  : "Bitte unter Einstellungen → KI-Recherche einen Gemini-API-Key hinterlegen"
+              }
+              className="rounded-md border border-amber-300/30 bg-amber-300/[0.10] px-3 py-1.5 text-[12.5px] font-medium text-amber-100 transition hover:bg-amber-300/[0.18] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Auto-Check (Gemini)
+            </button>
             <button
               type="button"
               onClick={() => setShowCustomerForm((v) => !v)}
@@ -319,12 +337,28 @@ export default function LeadDetailPage() {
             ) : null}
           </Card>
 
+          {/* Pitch suggestion (only when present, e.g. after Auto-Check) */}
+          {lead.pitchSuggestion ? (
+            <Card title="Pitch-Vorschlag">
+              <p className="text-[13.5px] leading-relaxed text-amber-50/95">
+                {lead.pitchSuggestion}
+              </p>
+              {lead.enrichedAt ? (
+                <div className="mt-2 text-[11px] text-white/35">
+                  Aus Auto-Check vom {formatDateTime(lead.enrichedAt)}
+                </div>
+              ) : null}
+            </Card>
+          ) : null}
+
           {/* Contact / source / research --------------------------- */}
           <Card title="Kontakt & Quelle">
             <dl className="grid gap-3 text-[13px] sm:grid-cols-2">
               <DefRow label="Telefon" value={lead.phone} href={lead.phone ? `tel:${lead.phone}` : undefined} />
               <DefRow label="E-Mail" value={lead.email} href={lead.email ? `mailto:${lead.email}` : undefined} />
               <DefRow label="Website" value={lead.website} href={lead.website ?? undefined} />
+              <DefRow label="Adresse" value={lead.address} />
+              <DefRow label="Öffnungszeiten" value={lead.openingHours} />
               <DefRow label="Entfernung" value={lead.distanceFromKassel} />
               <DefRow
                 label="Quelle"
@@ -333,6 +367,38 @@ export default function LeadDetailPage() {
               />
               <DefRow label="Bewertungssignal" value={lead.ratingSignal} />
             </dl>
+            {lead.social && Object.values(lead.social).some(Boolean) ? (
+              <div className="mt-4 border-t border-white/[0.06] pt-3">
+                <div className="mb-2 text-[10.5px] uppercase tracking-[0.14em] text-white/40">
+                  Social Media
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {(
+                    [
+                      ["instagram", "Instagram"],
+                      ["facebook", "Facebook"],
+                      ["tiktok", "TikTok"],
+                      ["linkedin", "LinkedIn"],
+                      ["youtube", "YouTube"],
+                    ] as const
+                  ).map(([key, label]) => {
+                    const url = lead.social?.[key];
+                    if (!url) return null;
+                    return (
+                      <a
+                        key={key}
+                        href={url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-md border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[12px] text-white/85 hover:bg-white/[0.07]"
+                      >
+                        {label}
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
             {lead.researchNote ? (
               <div className="mt-4 rounded-md border border-white/[0.06] bg-white/[0.015] p-3 text-[13px] leading-relaxed text-white/75">
                 <div className="mb-1 text-[10.5px] uppercase tracking-[0.14em] text-white/40">
@@ -520,6 +586,10 @@ export default function LeadDetailPage() {
         onConfirm={onArchive}
         onCancel={() => setConfirmArchive(false)}
       />
+
+      {autoCheckOpen ? (
+        <AutoCheckModal lead={lead} onClose={() => setAutoCheckOpen(false)} />
+      ) : null}
     </>
   );
 }

@@ -114,6 +114,26 @@ export interface Lead {
   phone?: string;
   email?: string;
   website?: string;
+  /** Verified business address from Google. */
+  address?: string;
+  /** "08:00–18:00 Mo–Fr" or similar free-text. */
+  openingHours?: string;
+  /** Aggregated Google rating (e.g. 4.6). */
+  googleRating?: number;
+  /** Number of Google reviews backing the rating. */
+  googleReviewCount?: number;
+  /** Social media URLs detected by Auto-Check. */
+  social?: {
+    instagram?: string;
+    facebook?: string;
+    tiktok?: string;
+    linkedin?: string;
+    youtube?: string;
+  };
+  /** ISO timestamp of the last successful Auto-Check enrichment. */
+  enrichedAt?: string;
+  /** Auto-Check pitch suggestion produced by Gemini for B/C leads. */
+  pitchSuggestion?: string;
   ratingSignal?: string;
   websiteCheck?: string;
   websiteCheckBucket?: WebsiteCheckBucket;
@@ -260,6 +280,14 @@ export interface PortalSettings {
    */
   schemaVersion: number;
   updatedAt: string;
+  /**
+   * Personal Gemini API key used for the Auto-Check feature on the
+   * lead detail page. Stored in the same Supabase row as the rest of
+   * portal_state — RLS already restricts access to the owner email.
+   */
+  geminiApiKey?: string;
+  /** Default Gemini model used by Auto-Check. Falls back to gemini-2.5-flash. */
+  geminiModel?: string;
 }
 
 /** Top-level snapshot used for JSON export/import (settings backup). */
