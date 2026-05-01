@@ -11,6 +11,8 @@
 # corpus by default.
 
 User-agent: *
+Disallow: /portal
+Disallow: /portal/
 Allow: /
 
 # AI search and answer engines - explicit allow.

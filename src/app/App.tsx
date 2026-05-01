@@ -26,6 +26,14 @@ const KiAutomationUnternehmenPage = lazy(() => import("./pages/seo/KiAutomationU
 const SeoSichtbarkeitPage = lazy(() => import("./pages/seo/SeoSichtbarkeitPage"));
 const ContentBildweltMedienPage = lazy(() => import("./pages/seo/ContentBildweltMedienPage"));
 
+/**
+ * Internal portal — mounted as a top-level sibling route so the public
+ * `<SiteLayout>` (Navbar, Footer, grain overlay) never loads on
+ * `/portal/*`, and no portal-only code reaches public chunks. Excluded
+ * from the sitemap (see `SITEMAP_PATHS`) and disallowed in robots.txt.
+ */
+const PortalApp = lazy(() => import("./portal/PortalApp"));
+
 export default function App() {
   return (
     <Suspense fallback={null}>
@@ -77,6 +85,9 @@ export default function App() {
            */}
           <Route path="*" element={<NotFoundPage />} />
         </Route>
+
+        {/* Internal portal — own layout, own SEO, own catch-all. */}
+        <Route path="/portal/*" element={<PortalApp />} />
       </Routes>
     </Suspense>
   );
