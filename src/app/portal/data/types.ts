@@ -132,8 +132,22 @@ export interface Lead {
   };
   /** ISO timestamp of the last successful Auto-Check enrichment. */
   enrichedAt?: string;
-  /** Auto-Check pitch suggestion produced by Gemini for B/C leads. */
+  /** Auto-Check pitch suggestion produced by Gemini. Tonalitaet variiert je
+   * Lead-Grade: A bekommt einen "Why-Website"-Pitch (Branchen-Probleme),
+   * B/C bekommt einen "Schwachstellen-Pitch" zur bestehenden Website. */
   pitchSuggestion?: string;
+  /** Inhaber:in / Geschaeftsfuehrung — fuer persoenliche Telefon-Ansprache. */
+  ownerName?: string;
+  /** Hat das Unternehmen ein erkennbares Online-Buchungs-/Termin-Tool? */
+  hasOnlineBooking?: boolean;
+  /** 3 Kernaussagen aus negativen Google-Bewertungen (z.B. "Termin schwer
+   * zu bekommen", "keine Online-Buchung"). Pitch-Hooks. */
+  reviewIssues?: string[];
+  /** 1-3 lokale Wettbewerber als Vergleichsargument im Verkaufsgespraech. */
+  competitors?: LeadCompetitor[];
+  /** Strukturierte Web-Defekt-Karte. Wird nur fuer B/C-Leads MIT Website
+   * gefuellt — A-Leads und Leads ohne Website lassen es leer. */
+  webDefects?: LeadWebDefects;
   ratingSignal?: string;
   websiteCheck?: string;
   websiteCheckBucket?: WebsiteCheckBucket;
@@ -155,6 +169,27 @@ export interface Lead {
   rawMetadata: Record<string, string>;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface LeadCompetitor {
+  name: string;
+  city?: string;
+  website?: string;
+  hasModernSite?: boolean;
+  note?: string;
+}
+
+export interface LeadWebDefects {
+  ssl?: boolean;
+  mobileFriendly?: boolean;
+  cms?: string;
+  lastUpdate?: string;
+  pageSpeed?: "schnell" | "ok" | "langsam";
+  cookieBanner?: boolean;
+  impressumOk?: boolean;
+  hasOnlineBooking?: boolean;
+  domainAge?: string;
+  notes?: string;
 }
 
 export interface Campaign {

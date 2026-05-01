@@ -21,6 +21,8 @@ import {
   type Lead,
   type LeadStatus,
 } from "../data/types";
+import { BulkAutoCheckModal } from "../components/BulkAutoCheckModal";
+import { DEFAULT_GEMINI_MODEL, type GeminiModel } from "../data/gemini";
 
 type SortKey = "score" | "newest" | "company" | "city";
 
@@ -93,10 +95,17 @@ function matchesGoogle(lead: Lead, key: string): boolean {
 }
 
 export default function LeadsPage() {
-  const { leads, campaigns } = useStore((s) => ({
+  const { leads, campaigns, settings } = useStore((s) => ({
     leads: s.getLeads(),
     campaigns: s.getCampaigns(),
+    settings: s.getSettings(),
   }));
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const geminiReady = !!settings.geminiApiKey;
+  const uncheckedLeads = useMemo(
+    () => leads.filter((l) => !l.enrichedAt && l.status !== "Archiviert"),
+    [leads],
+  );
 
   const campaignOptions: SelectOption[] = useMemo(
     () => [
@@ -223,14 +232,32 @@ export default function LeadsPage() {
       <PageHeader
         eyebrow="Pipeline"
         title="Leads"
-        description={`${leads.length} Leads gesamt · ${filtered.length} sichtbar`}
+        description={`${leads.length} Leads gesamt · ${filtered.length} sichtbar · ${uncheckedLeads.length} ungecheckt`}
         actions={
-          <Link
-            to="/portal/csv-import"
-            className="rounded-md border border-white/15 bg-white/95 px-3 py-1.5 text-[12.5px] font-medium text-black transition hover:bg-white"
-          >
-            CSV importieren
-          </Link>
+          <>
+            <button
+              type="button"
+              onClick={() => setBulkOpen(true)}
+              disabled={!geminiReady || uncheckedLeads.length === 0}
+              title={
+                !geminiReady
+                  ? "Gemini-API-Key in Einstellungen hinterlegen"
+                  : uncheckedLeads.length === 0
+                    ? "Alle Leads bereits gecheckt"
+                    : `${uncheckedLeads.length} ungecheckte Leads — Bulk-Auto-Check starten`
+              }
+              className="rounded-md border border-amber-300/30 bg-amber-300/[0.10] px-3 py-1.5 text-[12.5px] font-medium text-amber-100 transition hover:bg-amber-300/[0.18] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Auto-Check Alle (Gemini){" "}
+              {uncheckedLeads.length > 0 ? `· ${uncheckedLeads.length}` : ""}
+            </button>
+            <Link
+              to="/portal/csv-import"
+              className="rounded-md border border-white/15 bg-white/95 px-3 py-1.5 text-[12.5px] font-medium text-black transition hover:bg-white"
+            >
+              CSV importieren
+            </Link>
+          </>
         }
       />
 
@@ -419,6 +446,15 @@ export default function LeadsPage() {
           </div>
         </>
       )}
+
+      {bulkOpen && geminiReady && uncheckedLeads.length > 0 ? (
+        <BulkAutoCheckModal
+          candidates={uncheckedLeads}
+          apiKey={settings.geminiApiKey ?? ""}
+          model={(settings.geminiModel as GeminiModel | undefined) ?? DEFAULT_GEMINI_MODEL}
+          onClose={() => setBulkOpen(false)}
+        />
+      ) : null}
     </>
   );
 }

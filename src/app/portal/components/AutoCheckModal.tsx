@@ -80,6 +80,10 @@ export function AutoCheckModal({ lead, onClose }: AutoCheckModalProps) {
   const [state, setState] = useState<LoadState>({ kind: "loading" });
   const [picks, setPicks] = useState<Record<string, boolean>>({});
   const [acceptPitch, setAcceptPitch] = useState(false);
+  const [acceptOwner, setAcceptOwner] = useState(false);
+  const [acceptReviews, setAcceptReviews] = useState(false);
+  const [acceptCompetitors, setAcceptCompetitors] = useState(false);
+  const [acceptDefects, setAcceptDefects] = useState(false);
   const [applying, setApplying] = useState(false);
   const settings = portalStore.getSettings();
 
@@ -240,15 +244,43 @@ export function AutoCheckModal({ lead, onClose }: AutoCheckModalProps) {
     for (const r of rows) initial[r.key] = r.default;
     setPicks(initial);
     setAcceptPitch(false);
-  }, [state, rows]);
+    // Block-Sektionen: konservativ vorbelegen — wenn am Lead noch nichts
+    // dazu hinterlegt ist und Gemini etwas geliefert hat, vorab anhaken.
+    const r = state.result;
+    setAcceptOwner(!lead.ownerName && !!r.ownerName);
+    setAcceptReviews(
+      (lead.reviewIssues?.length ?? 0) === 0 &&
+        (r.reviewIssues?.length ?? 0) > 0,
+    );
+    setAcceptCompetitors(
+      (lead.competitors?.length ?? 0) === 0 &&
+        (r.competitors?.length ?? 0) > 0,
+    );
+    setAcceptDefects(!lead.webDefects && !!r.webDefects);
+  }, [state, rows, lead]);
 
   const visibleRows = rows.filter(
     (r) => r.suggested && r.suggested.trim().length > 0,
   );
   const acceptedCount = Object.values(picks).filter(Boolean).length;
+  // Pitch wird fuer alle Grades vorgeschlagen — A bekommt einen
+  // "Why-Website"-Pitch, B/C einen Schwachstellen-Pitch.
   const showPitch =
+    state.kind === "ready" && !!state.result.pitchSuggestion;
+  const showOwner = state.kind === "ready" && !!state.result.ownerName;
+  const showOnlineBooking =
     state.kind === "ready" &&
-    !!state.result.pitchSuggestion &&
+    state.result.hasOnlineBooking !== undefined &&
+    state.result.hasOnlineBooking !== null;
+  const showReviews =
+    state.kind === "ready" && (state.result.reviewIssues?.length ?? 0) > 0;
+  const showCompetitors =
+    state.kind === "ready" && (state.result.competitors?.length ?? 0) > 0;
+  // Web-Defekt-Karte nur fuer B/C-Leads mit Website
+  const showDefects =
+    state.kind === "ready" &&
+    !!state.result.webDefects &&
+    !!lead.website &&
     (lead.leadGrade === "B" ||
       lead.leadGrade === "C" ||
       lead.leadGrade === "Unknown");
@@ -348,6 +380,36 @@ export function AutoCheckModal({ lead, onClose }: AutoCheckModalProps) {
       if (showPitch && acceptPitch && r.pitchSuggestion) {
         patch.pitchSuggestion = r.pitchSuggestion;
         changes.push("Pitch-Vorschlag");
+      }
+
+      if (showOwner && acceptOwner && r.ownerName) {
+        patch.ownerName = r.ownerName;
+        changes.push("Inhaber");
+      }
+
+      // Online-Buchung — separates Stand-alone-Toggle (Teil der Owner-Karte)
+      if (
+        showOnlineBooking &&
+        acceptOwner &&
+        r.hasOnlineBooking !== undefined &&
+        r.hasOnlineBooking !== null
+      ) {
+        patch.hasOnlineBooking = r.hasOnlineBooking;
+      }
+
+      if (showReviews && acceptReviews && r.reviewIssues?.length) {
+        patch.reviewIssues = r.reviewIssues;
+        changes.push("Review-Themen");
+      }
+
+      if (showCompetitors && acceptCompetitors && r.competitors?.length) {
+        patch.competitors = r.competitors;
+        changes.push("Wettbewerber");
+      }
+
+      if (showDefects && acceptDefects && r.webDefects) {
+        patch.webDefects = r.webDefects;
+        changes.push("Web-Defekt-Karte");
       }
 
       patch.enrichedAt = new Date().toISOString();
@@ -485,16 +547,146 @@ export function AutoCheckModal({ lead, onClose }: AutoCheckModalProps) {
                 )}
               </section>
 
-              {/* Pitch suggestion (B/C only) */}
+              {/* Inhaber + Online-Buchung */}
+              {showOwner || showOnlineBooking ? (
+                <section className="mt-4 px-6">
+                  <BlockCard
+                    title="Inhaber & Betrieb"
+                    accepted={acceptOwner}
+                    onToggle={setAcceptOwner}
+                  >
+                    <dl className="grid gap-2 text-[13px] sm:grid-cols-2">
+                      {showOwner ? (
+                        <Pair
+                          label="Inhaber:in / GF"
+                          current={lead.ownerName}
+                          suggested={state.result.ownerName}
+                        />
+                      ) : null}
+                      {showOnlineBooking ? (
+                        <Pair
+                          label="Online-Buchung"
+                          current={
+                            lead.hasOnlineBooking === true
+                              ? "ja"
+                              : lead.hasOnlineBooking === false
+                                ? "nein"
+                                : undefined
+                          }
+                          suggested={
+                            state.result.hasOnlineBooking ? "ja" : "nein"
+                          }
+                        />
+                      ) : null}
+                    </dl>
+                  </BlockCard>
+                </section>
+              ) : null}
+
+              {/* Negative Review-Themen */}
+              {showReviews ? (
+                <section className="mt-4 px-6">
+                  <BlockCard
+                    title="Was Kunden konkret kritisieren"
+                    accepted={acceptReviews}
+                    onToggle={setAcceptReviews}
+                    hint={`${state.result.reviewIssues?.length} Kernaussagen aus negativen Bewertungen — Pitch-Hooks`}
+                  >
+                    <ul className="grid gap-1.5 text-[13px] text-white/80">
+                      {state.result.reviewIssues!.map((issue, i) => (
+                        <li
+                          key={`${issue}-${i}`}
+                          className="flex items-start gap-2"
+                        >
+                          <span className="mt-1.5 inline-block h-1 w-1 shrink-0 rounded-full bg-rose-300/70" />
+                          {issue}
+                        </li>
+                      ))}
+                    </ul>
+                  </BlockCard>
+                </section>
+              ) : null}
+
+              {/* Wettbewerber */}
+              {showCompetitors ? (
+                <section className="mt-4 px-6">
+                  <BlockCard
+                    title="Lokale Wettbewerber"
+                    accepted={acceptCompetitors}
+                    onToggle={setAcceptCompetitors}
+                    hint="Vergleichsargument für den Pitch"
+                  >
+                    <ul className="grid gap-2">
+                      {state.result.competitors!.map((c, i) => (
+                        <li
+                          key={`${c.name}-${i}`}
+                          className="rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12.5px]"
+                        >
+                          <div className="flex flex-wrap items-baseline justify-between gap-2">
+                            <div className="font-medium text-white">
+                              {c.name}
+                              {c.city ? (
+                                <span className="ml-1.5 text-white/45">
+                                  · {c.city}
+                                </span>
+                              ) : null}
+                            </div>
+                            <div className="text-[11px] text-white/50">
+                              {c.hasModernSite === true
+                                ? "moderne Website"
+                                : c.hasModernSite === false
+                                  ? "keine moderne Website"
+                                  : ""}
+                            </div>
+                          </div>
+                          {c.website ? (
+                            <a
+                              href={c.website}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="mt-1 block truncate text-[11.5px] text-white/65 underline decoration-white/20 underline-offset-2 hover:text-white"
+                            >
+                              {c.website}
+                            </a>
+                          ) : null}
+                          {c.note ? (
+                            <div className="mt-1 text-[11.5px] text-white/55">
+                              {c.note}
+                            </div>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  </BlockCard>
+                </section>
+              ) : null}
+
+              {/* Web-Defekt-Karte (nur B/C + Website) */}
+              {showDefects ? (
+                <section className="mt-4 px-6">
+                  <BlockCard
+                    title="Web-Defekt-Karte"
+                    accepted={acceptDefects}
+                    onToggle={setAcceptDefects}
+                    hint="Strukturierte Schwachstellen-Karte zur bestehenden Website"
+                  >
+                    <DefectsTable defects={state.result.webDefects!} />
+                  </BlockCard>
+                </section>
+              ) : null}
+
+              {/* Pitch suggestion */}
               {showPitch ? (
                 <section className="mt-4 px-6">
                   <div className="rounded-md border border-amber-300/20 bg-amber-300/[0.04] p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <div className="text-[10.5px] uppercase tracking-[0.16em] text-amber-200/70">
-                          Pitch-Vorschlag · für {lead.leadGrade}-Lead
+                          {lead.leadGrade === "A"
+                            ? "Pitch — Warum eine Website? · A-Lead"
+                            : `Pitch-Vorschlag · ${lead.leadGrade}-Lead`}
                         </div>
-                        <p className="mt-1.5 text-[13px] leading-relaxed text-amber-50">
+                        <p className="mt-1.5 whitespace-pre-line text-[13px] leading-relaxed text-amber-50">
                           {state.result.pitchSuggestion}
                         </p>
                       </div>
@@ -572,7 +764,12 @@ export function AutoCheckModal({ lead, onClose }: AutoCheckModalProps) {
               disabled={
                 state.kind !== "ready" ||
                 applying ||
-                (acceptedCount === 0 && !(showPitch && acceptPitch))
+                (acceptedCount === 0 &&
+                  !(showPitch && acceptPitch) &&
+                  !(showOwner && acceptOwner) &&
+                  !(showReviews && acceptReviews) &&
+                  !(showCompetitors && acceptCompetitors) &&
+                  !(showDefects && acceptDefects))
               }
               className="rounded-md border border-white/15 bg-white/95 px-3 py-1.5 text-[12.5px] font-medium text-black transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -591,5 +788,199 @@ function Spinner() {
       aria-hidden
       className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white/80"
     />
+  );
+}
+
+function BlockCard({
+  title,
+  accepted,
+  onToggle,
+  hint,
+  children,
+}: {
+  title: string;
+  accepted: boolean;
+  onToggle: (next: boolean) => void;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-md border border-white/[0.07] bg-white/[0.02] p-4">
+      <div className="mb-2.5 flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <div className="text-[10.5px] uppercase tracking-[0.14em] text-white/45">
+            {title}
+          </div>
+          {hint ? (
+            <div className="mt-0.5 text-[11.5px] text-white/40">{hint}</div>
+          ) : null}
+        </div>
+        <label className="flex shrink-0 items-center gap-2 text-[11.5px] text-white/65">
+          <input
+            type="checkbox"
+            checked={accepted}
+            onChange={(e) => onToggle(e.target.checked)}
+            className="h-4 w-4 cursor-pointer accent-white"
+          />
+          übernehmen
+        </label>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function Pair({
+  label,
+  current,
+  suggested,
+}: {
+  label: string;
+  current?: string;
+  suggested?: string;
+}) {
+  return (
+    <div>
+      <div className="text-[10.5px] uppercase tracking-[0.14em] text-white/40">
+        {label}
+      </div>
+      <div className="mt-0.5 grid grid-cols-2 gap-2">
+        <span className="text-[12.5px] text-white/45">{current ?? "—"}</span>
+        <span className="text-[12.5px] text-white">{suggested ?? "—"}</span>
+      </div>
+    </div>
+  );
+}
+
+function DefectsTable({
+  defects,
+}: {
+  defects: NonNullable<LeadEnrichmentResult["webDefects"]>;
+}) {
+  const rows: { label: string; value: string; tone: "ok" | "bad" | "n/a" }[] = [
+    {
+      label: "SSL",
+      value:
+        defects.ssl === true
+          ? "ja"
+          : defects.ssl === false
+            ? "fehlt"
+            : "unbekannt",
+      tone:
+        defects.ssl === true ? "ok" : defects.ssl === false ? "bad" : "n/a",
+    },
+    {
+      label: "Mobil optimiert",
+      value:
+        defects.mobileFriendly === true
+          ? "ja"
+          : defects.mobileFriendly === false
+            ? "nein"
+            : "unbekannt",
+      tone:
+        defects.mobileFriendly === true
+          ? "ok"
+          : defects.mobileFriendly === false
+            ? "bad"
+            : "n/a",
+    },
+    {
+      label: "CMS",
+      value: defects.cms ?? "unbekannt",
+      tone: "n/a",
+    },
+    {
+      label: "Letztes Update",
+      value: defects.lastUpdate ?? "unbekannt",
+      tone: defects.lastUpdate ? "n/a" : "n/a",
+    },
+    {
+      label: "Geschwindigkeit",
+      value: defects.pageSpeed ?? "unbekannt",
+      tone:
+        defects.pageSpeed === "schnell"
+          ? "ok"
+          : defects.pageSpeed === "langsam"
+            ? "bad"
+            : "n/a",
+    },
+    {
+      label: "Cookie-Banner",
+      value:
+        defects.cookieBanner === true
+          ? "vorhanden"
+          : defects.cookieBanner === false
+            ? "fehlt (DSGVO-Risiko)"
+            : "unbekannt",
+      tone:
+        defects.cookieBanner === true
+          ? "ok"
+          : defects.cookieBanner === false
+            ? "bad"
+            : "n/a",
+    },
+    {
+      label: "Impressum",
+      value:
+        defects.impressumOk === true
+          ? "ok"
+          : defects.impressumOk === false
+            ? "fehlt/unvollständig"
+            : "unbekannt",
+      tone:
+        defects.impressumOk === true
+          ? "ok"
+          : defects.impressumOk === false
+            ? "bad"
+            : "n/a",
+    },
+    {
+      label: "Online-Buchung",
+      value:
+        defects.hasOnlineBooking === true
+          ? "vorhanden"
+          : defects.hasOnlineBooking === false
+            ? "fehlt"
+            : "unbekannt",
+      tone:
+        defects.hasOnlineBooking === true
+          ? "ok"
+          : defects.hasOnlineBooking === false
+            ? "bad"
+            : "n/a",
+    },
+    {
+      label: "Domain-Alter",
+      value: defects.domainAge ?? "unbekannt",
+      tone: "n/a",
+    },
+  ];
+  return (
+    <>
+      <dl className="grid gap-1.5 text-[12.5px] sm:grid-cols-2">
+        {rows.map((r) => (
+          <div
+            key={r.label}
+            className="flex items-baseline justify-between gap-2 rounded border border-white/[0.05] bg-white/[0.015] px-2.5 py-1.5"
+          >
+            <dt className="text-white/55">{r.label}</dt>
+            <dd
+              className={
+                r.tone === "ok"
+                  ? "text-emerald-200/95"
+                  : r.tone === "bad"
+                    ? "text-rose-200/95"
+                    : "text-white/80"
+              }
+            >
+              {r.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      {defects.notes ? (
+        <div className="mt-2 text-[11.5px] text-white/55">{defects.notes}</div>
+      ) : null}
+    </>
   );
 }

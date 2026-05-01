@@ -23,6 +23,7 @@ import {
   type LeadStatus,
   type ProjectType,
   type WebsiteCheckBucket,
+  type LeadWebDefects,
 } from "../data/types";
 import { AutoCheckModal } from "../components/AutoCheckModal";
 
@@ -373,7 +374,7 @@ export default function LeadDetailPage() {
           {/* Pitch suggestion (only when present, e.g. after Auto-Check) */}
           {lead.pitchSuggestion ? (
             <Card title="Pitch-Vorschlag">
-              <p className="text-[13.5px] leading-relaxed text-amber-50/95">
+              <p className="whitespace-pre-line text-[13.5px] leading-relaxed text-amber-50/95">
                 {lead.pitchSuggestion}
               </p>
               {lead.enrichedAt ? (
@@ -381,6 +382,104 @@ export default function LeadDetailPage() {
                   Aus Auto-Check vom {formatDateTime(lead.enrichedAt)}
                 </div>
               ) : null}
+            </Card>
+          ) : null}
+
+          {/* Inhaber + Online-Buchung */}
+          {lead.ownerName || lead.hasOnlineBooking !== undefined ? (
+            <Card title="Inhaber & Betrieb">
+              <dl className="grid gap-3 text-[13px] sm:grid-cols-2">
+                <DefRow label="Inhaber:in / GF" value={lead.ownerName} />
+                <DefRow
+                  label="Online-Buchung"
+                  value={
+                    lead.hasOnlineBooking === true
+                      ? "vorhanden"
+                      : lead.hasOnlineBooking === false
+                        ? "nicht vorhanden — Pitch-Hebel"
+                        : undefined
+                  }
+                />
+              </dl>
+            </Card>
+          ) : null}
+
+          {/* Negative Reviews */}
+          {lead.reviewIssues && lead.reviewIssues.length > 0 ? (
+            <Card title="Was Kunden konkret kritisieren">
+              <ul className="grid gap-1.5 text-[13.5px] text-white/85">
+                {lead.reviewIssues.map((issue, i) => (
+                  <li
+                    key={`${issue}-${i}`}
+                    className="flex items-start gap-2"
+                  >
+                    <span className="mt-1.5 inline-block h-1 w-1 shrink-0 rounded-full bg-rose-300/70" />
+                    {issue}
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          ) : null}
+
+          {/* Wettbewerber */}
+          {lead.competitors && lead.competitors.length > 0 ? (
+            <Card title="Lokale Wettbewerber">
+              <ul className="grid gap-2">
+                {lead.competitors.map((c, i) => (
+                  <li
+                    key={`${c.name}-${i}`}
+                    className="rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12.5px]"
+                  >
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                      <div className="font-medium text-white">
+                        {c.name}
+                        {c.city ? (
+                          <span className="ml-1.5 text-white/45">
+                            · {c.city}
+                          </span>
+                        ) : null}
+                      </div>
+                      <div
+                        className={
+                          c.hasModernSite === true
+                            ? "text-[11px] text-emerald-300/85"
+                            : c.hasModernSite === false
+                              ? "text-[11px] text-rose-300/85"
+                              : "text-[11px] text-white/45"
+                        }
+                      >
+                        {c.hasModernSite === true
+                          ? "moderne Website"
+                          : c.hasModernSite === false
+                            ? "keine moderne Website"
+                            : ""}
+                      </div>
+                    </div>
+                    {c.website ? (
+                      <a
+                        href={c.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-1 block truncate text-[11.5px] text-white/65 underline decoration-white/20 underline-offset-2 hover:text-white"
+                      >
+                        {c.website}
+                      </a>
+                    ) : null}
+                    {c.note ? (
+                      <div className="mt-1 text-[11.5px] text-white/55">
+                        {c.note}
+                      </div>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          ) : null}
+
+          {/* Web-Defekt-Karte */}
+          {lead.webDefects ? (
+            <Card title="Web-Defekt-Karte">
+              <DefectsGrid defects={lead.webDefects} />
             </Card>
           ) : null}
 
@@ -688,5 +787,131 @@ function DefRow({
         )}
       </dd>
     </div>
+  );
+}
+
+function DefectsGrid({ defects }: { defects: LeadWebDefects }) {
+  type Tone = "ok" | "bad" | "n/a";
+  const rows: { label: string; value: string; tone: Tone }[] = [
+    {
+      label: "SSL",
+      value:
+        defects.ssl === true
+          ? "ja"
+          : defects.ssl === false
+            ? "fehlt"
+            : "unbekannt",
+      tone:
+        defects.ssl === true ? "ok" : defects.ssl === false ? "bad" : "n/a",
+    },
+    {
+      label: "Mobil optimiert",
+      value:
+        defects.mobileFriendly === true
+          ? "ja"
+          : defects.mobileFriendly === false
+            ? "nein"
+            : "unbekannt",
+      tone:
+        defects.mobileFriendly === true
+          ? "ok"
+          : defects.mobileFriendly === false
+            ? "bad"
+            : "n/a",
+    },
+    { label: "CMS", value: defects.cms ?? "unbekannt", tone: "n/a" },
+    {
+      label: "Letztes Update",
+      value: defects.lastUpdate ?? "unbekannt",
+      tone: "n/a",
+    },
+    {
+      label: "Geschwindigkeit",
+      value: defects.pageSpeed ?? "unbekannt",
+      tone:
+        defects.pageSpeed === "schnell"
+          ? "ok"
+          : defects.pageSpeed === "langsam"
+            ? "bad"
+            : "n/a",
+    },
+    {
+      label: "Cookie-Banner",
+      value:
+        defects.cookieBanner === true
+          ? "vorhanden"
+          : defects.cookieBanner === false
+            ? "fehlt (DSGVO-Risiko)"
+            : "unbekannt",
+      tone:
+        defects.cookieBanner === true
+          ? "ok"
+          : defects.cookieBanner === false
+            ? "bad"
+            : "n/a",
+    },
+    {
+      label: "Impressum",
+      value:
+        defects.impressumOk === true
+          ? "ok"
+          : defects.impressumOk === false
+            ? "fehlt/unvollständig"
+            : "unbekannt",
+      tone:
+        defects.impressumOk === true
+          ? "ok"
+          : defects.impressumOk === false
+            ? "bad"
+            : "n/a",
+    },
+    {
+      label: "Online-Buchung",
+      value:
+        defects.hasOnlineBooking === true
+          ? "vorhanden"
+          : defects.hasOnlineBooking === false
+            ? "fehlt"
+            : "unbekannt",
+      tone:
+        defects.hasOnlineBooking === true
+          ? "ok"
+          : defects.hasOnlineBooking === false
+            ? "bad"
+            : "n/a",
+    },
+    {
+      label: "Domain-Alter",
+      value: defects.domainAge ?? "unbekannt",
+      tone: "n/a",
+    },
+  ];
+  return (
+    <>
+      <dl className="grid gap-1.5 text-[12.5px] sm:grid-cols-2">
+        {rows.map((r) => (
+          <div
+            key={r.label}
+            className="flex items-baseline justify-between gap-2 rounded border border-white/[0.06] bg-white/[0.015] px-2.5 py-1.5"
+          >
+            <dt className="text-white/55">{r.label}</dt>
+            <dd
+              className={
+                r.tone === "ok"
+                  ? "text-emerald-200/95"
+                  : r.tone === "bad"
+                    ? "text-rose-200/95"
+                    : "text-white/85"
+              }
+            >
+              {r.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      {defects.notes ? (
+        <div className="mt-2 text-[11.5px] text-white/55">{defects.notes}</div>
+      ) : null}
+    </>
   );
 }
