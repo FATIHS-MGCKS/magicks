@@ -470,16 +470,14 @@ export function WhyMagicks() {
                   hides on the very narrowest widths because at that
                   size the column is too tight for an inline rule. */}
               <aside className="[grid-area:note] md:pt-[1.1rem]">
-                <p
+                <div
                   data-why-note
-                  className="font-mono max-w-[36ch] text-[10.5px] leading-[1.65] tracking-[0.03em] text-white/58 will-change-[opacity,filter] sm:text-[11.5px] sm:leading-[1.7] sm:tracking-[0.04em] md:text-[12px]"
+                  className="relative pl-4 before:absolute before:left-0 before:top-1 before:h-[calc(100%-8px)] before:w-px before:bg-gradient-to-b before:from-white/30 before:via-white/10 before:to-transparent"
                 >
-                  <span
-                    aria-hidden
-                    className="mr-2 hidden h-px w-5 bg-white/35 align-middle sm:inline-block sm:w-6"
-                  />
-                  {p.note}
-                </p>
+                  <p className="font-instrument max-w-[32ch] text-[1.05rem] leading-[1.55] tracking-[-0.01em] text-white/65 will-change-[opacity,filter] sm:text-[1.15rem] sm:leading-[1.6] md:text-[1.2rem]">
+                    {p.note}
+                  </p>
+                </div>
               </aside>
             </li>
           ))}

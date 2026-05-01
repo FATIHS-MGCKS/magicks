@@ -783,14 +783,14 @@ export function Services() {
             >
               Was wir <em className="italic text-white/58">bauen</em>.
             </h2>
-            <p
+            <div
               data-services-caption
-              className="font-ui max-w-md text-[14px] leading-[1.66] text-white/52 md:text-[15px]"
+              className="relative pl-5 before:absolute before:left-0 before:top-2 before:h-[calc(100%-16px)] before:w-px before:bg-gradient-to-b before:from-white/30 before:via-white/10 before:to-transparent"
             >
-              Vier Bereiche für digitale Arbeit, die sichtbar besser wirkt und im Alltag sauber
-              funktioniert — von Websites und Konfiguratoren bis zu Web-Software und
-              Automationen.
-            </p>
+              <p className="font-instrument max-w-[26rem] text-[1.15rem] leading-[1.6] tracking-[-0.01em] text-white/65 md:text-[1.25rem]">
+                Vier Bereiche für digitale Arbeit, die <em className="italic text-white/90">sichtbar besser</em> wirkt und im Alltag <em className="italic text-white/90">sauber funktioniert</em> — von Websites und Konfiguratoren bis zu Web-Software und Automationen.
+              </p>
+            </div>
           </div>
         </div>
 
