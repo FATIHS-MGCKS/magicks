@@ -65,35 +65,52 @@ export function AccessGate({ children }: AccessGateProps) {
   }
 
   if (gate.status === "locked") {
-    return <LoginForm onSend={gate.sendMagicLink} />;
+    return <LoginForm onSignIn={gate.signIn} onSendLink={gate.sendMagicLink} />;
   }
 
   return <HydrationGate>{children}</HydrationGate>;
 }
 
 interface LoginFormProps {
-  onSend: (
+  onSignIn: (
+    email: string,
+    password: string,
+  ) => Promise<{ ok: true } | { ok: false; error: string }>;
+  onSendLink: (
     email: string,
   ) => Promise<{ ok: true } | { ok: false; error: string }>;
 }
 
-function LoginForm({ onSend }: LoginFormProps) {
+type Mode = "password" | "magic";
+
+function LoginForm({ onSignIn, onSendLink }: LoginFormProps) {
+  const [mode, setMode] = useState<Mode>("password");
   const [email, setEmail] = useState(PORTAL_OWNER_EMAIL);
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [linkSent, setLinkSent] = useState(false);
 
-  const submit = async () => {
+  const submitPassword = async () => {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    const result = await onSignIn(email, password);
+    setBusy(false);
+    if (!result.ok) setError(result.error);
+  };
+
+  const submitMagicLink = async () => {
     if (busy || email.length === 0) return;
     setBusy(true);
     setError(null);
-    const result = await onSend(email);
+    const result = await onSendLink(email);
     setBusy(false);
     if (!result.ok) setError(result.error);
-    else setSent(true);
+    else setLinkSent(true);
   };
 
-  if (sent) {
+  if (mode === "magic" && linkSent) {
     return (
       <FullScreen>
         <div className="w-full max-w-sm rounded-2xl border border-emerald-300/20 bg-[#0F0F11] p-7 text-emerald-100/90">
@@ -109,18 +126,19 @@ function LoginForm({ onSend }: LoginFormProps) {
             Öffne ihn auf diesem Gerät, um das Portal zu betreten.
           </p>
           <p className="mt-3 text-[11.5px] text-white/45">
-            Der Link ist 60 Minuten gültig. Falls keine E-Mail ankommt:
-            Spam-Ordner prüfen oder gleich erneut anfordern.
+            Der Link ist 60 Minuten gültig. Bei Mail-Verzögerungen den
+            Spam-Ordner prüfen oder zurück zum Passwort-Login.
           </p>
           <button
             type="button"
             onClick={() => {
-              setSent(false);
+              setLinkSent(false);
+              setMode("password");
               setError(null);
             }}
             className="mt-5 w-full rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-[12.5px] text-white/70 transition hover:text-white"
           >
-            Anderer Versand
+            Zurück zum Passwort-Login
           </button>
         </div>
       </FullScreen>
@@ -132,7 +150,8 @@ function LoginForm({ onSend }: LoginFormProps) {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          void submit();
+          if (mode === "password") void submitPassword();
+          else void submitMagicLink();
         }}
         className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#0F0F11] p-7"
       >
@@ -141,8 +160,9 @@ function LoginForm({ onSend }: LoginFormProps) {
         </div>
         <h1 className="mt-1 font-instrument text-3xl text-white">Zugang</h1>
         <p className="mt-2 text-sm text-white/55">
-          Login per Magic-Link. Der einmalige Link wird an deine
-          E-Mail-Adresse geschickt.
+          {mode === "password"
+            ? "Mit E-Mail und Passwort anmelden."
+            : "Einmalig anstelle des Passworts: Magic-Link per Mail."}
         </p>
 
         <label className="mt-6 block text-[11px] uppercase tracking-[0.14em] text-white/50">
@@ -150,25 +170,65 @@ function LoginForm({ onSend }: LoginFormProps) {
         </label>
         <input
           type="email"
-          autoFocus
+          autoFocus={mode === "magic"}
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="mt-1 w-full rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-[14px] text-white outline-none transition focus:border-white/30"
         />
+
+        {mode === "password" ? (
+          <>
+            <label className="mt-4 block text-[11px] uppercase tracking-[0.14em] text-white/50">
+              Passwort
+            </label>
+            <input
+              type="password"
+              autoFocus
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 w-full rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-[14px] text-white outline-none transition focus:border-white/30"
+            />
+          </>
+        ) : null}
+
         {error ? (
-          <div className="mt-2 text-[12.5px] text-rose-300/90">{error}</div>
+          <div className="mt-3 text-[12.5px] text-rose-300/90">{error}</div>
         ) : null}
 
         <button
           type="submit"
-          disabled={busy || email.length === 0}
+          disabled={
+            busy ||
+            email.length === 0 ||
+            (mode === "password" && password.length === 0)
+          }
           className="mt-5 w-full rounded-md border border-white/15 bg-white/95 px-3 py-2 text-[13px] font-medium text-black transition hover:bg-white disabled:opacity-50"
         >
-          {busy ? "Sende Link…" : "Magic-Link senden"}
+          {busy
+            ? mode === "password"
+              ? "Prüfe…"
+              : "Sende Link…"
+            : mode === "password"
+              ? "Anmelden"
+              : "Magic-Link senden"}
         </button>
 
-        <p className="mt-4 text-[10.5px] leading-relaxed text-white/35">
+        <button
+          type="button"
+          onClick={() => {
+            setMode((m) => (m === "password" ? "magic" : "password"));
+            setError(null);
+          }}
+          className="mt-3 w-full text-center text-[11.5px] text-white/45 transition hover:text-white/75"
+        >
+          {mode === "password"
+            ? "Passwort vergessen? Magic-Link senden"
+            : "Zurück zum Passwort-Login"}
+        </button>
+
+        <p className="mt-5 text-[10.5px] leading-relaxed text-white/35">
           Daten liegen verschlüsselt in Supabase Postgres mit täglichen
           Backups. Sitzung bleibt aktiv, bis explizit gesperrt wird.
         </p>

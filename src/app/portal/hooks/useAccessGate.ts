@@ -31,6 +31,10 @@ export interface AccessGateApi {
   unconfigured: boolean;
   /** Email currently authenticated, if any. */
   email: string | null;
+  signIn: (
+    email: string,
+    password: string,
+  ) => Promise<{ ok: true } | { ok: false; error: string }>;
   sendMagicLink: (
     email: string,
   ) => Promise<{ ok: true } | { ok: false; error: string }>;
@@ -78,6 +82,44 @@ export function useAccessGate(): AccessGateApi {
       sub.data.subscription.unsubscribe();
     };
   }, []);
+
+  const signIn = useCallback(
+    async (
+      input: string,
+      password: string,
+    ): Promise<{ ok: true } | { ok: false; error: string }> => {
+      const trimmed = input.trim().toLowerCase();
+      if (!trimmed.includes("@")) {
+        return { ok: false, error: "Bitte gültige E-Mail-Adresse eingeben." };
+      }
+      if (trimmed !== PORTAL_OWNER_EMAIL.toLowerCase()) {
+        return {
+          ok: false,
+          error: "Diese E-Mail-Adresse ist für das Portal nicht freigegeben.",
+        };
+      }
+      if (password.length === 0) {
+        return { ok: false, error: "Bitte Passwort eingeben." };
+      }
+      if (!supabaseConfigured) {
+        return { ok: false, error: "Supabase ist nicht konfiguriert." };
+      }
+      const supabase = getSupabase();
+      const { error } = await supabase.auth.signInWithPassword({
+        email: trimmed,
+        password,
+      });
+      if (error) {
+        const friendly =
+          error.message === "Invalid login credentials"
+            ? "E-Mail oder Passwort falsch."
+            : error.message;
+        return { ok: false, error: friendly };
+      }
+      return { ok: true };
+    },
+    [],
+  );
 
   const sendMagicLink = useCallback(
     async (
@@ -129,6 +171,7 @@ export function useAccessGate(): AccessGateApi {
     unlocked: status === "unlocked",
     unconfigured: status === "unconfigured",
     email,
+    signIn,
     sendMagicLink,
     lock,
   };
