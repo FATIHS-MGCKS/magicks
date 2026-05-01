@@ -10,7 +10,7 @@ import {
 } from "../components/StatusBadge";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { PortalSelect } from "../components/FilterBar";
-import { formatDate, formatDateTime } from "../components/format";
+import { formatDate, formatDateTime, formatRelative } from "../components/format";
 import { useStore, portalStore } from "../hooks/useStore";
 import {
   ACTIVITY_CHANNELS,
@@ -196,10 +196,43 @@ export default function LeadDetailPage() {
           <LeadStatusBadge status={lead.status} />
         </Stat>
         <div className="col-span-2 sm:col-span-4 mt-1 border-t border-white/[0.06] pt-3">
-          <div className="text-[10.5px] uppercase tracking-[0.16em] text-white/45">
-            Next Best Step
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="text-[10.5px] uppercase tracking-[0.16em] text-white/45">
+                Next Best Step
+              </div>
+              <div className="mt-1 font-instrument text-xl text-white">
+                {lead.nextBestStep}
+              </div>
+            </div>
+            {lead.enrichedAt ? (
+              <div
+                className="flex items-center gap-2.5 rounded-md border border-amber-300/25 bg-amber-300/[0.06] px-3 py-1.5"
+                title={`Letzter Auto-Check: ${formatDateTime(lead.enrichedAt)}`}
+              >
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-amber-300/40 opacity-75" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-amber-300/85" />
+                </span>
+                <div>
+                  <div className="text-[9.5px] uppercase tracking-[0.16em] text-amber-200/70">
+                    Auto-Check
+                  </div>
+                  <div className="text-[12px] text-amber-100/95">
+                    {formatRelative(lead.enrichedAt)}
+                    {lead.pitchSuggestion ? " · Pitch verfügbar" : ""}
+                  </div>
+                </div>
+              </div>
+            ) : geminiReady ? (
+              <div
+                className="text-[11px] text-white/35"
+                title="Auto-Check (Gemini) wurde für diesen Lead noch nicht ausgeführt."
+              >
+                Auto-Check noch nicht ausgeführt
+              </div>
+            ) : null}
           </div>
-          <div className="mt-1 font-instrument text-xl text-white">{lead.nextBestStep}</div>
         </div>
       </section>
 
@@ -571,6 +604,14 @@ export default function LeadDetailPage() {
             <dl className="grid gap-2 text-[12px] text-white/70">
               <DefRow label="Angelegt" value={formatDateTime(lead.createdAt)} />
               <DefRow label="Aktualisiert" value={formatDateTime(lead.updatedAt)} />
+              <DefRow
+                label="Letzter Auto-Check"
+                value={
+                  lead.enrichedAt
+                    ? `${formatRelative(lead.enrichedAt)} · ${formatDateTime(lead.enrichedAt)}`
+                    : "Nie"
+                }
+              />
               <DefRow label="Lead-Status (CSV)" value={lead.leadStatusRaw} />
             </dl>
           </Card>

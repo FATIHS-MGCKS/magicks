@@ -49,7 +49,13 @@ export function computeLeadScore(input: ScoringInput): number {
   if (containsAny(input.websiteCheck, ["Website hinzufügen", "Website hinzufuegen"])) {
     score += 25;
   }
-  if (containsAny(input.websiteCheck, ["keine eigene Website"])) {
+  if (
+    containsAny(input.websiteCheck, [
+      "keine eigene Website",
+      "Keine Website gefunden",
+      "Keine Webseite gefunden",
+    ])
+  ) {
     score += 25;
   }
   if (
