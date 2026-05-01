@@ -11,7 +11,6 @@ import {
   sectionFarewell,
 } from "../../lib/scrollMotion";
 import { ChapterMarker } from "./ChapterMarker";
-import { MagicksSignatureReveal } from "./MagicksSignatureReveal";
 
 /**
  * About breathes as the user scrolls. Each element has its own envelope:
@@ -41,7 +40,6 @@ export function About() {
       const right = root.querySelector<HTMLElement>("[data-about-right]");
       const body = root.querySelector<HTMLElement>("[data-about-body]");
       const cta = root.querySelector<HTMLElement>("[data-about-cta]");
-      const sign = root.querySelector<HTMLElement>("[data-about-sign]");
       const rule = root.querySelector<HTMLElement>("[data-about-rule]");
       const heading = root.querySelector<HTMLElement>("[data-about-heading]");
       const farewell = root.querySelector<HTMLElement>("[data-about-farewell]");
@@ -49,7 +47,7 @@ export function About() {
 
       if (reduced) {
         gsap.set(
-          [chapter, quote, left, center, right, body, cta, sign, rule, ...emphasis].filter(
+          [chapter, quote, left, center, right, body, cta, rule, ...emphasis].filter(
             Boolean,
           ) as HTMLElement[],
           {
@@ -64,6 +62,28 @@ export function About() {
         );
         if (farewell) gsap.set(farewell, { opacity: 0 });
         return;
+      }
+
+      // ─── Edge Glow: wandering light along the section boundaries ─────
+      // A soft, wide glow that moves horizontally along the top edge
+      // of the section as the user scrolls through it.
+      const edgeGlow = root.querySelector<HTMLElement>("[data-about-edgeglow]");
+      if (edgeGlow) {
+        gsap.fromTo(
+          edgeGlow,
+          { xPercent: -100, opacity: 0 },
+          {
+            xPercent: 100,
+            opacity: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: root,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.0,
+            },
+          },
+        );
       }
 
       // ─── Quote glyph: atmospheric drift + presence envelope ──────────
@@ -255,35 +275,6 @@ export function About() {
         });
       }
 
-      // ─── Editorial signature: scroll-coupled in/out envelope ─────────
-      // The handwritten signature is the section's compositional anchor.
-      // The wrapper plays a clean opacity + y + blur entry on enter
-      // and reverses on leave (in either scroll direction). This stays
-      // perfectly in sync with the inner MagicksSignatureReveal, which
-      // uses the same toggleActions semantics on its own ScrollTrigger.
-      // No scrub: the choreography keeps its premium pacing regardless
-      // of scroll velocity.
-      if (sign) {
-        gsap.set(sign, { opacity: 0, y: 14, filter: "blur(3px)" });
-        gsap.fromTo(
-          sign,
-          { opacity: 0, y: 14, filter: "blur(3px)" },
-          {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 0.85,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: sign,
-              start: "top 88%",
-              end: "bottom 12%",
-              toggleActions: "play reverse play reverse",
-            },
-          },
-        );
-      }
-
       // ─── CTA: tail-end envelope ─────────────────────────────────────
       presenceEnvelope(cta, {
         trigger: cta ?? root,
@@ -328,6 +319,17 @@ export function About() {
       aria-labelledby="about-heading"
     >
       <div aria-hidden className="section-top-rule" />
+
+      {/* Edge Glow — wandering light along the top border */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[2px] overflow-hidden"
+      >
+        <div
+          data-about-edgeglow
+          className="h-full w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent blur-[1px] will-change-[transform,opacity]"
+        />
+      </div>
 
       {/* Oversized opening quote mark — floats as compositional anchor */}
       <div
@@ -415,27 +417,6 @@ export function About() {
                 </p>
               </div>
             </div>
-
-            {/* Editorial signature — single compositional anchor for the
-                section. The handwritten reveal replaces the previous
-                studio photograph: it carries the same editorial weight
-                and frames the section's tail without competing with the
-                heading. Sized large, centred in the right column,
-                surrounded by quiet whitespace. */}
-            <figure
-              data-about-sign
-              className="mx-auto mt-14 flex w-full max-w-[34rem] flex-col items-center will-change-[opacity,transform,filter] sm:mt-20 sm:ml-auto sm:mr-0 sm:max-w-[36rem] md:mt-28 md:max-w-[42rem]"
-            >
-              <MagicksSignatureReveal className="w-full max-w-[28rem] sm:max-w-[32rem] md:max-w-[38rem]" />
-
-              <figcaption className="font-mono mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 self-stretch text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-white/45 sm:mt-7 sm:gap-x-6 sm:text-[10px] sm:tracking-[0.32em] sm:text-white/42">
-                <span className="flex items-center gap-2 sm:gap-3">
-                  <span aria-hidden className="h-px w-5 bg-white/26 sm:w-8" />
-                  <span>Studio · Kassel</span>
-                </span>
-                <span className="text-white/34">N51°19′ · E9°29′</span>
-              </figcaption>
-            </figure>
 
             <div
               data-about-cta

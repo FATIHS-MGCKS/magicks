@@ -9,6 +9,7 @@ import {
   sectionFarewell,
 } from "../../lib/scrollMotion";
 import { ChapterMarker } from "./ChapterMarker";
+import { MagicksSignatureReveal } from "./MagicksSignatureReveal";
 
 /**
  * Three sentences. The lens rack-pulls down the paragraph as the user
@@ -61,16 +62,21 @@ export function ValueStatement() {
       const heading = root.querySelector<HTMLElement>("[data-value-heading]");
       const focusBand = root.querySelector<HTMLElement>("[data-value-focusband]");
       const ambient = root.querySelector<HTMLElement>("[data-value-ambient]");
+      const godray = root.querySelector<HTMLElement>("[data-value-godray] > div");
       const farewell = root.querySelector<HTMLElement>("[data-value-farewell]");
+      const sign = root.querySelector<HTMLElement>("[data-value-sign]");
 
       if (reduced) {
-        gsap.set([chapter, dropCap, ...sentences, rule, ...indexItems, focusBand, ambient, farewell], {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          scaleX: 1,
-          filter: "blur(0px)",
-        });
+        gsap.set(
+          [chapter, dropCap, ...sentences, rule, ...indexItems, focusBand, ambient, godray, farewell, sign].filter(Boolean) as HTMLElement[],
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            scaleX: 1,
+            filter: "blur(0px)",
+          },
+        );
         if (focusBand) gsap.set(focusBand, { opacity: 0 });
         if (farewell) gsap.set(farewell, { opacity: 0 });
         return;
@@ -133,6 +139,28 @@ export function ValueStatement() {
           .to(ambient, { opacity: 0.9, duration: 0.35, ease: "power2.out" }, 0)
           .to(ambient, { opacity: 1, duration: 0.3, ease: "none" }, 0.35)
           .to(ambient, { opacity: 0.55, duration: 0.35, ease: "power2.in" }, 0.65);
+      }
+
+      // ─── Volumetric God Ray: slow diagonal sweep ─────────────────────
+      // Drifts across the text as the user scrolls, creating a sense of
+      // depth and atmosphere.
+      if (godray) {
+        gsap.fromTo(
+          godray,
+          { opacity: 0, xPercent: -15, yPercent: -20 },
+          {
+            opacity: 1,
+            xPercent: 10,
+            yPercent: 10,
+            ease: "none",
+            scrollTrigger: {
+              trigger: root,
+              start: "top 80%",
+              end: "bottom 20%",
+              scrub: 1.5,
+            },
+          },
+        );
       }
 
       // ─── Rack-focus sentence track ───────────────────────────────────
@@ -204,6 +232,33 @@ export function ValueStatement() {
         stagger: 0.02,
       });
 
+      // ─── Editorial signature: scroll-coupled in/out envelope ─────────
+      // The handwritten signature is the tail anchor of the value
+      // statement. Wrapper plays a clean opacity + y + blur entry on
+      // enter and reverses on leave — in sync with the inner
+      // MagicksSignatureReveal which has its own ScrollTrigger for the
+      // photographic exposure effect.
+      if (sign) {
+        gsap.set(sign, { opacity: 0, y: 14, filter: "blur(3px)" });
+        gsap.fromTo(
+          sign,
+          { opacity: 0, y: 14, filter: "blur(3px)" },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.85,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: sign,
+              start: "top 88%",
+              end: "bottom 12%",
+              toggleActions: "play reverse play reverse",
+            },
+          },
+        );
+      }
+
       // ─── Section farewell: ink-shadow bottom fade ────────────────────
       sectionFarewell(farewell, {
         trigger: root,
@@ -225,6 +280,25 @@ export function ValueStatement() {
       aria-labelledby="value-heading"
     >
       <div aria-hidden className="section-top-rule" />
+
+      {/* Volumetric God Ray — cinematic lighting sweeping diagonally across the section.
+          Coupled to scroll so it 'reveals' the space dynamically. */}
+      <div
+        data-value-godray
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden will-change-[opacity,transform]"
+      >
+        <div
+          className="absolute -inset-[50%] h-[200%] w-[200%] origin-top-left opacity-0"
+          style={{
+            background:
+              "linear-gradient(135deg, transparent 35%, rgba(255,255,255,0.02) 45%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.015) 55%, transparent 65%)",
+            transform: "translate3d(0, -20%, 0) rotate(-15deg)",
+            filter: "blur(40px)",
+            mixBlendMode: "screen",
+          }}
+        />
+      </div>
 
       {/* Ambient field — wide radial light anchored behind the paragraph.
           Never claims focus; registers as room-light moving with the read. */}
@@ -290,6 +364,26 @@ export function ValueStatement() {
                 {SENTENCES[2].text}
               </span>
             </h2>
+
+            {/* Editorial signature — signing hand directly below the
+                three-sentence declaration. Aligned to the right column,
+                surrounded by quiet whitespace. Sits before the services
+                index so the signature closes the *statement*, and the
+                services list reads as a follow-on footnote. */}
+            <figure
+              data-value-sign
+              className="mx-auto mt-14 flex w-full max-w-[34rem] flex-col items-center will-change-[opacity,transform,filter] sm:mt-16 sm:ml-auto sm:mr-0 sm:max-w-[36rem] md:mt-20 md:max-w-[42rem]"
+            >
+              <MagicksSignatureReveal className="w-full max-w-[28rem] sm:max-w-[32rem] md:max-w-[38rem]" />
+
+              <figcaption className="font-mono mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 self-stretch text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-white/45 sm:mt-7 sm:gap-x-6 sm:text-[10px] sm:tracking-[0.32em] sm:text-white/42">
+                <span className="flex items-center gap-2 sm:gap-3">
+                  <span aria-hidden className="h-px w-5 bg-white/26 sm:w-8" />
+                  <span>Studio · Kassel</span>
+                </span>
+                <span className="text-white/34">N51°19′ · E9°29′</span>
+              </figcaption>
+            </figure>
 
             <div className="mt-16 sm:mt-20 md:mt-24">
               <div aria-hidden className="relative h-px w-full">

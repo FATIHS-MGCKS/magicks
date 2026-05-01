@@ -814,6 +814,24 @@ export function Services() {
                     onBlur={onLeave}
                     className="group relative block py-10 no-underline outline-none sm:py-12 md:py-14"
                   >
+                    {/* Lens Flare — cinematic lighting on hover.
+                        A horizontal streak that scales up and glows brightly
+                        when the service is active, giving it a premium tech feel. */}
+                    <div
+                      aria-hidden
+                      className={`pointer-events-none absolute left-0 top-0 h-px w-[120px] -translate-y-1/2 bg-gradient-to-r from-transparent via-amber-200/80 to-transparent blur-[2px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] ${
+                        active ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+                      }`}
+                      style={{ mixBlendMode: "screen" }}
+                    />
+                    <div
+                      aria-hidden
+                      className={`pointer-events-none absolute left-0 top-0 h-[3px] w-[60px] -translate-y-1/2 bg-gradient-to-r from-transparent via-white to-transparent blur-[4px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] ${
+                        active ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+                      }`}
+                      style={{ mixBlendMode: "screen" }}
+                    />
+
                     <div
                       aria-hidden
                       className={`absolute left-0 top-0 h-full w-[2px] origin-top bg-white magicks-duration-hover magicks-ease-out transition-[transform,opacity] ${

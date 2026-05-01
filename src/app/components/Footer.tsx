@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { SectionEyebrow } from "./SectionEyebrow";
 import { MagicksLogo } from "./MagicksLogo";
+import { useLayoutEffect, useRef } from "react";
+import { registerGsap } from "../lib/gsap";
+import { useReducedMotion } from "../hooks/useReducedMotion";
 
 const primaryNav = [
   { label: "Leistungen", to: "/leistungen" },
@@ -35,9 +38,50 @@ const linkClass =
   "font-ui inline-flex min-h-[44px] items-center text-[14.5px] text-white/50 magicks-duration-hover magicks-ease-out transition-colors hover:text-white lg:min-h-[40px]";
 
 export function Footer() {
+  const rootRef = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion();
+
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const gsap = registerGsap();
+
+    const ctx = gsap.context(() => {
+      const pulse = root.querySelector<HTMLElement>("[data-footer-pulse]");
+      
+      if (reduced) {
+        if (pulse) gsap.set(pulse, { opacity: 0 });
+        return;
+      }
+
+      // ─── Ambient Pulse: deep, slow breathing light in the footer ──────
+      if (pulse) {
+        gsap.to(pulse, {
+          opacity: 0.6,
+          duration: 4,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+        });
+      }
+    }, root);
+
+    return () => ctx.revert();
+  }, [reduced]);
+
   return (
-    <footer className="border-t border-white/[0.06] bg-[#0A0A0A] px-5 pb-8 pt-14 md:pt-16">
-      <div className="layout-max">
+    <footer ref={rootRef} className="relative overflow-hidden border-t border-white/[0.06] bg-[#0A0A0A] px-5 pb-8 pt-14 md:pt-16">
+      {/* Ambient Pulse — deep background glow */}
+      <div
+        data-footer-pulse
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 opacity-20 will-change-[opacity]"
+        style={{
+          background: "radial-gradient(circle at 50% 120%, rgba(255,255,255,0.03) 0%, transparent 60%)",
+        }}
+      />
+
+      <div className="relative z-10 layout-max">
         <div className="grid gap-10 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] md:gap-10 lg:gap-14">
           {/* Brand column */}
           <div className="max-w-sm">
