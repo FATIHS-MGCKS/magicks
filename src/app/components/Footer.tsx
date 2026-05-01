@@ -44,7 +44,7 @@ export function Footer() {
   useLayoutEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    const gsap = registerGsap();
+    const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
       const pulse = root.querySelector<HTMLElement>("[data-footer-pulse]");
