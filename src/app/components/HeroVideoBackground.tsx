@@ -9,12 +9,8 @@ import { HERO_VIDEO_SRC } from "../heroMedia";
 export function HeroVideoBackground() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // React intentionally does NOT render `<video muted>` as an HTML
-  // attribute (it sets the property post-mount). Chrome's autoplay
-  // policy is parsed from the *attribute* though — without it on
-  // initial markup, the `autoplay` attribute is silently rejected
-  // when the element is inside an iframe (laptop-screen preview on
-  // /services). Forcing the attribute before paint restores autoplay.
+  // React sets `muted` as a property after mount. Setting the attribute
+  // before paint keeps browser autoplay handling consistent.
   useLayoutEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -32,21 +28,6 @@ export function HeroVideoBackground() {
       if (p) void p.catch(() => {});
     };
     tryPlay();
-
-    // When this hero is rendered inside an iframe (the laptop-screen
-    // preview on /services), IntersectionObserver against the iframe's
-    // own viewport returns `isIntersecting: false` because the parent's
-    // matrix3d transform makes Chrome treat the iframe as off-screen
-    // — even though the user can clearly see it. The IO would then
-    // call `video.pause()` immediately, fighting against the parent's
-    // attempts to start the video. The parent owns play/pause for the
-    // iframe instance, so we skip the IO entirely there.
-    const inIframe = typeof window !== "undefined" && window.self !== window.top;
-    if (inIframe) {
-      return () => {
-        video.pause();
-      };
-    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {

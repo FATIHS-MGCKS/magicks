@@ -1095,8 +1095,8 @@ export default function LeistungenPage() {
                   </div>
                 )}
               </div>
-            ))}
-          </div>
+          ))}
+        </div>
 
           {/* Chapter colophon */}
           <div
@@ -1202,7 +1202,7 @@ export default function LeistungenPage() {
                           {item.body}
                         </p>
                         {item.cta && item.to ? (
-                          <Link
+            <Link
                             to={item.to}
                             className="group mt-5 inline-flex items-baseline gap-2 text-[13px] font-medium tracking-[-0.005em] text-white no-underline md:text-[13.5px]"
                           >
@@ -1223,7 +1223,7 @@ export default function LeistungenPage() {
                             >
                               ↗︎
                             </span>
-                          </Link>
+            </Link>
                         ) : null}
                       </div>
                     </li>
@@ -1497,8 +1497,8 @@ export default function LeistungenPage() {
                     <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.38em] text-white/54 sm:text-[10.5px]">
                       Nächster Schritt · Anfrage
                     </span>
-                    <Link
-                      to="/kontakt"
+            <Link
+              to="/kontakt"
                       className="group relative inline-flex items-baseline gap-3 text-[16px] font-medium tracking-[-0.005em] text-white no-underline sm:text-[17px] md:text-[18.5px]"
                       aria-label="Projekt besprechen"
                     >
@@ -1519,9 +1519,9 @@ export default function LeistungenPage() {
                       >
                         ↗︎
                       </span>
-                    </Link>
-                  </div>
-                </div>
+            </Link>
+          </div>
+      </div>
               </div>
             </div>
           </div>
@@ -1605,8 +1605,8 @@ export default function LeistungenPage() {
                           <span aria-hidden className="block" />
                         </div>
                       </details>
-                    </li>
-                  ))}
+          </li>
+        ))}
                 </ol>
 
                 <div

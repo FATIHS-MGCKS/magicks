@@ -9,7 +9,6 @@ import {
   presenceEnvelope,
   sectionFarewell,
 } from "../../lib/scrollMotion";
-import { quadToQuadMatrix3d, type V2 } from "../../lib/perspective";
 import { ChapterMarker } from "./ChapterMarker";
 
 type Service = {
@@ -37,9 +36,9 @@ const SERVICES: Service[] = [
       "Markenwebsites, Landing Pages und Relaunches als zusammenhängendes System — geführt, schnell, conversion-orientiert.",
     metric: "Von Auftritt bis Conversion",
     href: "/websites-landingpages",
-    image: "/media/home/service-websites-alpha-hires.webp",
+    image: "/media/home/service-websites-ultrarealistic.jpg",
     imageAlt:
-      "Editorial-Website auf einem Laptop, daneben ein Messinglineal und ein gefalteter Print-Proof auf dunklem Walnut-Desk.",
+      "Premium-Website auf einem Laptop in einem dunklen Studio-Setup mit Messinglineal, Print-Proof und edler Schreibtischszene.",
   },
   {
     index: 1,
@@ -85,325 +84,6 @@ const SERVICES: Service[] = [
   },
 ];
 
-// ─── Laptop-screen perspective ───────────────────────────────────────────
-//
-// The laptop photo (4500 × 3000 px WebP, alpha hole punched) carries a
-// TRUE alpha hole in the shape of the screen. The four corners of that
-// hole — manually picked from the source PNG to perfectly exclude the
-// black bezel — are the source of truth for projecting the iframe
-// onto the screen with correct perspective.
-//
-// We render the iframe *behind* the photo at a fixed desktop resolution
-// (1440 × 900) and apply a `matrix3d()` 4-point homography that maps the
-// iframe's rectangle onto the screen quadrilateral. The alpha hole acts
-// as the natural mask — no clip-path needed.
-//
-// Keeping the iframe pixel-perfect to the polygon means the MacBook's
-// actual bezel reads correctly around the live screen.
-
-/** Screen-corner positions in the native 4500×3000 WebP, clockwise from TL. */
-const SCREEN_CORNERS_NATIVE: readonly [V2, V2, V2, V2] = [
-  [1446, 837],
-  [3083, 700],
-  [3080, 1852],
-  [1478, 2070],
-];
-
-const LAPTOP_PNG_W = 4500;
-const LAPTOP_PNG_H = 3000;
-
-/**
- * Horizontal `object-position` percentage on the laptop image. The
- * native image is 3:2 inside a 4:5 (taller) container — so a wide
- * strip of the width is cropped off. The screen sits slightly right
- * of the image center (centroid x ≈ 2294 in a 4500-wide image), so
- * we shift just past 50 % to land the screen's centroid on the
- * container's centre line.
- */
-const LAPTOP_OBJECT_POSITION_X = 52; // %
-
-/** Native iframe resolution that gets perspective-mapped onto the screen. */
-const HERO_IFRAME_W = 1440;
-const HERO_IFRAME_H = 900;
-
-/**
- * Computes the 4 screen-corner positions in CONTAINER pixel coordinates
- * for the given container size, accounting for `object-cover` cropping
- * and the configured `object-position`. Handles both axes — the desktop
- * 4:5 container crops horizontally (height-limited), the mobile 16:10
- * container matches the image ratio exactly (no crop). A future taller
- * container would crop vertically (width-limited).
- */
-function projectCornersToContainer(
-  containerW: number,
-  containerH: number,
-  objectPositionX: number = LAPTOP_OBJECT_POSITION_X,
-  objectPositionY: number = 50,
-): [V2, V2, V2, V2] {
-  const containerRatio = containerW / containerH;
-  const imageRatio = LAPTOP_PNG_W / LAPTOP_PNG_H;
-
-  let scale: number;
-  let cropLeft: number;
-  let cropTop: number;
-
-  if (imageRatio >= containerRatio) {
-    // Image is at least as wide as the container — height fills, width
-    // overflows (or matches exactly when ratios are equal).
-    scale = containerH / LAPTOP_PNG_H;
-    const overflow = LAPTOP_PNG_W * scale - containerW;
-    cropLeft = (objectPositionX / 100) * overflow;
-    cropTop = 0;
-  } else {
-    // Container is wider than the image — width fills, height overflows.
-    scale = containerW / LAPTOP_PNG_W;
-    cropLeft = 0;
-    const overflow = LAPTOP_PNG_H * scale - containerH;
-    cropTop = (objectPositionY / 100) * overflow;
-  }
-
-  const map = ([nx, ny]: V2): V2 => [nx * scale - cropLeft, ny * scale - cropTop];
-
-  return [
-    map(SCREEN_CORNERS_NATIVE[0]),
-    map(SCREEN_CORNERS_NATIVE[1]),
-    map(SCREEN_CORNERS_NATIVE[2]),
-    map(SCREEN_CORNERS_NATIVE[3]),
-  ];
-}
-
-/**
- * Renders the live hero inside the laptop screen with correct
- * perspective. The wrapper observes its own size and recomputes the
- * `matrix3d` transform whenever the container resizes.
- */
-function LaptopScreenIframe() {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [ready, setReady] = useState(false);
-
-  // Pinch-zoom safety unmount.
-  //
-  // Pinch-zooming on mobile while a same-origin iframe (with its own
-  // React app, GSAP timelines, hero video, signature SVGs, etc.) is
-  // mounted is the single biggest memory pressure event we can
-  // create on a phone. iOS Safari's per-tab cap is ~384 MB and
-  // budget Android devices often have far less. The OS reaction is
-  // to terminate the WebView — the tab "crashes" and reloads.
-  //
-  // The cleanest fix is to keep the iframe out of the DOM for the
-  // duration of the gesture. We listen to `visualViewport` (the only
-  // reliable API for detecting pinch-zoom across iOS Safari, Chrome
-  // for Android, and Samsung Internet) and unmount as soon as the
-  // user starts to zoom. We delay the remount until the page has
-  // sat at scale ≈ 1 for 600 ms, so a quick zoom-out-zoom-in
-  // doesn't thrash mount/unmount repeatedly.
-  const [zoomedOut, setZoomedOut] = useState(false);
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const vv = window.visualViewport;
-    if (!vv) return;
-
-    let raf: number | null = null;
-    let restoreTimer: ReturnType<typeof setTimeout> | null = null;
-
-    const onChange = () => {
-      if (raf !== null) return;
-      raf = requestAnimationFrame(() => {
-        raf = null;
-        const isZoomed = vv.scale > 1.02;
-        if (isZoomed) {
-          if (restoreTimer) {
-            clearTimeout(restoreTimer);
-            restoreTimer = null;
-          }
-          setZoomedOut(true);
-        } else {
-          if (restoreTimer) clearTimeout(restoreTimer);
-          restoreTimer = setTimeout(() => {
-            setZoomedOut(false);
-            restoreTimer = null;
-          }, 600);
-        }
-      });
-    };
-
-    vv.addEventListener("resize", onChange);
-    vv.addEventListener("scroll", onChange);
-
-    return () => {
-      vv.removeEventListener("resize", onChange);
-      vv.removeEventListener("scroll", onChange);
-      if (raf !== null) cancelAnimationFrame(raf);
-      if (restoreTimer) clearTimeout(restoreTimer);
-    };
-  }, []);
-
-  // (Re)apply the perspective matrix whenever the wrapper resizes OR
-  // the iframe gets mounted (gated behind `ready` and the pinch-zoom
-  // safety unmount).
-  useLayoutEffect(() => {
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
-
-    const apply = () => {
-      const iframe = iframeRef.current;
-      if (!iframe) return;
-      const rect = wrapper.getBoundingClientRect();
-      if (rect.width <= 0 || rect.height <= 0) return;
-
-      const corners = projectCornersToContainer(rect.width, rect.height);
-      const matrix = quadToQuadMatrix3d(
-        HERO_IFRAME_W,
-        HERO_IFRAME_H,
-        corners,
-      );
-      iframe.style.transform = matrix;
-      iframe.style.transformOrigin = "0 0";
-      // Reveal once the matrix has landed so the user never sees the
-      // pre-transform 1440×900 rectangle in the wrong spot.
-      iframe.style.opacity = "1";
-    };
-
-    apply();
-
-    const ro = new ResizeObserver(apply);
-    ro.observe(wrapper);
-
-    // Same-origin iframe: drive autoplay from the parent, which retains
-    // the user-activation transferred during navigation. Calls from
-    // inside the iframe's own scripts (the hero's useEffect) are
-    // silently rejected by Chrome's autoplay heuristic when there is
-    // no explicit user gesture in the iframe document, even though the
-    // iframe element has `allow="autoplay"`. Driving from the parent
-    // — which DOES have activation — works reliably.
-    const iframeEl = iframeRef.current;
-    let retryTimer: ReturnType<typeof setInterval> | null = null;
-    const tryPlay = () => {
-      const doc = iframeEl?.contentDocument;
-      const video = doc?.querySelector("video");
-      if (!video) return false;
-      video.muted = true;
-      video.setAttribute("muted", "");
-      const p = video.play();
-      if (p && typeof p.then === "function") {
-        p.then(() => {
-          if (retryTimer) {
-            clearInterval(retryTimer);
-            retryTimer = null;
-          }
-          if (iframeEl) iframeEl.dataset.heroPlaying = "true";
-        }).catch(() => {});
-      }
-      return !video.paused;
-    };
-
-    if (iframeEl) {
-      iframeEl.addEventListener("load", tryPlay);
-      // Best-effort retry: poll every 250 ms for up to 4 s. Catches
-      // races where the iframe load event fired before the listener
-      // attached, and gives Chrome a chance to grant autoplay once
-      // the iframe gets composited.
-      tryPlay();
-      let elapsed = 0;
-      retryTimer = setInterval(() => {
-        elapsed += 250;
-        if (tryPlay() || elapsed >= 4000) {
-          if (retryTimer) {
-            clearInterval(retryTimer);
-            retryTimer = null;
-          }
-        }
-      }, 250);
-    }
-
-    return () => {
-      ro.disconnect();
-      iframeEl?.removeEventListener("load", tryPlay);
-      if (retryTimer) clearInterval(retryTimer);
-    };
-    // `zoomedOut` is in the dep list so the matrix re-applies after a
-    // pinch-zoom remount — without it, the freshly mounted iframe
-    // would inherit no transform and snap to the top-left of its
-    // 1440×900 source rectangle.
-  }, [ready, zoomedOut]);
-
-  // Mount gating:
-  //  · Mounts on every viewport — the live hero (eyebrow, headline,
-  //    CTA, video) is the whole point on mobile too.
-  //  · Only when the laptop preview is approaching the viewport
-  //    (IntersectionObserver with 500 px rootMargin). This stops the
-  //    iframe from booting a full second React app + GSAP + the hero
-  //    video while the user is still at the top of the page —
-  //    the primary cause of the perceived performance dip.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
-
-    let timer: ReturnType<typeof setTimeout> | null = null;
-
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          // Tiny defer so the in-page paint isn't competing with the
-          // iframe's hero boot.
-          if (!timer) timer = setTimeout(() => setReady(true), 200);
-        } else {
-          setReady(false);
-          if (timer) {
-            clearTimeout(timer);
-            timer = null;
-          }
-        }
-      },
-      { rootMargin: "500px 0px", threshold: 0 },
-    );
-    io.observe(wrapper);
-
-    return () => {
-      io.disconnect();
-      if (timer) clearTimeout(timer);
-    };
-  }, []);
-
-  return (
-    <div
-      ref={wrapperRef}
-      aria-hidden
-      className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#0A0A0B]"
-    >
-      {ready && !zoomedOut && (
-        <iframe
-          ref={iframeRef}
-          src="/?hero-only=true"
-          title="Magicks Hero Preview"
-          className="absolute left-0 top-0 border-0 bg-[#0a0a0a]"
-          style={{
-            width: `${HERO_IFRAME_W}px`,
-            height: `${HERO_IFRAME_H}px`,
-            // Initial opacity hides the iframe before matrix3d lands —
-            // we don't translate it off-screen because Chrome's
-            // autoplay heuristic refuses to start the video unless
-            // the iframe is at least conceptually "visible". The
-            // layout effect flips opacity to 1 the moment matrix3d
-            // is applied (single frame).
-            opacity: 0,
-            transformOrigin: "0 0",
-          }}
-          loading="lazy"
-          tabIndex={-1}
-          // Same-origin iframe but the browser still requires explicit
-          // `allow` permissions for autoplay. Without these, the hero
-          // video stays on its first frame and the section reads as a
-          // static screenshot instead of the live animated hero.
-          allow="autoplay; encrypted-media; fullscreen"
-        />
-      )}
-    </div>
-  );
-}
-
 function useCanHover(): boolean {
   const [v, setV] = useState<boolean>(() =>
     typeof window === "undefined"
@@ -431,7 +111,6 @@ function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; classN
     <div className={`relative overflow-hidden ${className}`.trim()}>
       {SERVICES.map((s, i) => {
         const isActive = activeIdx === i;
-        const isWebsites = s.slug === "websites";
 
         return (
           <div
@@ -441,19 +120,6 @@ function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; classN
               isActive ? "opacity-100 z-10" : "opacity-0 z-0"
             }`}
           >
-            {/*
-              For the websites slide we render the live hero BEHIND
-              the laptop photo. The photo has a true alpha hole at the
-              screen, so the iframe naturally appears only inside the
-              screen area — no clip-path needed. The iframe itself is
-              perspective-mapped via matrix3d (see LaptopScreenIframe).
-            */}
-            {isWebsites && <LaptopScreenIframe />}
-
-            {/* Laptop photograph — sits ABOVE the iframe so the alpha
-                hole reveals the hero. object-position is shifted left
-                of center because the screen sits left of the image
-                center; default centering would crop the screen edge. */}
             <img
               src={s.image}
               alt={isActive ? s.imageAlt : ""}
@@ -464,13 +130,8 @@ function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; classN
               fetchPriority="low"
               draggable={false}
               className={`preview-stack__image absolute inset-0 h-full w-full object-cover ${
-                isWebsites ? "z-10" : ""
-              } ${isActive ? "preview-stack__image--active" : ""}`}
-              style={
-                isWebsites
-                  ? { objectPosition: `${LAPTOP_OBJECT_POSITION_X}% center` }
-                  : undefined
-              }
+                isActive ? "preview-stack__image--active" : ""
+              }`}
             />
           </div>
         );
@@ -847,15 +508,15 @@ export function Services() {
                         when the service is active, giving it a premium tech feel. */}
                     <div
                       aria-hidden
-                      className={`pointer-events-none absolute left-0 top-0 h-px w-[120px] -translate-y-1/2 bg-gradient-to-r from-transparent via-amber-200/80 to-transparent blur-[2px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] ${
-                        active ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+                      className={`pointer-events-none absolute left-0 top-0 h-px w-[120px] -translate-y-1/2 -translate-x-full bg-gradient-to-r from-transparent via-amber-200/80 to-transparent blur-[2px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] ${
+                        active ? "translate-x-0 opacity-100" : "opacity-0"
                       }`}
                       style={{ mixBlendMode: "screen" }}
                     />
                     <div
                       aria-hidden
-                      className={`pointer-events-none absolute left-0 top-0 h-[3px] w-[60px] -translate-y-1/2 bg-gradient-to-r from-transparent via-white to-transparent blur-[4px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] ${
-                        active ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+                      className={`pointer-events-none absolute left-0 top-0 h-[3px] w-[60px] -translate-y-1/2 -translate-x-full bg-gradient-to-r from-transparent via-white to-transparent blur-[4px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] ${
+                        active ? "translate-x-0 opacity-100" : "opacity-0"
                       }`}
                       style={{ mixBlendMode: "screen" }}
                     />
@@ -905,15 +566,10 @@ export function Services() {
                           {s.teaser}
                         </p>
 
-                        {/* Inline media — mobile/tablet only. The
-                            websites slide gets the live hero (eyebrow,
-                            title, CTA, video) inside the laptop screen,
-                            same as desktop — perspective-mapped via
-                            `matrix3d`. Lazy-mounted by IntersectionObserver
-                            so it costs nothing until the card approaches
-                            the viewport. Other slides stay as plain images. */}
+                        {/* Inline media — mobile/tablet only. Static,
+                            optimized imagery keeps the service cards light
+                            and leaves room for a future dedicated video. */}
                         <div className="relative mt-6 aspect-[16/10] w-full overflow-hidden rounded-[0.85rem] border border-white/[0.08] lg:hidden">
-                          {s.slug === "websites" && <LaptopScreenIframe />}
                           <img
                             src={s.image}
                             alt={s.imageAlt}
@@ -923,9 +579,7 @@ export function Services() {
                             decoding="async"
                             fetchPriority="low"
                             draggable={false}
-                            className={`preview-stack__image preview-stack__image--active absolute inset-0 h-full w-full object-cover object-center ${
-                              s.slug === "websites" ? "z-10" : ""
-                            }`}
+                            className="preview-stack__image preview-stack__image--active absolute inset-0 h-full w-full object-cover object-center"
                           />
                           <div
                             aria-hidden
