@@ -68,10 +68,13 @@ export default function CampaignsPage() {
       a.importedAt > b.importedAt ? -1 : 1,
     );
 
-    const manualRows = sorted.filter((c) => c.kind === "manual").map(toRow);
-    const industryRows = sorted
-      .filter((c) => c.kind !== "manual")
-      .map(toRow);
+    // Legacy campaigns (created before the manual/industry split existed)
+    // have `kind` === undefined. Default those to "Kampagnen" — only
+    // campaigns explicitly marked as CSV-generated land under "Branchen".
+    // New CSV imports always set `kind: "industry"` so no industry
+    // batches get misclassified by this default.
+    const manualRows = sorted.filter((c) => c.kind !== "industry").map(toRow);
+    const industryRows = sorted.filter((c) => c.kind === "industry").map(toRow);
 
     return { manualRows, industryRows };
   }, [campaigns, leads, customers, projects]);
