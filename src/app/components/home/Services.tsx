@@ -1,10 +1,8 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useLayoutEffect, useRef } from "react";
+import { PrefetchLink } from "../PrefetchLink";
 import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import {
-  breathingScale,
-  focusEnvelope,
   parallaxDrift,
   presenceEnvelope,
   sectionFarewell,
@@ -12,7 +10,6 @@ import {
 import { ChapterMarker } from "./ChapterMarker";
 
 type Service = {
-  index: number;
   slug: string;
   number: string;
   kicker: string;
@@ -27,7 +24,6 @@ type Service = {
 
 const SERVICES: Service[] = [
   {
-    index: 0,
     slug: "websites",
     number: "01",
     kicker: "Marke",
@@ -41,7 +37,6 @@ const SERVICES: Service[] = [
       "Premium-Website auf einem Laptop in einem dunklen Studio-Setup mit Messinglineal, Print-Proof und edler Schreibtischszene.",
   },
   {
-    index: 1,
     slug: "shops",
     number: "02",
     kicker: "Commerce",
@@ -55,7 +50,6 @@ const SERVICES: Service[] = [
       "Produktkonfigurator für eine moderne Terrassenüberdachung auf einem Laptop, darunter ein architektonischer Bauplan.",
   },
   {
-    index: 2,
     slug: "software",
     number: "03",
     kicker: "System",
@@ -69,7 +63,6 @@ const SERVICES: Service[] = [
       "Mehrpaneel-Plattform mit Projekttabelle, Statuschips und Timeline-Drawer auf einem Wide-Monitor vor einer Betonwand.",
   },
   {
-    index: 3,
     slug: "automation",
     number: "04",
     kicker: "Automation & KI",
@@ -84,66 +77,29 @@ const SERVICES: Service[] = [
   },
 ];
 
-function useCanHover(): boolean {
-  const [v, setV] = useState<boolean>(() =>
-    typeof window === "undefined"
-      ? false
-      : window.matchMedia("(hover: hover) and (pointer: fine)").matches,
-  );
-  useEffect(() => {
-    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const on = () => setV(mq.matches);
-    mq.addEventListener("change", on);
-    return () => mq.removeEventListener("change", on);
-  }, []);
-  return v;
-}
-
 /**
- * Image-first preview stack. All four visuals are rendered up-front so
- * the cross-fade is a pure opacity swap (no layout thrash). The active
- * image additionally gets a slow Ken-Burns move via `.preview-stack__image`
- * so the still has just enough life to feel cinematic without ever
- * pulling attention away from the type on the left column.
+ * Service image card — renders the hero visual for a single service with
+ * the same editorial chrome as the original preview stack (meta-overlay,
+ * gradient, studio-air sweep). Used in both the mobile inline slot and
+ * the desktop card's right column.
  */
-function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; className?: string }) {
+function ServiceImage({ s }: { s: Service }) {
   return (
-    <div className={`relative overflow-hidden ${className}`.trim()}>
-      {SERVICES.map((s, i) => {
-        const isActive = activeIdx === i;
+    <>
+      <img
+        src={s.image}
+        alt={s.imageAlt}
+        width={1440}
+        height={1800}
+        loading="lazy"
+        decoding="async"
+        fetchPriority="low"
+        draggable={false}
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.03]"
+      />
 
-        return (
-          <div
-            key={s.slug}
-            aria-hidden={!isActive}
-            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-              isActive ? "opacity-100 z-10" : "opacity-0 z-0"
-            }`}
-          >
-            <img
-              src={s.image}
-              alt={isActive ? s.imageAlt : ""}
-              width={1440}
-              height={1800}
-              loading="lazy"
-              decoding="async"
-              fetchPriority="low"
-              draggable={false}
-              className={`preview-stack__image absolute inset-0 h-full w-full object-cover ${
-                isActive ? "preview-stack__image--active" : ""
-              }`}
-            />
-          </div>
-        );
-      })}
-
-      {/* Studio-air — a very slow diagonal light pass. Non-looping perception
-          (cycle is 34s and travels edge-to-edge only at the midpoint). */}
       <div aria-hidden className="preview-sweep z-30 relative pointer-events-none" />
 
-      {/* Overlays tuned for intentionally dark-composed still images —
-          lighter than the original video-era values so the composition
-          reads through while the meta-text at top/bottom stays legible. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 z-30 bg-[radial-gradient(ellipse_120%_80%_at_50%_120%,rgba(10,10,10,0.45),transparent_62%)]"
@@ -153,99 +109,31 @@ function PreviewStack({ activeIdx, className = "" }: { activeIdx: number; classN
         className="pointer-events-none absolute inset-0 z-30 bg-gradient-to-t from-[#0A0A0B]/48 via-transparent to-[#0A0A0B]/14"
       />
 
-      {/* Preview chapter-meta overlay */}
       <div className="pointer-events-none absolute left-5 top-5 z-40 flex items-center gap-3 sm:left-6 sm:top-6">
         <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/68 sm:text-[10.5px]">
-          §{" "}
-          {SERVICES[activeIdx]?.number}
+          § {s.number}
         </span>
         <span aria-hidden className="h-px w-7 bg-white/32" />
         <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/58 sm:text-[10.5px]">
-          {SERVICES[activeIdx]?.kicker}
+          {s.kicker}
         </span>
       </div>
 
-      <div className="pointer-events-none absolute bottom-5 left-5 right-5 flex items-baseline justify-between gap-4 sm:bottom-6 sm:left-6 sm:right-6">
+      <div className="pointer-events-none absolute bottom-5 left-5 right-5 z-40 flex items-baseline justify-between gap-4 sm:bottom-6 sm:left-6 sm:right-6">
         <span className="font-instrument text-[14px] italic text-white/75 sm:text-[15px]">
-          {SERVICES[activeIdx]?.title}
+          {s.title}
         </span>
         <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 sm:text-[10.5px]">
-          {SERVICES[activeIdx]?.metric}
+          {s.metric}
         </span>
       </div>
-    </div>
+    </>
   );
 }
 
 export function Services() {
   const rootRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
-  const canHover = useCanHover();
-
-  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
-  const [scrollIdx, setScrollIdx] = useState<number>(0);
-  const hoverLeaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // IntersectionObserver — tracks which entry dominates the viewport.
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-
-    const entries = Array.from(root.querySelectorAll<HTMLElement>("[data-service-entry]"));
-    const ratios = new Array<number>(entries.length).fill(0);
-
-    const obs = new IntersectionObserver(
-      (records) => {
-        for (const r of records) {
-          const idx = Number((r.target as HTMLElement).dataset.serviceIndex ?? -1);
-          if (idx < 0 || idx >= ratios.length) continue;
-          ratios[idx] = r.intersectionRatio;
-        }
-        let best = 0;
-        let bestR = 0;
-        for (let i = 0; i < ratios.length; i++) {
-          if (ratios[i] > bestR) {
-            bestR = ratios[i];
-            best = i;
-          }
-        }
-        setScrollIdx(best);
-      },
-      { threshold: Array.from({ length: 21 }, (_, i) => i / 20) },
-    );
-
-    entries.forEach((n) => obs.observe(n));
-    return () => obs.disconnect();
-  }, []);
-
-  const onEnter = useCallback(
-    (i: number) => {
-      if (!canHover) return;
-      if (hoverLeaveTimer.current) {
-        clearTimeout(hoverLeaveTimer.current);
-        hoverLeaveTimer.current = null;
-      }
-      setHoverIdx(i);
-    },
-    [canHover],
-  );
-
-  const onLeave = useCallback(() => {
-    if (!canHover) return;
-    if (hoverLeaveTimer.current) clearTimeout(hoverLeaveTimer.current);
-    hoverLeaveTimer.current = setTimeout(() => {
-      setHoverIdx(null);
-      hoverLeaveTimer.current = null;
-    }, 120);
-  }, [canHover]);
-
-  useEffect(() => {
-    return () => {
-      if (hoverLeaveTimer.current) clearTimeout(hoverLeaveTimer.current);
-    };
-  }, []);
-
-  const activeIdx = canHover && hoverIdx !== null ? hoverIdx : scrollIdx;
 
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -256,14 +144,12 @@ export function Services() {
       const chapter = root.querySelector<HTMLElement>("[data-services-chapter]");
       const headline = root.querySelector<HTMLElement>("[data-services-headline]");
       const caption = root.querySelector<HTMLElement>("[data-services-caption]");
-      const entries = gsap.utils.toArray<HTMLElement>("[data-service-entry]");
-      const preview = root.querySelector<HTMLElement>("[data-services-preview]");
-      const previewSticky = root.querySelector<HTMLElement>("[data-services-preview-sticky]");
+      const cards = gsap.utils.toArray<HTMLElement>("[data-service-card]");
       const farewell = root.querySelector<HTMLElement>("[data-services-farewell]");
       const ambient = root.querySelector<HTMLElement>("[data-services-ambient]");
 
       if (reduced) {
-        gsap.set([chapter, headline, caption, ...entries, preview, farewell, ambient], {
+        gsap.set([chapter, headline, caption, ...cards, farewell, ambient], {
           opacity: 1,
           y: 0,
           filter: "blur(0px)",
@@ -274,8 +160,6 @@ export function Services() {
       }
 
       // ─── Ambient studio-light: behind the list ────────────────────────
-      // A wide radial light that slowly drifts as the user reads through
-      // the four clusters. Registers as depth, not as decoration.
       if (ambient) {
         gsap.set(ambient, { opacity: 0 });
         gsap
@@ -296,12 +180,6 @@ export function Services() {
       }
 
       // ─── Section header ──────────────────────────────────────────────
-      // Wide entry triggers (top 98% → ~mid-section) so chapter +
-      // headline + caption begin building the instant the section
-      // peeks — no cold frame between Value and Services. Exit is
-      // weighted ~2.5× the entry so the headline anchors the spread
-      // while the reader scans the four service rows underneath
-      // instead of disappearing on a single wheel notch.
       presenceEnvelope(chapter, {
         trigger: root,
         start: "top 98%",
@@ -315,8 +193,6 @@ export function Services() {
       });
 
       // ─── Headline: "Was wir bauen." ──────────────────────────────────
-      // Literally "built" as the user scrolls into the section.
-      // Reverses cleanly when scrolling back up.
       const buildParts = root.querySelectorAll<HTMLElement>("[data-build-part]");
       if (buildParts.length > 0) {
         gsap.fromTo(
@@ -350,72 +226,32 @@ export function Services() {
         scrub: 1.0,
       });
 
-      // ─── Preview frame: entry + hold-breathing + exit ────────────────
-      // The preview is sticky, so it lives on screen for the entire list.
-      // It builds presence with the section entry, BREATHES softly during
-      // the hold so the frame never feels frozen, and releases as the
-      // user exits the section.
-      if (preview) {
-        const triggerEl = previewSticky ?? root;
-        gsap.set(preview, { opacity: 0, scale: 0.955, filter: "blur(7px)" });
+      // ─── Service Stacking Cards ──────────────────────────────────────
+      // As the user scrolls, each service card sticks to the top.
+      // When the next card scrolls up, the current card scales down and darkens slightly.
+      cards.forEach((card, i) => {
+        if (i === cards.length - 1) return; // Last card doesn't scale down
 
-        gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: triggerEl,
-              start: "top 90%",
-              end: "top 32%",
-              scrub: 0.95,
-              invalidateOnRefresh: true,
-            },
-            defaults: { ease: "none" },
-          })
-          .to(preview, {
-            opacity: 1,
-            scale: 1,
-            filter: "blur(0px)",
-            ease: "power2.out",
-          });
+        const nextCard = cards[i + 1];
 
-        breathingScale(preview, { trigger: root, from: 0.996, peak: 1.008, to: 1.0, scrub: 1.6 });
-
-        gsap.to(preview, {
-          opacity: 0,
-          scale: 0.988,
-          filter: "blur(5px)",
+        gsap.to(card, {
+          scale: 0.94,
+          opacity: 0.4,
           ease: "none",
           scrollTrigger: {
-            trigger: root,
-            start: "bottom 60%",
-            end: "bottom 12%",
-            scrub: 0.95,
+            trigger: nextCard,
+            start: "top 85%", // Start scaling when the next card comes into view
+            end: "top 35%",   // Finish scaling when the next card reaches its sticky position
+            scrub: true,
           },
         });
+      });
+
+      // ─── Section farewell ────────────────────────────────────────────
+      if (farewell) {
+        sectionFarewell(farewell, { trigger: root, start: "bottom 95%", end: "bottom 60%" });
       }
-
-      // ─── Service entries: per-entry focus envelope ───────────────────
-      // Each entry gains clarity as it reaches its own viewport sweet
-      // spot and softens as the next one takes over. Slightly stronger
-      // floor-opacity than other sections so the list reads as a
-      // continuous index rather than fade-pairs.
-      focusEnvelope(entries as HTMLElement[], {
-        start: "top 86%",
-        end: "bottom 16%",
-        blur: 4,
-        opacityFloor: 0.3,
-        focusOpacity: 1,
-        holdRatio: 0.5,
-      });
-
-      // ─── Section farewell: deepens into Why MAGICKS ──────────────────
-      sectionFarewell(farewell, {
-        trigger: root,
-        peak: 1,
-        start: "bottom 80%",
-        end: "bottom 0%",
-        scrub: 1.0,
-      });
-    }, root);
+    });
 
     return () => ctx.revert();
   }, [reduced]);
@@ -483,82 +319,55 @@ export function Services() {
           </div>
         </div>
 
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-14 xl:gap-20">
-          {/* Left — editorial index */}
-          <ol className="relative border-t border-white/[0.08]">
-            {SERVICES.map((s, i) => {
-              const active = activeIdx === i;
-              return (
-                <li
-                  key={s.slug}
-                  data-service-entry
-                  data-service-index={s.index}
-                  onPointerEnter={() => onEnter(i)}
-                  onPointerLeave={onLeave}
-                  className="border-b border-white/[0.08]"
-                >
-                  <Link
+        <div className="relative flex flex-col pt-10">
+          {SERVICES.map((s, i) => {
+            return (
+              <article
+                key={s.slug}
+                data-service-card
+                className="sticky z-10 w-full border border-white/[0.08] rounded-3xl bg-[#0A0A0B] p-8 sm:p-10 md:p-12 origin-top will-change-[transform,opacity] shadow-[0_0_40px_rgba(0,0,0,0.5)]"
+                style={{ top: `calc(6rem + ${i * 2.5}rem)` }}
+              >
+                <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-14 xl:gap-20">
+                  {/* Left — Text Content */}
+                  <PrefetchLink
                     to={s.href}
-                    onFocus={() => canHover && onEnter(i)}
-                    onBlur={onLeave}
-                    className="group relative block py-10 no-underline outline-none sm:py-12 md:py-14"
+                    className="group relative block no-underline outline-none"
                   >
-                    {/* Lens Flare — cinematic lighting on hover.
-                        A horizontal streak that scales up and glows brightly
-                        when the service is active, giving it a premium tech feel. */}
+                    {/* Lens Flare — cinematic lighting on hover */}
                     <div
                       aria-hidden
-                      className={`pointer-events-none absolute left-0 top-0 h-px w-[120px] -translate-y-1/2 -translate-x-full bg-gradient-to-r from-transparent via-amber-200/80 to-transparent blur-[2px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] ${
-                        active ? "translate-x-0 opacity-100" : "opacity-0"
-                      }`}
+                      className="pointer-events-none absolute left-0 top-0 h-px w-[120px] -translate-y-1/2 -translate-x-full bg-gradient-to-r from-transparent via-amber-200/80 to-transparent blur-[2px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100"
                       style={{ mixBlendMode: "screen" }}
                     />
                     <div
                       aria-hidden
-                      className={`pointer-events-none absolute left-0 top-0 h-[3px] w-[60px] -translate-y-1/2 -translate-x-full bg-gradient-to-r from-transparent via-white to-transparent blur-[4px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] ${
-                        active ? "translate-x-0 opacity-100" : "opacity-0"
-                      }`}
+                      className="pointer-events-none absolute left-0 top-0 h-[3px] w-[60px] -translate-y-1/2 -translate-x-full bg-gradient-to-r from-transparent via-white to-transparent blur-[4px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100"
                       style={{ mixBlendMode: "screen" }}
                     />
 
                     <div
                       aria-hidden
-                      className={`absolute left-0 top-0 h-full w-[2px] origin-top bg-white magicks-duration-hover magicks-ease-out transition-[transform,opacity] ${
-                        active ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0"
-                      }`}
+                      className="absolute left-0 top-0 h-full w-[2px] origin-top bg-white magicks-duration-hover magicks-ease-out transition-[transform,opacity] scale-y-0 opacity-0 group-hover:scale-y-100 group-hover:opacity-100 group-focus-visible:scale-y-100 group-focus-visible:opacity-100"
                     />
 
                     <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-x-5 gap-y-1.5 sm:gap-x-7 md:grid-cols-[52px_minmax(0,1fr)_auto] md:gap-x-10">
-                      <span
-                        className={`font-mono pt-[0.55rem] text-[12px] font-medium leading-none tracking-[0.18em] magicks-duration-hover magicks-ease-out transition-colors sm:text-[12px] sm:tracking-[0.28em] ${
-                          active ? "text-white" : "text-white/45"
-                        }`}
-                      >
+                      <span className="font-mono pt-[0.55rem] text-[12px] font-medium leading-none tracking-[0.18em] text-white/45 magicks-duration-hover magicks-ease-out transition-colors sm:text-[12px] sm:tracking-[0.28em] group-hover:text-white group-focus-visible:text-white">
                         {s.number}
                       </span>
 
                       <div>
                         <div className="mb-2 flex items-center gap-3">
-                          <span
-                            className={`font-mono text-[11px] font-medium uppercase leading-none tracking-[0.2em] magicks-duration-hover magicks-ease-out transition-colors sm:text-[10.5px] sm:tracking-[0.3em] ${
-                              active ? "text-white/72" : "text-white/40"
-                            }`}
-                          >
+                          <span className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.2em] text-white/40 magicks-duration-hover magicks-ease-out transition-colors sm:text-[10.5px] sm:tracking-[0.3em] group-hover:text-white/72 group-focus-visible:text-white/72">
                             {s.kicker}
                           </span>
                           <span
                             aria-hidden
-                            className={`h-px magicks-duration-hover magicks-ease-out transition-[width,background-color] ${
-                              active ? "w-10 bg-white/40" : "w-5 bg-white/15"
-                            }`}
+                            className="h-px w-5 bg-white/15 magicks-duration-hover magicks-ease-out transition-[width,background-color] group-hover:w-10 group-hover:bg-white/40 group-focus-visible:w-10 group-focus-visible:bg-white/40"
                           />
                         </div>
 
-                        <h3
-                          className={`font-instrument text-[1.65rem] leading-[1.1] tracking-[-0.02em] magicks-duration-hover magicks-ease-out transition-colors sm:text-[2rem] md:text-[2.3rem] lg:text-[2.45rem] ${
-                            active ? "text-white" : "text-white/82"
-                          }`}
-                        >
+                        <h3 className="font-instrument text-[1.65rem] leading-[1.1] tracking-[-0.02em] text-white/82 magicks-duration-hover magicks-ease-out transition-colors sm:text-[2rem] md:text-[2.3rem] lg:text-[2.45rem] group-hover:text-white group-focus-visible:text-white">
                           {s.title}
                         </h3>
 
@@ -566,85 +375,41 @@ export function Services() {
                           {s.teaser}
                         </p>
 
-                        {/* Inline media — mobile/tablet only. Static,
-                            optimized imagery keeps the service cards light
-                            and leaves room for a future dedicated video. */}
+                        {/* Inline media — mobile/tablet only */}
                         <div className="relative mt-6 aspect-[16/10] w-full overflow-hidden rounded-[0.85rem] border border-white/[0.08] lg:hidden">
-                          <img
-                            src={s.image}
-                            alt={s.imageAlt}
-                            width={1440}
-                            height={900}
-                            loading="lazy"
-                            decoding="async"
-                            fetchPriority="low"
-                            draggable={false}
-                            className="preview-stack__image preview-stack__image--active absolute inset-0 h-full w-full object-cover object-center"
-                          />
-                          <div
-                            aria-hidden
-                            className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-[#0A0A0B]/45 via-transparent to-[#0A0A0B]/12"
-                          />
+                          <ServiceImage s={s} />
                         </div>
 
-                        <span
-                          className={`mt-5 inline-flex min-h-[40px] items-center gap-2 font-mono text-[11.5px] font-medium uppercase leading-none tracking-[0.16em] magicks-duration-hover magicks-ease-out transition-colors sm:min-h-0 sm:text-[11px] sm:tracking-[0.24em] ${
-                            active ? "text-white" : "text-white/55"
-                          }`}
-                        >
+                        <span className="mt-6 inline-flex min-h-[40px] items-center gap-3 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.25em] text-white/40 magicks-duration-hover magicks-ease-out transition-colors sm:min-h-0 sm:text-[11px] sm:tracking-[0.3em] group-hover:text-white group-focus-visible:text-white">
                           Ansehen
                           <span
                             aria-hidden
-                            className={`h-px magicks-duration-hover magicks-ease-out transition-[width,background-color] ${
-                              active ? "w-8 bg-white" : "w-4 bg-white/40"
-                            }`}
+                            className="h-px w-5 bg-white/20 magicks-duration-hover magicks-ease-out transition-[width,background-color] group-hover:w-12 group-hover:bg-white group-focus-visible:w-12 group-focus-visible:bg-white"
                           />
                         </span>
                       </div>
 
                       <span
                         aria-hidden
-                        className={`mt-[0.5rem] hidden h-8 w-8 items-center justify-center rounded-full border text-white magicks-duration-hover magicks-ease-out transition-[background-color,border-color,transform] md:flex ${
-                          active
-                            ? "-translate-y-[1px] translate-x-[1px] border-white/40 bg-white/10"
-                            : "border-white/10 bg-transparent"
-                        }`}
+                        className="mt-[0.5rem] hidden h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-transparent text-white magicks-duration-hover magicks-ease-out transition-[background-color,border-color,transform] md:flex group-hover:-translate-y-[1px] group-hover:translate-x-[1px] group-hover:border-white/40 group-hover:bg-white/10 group-focus-visible:-translate-y-[1px] group-focus-visible:translate-x-[1px] group-focus-visible:border-white/40 group-focus-visible:bg-white/10"
                       >
                         <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.4">
                           <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </span>
                     </div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ol>
+                  </PrefetchLink>
 
-          {/* Right — sticky preview (desktop only) */}
-          <aside
-            data-services-preview-sticky
-            aria-hidden
-            className="relative hidden lg:block"
-          >
-            <div className="sticky top-[14vh]">
-              <div
-                data-services-preview
-                className="relative aspect-[4/5] w-full overflow-hidden rounded-[1rem] border border-white/[0.08] bg-[#0C0C0E] shadow-[0_48px_120px_-60px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.04)]"
-              >
-                <PreviewStack activeIdx={activeIdx} className="h-full w-full" />
-              </div>
-
-              <div className="mt-5 flex items-center justify-between gap-4 px-2">
-                <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.28em] text-white/40">
-                  Live Preview
-                </span>
-                <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.28em] text-white/40">
-                  {String(activeIdx + 1).padStart(2, "0")} / {String(SERVICES.length).padStart(2, "0")}
-                </span>
-              </div>
-            </div>
-          </aside>
+                  {/* Right — Image (Desktop only) */}
+                  <aside aria-hidden className="hidden lg:block relative">
+                    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1rem] border border-white/[0.08] bg-[#0C0C0E] shadow-[0_48px_120px_-60px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.04)]">
+                      <ServiceImage s={s} />
+                    </div>
+                  </aside>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
 

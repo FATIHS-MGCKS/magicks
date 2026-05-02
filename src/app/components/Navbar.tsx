@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { MagicksLogo } from "./MagicksLogo";
+import { PrefetchLink } from "./PrefetchLink";
 
 const navLinks = [
   { label: "Leistungen", to: "/leistungen" },
@@ -42,25 +43,25 @@ export function Navbar() {
 
         <div className="hidden items-center gap-2 lg:flex lg:gap-4">
           {navLinks.map((link) => (
-            <Link
+            <PrefetchLink
               key={link.to}
               to={link.to}
               className="font-ui inline-flex min-h-[44px] items-center text-[11px] font-medium text-white/68 magicks-duration-hover magicks-ease-out transition-colors hover:text-white lg:text-[13px]"
             >
               {link.label}
-            </Link>
+            </PrefetchLink>
           ))}
         </div>
 
         <div className="hidden items-center gap-2 lg:flex">
           {/* CSS-only hover/active scale — identical feel to prior framer-motion
               micro-interaction, eliminates the 122 KB framer-motion bundle. */}
-          <Link
+          <PrefetchLink
             to="/kontakt"
             className="font-ui liquid-glass inline-flex min-h-[44px] items-center rounded-full px-5 py-2 text-[14px] font-semibold text-white no-underline transition-transform duration-[420ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02] active:scale-[0.98] lg:text-[15px]"
           >
             Unverbindlich anfragen
-          </Link>
+          </PrefetchLink>
         </div>
 
         <button
@@ -85,20 +86,20 @@ export function Navbar() {
           <div className="liquid-glass liquid-glass-nav pointer-events-auto relative z-50 layout-max mt-2 rounded-2xl p-3 lg:hidden">
             <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
-                <Link
+                <PrefetchLink
                   key={link.to}
                   to={link.to}
                   className="font-ui magicks-duration-hover magicks-ease-out flex min-h-[48px] items-center rounded-xl px-4 text-[15px] font-medium text-white/82 transition-colors hover:bg-white/[0.05] hover:text-white"
                 >
                   {link.label}
-                </Link>
+                </PrefetchLink>
               ))}
-              <Link
+              <PrefetchLink
                 to="/kontakt"
                 className="font-ui mt-3 flex min-h-[52px] items-center justify-center rounded-full bg-white text-[15px] font-semibold text-black"
               >
                 Unverbindlich anfragen
-              </Link>
+              </PrefetchLink>
             </div>
           </div>
         </>

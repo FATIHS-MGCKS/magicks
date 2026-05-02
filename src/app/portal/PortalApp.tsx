@@ -39,6 +39,7 @@ export default function PortalApp() {
             <Route path="leads/:id" element={<LeadDetailPage />} />
             <Route path="csv-import" element={<CsvImportPage />} />
             <Route path="kampagnen" element={<CampaignsPage />} />
+            <Route path="branchen" element={<CampaignsPage />} />
             <Route path="kampagnen/:id" element={<CampaignDetailPage />} />
             <Route path="kunden" element={<CustomersPage />} />
             <Route path="kunden/:id" element={<CustomerDetailPage />} />

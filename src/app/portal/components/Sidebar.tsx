@@ -11,6 +11,7 @@ const NAV: NavItem[] = [
   { to: "/portal/leads", label: "Leads" },
   { to: "/portal/csv-import", label: "CSV Import" },
   { to: "/portal/kampagnen", label: "Kampagnen" },
+  { to: "/portal/branchen", label: "Branchen" },
   { to: "/portal/kunden", label: "Kunden" },
   { to: "/portal/projekte", label: "Projekte" },
   { to: "/portal/aufgaben", label: "Aufgaben" },

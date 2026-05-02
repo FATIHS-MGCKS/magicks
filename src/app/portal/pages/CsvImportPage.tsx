@@ -98,6 +98,7 @@ export default function CsvImportPage() {
 
     const campaign = portalStore.createCampaign({
       name: campaignName.trim(),
+      kind: "industry",
       industry: industry.trim() || undefined,
       region: region.trim() || undefined,
       source: source.trim() || undefined,

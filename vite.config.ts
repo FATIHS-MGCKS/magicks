@@ -186,8 +186,45 @@ function magicksSitemapPlugin(): Plugin {
   };
 }
 
+/**
+ * Post-build HTML rewrite that adds a `<link rel="modulepreload">`
+ * for the HomePage route chunk. Rationale:
+ *   · Vite auto-preloads shared chunks that the entry references
+ *     statically (`react-vendor`, `gsap`), but route chunks are
+ *     behind `React.lazy()` — discovered only after the entry JS
+ *     has parsed, evaluated, and hit the route's `<Suspense>`.
+ *   · The homepage is by far the most likely first route. Hinting
+ *     it explicitly shaves a roundtrip's worth of idle time off the
+ *     critical path on cold loads.
+ *   · Only the homepage is hinted — other routes stay route-split
+ *     so direct landings (/leistungen, /kontakt, …) do not pay
+ *     for 60+ KB they will never use.
+ */
+function homePagePreloadPlugin(): Plugin {
+  return {
+    name: "magicks-home-modulepreload",
+    apply: "build",
+    transformIndexHtml: {
+      order: "post",
+      handler(html, ctx) {
+        if (!ctx.bundle) return html;
+        const homeChunk = Object.values(ctx.bundle).find(
+          (c) =>
+            c.type === "chunk" &&
+            (c.name === "HomePage" || c.fileName.includes("HomePage-")),
+        );
+        if (!homeChunk || homeChunk.type !== "chunk") return html;
+        const href = `/${homeChunk.fileName}`;
+        if (html.includes(`modulepreload" crossorigin href="${href}"`)) return html;
+        const tag = `<link rel="modulepreload" crossorigin href="${href}">`;
+        return html.replace("</head>", `    ${tag}\n  </head>`);
+      },
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), tailwindcss(), magicksSitemapPlugin()],
+  plugins: [react(), tailwindcss(), magicksSitemapPlugin(), homePagePreloadPlugin()],
   build: {
     // Bump the warning threshold — react-vendor (~180 KB) is an intentional
     // vendor split we control and the default 500 KB ceiling is already far

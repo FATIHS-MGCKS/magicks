@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { SectionEyebrow } from "./SectionEyebrow";
 import { MagicksLogo } from "./MagicksLogo";
+import { PrefetchLink } from "./PrefetchLink";
 import { useLayoutEffect, useRef } from "react";
 import { registerGsap } from "../lib/gsap";
 import { useReducedMotion } from "../hooks/useReducedMotion";
@@ -104,12 +105,12 @@ export function Footer() {
             <ul className="mt-8 space-y-1 border-t border-white/[0.05] pt-6 sm:space-y-2">
               {locationNav.map((item) => (
                 <li key={item.to}>
-                  <Link
+                  <PrefetchLink
                     to={item.to}
                     className="font-ui inline-flex min-h-[44px] items-center text-[12.5px] text-white/36 magicks-duration-hover magicks-ease-out transition-colors hover:text-white/72 lg:min-h-[36px]"
                   >
                     {item.label}
-                  </Link>
+                  </PrefetchLink>
                 </li>
               ))}
             </ul>
@@ -123,9 +124,9 @@ export function Footer() {
             <ul className="space-y-2.5">
               {primaryNav.map((item) => (
                 <li key={item.to}>
-                  <Link to={item.to} className={linkClass}>
+                  <PrefetchLink to={item.to} className={linkClass}>
                     {item.label}
-                  </Link>
+                  </PrefetchLink>
                 </li>
               ))}
             </ul>
@@ -139,9 +140,9 @@ export function Footer() {
             <ul className="space-y-2.5">
               {servicesNav.map((item) => (
                 <li key={item.to}>
-                  <Link to={item.to} className={linkClass}>
+                  <PrefetchLink to={item.to} className={linkClass}>
                     {item.label}
-                  </Link>
+                  </PrefetchLink>
                 </li>
               ))}
             </ul>
@@ -155,9 +156,9 @@ export function Footer() {
             <ul className="space-y-2.5">
               {legalNav.map((item) => (
                 <li key={item.to}>
-                  <Link to={item.to} className={linkClass}>
+                  <PrefetchLink to={item.to} className={linkClass}>
                     {item.label}
-                  </Link>
+                  </PrefetchLink>
                 </li>
               ))}
             </ul>

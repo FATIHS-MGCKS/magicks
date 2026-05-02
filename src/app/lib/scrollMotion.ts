@@ -109,7 +109,6 @@ export function presenceEnvelope(
   // exitFraction = entryFraction * exitWeight
   const nonHold = Math.max(0, 1 - holdRatio);
   const entryFraction = nonHold / (1 + exitWeight);
-  const exitFraction = nonHold - entryFraction;
   const entryEnd = entryFraction;
   const exitStart = entryEnd + holdRatio;
   const blurPx = adaptBlur(blur);
@@ -361,6 +360,10 @@ export function rackFocusTrack(
     softOpacity?: number;
     reachOpacity?: number;
     holdRatio?: number;
+    /** Accepted for API parity with `focusEnvelope`. Currently mapped to `softOpacity`. */
+    opacityFloor?: number;
+    /** Accepted for API parity with `focusEnvelope`. Currently ignored. */
+    stagger?: number;
     onProgress?: (index: number, progress: number) => void;
   },
 ) {

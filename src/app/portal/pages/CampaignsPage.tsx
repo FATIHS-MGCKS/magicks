@@ -1,12 +1,28 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { PortalSeo } from "../components/PortalSeo";
 import { PageHeader } from "../components/PageHeader";
 import { EmptyState } from "../components/EmptyState";
 import { useStore, portalStore } from "../hooks/useStore";
 import { formatDate } from "../components/format";
+import type { Campaign, Customer, Lead, Project } from "../data/types";
+
+type Tab = "manual" | "industry";
+
+type CampaignRow = {
+  campaign: Campaign;
+  total: number;
+  hot: number;
+  contacted: number;
+  customers: number;
+  projects: number;
+};
 
 export default function CampaignsPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const routeTab: Tab = location.pathname.endsWith("/branchen") ? "industry" : "manual";
+
   const { campaigns, leads, customers, projects } = useStore((s) => ({
     campaigns: s.getCampaigns(),
     leads: s.getLeads(),
@@ -14,48 +30,59 @@ export default function CampaignsPage() {
     projects: s.getProjects(),
   }));
 
+  const tab = routeTab;
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
   const [industry, setIndustry] = useState("");
   const [region, setRegion] = useState("");
   const [source, setSource] = useState("");
 
-  const rows = useMemo(() => {
-    return campaigns
-      .map((c) => {
-        const cLeads = leads.filter((l) => l.campaignId === c.id);
-        const cCustomers = customers.filter((cu) =>
-          cLeads.some((l) => l.id === cu.sourceLeadId),
-        );
-        const cProjects = projects.filter((p) =>
-          cLeads.some((l) => l.id === p.sourceLeadId),
-        );
-        return {
-          campaign: c,
-          total: cLeads.length,
-          hot: cLeads.filter((l) => l.priority === "Hot").length,
-          contacted: cLeads.filter((l) =>
-            [
-              "Kontaktiert",
-              "Interessiert",
-              "Follow-up",
-              "Angebot angefragt",
-              "Kunde geworden",
-            ].includes(l.status),
-          ).length,
-          customers: cCustomers.length,
-          projects: cProjects.length,
-        };
-      })
-      .sort((a, b) =>
-        a.campaign.importedAt > b.campaign.importedAt ? -1 : 1,
+  const { manualRows, industryRows } = useMemo(() => {
+    const toRow = (c: Campaign): CampaignRow => {
+      const cLeads = leads.filter((l: Lead) => l.campaignId === c.id);
+      const cCustomers = customers.filter((cu: Customer) =>
+        cLeads.some((l) => l.id === cu.sourceLeadId),
       );
+      const cProjects = projects.filter((p: Project) =>
+        cLeads.some((l) => l.id === p.sourceLeadId),
+      );
+      return {
+        campaign: c,
+        total: cLeads.length,
+        hot: cLeads.filter((l) => l.priority === "Hot").length,
+        contacted: cLeads.filter((l) =>
+          [
+            "Kontaktiert",
+            "Interessiert",
+            "Follow-up",
+            "Angebot angefragt",
+            "Kunde geworden",
+          ].includes(l.status),
+        ).length,
+        customers: cCustomers.length,
+        projects: cProjects.length,
+      };
+    };
+
+    const sorted = [...campaigns].sort((a, b) =>
+      a.importedAt > b.importedAt ? -1 : 1,
+    );
+
+    const manualRows = sorted.filter((c) => c.kind === "manual").map(toRow);
+    const industryRows = sorted
+      .filter((c) => c.kind !== "manual")
+      .map(toRow);
+
+    return { manualRows, industryRows };
   }, [campaigns, leads, customers, projects]);
+
+  const activeRows = tab === "manual" ? manualRows : industryRows;
 
   const onCreate = () => {
     if (!name.trim()) return;
     const created = portalStore.createCampaign({
       name: name.trim(),
+      kind: "manual",
       industry: industry.trim() || undefined,
       region: region.trim() || undefined,
       source: source.trim() || undefined,
@@ -68,22 +95,30 @@ export default function CampaignsPage() {
     return created;
   };
 
+  const pageTitle = tab === "manual" ? "Kampagnen" : "Branchen";
+  const pageDescription =
+    tab === "manual"
+      ? "Manuell angelegte Kampagnen – für gezielte Akquise-Wellen und Folgeaktionen."
+      : "Automatisch angelegte Branchen-Batches aus deinen CSV-Imports.";
+
   return (
     <>
-      <PortalSeo title="Kampagnen" />
+      <PortalSeo title={pageTitle} />
       <PageHeader
         eyebrow="Pipeline"
-        title="Kampagnen"
-        description="Lead-Batches aus CSV-Importen oder manuell angelegt."
+        title={pageTitle}
+        description={pageDescription}
         actions={
           <>
-            <button
-              type="button"
-              onClick={() => setShowForm((v) => !v)}
-              className="rounded-md border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[12.5px] text-white/85 transition hover:bg-white/[0.08]"
-            >
-              Manuell anlegen
-            </button>
+            {tab === "manual" ? (
+              <button
+                type="button"
+                onClick={() => setShowForm((v) => !v)}
+                className="rounded-md border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[12.5px] text-white/85 transition hover:bg-white/[0.08]"
+              >
+                Kampagne anlegen
+              </button>
+            ) : null}
             <Link
               to="/portal/csv-import"
               className="rounded-md border border-white/15 bg-white/95 px-3 py-1.5 text-[12.5px] font-medium text-black transition hover:bg-white"
@@ -94,7 +129,39 @@ export default function CampaignsPage() {
         }
       />
 
-      {showForm ? (
+      {/* Tabs */}
+      <div className="mb-6 flex items-center gap-1 rounded-md border border-white/[0.08] bg-white/[0.02] p-1 text-[12.5px] w-fit">
+        <button
+          type="button"
+          onClick={() => {
+            setShowForm(false);
+            navigate("/portal/kampagnen");
+          }}
+          className={`rounded px-3 py-1.5 transition ${
+            tab === "manual"
+              ? "bg-white/[0.08] text-white"
+              : "text-white/55 hover:text-white/85"
+          }`}
+        >
+          Kampagnen <span className="ml-1 text-white/45">({manualRows.length})</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setShowForm(false);
+            navigate("/portal/branchen");
+          }}
+          className={`rounded px-3 py-1.5 transition ${
+            tab === "industry"
+              ? "bg-white/[0.08] text-white"
+              : "text-white/55 hover:text-white/85"
+          }`}
+        >
+          Branchen <span className="ml-1 text-white/45">({industryRows.length})</span>
+        </button>
+      </div>
+
+      {showForm && tab === "manual" ? (
         <section className="mb-6 rounded-lg border border-white/[0.08] bg-white/[0.02] p-4">
           <h2 className="font-instrument text-lg text-white">Neue Kampagne</h2>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -150,36 +217,56 @@ export default function CampaignsPage() {
         </section>
       ) : null}
 
-      {campaigns.length === 0 ? (
-        <EmptyState
-          title="Noch keine Kampagnen."
-          description="Lade eine CSV hoch, um deine erste Kampagne mit Leads anzulegen."
-          action={
-            <Link
-              to="/portal/csv-import"
-              className="rounded-md border border-white/15 bg-white/95 px-3 py-1.5 text-[13px] font-medium text-black transition hover:bg-white"
-            >
-              CSV importieren
-            </Link>
-          }
-        />
+      {activeRows.length === 0 ? (
+        tab === "manual" ? (
+          <EmptyState
+            title="Noch keine Kampagnen angelegt."
+            description="Lege eine Kampagne manuell an, um gezielte Akquise-Wellen oder Folgeaktionen zu organisieren."
+            action={
+              <button
+                type="button"
+                onClick={() => setShowForm(true)}
+                className="rounded-md border border-white/15 bg-white/95 px-3 py-1.5 text-[13px] font-medium text-black transition hover:bg-white"
+              >
+                Kampagne anlegen
+              </button>
+            }
+          />
+        ) : (
+          <EmptyState
+            title="Noch keine Branchen-Batches importiert."
+            description="Lade eine CSV-Liste hoch – daraus entsteht automatisch ein Branchen-Batch mit allen enthaltenen Leads."
+            action={
+              <Link
+                to="/portal/csv-import"
+                className="rounded-md border border-white/15 bg-white/95 px-3 py-1.5 text-[13px] font-medium text-black transition hover:bg-white"
+              >
+                CSV importieren
+              </Link>
+            }
+          />
+        )
       ) : (
         <div className="overflow-x-auto rounded-lg border border-white/[0.08] bg-white/[0.02]">
           <table className="w-full min-w-[760px] border-collapse text-[12.5px]">
             <thead>
               <tr className="border-b border-white/[0.06] text-white/45">
-                <th className="px-3 py-2 text-left font-medium">Kampagne</th>
+                <th className="px-3 py-2 text-left font-medium">
+                  {tab === "manual" ? "Kampagne" : "Branche"}
+                </th>
                 <th className="px-3 py-2 text-left font-medium">Branche · Region</th>
                 <th className="px-3 py-2 text-right font-medium">Leads</th>
                 <th className="px-3 py-2 text-right font-medium">Hot</th>
                 <th className="px-3 py-2 text-right font-medium">Kontaktiert</th>
                 <th className="px-3 py-2 text-right font-medium">Kunden</th>
                 <th className="px-3 py-2 text-right font-medium">Projekte</th>
-                <th className="px-3 py-2 text-right font-medium">Import</th>
+                <th className="px-3 py-2 text-right font-medium">
+                  {tab === "manual" ? "Angelegt" : "Import"}
+                </th>
               </tr>
             </thead>
             <tbody>
-              {rows.map(({ campaign, total, hot, contacted, customers, projects }) => (
+              {activeRows.map(({ campaign, total, hot, contacted, customers, projects }) => (
                 <tr
                   key={campaign.id}
                   className="border-b border-white/[0.04] transition hover:bg-white/[0.03]"

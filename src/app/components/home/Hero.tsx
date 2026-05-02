@@ -379,11 +379,8 @@ export function Hero() {
               data-hero-subline
               className="font-instrument mx-auto mt-7 max-w-[40ch] text-[15.5px] leading-[1.55] tracking-[-0.002em] text-white/82 sm:mt-9 sm:max-w-[48ch] sm:text-[17px] md:mt-11 md:max-w-[56ch] md:text-[19px] lg:max-w-[62ch] lg:text-[20.5px]"
             >
-              <em className="italic text-white/95">Webagentur aus Kassel</em>
-              <span aria-hidden className="mx-[0.45em] text-white/45">
-                —
-              </span>
-              Websites, Shops, Web-Software &amp; KI-Automationen.
+              <em className="italic text-white/95 block">Technologie, die sich nach Premium anfühlt.</em>
+              <span className="block text-white/65 mt-1">Ein digitaler Eindruck, der im Gedächtnis bleibt.</span>
             </h2>
 
             {/* Text-link CTA — magazine-style dual underline, no glass pill.

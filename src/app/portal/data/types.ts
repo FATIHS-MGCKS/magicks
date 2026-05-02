@@ -195,6 +195,7 @@ export interface LeadWebDefects {
 export interface Campaign {
   id: string;
   name: string;
+  kind?: "manual" | "industry";
   industry?: string;
   region?: string;
   source?: string;

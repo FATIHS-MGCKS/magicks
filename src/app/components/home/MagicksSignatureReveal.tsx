@@ -4,9 +4,6 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
 
 import magicksSignatureUrl from "../../../assets/signature/magicks-signature.svg?url";
 import studioSignatureUrl from "../../../assets/signature/studio-signature.svg?url";
-import combinedSignatureUrl from "../../../assets/signature/magicks-studio-signature-full.svg?url";
-
-export const MAGICKS_SIGNATURE_COMBINED_URL: string = combinedSignatureUrl;
 
 const ASSET_W = 1672;
 const ASSET_H = 941;

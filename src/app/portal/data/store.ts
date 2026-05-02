@@ -43,8 +43,6 @@ import {
 
 type Listener = () => void;
 
-const SETTINGS_KEY = `${PORTAL_STORAGE_PREFIX}settings`;
-
 const defaultSettings = (): PortalSettings => ({
   defaultRegion: "Kassel & 50 km",
   defaultSource: "ChatGPT-Recherche",
