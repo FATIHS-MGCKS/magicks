@@ -655,8 +655,7 @@ export function Services() {
 
       // ─── Headline: "Was wir bauen." ──────────────────────────────────
       // Literally "built" as the user scrolls into the section.
-      // We use a scrubbed timeline that kills itself once it reaches 100%
-      // so it never "unbuilds" if the user scrolls back up.
+      // Reverses cleanly when scrolling back up.
       const buildParts = root.querySelectorAll<HTMLElement>("[data-build-part]");
       if (buildParts.length > 0) {
         gsap.fromTo(
@@ -666,18 +665,13 @@ export function Services() {
             yPercent: 0,
             opacity: 1,
             rotateX: 0,
-            stagger: 0.1,
+            stagger: 0.18,
             ease: "power3.out",
             scrollTrigger: {
               trigger: root,
               start: "top 85%",
-              end: "top 35%",
-              scrub: 1.2,
-              onUpdate: (self) => {
-                if (self.progress === 1) {
-                  self.kill(false);
-                }
-              },
+              end: "top 15%",
+              scrub: 1.5,
             },
           },
         );
