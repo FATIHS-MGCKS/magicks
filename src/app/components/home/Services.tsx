@@ -653,17 +653,35 @@ export function Services() {
         scrub: 1.0,
       });
 
-      presenceEnvelope(headline, {
-        trigger: root,
-        start: "top 96%",
-        end: "top 0%",
-        yFrom: 28,
-        yTo: -12,
-        blur: 5,
-        holdRatio: 0.5,
-        exitWeight: 2.8,
-        scrub: 1.05,
-      });
+      // ─── Headline: "Was wir bauen." ──────────────────────────────────
+      // Literally "built" as the user scrolls into the section.
+      // We use a scrubbed timeline that kills itself once it reaches 100%
+      // so it never "unbuilds" if the user scrolls back up.
+      const buildParts = root.querySelectorAll<HTMLElement>("[data-build-part]");
+      if (buildParts.length > 0) {
+        gsap.fromTo(
+          buildParts,
+          { yPercent: 120, opacity: 0, rotateX: -60, transformOrigin: "50% 100%" },
+          {
+            yPercent: 0,
+            opacity: 1,
+            rotateX: 0,
+            stagger: 0.1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: root,
+              start: "top 85%",
+              end: "top 35%",
+              scrub: 1.2,
+              onUpdate: (self) => {
+                if (self.progress === 1) {
+                  self.kill(false);
+                }
+              },
+            },
+          },
+        );
+      }
 
       presenceEnvelope(caption, {
         trigger: root,
@@ -780,8 +798,24 @@ export function Services() {
               id="services-heading"
               data-services-headline
               className="font-instrument text-[2rem] leading-[1.02] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.15rem] lg:text-[3.6rem]"
+              style={{ perspective: "1000px" }}
             >
-              Was wir <em className="italic text-white/58">bauen</em>.
+              <span className="inline-block overflow-hidden pb-1 -mb-1">
+                <span data-build-part className="inline-block will-change-transform">Was</span>
+              </span>{" "}
+              <span className="inline-block overflow-hidden pb-1 -mb-1">
+                <span data-build-part className="inline-block will-change-transform">wir</span>
+              </span>{" "}
+              <em className="italic text-white/58 inline-block">
+                {"bauen".split("").map((char, i) => (
+                  <span key={i} className="inline-block overflow-hidden pb-1 -mb-1">
+                    <span data-build-part className="inline-block will-change-transform">{char}</span>
+                  </span>
+                ))}
+              </em>
+              <span className="inline-block overflow-hidden pb-1 -mb-1">
+                <span data-build-part className="inline-block will-change-transform">.</span>
+              </span>
             </h2>
             <div
               data-services-caption
