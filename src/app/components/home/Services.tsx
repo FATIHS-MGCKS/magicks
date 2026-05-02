@@ -51,7 +51,7 @@ const SERVICES: Service[] = [
       "Online-Shops und 2D/3D-Produktkonfiguratoren, die komplexe Produkte erklären und Anfragen sauber qualifizieren.",
     metric: "Shopware · Shopify · Custom",
     href: "/shops-produktkonfiguratoren",
-    image: "/media/home/service-shops.webp",
+    image: "/media/home/service-shops-ultrarealistic.jpg",
     imageAlt:
       "Produktkonfigurator für eine moderne Terrassenüberdachung auf einem Laptop, darunter ein architektonischer Bauplan.",
   },
@@ -65,7 +65,7 @@ const SERVICES: Service[] = [
       "Dashboards, Portale und individuelle Web-Software — Prozesse bündeln statt Tabs sammeln.",
     metric: "Intern · Multi-Tenant · API",
     href: "/web-software",
-    image: "/media/home/service-software.webp",
+    image: "/media/home/service-software-ultrarealistic.jpg",
     imageAlt:
       "Mehrpaneel-Plattform mit Projekttabelle, Statuschips und Timeline-Drawer auf einem Wide-Monitor vor einer Betonwand.",
   },
@@ -79,7 +79,7 @@ const SERVICES: Service[] = [
       "KI-Workflows, Automationen und Integrationen — wiederkehrende Arbeit aus dem Team holen, nachvollziehbar und wartbar.",
     metric: "n8n · Agents · LLM-Integration",
     href: "/ki-automationen-integrationen",
-    image: "/media/home/service-automation.webp",
+    image: "/media/home/service-automation-ultrarealistic.jpg",
     imageAlt:
       "Drei verbundene UI-Fragmente — Anfrage, Verarbeitung, CRM-Eintrag — auf einer dunklen Gitterplatte, verbunden durch feine Flusslinien.",
   },
