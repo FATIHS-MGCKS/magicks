@@ -22,6 +22,7 @@ import {
   type LeadStatus,
 } from "../data/types";
 import { BulkAutoCheckModal } from "../components/BulkAutoCheckModal";
+import { ScoringInfoBox } from "../components/ScoringInfoBox";
 import { DEFAULT_GEMINI_MODEL, type GeminiModel } from "../data/gemini";
 
 type SortKey = "score" | "newest" | "company" | "city";
@@ -260,6 +261,8 @@ export default function LeadsPage() {
           </>
         }
       />
+
+      <ScoringInfoBox />
 
       {empty ? (
         <EmptyState
