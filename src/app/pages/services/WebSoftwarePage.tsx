@@ -8,6 +8,7 @@ import { EditorialAnchor } from "../../components/service/EditorialAnchor";
 import { SectionTransition } from "../../components/service/SectionTransition";
 import { presenceEnvelope } from "../../lib/scrollMotion";
 import { RouteSEO } from "../../seo/RouteSEO";
+import { SERVICE_PAGE_IMAGES } from "../../data/imageWorld";
 
 /* ------------------------------------------------------------------
  * /web-software — bespoke editorial landing page.
@@ -693,8 +694,8 @@ export default function WebSoftwarePage() {
                 over standard tools. */}
             <div className="mt-20 sm:mt-24 md:mt-28">
               <EditorialAnchor
-                src="/media/services/web-software/hero-portal.webp"
-                alt="Monitor auf einem dunklen Studiotisch zeigt ein internes Einsatzplanungs-Portal: links Seitennavigation mit Dashboard, Ressourcen, Einsätze, Berichte; Mittelteil eine Wochenplanung für Kalenderwoche 18 mit Teammitgliedern als Zeilen; rechts ein Detail-Panel zu einem ausgewählten Einsatz mit Status-Zeitleiste."
+                src={SERVICE_PAGE_IMAGES.software.portal.src}
+                alt={SERVICE_PAGE_IMAGES.software.portal.alt}
                 folio="Mod. 01"
                 context="Plattform"
                 leftCaption="Einsatzplanung · Portal"
@@ -918,8 +919,8 @@ export default function WebSoftwarePage() {
                 paragraph above refers to — not a marketing shot. */}
             <div className="mt-20 sm:mt-24 md:mt-28">
               <EditorialAnchor
-                src="/media/services/web-software/detail-workflow.webp"
-                alt="Enger UI-Ausschnitt einer Web-Software: links ein Status-Workflow mit vier Schritten von ‚Eingereicht‘ bis ‚Archiviert‘, Mitte eine Filterleiste mit Chips ‚Alle‘, ‚Meine‘, ‚Überfällig‘, ‚Heute fällig‘ mit Zählern, rechts eine Datentabelle mit vier Zeilen mit Aufträgen, Zuständigen und Status-Chips."
+                src={SERVICE_PAGE_IMAGES.software.workflow.src}
+                alt={SERVICE_PAGE_IMAGES.software.workflow.alt}
                 folio="Mod. 02"
                 context="Ablauf-Logik"
                 leftCaption="Status · Filter · Tabelle"

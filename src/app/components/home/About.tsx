@@ -10,6 +10,8 @@ import {
   presenceEnvelope,
   sectionFarewell,
 } from "../../lib/scrollMotion";
+import { EditorialAnchor } from "../service/EditorialAnchor";
+import { HOME_ABOUT_IMAGE } from "../../data/imageWorld";
 import { ChapterMarker } from "./ChapterMarker";
 
 /**
@@ -424,6 +426,20 @@ export function About() {
                   Direkter Kontakt zu den Menschen, die bauen. Keine unnötigen Schleifen. Kein
                   Weiterreichen.
                 </p>
+              </div>
+
+              <div className="mt-10 max-w-[44rem] sm:mt-12 md:mt-14">
+                <EditorialAnchor
+                  src={HOME_ABOUT_IMAGE.src}
+                  alt={HOME_ABOUT_IMAGE.alt}
+                  folio="Fig. 04"
+                  context="Studio"
+                  leftCaption="Arbeitsumfeld · MAGICKS"
+                  rightCaption="Light System"
+                  aspect="16/9"
+                  align="left"
+                  maxWidth="40rem"
+                />
               </div>
             </div>
 

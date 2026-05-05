@@ -8,6 +8,7 @@ import { EditorialAnchor } from "../../components/service/EditorialAnchor";
 import { SectionTransition } from "../../components/service/SectionTransition";
 import { presenceEnvelope } from "../../lib/scrollMotion";
 import { RouteSEO } from "../../seo/RouteSEO";
+import { SERVICE_PAGE_IMAGES } from "../../data/imageWorld";
 
 /* ------------------------------------------------------------------
  * /ki-automationen-integrationen — bespoke editorial landing page.
@@ -854,8 +855,8 @@ export default function KiAutomationenPage() {
                 sci-fi AI visual. */}
             <div className="mt-20 sm:mt-24 md:mt-28">
               <EditorialAnchor
-                src="/media/services/ki-automation/hero-canvas.webp"
-                alt="Laptop auf dunklem Studiotisch mit einer Workflow-Canvas in dunklem UI: drei verbundene Knoten Formular, Logik und CRM, dünne Hairline-Verbindungslinien mit einem wandernden Signal-Punkt, Header ‚Lead-Eingang · v3 · Aktiv‘."
+                src={SERVICE_PAGE_IMAGES.automation.canvas.src}
+                alt={SERVICE_PAGE_IMAGES.automation.canvas.alt}
                 folio="Hop 01"
                 context="Ablauf"
                 leftCaption="Lead-Eingang · Canvas"
@@ -1101,8 +1102,8 @@ export default function KiAutomationenPage() {
                 concrete picture, not as a claim. */}
             <div className="mt-20 sm:mt-24 md:mt-28">
               <EditorialAnchor
-                src="/media/services/ki-automation/detail-handoff.webp"
-                alt="Enger Ausschnitt eines Automations-Handoffs: links eine Formular-Karte mit Name, Unternehmen, Anfrage und Budget, rechts ein daraus erzeugter CRM-Datensatz mit Kontakt, Firma, Projekt, Quelle Webformular und Status Neu, dazwischen ein Indikator ‚Validierung ✓ — 218 ms‘."
+                src={SERVICE_PAGE_IMAGES.automation.handoff.src}
+                alt={SERVICE_PAGE_IMAGES.automation.handoff.alt}
                 folio="Hop 02"
                 context="Übergabe"
                 leftCaption="Formular → CRM"

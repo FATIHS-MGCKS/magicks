@@ -8,6 +8,7 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { registerGsap } from "../../lib/gsap";
 import { presenceEnvelope, rackFocusTrack } from "../../lib/scrollMotion";
 import { RouteSEO } from "../../seo/RouteSEO";
+import { PAGE_IMAGES } from "../../data/imageWorld";
 
 /* ------------------------------------------------------------------
  * /landingpages-kassel — bespoke editorial landing page.
@@ -1108,8 +1109,8 @@ export default function LandingPagesKasselPage() {
               {/* Specimen plate — chromeless; the axis and anatomy
                   caption below carry all the metadata. */}
               <EditorialAnchor
-                src="/media/pages/landingpages-kassel/anchor.webp"
-                alt="Fokussierte deutschsprachige Landing Page in Dark-Mode auf einem mattschwarzen Laptop: Serif-Headline „Schneller sichtbar werden.“, einziger dominanter Call-to-Action-Button „Jetzt anfragen“ und darunter eine dreispaltige Argument-Leiste (Tempo · Klarheit · Wirkung)."
+                src={PAGE_IMAGES.landingpagesKassel.anchor.src}
+                alt={PAGE_IMAGES.landingpagesKassel.anchor.alt}
                 aspect="16/9"
                 align="center"
                 maxWidth="60rem"

@@ -8,6 +8,7 @@ import {
   presenceEnvelope,
   sectionFarewell,
 } from "../../lib/scrollMotion";
+import { HOME_SERVICE_IMAGES } from "../../data/imageWorld";
 import { ChapterMarker } from "./ChapterMarker";
 
 type Service = {
@@ -33,9 +34,8 @@ const SERVICES: Service[] = [
       "Markenwebsites, Landing Pages und Relaunches als zusammenhängendes System — geführt, schnell, conversion-orientiert.",
     metric: "Von Auftritt bis Conversion",
     href: "/websites-landingpages",
-    image: "/media/home/service-websites-ultrarealistic.jpg",
-    imageAlt:
-      "Premium-Website auf einem Laptop in einem dunklen Studio-Setup mit Messinglineal, Print-Proof und edler Schreibtischszene.",
+    image: HOME_SERVICE_IMAGES.websites.src,
+    imageAlt: HOME_SERVICE_IMAGES.websites.alt,
   },
   {
     slug: "shops",
@@ -46,9 +46,8 @@ const SERVICES: Service[] = [
       "Online-Shops und 2D/3D-Produktkonfiguratoren, die komplexe Produkte erklären und Anfragen sauber qualifizieren.",
     metric: "Shopware · Shopify · Custom",
     href: "/shops-produktkonfiguratoren",
-    image: "/media/home/service-shops-ultrarealistic.jpg",
-    imageAlt:
-      "Produktkonfigurator für eine moderne Terrassenüberdachung auf einem Laptop, darunter ein architektonischer Bauplan.",
+    image: HOME_SERVICE_IMAGES.shops.src,
+    imageAlt: HOME_SERVICE_IMAGES.shops.alt,
   },
   {
     slug: "software",
@@ -59,9 +58,8 @@ const SERVICES: Service[] = [
       "Dashboards, Portale und individuelle Web-Software — Prozesse bündeln statt Tabs sammeln.",
     metric: "Intern · Multi-Tenant · API",
     href: "/web-software",
-    image: "/media/home/service-software-ultrarealistic.jpg",
-    imageAlt:
-      "Mehrpaneel-Plattform mit Projekttabelle, Statuschips und Timeline-Drawer auf einem Wide-Monitor vor einer Betonwand.",
+    image: HOME_SERVICE_IMAGES.software.src,
+    imageAlt: HOME_SERVICE_IMAGES.software.alt,
   },
   {
     slug: "automation",
@@ -72,9 +70,8 @@ const SERVICES: Service[] = [
       "KI-Workflows, Automationen und Integrationen — wiederkehrende Arbeit aus dem Team holen, nachvollziehbar und wartbar.",
     metric: "n8n · Agents · LLM-Integration",
     href: "/ki-automationen-integrationen",
-    image: "/media/home/service-automation-ultrarealistic.jpg",
-    imageAlt:
-      "Drei verbundene UI-Fragmente — Anfrage, Verarbeitung, CRM-Eintrag — auf einer dunklen Gitterplatte, verbunden durch feine Flusslinien.",
+    image: HOME_SERVICE_IMAGES.automation.src,
+    imageAlt: HOME_SERVICE_IMAGES.automation.alt,
   },
 ];
 

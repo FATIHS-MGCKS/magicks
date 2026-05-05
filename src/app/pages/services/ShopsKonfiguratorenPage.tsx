@@ -8,6 +8,7 @@ import { EditorialAnchor } from "../../components/service/EditorialAnchor";
 import { SectionTransition } from "../../components/service/SectionTransition";
 import { presenceEnvelope } from "../../lib/scrollMotion";
 import { RouteSEO } from "../../seo/RouteSEO";
+import { SERVICE_PAGE_IMAGES } from "../../data/imageWorld";
 
 /* ------------------------------------------------------------------
  * /shops-produktkonfiguratoren — bespoke editorial landing page.
@@ -689,8 +690,8 @@ export default function ShopsKonfiguratorenPage() {
                 high-end digital sales experience looks like. */}
             <div className="mt-20 sm:mt-24 md:mt-28">
               <EditorialAnchor
-                src="/media/services/shops/hero-pergola.webp"
-                alt="Pergola-Konfigurator auf einem Laptop: Produktansicht einer freistehenden Aluminium-Pergola mit Lamellendach, rechts Konfigurator-UI mit Material-Auswahl, Dimensionen und ‚Anfrage senden‘."
+                src={SERVICE_PAGE_IMAGES.shops.pergola.src}
+                alt={SERVICE_PAGE_IMAGES.shops.pergola.alt}
                 folio="Plate 01"
                 context="Konfigurator"
                 leftCaption="Pergola Linea · Desktop"
@@ -910,8 +911,8 @@ export default function ShopsKonfiguratorenPage() {
                 work without repeating the same device-mockup formula. */}
             <div className="mt-20 sm:mt-24 md:mt-28">
               <EditorialAnchor
-                src="/media/services/shops/detail-fenster.webp"
-                alt="Enger UI-Ausschnitt eines Fenster-Konfigurators: großes 3D-Fenster links, rechts Material-Swatches in Anthrazit, Rahmenprofil-Optionen, Verglasung 2-fach, Öffnungsart Dreh-Kipp, Maße Breite und Höhe in Millimetern."
+                src={SERVICE_PAGE_IMAGES.shops.window.src}
+                alt={SERVICE_PAGE_IMAGES.shops.window.alt}
                 folio="Plate 02"
                 context="Entscheidungsführung"
                 leftCaption="Fenster · Material & Maße"
@@ -1075,8 +1076,8 @@ export default function ShopsKonfiguratorenPage() {
         <section className="relative px-5 pb-20 pt-4 sm:px-8 sm:pb-28 md:px-12 md:pb-32 lg:px-16">
           <div className="layout-max">
             <EditorialAnchor
-              src="/media/services/shops/mobile-summary.webp"
-              alt="Smartphone auf einem dunklen Studiotisch zeigt eine Konfigurator-Zusammenfassung: Modell Pergola Linea, Anthrazit RAL 7016, 4.000 mm × 4.000 mm, 14 variable Dachlamellen, Gesamtpreis 11.940 €, darunter ein Button ‚Anfrage senden‘."
+              src={SERVICE_PAGE_IMAGES.shops.mobile.src}
+              alt={SERVICE_PAGE_IMAGES.shops.mobile.alt}
               folio="Plate 03"
               context="Abschluss"
               leftCaption="Mobile · Zusammenfassung"

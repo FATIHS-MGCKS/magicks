@@ -6,6 +6,7 @@ import { useReducedMotion } from "../hooks/useReducedMotion";
 import { SectionTransition } from "../components/service/SectionTransition";
 import { EditorialAnchor } from "../components/service/EditorialAnchor";
 import { RouteSEO } from "../seo/RouteSEO";
+import { PAGE_IMAGES } from "../data/imageWorld";
 
 /* ------------------------------------------------------------------
  * /ueber-uns — positioning manifesto for MAGICKS Studio.
@@ -665,8 +666,8 @@ export default function UeberUnsPage() {
               </div>
 
               <EditorialAnchor
-                src="/media/pages/ueber-uns/studio.webp"
-                alt="Dunkler Arbeitstisch aus Eiche mit aufgeschlagenem Notizbuch voller handgeschriebener Typografie- und Rasterstudien, einer Espresso-Tasse, einer Messlupe, Papierproben und einem matten Laptop im weichen Seitenlicht."
+                src={PAGE_IMAGES.ueberUns.studio.src}
+                alt={PAGE_IMAGES.ueberUns.studio.alt}
                 aspect="16/9"
                 align="center"
                 maxWidth="54rem"

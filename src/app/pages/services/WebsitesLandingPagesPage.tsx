@@ -8,6 +8,7 @@ import { EditorialAnchor } from "../../components/service/EditorialAnchor";
 import { SectionTransition } from "../../components/service/SectionTransition";
 import { RouteSEO } from "../../seo/RouteSEO";
 import { presenceEnvelope } from "../../lib/scrollMotion";
+import { SERVICE_PAGE_IMAGES } from "../../data/imageWorld";
 
 /* ------------------------------------------------------------------
  * /websites-landingpages — bespoke editorial landing page.
@@ -545,8 +546,8 @@ export default function WebsitesLandingPagesPage() {
                 single, deliberate picture rather than more prose. */}
             <div className="mt-20 sm:mt-24 md:mt-28">
               <EditorialAnchor
-                src="/media/services/websites/hero-brand.webp"
-                alt="Premium Brand-Site auf einem Laptop auf dunklem Studiotisch: serifige Headline ‚Werkstätte · 2026‘, schlichte 4er-Navigation, eine einzelne Fassaden-Aufnahme, daneben eine handgezeichnete Skizze."
+                src={SERVICE_PAGE_IMAGES.websites.brand.src}
+                alt={SERVICE_PAGE_IMAGES.websites.brand.alt}
                 folio="Fig. 01"
                 context="Web-Entwurf"
                 leftCaption="Brand-Site · Desktop"
@@ -726,8 +727,8 @@ export default function WebsitesLandingPagesPage() {
                 section is about how we work, not what the outside looks like. */}
             <div className="mt-20 sm:mt-24 md:mt-28">
               <EditorialAnchor
-                src="/media/services/websites/detail-approach.webp"
-                alt="Enger Bildausschnitt einer dunklen Website-Section: serifige Überschrift ‚Unser Ansatz beginnt mit Verstehen.‘, zwei Absätze in Off-White und ein reduzierter Gespräch-anfragen-Button."
+                src={SERVICE_PAGE_IMAGES.websites.detail.src}
+                alt={SERVICE_PAGE_IMAGES.websites.detail.alt}
                 folio="Fig. 02"
                 context="Interface-Plate"
                 leftCaption="Arbeitsweise · Ausschnitt"

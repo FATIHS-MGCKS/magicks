@@ -10,6 +10,7 @@ import { registerGsap } from "../../lib/gsap";
 import { presenceEnvelope, rackFocusTrack } from "../../lib/scrollMotion";
 import { FaqJsonLd, type FaqItem } from "../../seo/FaqJsonLd";
 import { RouteSEO } from "../../seo/RouteSEO";
+import { PAGE_IMAGES } from "../../data/imageWorld";
 
 /* ------------------------------------------------------------------
  * /webdesign-kassel — bespoke editorial landing page.
@@ -942,8 +943,8 @@ export default function WebdesignKasselPage() {
                   carry all caption metadata so the image reads as
                   a pure bureau exhibit. */}
               <EditorialAnchor
-                src="/media/pages/webdesign-kassel/anchor.webp"
-                alt="Dunkel gestaltete deutschsprachige Unternehmenswebsite (Wortmarke Nordwerk) auf einem mattschwarzen Laptop in einer ruhigen Studio-Umgebung: zentrierte Serifentitel „Arbeit mit Haltung.“, feine Navigationszeile und ein einzelner unterstrichener Call-to-Action."
+                src={PAGE_IMAGES.webdesignKassel.anchor.src}
+                alt={PAGE_IMAGES.webdesignKassel.anchor.alt}
                 aspect="16/9"
                 align="center"
                 maxWidth="64rem"
