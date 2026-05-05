@@ -46,7 +46,7 @@
     min-height: 100vh;
     background-color: var(--magicks-bg-canvas);
     color: rgb(var(--magicks-ink-rgb) / 0.94);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Manrope", ui-sans-serif, system-ui, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -473,11 +473,17 @@
   backdrop-filter: blur(2px);
 }
 
+@media (pointer: coarse), (max-width: 900px) {
+  .magicks-light [data-kon-form-container] {
+    backdrop-filter: none;
+  }
+}
+
 .font-instrument {
   font-family: "Instrument Serif", "Instrument Serif Fallback", ui-serif, Georgia, serif;
   letter-spacing: -0.02em;
 }
 
 .font-ui {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Manrope", ui-sans-serif, system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
 }

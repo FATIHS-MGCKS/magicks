@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { HeroVideoBackground } from "../HeroVideoBackground";
 import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { prefersCheapMotion } from "../../lib/scrollMotion";
 
 /**
  * Hero — one dominant statement, one text-link CTA, one cinema credit.
@@ -32,6 +33,7 @@ export function Hero() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
+      const cheapMotion = prefersCheapMotion();
       const credit = root.querySelector<HTMLElement>("[data-hero-credit]");
       const lineA = gsap.utils.toArray<HTMLElement>("[data-hero-a]");
       const lineB = gsap.utils.toArray<HTMLElement>("[data-hero-b]");
@@ -163,10 +165,9 @@ export function Hero() {
 
       // 01 — video plane gently pushes and drifts. `scrub: 1.1` adds a
       // film-magazine inertia so the push never feels UI-like.
-      gsap.to(scaler, {
+      const scalerExit: gsap.TweenVars = {
         scale: 1.08,
         yPercent: -3,
-        filter: "blur(1.2px)",
         ease: "none",
         scrollTrigger: {
           trigger: root,
@@ -175,7 +176,9 @@ export function Hero() {
           scrub: 1.1,
           invalidateOnRefresh: true,
         },
-      });
+      };
+      if (!cheapMotion) scalerExit.filter = "blur(1.2px)";
+      gsap.to(scaler, scalerExit);
 
       // 02 — the depth layer darkens in two beats: a soft cool grade
       // first, then a stronger mid-frame falloff as the copy clears.
@@ -213,10 +216,9 @@ export function Hero() {
 
       // 04 — copy exhale: lifts, softens, and loses contrast before the
       // frame goes. No opacity wall — blur+y carries most of the farewell.
-      gsap.to(copy, {
+      const copyExit: gsap.TweenVars = {
         yPercent: -10,
         opacity: 0.26,
-        filter: "blur(2.2px)",
         ease: "none",
         scrollTrigger: {
           trigger: root,
@@ -224,7 +226,9 @@ export function Hero() {
           end: "bottom 12%",
           scrub: 0.9,
         },
-      });
+      };
+      if (!cheapMotion) copyExit.filter = "blur(2.2px)";
+      gsap.to(copy, copyExit);
 
       // 05 — marginalia (cue + credit) dissolve earlier than the copy so
       // the core headline holds the longest.

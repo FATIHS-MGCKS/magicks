@@ -51,7 +51,8 @@ export function ValueStatement() {
     const root = rootRef.current;
     if (!root) return;
 
-    const { gsap } = registerGsap();
+    const { gsap, ScrollTrigger } = registerGsap();
+    let removeFocusBandListeners: (() => void) | null = null;
 
     const ctx = gsap.context(() => {
       const chapter = root.querySelector<HTMLElement>("[data-value-chapter]");
@@ -65,6 +66,19 @@ export function ValueStatement() {
       const godray = root.querySelector<HTMLElement>("[data-value-godray] > div");
       const farewell = root.querySelector<HTMLElement>("[data-value-farewell]");
       const sign = root.querySelector<HTMLElement>("[data-value-sign]");
+      const setFocusBandY = focusBand ? gsap.quickSetter(focusBand, "y", "px") : null;
+      const setFocusBandOpacity = focusBand ? gsap.quickSetter(focusBand, "opacity") : null;
+      let cachedSentenceCenters: number[] = [];
+
+      const updateFocusBandGeometry = () => {
+        if (!focusBand || !sentences.length) return;
+        const parent = heading ?? root;
+        const parentRect = parent.getBoundingClientRect();
+        cachedSentenceCenters = sentences.map((sentence) => {
+          const rect = sentence.getBoundingClientRect();
+          return rect.top + rect.height / 2 - parentRect.top;
+        });
+      };
 
       if (reduced) {
         gsap.set(
@@ -178,21 +192,32 @@ export function ValueStatement() {
         holdRatio: 0.62,
         onProgress: (_idx, progress) => {
           if (!focusBand || !sentences.length) return;
+          if (!cachedSentenceCenters.length) updateFocusBandGeometry();
+          if (!cachedSentenceCenters.length) return;
           // Position the band along the paragraph height. We interpolate
           // through the three sentence centers so the band moves
           // continuously, not in steps — even the "between" positions
           // read as the lens traversing space.
-          const rects = sentences.map((s) => (s as HTMLElement).getBoundingClientRect());
-          const parentRect = (heading ?? root).getBoundingClientRect();
-          const centers = rects.map((r) => r.top + r.height / 2 - parentRect.top);
+          const centers = cachedSentenceCenters;
           const indexFloat = Math.max(0, Math.min(centers.length - 1, progress * centers.length - 0.5));
           const lo = Math.floor(indexFloat);
           const hi = Math.min(centers.length - 1, lo + 1);
           const t = indexFloat - lo;
           const y = centers[lo] + (centers[hi] - centers[lo]) * t;
-          gsap.set(focusBand, { y, opacity: 0.74 });
+          setFocusBandY?.(y);
+          setFocusBandOpacity?.(0.74);
         },
       });
+
+      if (focusBand && sentences.length) {
+        updateFocusBandGeometry();
+        ScrollTrigger.addEventListener("refreshInit", updateFocusBandGeometry);
+        ScrollTrigger.addEventListener("refresh", updateFocusBandGeometry);
+        removeFocusBandListeners = () => {
+          ScrollTrigger.removeEventListener("refreshInit", updateFocusBandGeometry);
+          ScrollTrigger.removeEventListener("refresh", updateFocusBandGeometry);
+        };
+      }
 
       // ─── Rule: scrubbed draw + gentle release ────────────────────────
       gsap.fromTo(
@@ -262,7 +287,10 @@ export function ValueStatement() {
       });
     }, root);
 
-    return () => ctx.revert();
+    return () => {
+      removeFocusBandListeners?.();
+      ctx.revert();
+    };
   }, [reduced]);
 
   return (

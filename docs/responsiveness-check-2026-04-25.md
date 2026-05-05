@@ -163,7 +163,7 @@ The constant 15 px gap between `innerWidth` and `scrollWidth` is the reserved sc
   ```
   All three weights are referenced in `src/styles/fonts.css` lines 5/13/21/29 from a third-party Apple S3 bucket. `document.fonts` reports the family but no glyph file ever loads → silent fallback to system. On iOS Safari the system fallback **happens to be SF Pro**, so the visual cost is invisible there. On Android, Windows, and most desktop browsers the result is Helvetica / Segoe UI / Roboto instead of the intended typeface.
 - **Source:** `src/styles/fonts.css` lines 3–32.
-- **Fix:** Either (a) self-host the SF Pro Display weights (proper Apple licence required), or (b) replace SF Pro Display with a licensed alternative already in the stack (Manrope is loaded; Inter / SF Pro Text local fallback is one option).
+- **Fix:** Either (a) self-host the SF Pro Display weights (proper Apple licence required), or (b) rely on the system sans stack already in place (Segoe UI / system-ui fallback; Inter / SF Pro Text local fallback is one option).
 - **Risk:** **High** — the entire UI font silently falls back on three of four major device-OS combinations.
 
 #### M-Y-04 — Inline `font-size` literals limit per-viewport tuning (MEDIUM)

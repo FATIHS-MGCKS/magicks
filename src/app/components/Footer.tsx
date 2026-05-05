@@ -2,9 +2,6 @@ import { Link } from "react-router-dom";
 import { SectionEyebrow } from "./SectionEyebrow";
 import { MagicksLogo } from "./MagicksLogo";
 import { PrefetchLink } from "./PrefetchLink";
-import { useLayoutEffect, useRef } from "react";
-import { registerGsap } from "../lib/gsap";
-import { useReducedMotion } from "../hooks/useReducedMotion";
 
 const primaryNav = [
   { label: "Leistungen", to: "/leistungen" },
@@ -43,47 +40,15 @@ const linkClass =
   "font-ui inline-flex min-h-[44px] items-center text-[15px] font-medium tracking-[0.004em] text-[var(--magicks-text-2)] magicks-duration-hover magicks-ease-out transition-colors hover:text-[var(--magicks-text-1)] lg:min-h-[40px]";
 
 export function Footer() {
-  const rootRef = useRef<HTMLElement>(null);
-  const reduced = useReducedMotion();
-
-  useLayoutEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-    const { gsap } = registerGsap();
-
-    const ctx = gsap.context(() => {
-      const pulse = root.querySelector<HTMLElement>("[data-footer-pulse]");
-      
-      if (reduced) {
-        if (pulse) gsap.set(pulse, { opacity: 0 });
-        return;
-      }
-
-      // ─── Ambient Pulse: deep, slow breathing light in the footer ──────
-      if (pulse) {
-        gsap.to(pulse, {
-          opacity: 0.6,
-          duration: 4,
-          ease: "sine.inOut",
-          yoyo: true,
-          repeat: -1,
-        });
-      }
-    }, root);
-
-    return () => ctx.revert();
-  }, [reduced]);
-
   return (
     <footer
-      ref={rootRef}
       className="relative overflow-hidden border-t border-[rgb(var(--magicks-line-rgb)/0.14)] bg-[var(--magicks-bg-base)] px-5 pb-8 pt-14 md:pt-16"
     >
-      {/* Ambient Pulse — deep background glow */}
+      {/* Ambient pulse stays CSS-only so the shell does not load GSAP. */}
       <div
         data-footer-pulse
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-0 opacity-20 will-change-[opacity]"
+        className="footer-pulse pointer-events-none absolute inset-0 z-0 opacity-20"
         style={{
           background: "radial-gradient(circle at 50% 120%, rgba(20,28,44,0.08) 0%, transparent 64%)",
         }}

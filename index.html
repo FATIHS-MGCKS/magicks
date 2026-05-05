@@ -6,7 +6,6 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://d8j0ntlcm91z4.cloudfront.net" crossorigin />
 
     <!--
       Fonts CSS is requested directly from the HTML head (previously
@@ -17,7 +16,7 @@
     -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
     />
 
     <!--
@@ -32,6 +31,28 @@
       as="image"
       href="/magicks-logo.webp"
       type="image/webp"
+      fetchpriority="high"
+    />
+
+    <!--
+      Hero image preload (responsive):
+      preload only the relevant source per breakpoint so the browser does
+      not compete mobile and desktop hero assets against each other.
+    -->
+    <link
+      rel="preload"
+      as="image"
+      href="/media/home/hero-mobile.webp"
+      type="image/webp"
+      media="(max-width: 767px)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="/media/home/hero-desktop.webp"
+      type="image/webp"
+      media="(min-width: 768px)"
       fetchpriority="high"
     />
 

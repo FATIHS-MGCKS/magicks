@@ -6,7 +6,7 @@ import { SectionTransition } from "../components/service/SectionTransition";
 import { featuredProjects, type Project } from "../data/projects";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { registerGsap } from "../lib/gsap";
-import { parallaxDrift, presenceEnvelope } from "../lib/scrollMotion";
+import { parallaxDrift, prefersCheapMotion, presenceEnvelope } from "../lib/scrollMotion";
 import { RouteSEO } from "../seo/RouteSEO";
 
 /* ------------------------------------------------------------------
@@ -101,6 +101,12 @@ export default function ProjektePage() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
+      const cheapMotion = prefersCheapMotion();
+      const withBlur = (amount: number): gsap.TweenVars =>
+        cheapMotion ? {} : { filter: `blur(${amount}px)` };
+      const withTracking = (value: string): gsap.TweenVars =>
+        cheapMotion ? {} : { letterSpacing: value };
+
       const reveals = gsap.utils.toArray<HTMLElement>("[data-pj-reveal]");
       const heroAxisRule = root.querySelector<HTMLElement>("[data-pj-axis-rule]");
       const heroAxisStops = gsap.utils.toArray<HTMLElement>("[data-pj-axis-stop]");
@@ -205,14 +211,14 @@ export default function ProjektePage() {
         gsap.set(finalHead, {
           opacity: 0.16,
           y: 12,
-          letterSpacing: "0.034em",
-          filter: "blur(3.8px)",
+          ...withTracking("0.034em"),
+          ...withBlur(3.8),
         });
         gsap.to(finalHead, {
           opacity: 1,
           y: 0,
-          letterSpacing: "-0.036em",
-          filter: "blur(0px)",
+          ...withTracking("-0.036em"),
+          ...withBlur(0),
           ease: "none",
           scrollTrigger: {
             trigger: finalSection,

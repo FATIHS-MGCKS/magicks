@@ -5,7 +5,7 @@ import { RouteSEO } from "../seo/RouteSEO";
 import { SectionTransition } from "../components/service/SectionTransition";
 import { ProjectIntakeForm } from "../components/contact/ProjectIntakeForm";
 import { registerGsap, MAGICKS_EASE, MAGICKS_EASE_SMOOTH } from "../lib/gsap";
-import { parallaxDrift, presenceEnvelope } from "../lib/scrollMotion";
+import { parallaxDrift, prefersCheapMotion, presenceEnvelope } from "../lib/scrollMotion";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 
 /* ---------------------------------------------------------------
@@ -173,6 +173,9 @@ export default function ContactPage() {
 
     const { gsap, ScrollTrigger } = registerGsap();
     const cleanups: Array<() => void> = [];
+    const cheapMotion = prefersCheapMotion();
+    const withBlur = (amount: number): gsap.TweenVars =>
+      cheapMotion ? {} : { filter: `blur(${amount}px)` };
 
     /* ---------- Hero intro timeline ---------- */
     const heroEl = heroRef.current;
@@ -314,11 +317,11 @@ export default function ContactPage() {
       const ctx = gsap.context(() => {
         const vows = gsap.utils.toArray<HTMLElement>("[data-kon-vow]");
         if (vows.length) {
-          gsap.set(vows, { opacity: 0.18, y: 12, filter: "blur(4px)" });
+          gsap.set(vows, { opacity: 0.18, y: 12, ...withBlur(4) });
           gsap.to(vows, {
             opacity: 1,
             y: 0,
-            filter: "blur(0px)",
+            ...withBlur(0),
             ease: "none",
             stagger: 0.1,
             scrollTrigger: {
@@ -333,7 +336,7 @@ export default function ContactPage() {
           // after the reader has moved on.
           gsap.to(vows, {
             opacity: 0.46,
-            filter: "blur(2.2px)",
+            ...withBlur(2.2),
             ease: "none",
             stagger: 0.04,
             scrollTrigger: {
@@ -414,12 +417,12 @@ export default function ContactPage() {
           gsap.set(frontispiece, {
             opacity: 0.2,
             y: 18,
-            filter: "blur(3.6px)",
+            ...withBlur(3.6),
           });
           gsap.to(frontispiece, {
             opacity: 1,
             y: 0,
-            filter: "blur(0px)",
+            ...withBlur(0),
             ease: "none",
             scrollTrigger: {
               trigger: formEl,

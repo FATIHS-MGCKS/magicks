@@ -4,6 +4,7 @@ import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import {
   parallaxDrift,
+  prefersCheapMotion,
   presenceEnvelope,
   sectionFarewell,
 } from "../../lib/scrollMotion";
@@ -141,6 +142,7 @@ export function Services() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
+      const cheapMotion = prefersCheapMotion();
       const chapter = root.querySelector<HTMLElement>("[data-services-chapter]");
       const headline = root.querySelector<HTMLElement>("[data-services-headline]");
       const caption = root.querySelector<HTMLElement>("[data-services-caption]");
@@ -195,22 +197,27 @@ export function Services() {
       // ─── Headline: "Was wir bauen." ──────────────────────────────────
       const buildParts = root.querySelectorAll<HTMLElement>("[data-build-part]");
       if (buildParts.length > 0) {
+        const buildFrom: gsap.TweenVars = cheapMotion
+          ? { yPercent: 86, opacity: 0 }
+          : { yPercent: 86, opacity: 0, rotateX: -34, transformOrigin: "50% 100%" };
+        const buildTo: gsap.TweenVars = {
+          yPercent: 0,
+          opacity: 1,
+          stagger: 0.14,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: root,
+            start: "top 85%",
+            end: "top 24%",
+            scrub: 1.2,
+          },
+        };
+        if (!cheapMotion) buildTo.rotateX = 0;
+
         gsap.fromTo(
           buildParts,
-          { yPercent: 86, opacity: 0, rotateX: -34, transformOrigin: "50% 100%" },
-          {
-            yPercent: 0,
-            opacity: 1,
-            rotateX: 0,
-            stagger: 0.14,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: root,
-              start: "top 85%",
-              end: "top 24%",
-              scrub: 1.2,
-            },
-          },
+          buildFrom,
+          buildTo,
         );
       }
 
@@ -234,10 +241,9 @@ export function Services() {
 
         const nextCard = cards[i + 1];
 
-        gsap.to(card, {
+        const recedeVars: gsap.TweenVars = {
           scale: 0.972,
           opacity: 0.74,
-          filter: "blur(1px)",
           ease: "none",
           scrollTrigger: {
             trigger: nextCard,
@@ -245,7 +251,9 @@ export function Services() {
             end: "top 35%",   // Finish scaling when the next card reaches its sticky position
             scrub: 0.85,
           },
-        });
+        };
+        if (!cheapMotion) recedeVars.filter = "blur(1px)";
+        gsap.to(card, recedeVars);
       });
 
       // ─── Section farewell ────────────────────────────────────────────

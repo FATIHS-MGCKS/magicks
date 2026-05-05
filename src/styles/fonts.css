@@ -8,7 +8,7 @@
  * SF Pro Display is intentionally not loaded as a webfont. The font
  * stack uses `-apple-system` / `BlinkMacSystemFont` so iOS and macOS
  * resolve directly to SF Pro Display without any network round-trip,
- * and Windows/Android fall back to Segoe UI / Manrope (Google Font).
+ * and Windows/Android fall back to Segoe UI / the system-ui sans stack.
  * Keeps typography consistent on Apple devices, removes prior 403
  * errors from a third-party Apple S3 mirror, and avoids licence
  * questions around hosting Apple webfonts.

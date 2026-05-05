@@ -33,13 +33,42 @@ function isNarrowViewport(): boolean {
   return window.matchMedia("(max-width: 640px)").matches;
 }
 
-/** Mobile-adaptive blur: halve radius on narrow viewports (min 1.5px). */
-function adaptBlur(blur: number): number {
-  return isNarrowViewport() ? Math.max(1.5, blur * 0.5) : blur;
+/**
+ * Cheap-motion heuristic for devices that are more likely to struggle with
+ * filter-heavy scrubbed timelines. Keeps choreography but drops costly blur.
+ */
+export function prefersCheapMotion(): boolean {
+  if (typeof window === "undefined") return false;
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return true;
+  if (window.matchMedia("(pointer: coarse)").matches) return true;
+  if (window.matchMedia("(max-width: 900px)").matches) return true;
+
+  const nav = navigator as Navigator & {
+    connection?: { saveData?: boolean };
+    deviceMemory?: number;
+  };
+
+  if (nav.connection?.saveData) return true;
+  if (typeof nav.hardwareConcurrency === "number" && nav.hardwareConcurrency <= 4) return true;
+  if (typeof nav.deviceMemory === "number" && nav.deviceMemory <= 4) return true;
+
+  return false;
 }
 
-/** Mobile-adaptive displacement: soften to 65% on narrow viewports. */
-function adaptY(y: number): number {
+/**
+ * Adaptive blur:
+ * - cheap-motion devices: no animated blur
+ * - narrow viewports: significantly reduced blur
+ */
+function adaptBlur(blur: number, cheapMotion: boolean): number {
+  if (cheapMotion) return 0;
+  return isNarrowViewport() ? Math.max(1.2, blur * 0.45) : blur;
+}
+
+/** Mobile-adaptive displacement: soften movement on constrained devices. */
+function adaptY(y: number, cheapMotion: boolean): number {
+  if (cheapMotion) return Math.round(y * 0.55);
   return isNarrowViewport() ? Math.round(y * 0.65) : y;
 }
 
@@ -101,7 +130,7 @@ export function presenceEnvelope(
     exitWeight = 1,
   }: PresenceEnvelopeOptions = {},
 ) {
-  const targets = Array.isArray(target) ? target : [target];
+  const targets = Array.isArray(target) ? target.filter(Boolean) : [target];
   if (!targets.length) return;
 
   // Split the non-hold timeline between entry and exit using exitWeight.
@@ -111,20 +140,71 @@ export function presenceEnvelope(
   const entryFraction = nonHold / (1 + exitWeight);
   const entryEnd = entryFraction;
   const exitStart = entryEnd + holdRatio;
-  const blurPx = adaptBlur(blur);
-  const yFromPx = adaptY(yFrom);
-  const yToPx = adaptY(yTo);
+  const cheapMotion = prefersCheapMotion();
+  const blurPx = adaptBlur(blur, cheapMotion);
+  const yFromPx = adaptY(yFrom, cheapMotion);
+  const yToPx = adaptY(yTo, cheapMotion);
+
+  const buildEntryState = () => {
+    const state: gsap.TweenVars = { opacity: opacityFloor, y: yFromPx };
+    if (blurPx > 0) state.filter = `blur(${blurPx}px)`;
+    return state;
+  };
+  const buildFocusState = () => {
+    const state: gsap.TweenVars = { opacity: 1, y: 0 };
+    if (blurPx > 0) state.filter = "blur(0px)";
+    return state;
+  };
+  const buildExitState = () => {
+    const state: gsap.TweenVars = { opacity: opacityFloor, y: yToPx };
+    if (blurPx > 0) state.filter = `blur(${blurPx}px)`;
+    return state;
+  };
+
+  const hasSharedTrigger = Array.isArray(target) && !!trigger;
+
+  // Shared trigger + array target: use one ScrollTrigger/timeline for the
+  // whole group to reduce trigger count on long pages.
+  if (hasSharedTrigger) {
+    const group = targets as Element[];
+    group.forEach((el) => gsap.set(el, buildEntryState()));
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: trigger as Element | string,
+        start,
+        end,
+        scrub,
+        invalidateOnRefresh: true,
+      },
+      defaults: { ease: "none" },
+    });
+
+    group.forEach((el, i) => {
+      const offset = stagger * i;
+      const entryDuration = Math.max(0.001, entryEnd);
+      const holdDuration = Math.max(0.001, holdRatio);
+      const exitDuration = Math.max(0.001, 1 - exitStart);
+      const entryAt = offset;
+      const holdAt = entryAt + entryDuration;
+      const exitAt = holdAt + holdDuration;
+
+      tl.fromTo(el, buildEntryState(), { ...buildFocusState(), duration: entryDuration, ease: "power2.out" }, entryAt);
+      tl.to(el, { ...buildFocusState(), duration: holdDuration, ease: "none" }, holdAt);
+      tl.to(el, { ...buildExitState(), duration: exitDuration, ease: "power2.in" }, exitAt);
+    });
+    return;
+  }
 
   targets.forEach((el, i) => {
     if (!el) return;
     const offset = stagger * i;
-    // When no explicit trigger is given AND we have an array, each
-    // element scrubs on itself — otherwise they all share the same
-    // trigger. This makes the helper usable both for "entire section
-    // envelopes" and for "per-row envelopes" without two APIs.
     const triggerEl = trigger ?? (el as Element);
+    const entryDuration = Math.max(0.001, entryEnd + offset);
+    const holdDuration = Math.max(0.001, holdRatio);
+    const exitDuration = Math.max(0.001, 1 - exitStart - offset);
 
-    gsap.set(el, { opacity: opacityFloor, y: yFromPx, filter: `blur(${blurPx}px)` });
+    gsap.set(el, buildEntryState());
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -137,34 +217,9 @@ export function presenceEnvelope(
       defaults: { ease: "none" },
     });
 
-    tl.fromTo(
-      el,
-      { opacity: opacityFloor, y: yFromPx, filter: `blur(${blurPx}px)` },
-      {
-        opacity: 1,
-        y: 0,
-        filter: "blur(0px)",
-        duration: entryEnd + offset,
-        ease: "power2.out",
-      },
-      0,
-    );
-    tl.to(
-      el,
-      { opacity: 1, y: 0, filter: "blur(0px)", duration: holdRatio, ease: "none" },
-      entryEnd + offset,
-    );
-    tl.to(
-      el,
-      {
-        opacity: opacityFloor,
-        y: yToPx,
-        filter: `blur(${blurPx}px)`,
-        duration: 1 - exitStart - offset,
-        ease: "power2.in",
-      },
-      exitStart + offset,
-    );
+    tl.fromTo(el, buildEntryState(), { ...buildFocusState(), duration: entryDuration, ease: "power2.out" }, 0);
+    tl.to(el, { ...buildFocusState(), duration: holdDuration, ease: "none" }, entryEnd + offset);
+    tl.to(el, { ...buildExitState(), duration: exitDuration, ease: "power2.in" }, exitStart + offset);
   });
 }
 
@@ -194,20 +249,73 @@ export function focusEnvelope(
     stagger = 0,
   }: FocusEnvelopeOptions = {},
 ) {
-  const targets = Array.isArray(target) ? target : [target];
+  const targets = Array.isArray(target) ? target.filter(Boolean) : [target];
   if (!targets.length) return;
 
   const halfHold = holdRatio / 2;
   const entryEnd = 0.5 - halfHold;
   const exitStart = 0.5 + halfHold;
-  const blurPx = adaptBlur(blur);
+  const cheapMotion = prefersCheapMotion();
+  const blurPx = adaptBlur(blur, cheapMotion);
+
+  const buildEntryState = () => {
+    const state: gsap.TweenVars = { opacity: opacityFloor };
+    if (blurPx > 0) state.filter = `blur(${blurPx}px)`;
+    return state;
+  };
+  const buildFocusState = () => {
+    const state: gsap.TweenVars = { opacity: focusOpacity };
+    if (blurPx > 0) state.filter = "blur(0px)";
+    return state;
+  };
+  const buildExitState = () => {
+    const state: gsap.TweenVars = { opacity: opacityFloor * 1.35 };
+    if (blurPx > 0) state.filter = `blur(${blurPx * 0.8}px)`;
+    return state;
+  };
+
+  const hasSharedTrigger = Array.isArray(target) && !!trigger;
+
+  if (hasSharedTrigger) {
+    const group = targets as Element[];
+    group.forEach((el) => gsap.set(el, buildEntryState()));
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: trigger as Element | string,
+        start,
+        end,
+        scrub,
+        invalidateOnRefresh: true,
+      },
+      defaults: { ease: "none" },
+    });
+
+    group.forEach((el, i) => {
+      const offset = stagger * i;
+      const entryDuration = Math.max(0.001, entryEnd);
+      const holdDuration = Math.max(0.001, holdRatio);
+      const exitDuration = Math.max(0.001, 1 - exitStart);
+      const entryAt = offset;
+      const holdAt = entryAt + entryDuration;
+      const exitAt = holdAt + holdDuration;
+
+      tl.fromTo(el, buildEntryState(), { ...buildFocusState(), duration: entryDuration, ease: "power2.out" }, entryAt);
+      tl.to(el, { ...buildFocusState(), duration: holdDuration, ease: "none" }, holdAt);
+      tl.to(el, { ...buildExitState(), duration: exitDuration, ease: "power2.in" }, exitAt);
+    });
+    return;
+  }
 
   targets.forEach((el, i) => {
     if (!el) return;
     const offset = stagger * i;
     const triggerEl = trigger ?? (el as Element);
+    const entryDuration = Math.max(0.001, entryEnd + offset);
+    const holdDuration = Math.max(0.001, holdRatio);
+    const exitDuration = Math.max(0.001, 1 - exitStart - offset);
 
-    gsap.set(el, { opacity: opacityFloor, filter: `blur(${blurPx}px)` });
+    gsap.set(el, buildEntryState());
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -220,27 +328,9 @@ export function focusEnvelope(
       defaults: { ease: "none" },
     });
 
-    tl.fromTo(
-      el,
-      { opacity: opacityFloor, filter: `blur(${blurPx}px)` },
-      { opacity: focusOpacity, filter: "blur(0px)", duration: entryEnd + offset, ease: "power2.out" },
-      0,
-    );
-    tl.to(
-      el,
-      { opacity: focusOpacity, filter: "blur(0px)", duration: holdRatio, ease: "none" },
-      entryEnd + offset,
-    );
-    tl.to(
-      el,
-      {
-        opacity: opacityFloor * 1.35,
-        filter: `blur(${blurPx * 0.8}px)`,
-        duration: 1 - exitStart - offset,
-        ease: "power2.in",
-      },
-      exitStart + offset,
-    );
+    tl.fromTo(el, buildEntryState(), { ...buildFocusState(), duration: entryDuration, ease: "power2.out" }, 0);
+    tl.to(el, { ...buildFocusState(), duration: holdDuration, ease: "none" }, entryEnd + offset);
+    tl.to(el, { ...buildExitState(), duration: exitDuration, ease: "power2.in" }, exitStart + offset);
   });
 }
 
@@ -369,10 +459,27 @@ export function rackFocusTrack(
 ) {
   if (!items.length) return;
 
-  const blurPx = adaptBlur(blur);
+  const cheapMotion = prefersCheapMotion();
+  const blurPx = adaptBlur(blur, cheapMotion);
+
+  const buildSoftState = () => {
+    const state: gsap.TweenVars = { opacity: softOpacity };
+    if (blurPx > 0) state.filter = `blur(${blurPx}px)`;
+    return state;
+  };
+  const buildFocusState = () => {
+    const state: gsap.TweenVars = { opacity: reachOpacity };
+    if (blurPx > 0) state.filter = "blur(0px)";
+    return state;
+  };
+  const buildReleaseState = () => {
+    const state: gsap.TweenVars = { opacity: softOpacity * 1.1 };
+    if (blurPx > 0) state.filter = `blur(${blurPx * 0.72}px)`;
+    return state;
+  };
 
   items.forEach((el) => {
-    gsap.set(el, { opacity: softOpacity, filter: `blur(${blurPx}px)` });
+    gsap.set(el, buildSoftState());
   });
 
   const slot = 1 / items.length;
@@ -405,8 +512,7 @@ export function rackFocusTrack(
     tl.to(
       el,
       {
-        opacity: reachOpacity,
-        filter: "blur(0px)",
+        ...buildFocusState(),
         duration: center - pullStart,
         ease: "power2.out",
       },
@@ -419,7 +525,7 @@ export function rackFocusTrack(
     const holdEnd = Math.min(1, center + (focusHalf * holdRatio) / 2);
     tl.to(
       el,
-      { opacity: reachOpacity, filter: "blur(0px)", duration: holdEnd - center, ease: "none" },
+      { ...buildFocusState(), duration: holdEnd - center, ease: "none" },
       center,
     );
 
@@ -427,8 +533,7 @@ export function rackFocusTrack(
       tl.to(
         el,
         {
-          opacity: softOpacity * 1.1,
-          filter: `blur(${blurPx * 0.72}px)`,
+          ...buildReleaseState(),
           duration: pullEnd - holdEnd,
           ease: "power2.in",
         },

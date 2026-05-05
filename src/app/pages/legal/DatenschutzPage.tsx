@@ -15,7 +15,7 @@ import {
  * Implementierungsstand der Website. Konkret berücksichtigt:
  *
  *   · Hosting              Hostinger (EU-Rechenzentrum)
- *   · Externe Schriften    Google Fonts (Instrument Serif, Manrope)
+ *   · Externe Schriften    Google Fonts (Instrument Serif)
  *                          geladen über fonts.googleapis.com und
  *                          fonts.gstatic.com
  *   · System­schriften     SF Pro Display / Segoe UI werden lokal
@@ -219,7 +219,7 @@ export default function DatenschutzPage() {
 
           <p className="text-[rgb(var(--magicks-ink-rgb)/0.8)]">
             <strong className="text-[rgb(var(--magicks-ink-rgb)/0.92)]">Google Fonts</strong> — Instrument
-            Serif und Manrope werden über{" "}
+            Serif wird über{" "}
             <code className="font-mono rounded border border-[rgb(var(--magicks-line-rgb)/0.24)] bg-[rgb(var(--magicks-ink-rgb)/0.05)] px-1.5 py-0.5 text-[0.88em] text-[rgb(var(--magicks-ink-rgb)/0.76)]">
               fonts.googleapis.com
             </code>{" "}

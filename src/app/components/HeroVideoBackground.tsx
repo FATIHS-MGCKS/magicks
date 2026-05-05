@@ -24,6 +24,9 @@ export function HeroVideoBackground() {
         className="absolute inset-0 h-full w-full object-cover object-center"
         loading="eager"
         decoding="async"
+        fetchPriority="high"
+        width={1920}
+        height={1080}
       />
     </picture>
   );

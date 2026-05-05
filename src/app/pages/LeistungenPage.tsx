@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { registerGsap } from "../lib/gsap";
-import { presenceEnvelope, rackFocusTrack } from "../lib/scrollMotion";
+import { presenceEnvelope, prefersCheapMotion, rackFocusTrack } from "../lib/scrollMotion";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { ChapterMarker } from "../components/home/ChapterMarker";
 import { ContextualCrossLink } from "../components/service/ContextualCrossLink";
@@ -353,6 +353,9 @@ export default function LeistungenPage() {
       const finalRule = root.querySelector<HTMLElement>("[data-leis-finalrule]");
       const finalLedger = gsap.utils.toArray<HTMLElement>("[data-leis-finalledger]");
       const finalCta = root.querySelector<HTMLElement>("[data-leis-finalcta]");
+      const cheapMotion = prefersCheapMotion();
+      const withBlur = (amount: number): gsap.TweenVars =>
+        cheapMotion ? {} : { filter: `blur(${amount}px)` };
 
       if (reduced) {
         gsap.set(
@@ -385,7 +388,7 @@ export default function LeistungenPage() {
       /* ——— Hero choreography ——— */
       gsap.set(heroChapter, { opacity: 0, y: 12 });
       gsap.set([...heroLineA, ...heroLineB], { yPercent: 118, opacity: 0 });
-      if (heroH1) gsap.set(heroH1, { letterSpacing: "0.008em" });
+      if (!cheapMotion && heroH1) gsap.set(heroH1, { letterSpacing: "0.008em" });
       gsap.set(heroLead, { opacity: 0, y: 16 });
       gsap.set(heroCta, { opacity: 0, y: 14 });
       gsap.set(heroCtaRule, { scaleX: 0, transformOrigin: "left center" });
@@ -409,7 +412,11 @@ export default function LeistungenPage() {
         )
         .to(
           heroH1,
-          { letterSpacing: "-0.036em", duration: 1.6, ease: "power2.out" },
+          {
+            ...(cheapMotion ? {} : { letterSpacing: "-0.036em" }),
+            duration: 1.6,
+            ease: "power2.out",
+          },
           0.45,
         )
         .to(heroLead, { opacity: 1, y: 0, duration: 1.0 }, 1.05)
@@ -513,7 +520,7 @@ export default function LeistungenPage() {
 
         // Heading letter-spacing settle — scrubbed across the entry zone
         // so the display weight tightens as the plate moves into focus.
-        if (heading) {
+        if (heading && !cheapMotion) {
           gsap.set(heading, { letterSpacing: "0.006em" });
           gsap.to(heading, {
             letterSpacing: "-0.03em",
@@ -606,12 +613,12 @@ export default function LeistungenPage() {
         gsap.set(pullLines, {
           yPercent: 20,
           opacity: 0.16,
-          filter: "blur(4px)",
+          ...withBlur(4),
         });
         gsap.to(pullLines, {
           yPercent: 0,
           opacity: 1,
-          filter: "blur(0px)",
+          ...withBlur(0),
           ease: "none",
           stagger: 0.18,
           scrollTrigger: {
@@ -626,7 +633,7 @@ export default function LeistungenPage() {
         // Release on exit — gentle, symmetric.
         gsap.to(pullLines, {
           opacity: 0.42,
-          filter: "blur(2.8px)",
+          ...withBlur(2.8),
           yPercent: -10,
           ease: "none",
           stagger: 0.08,
@@ -639,7 +646,7 @@ export default function LeistungenPage() {
           },
         });
 
-        if (pullHeading) {
+        if (pullHeading && !cheapMotion) {
           gsap.set(pullHeading, { letterSpacing: "0.008em" });
           gsap.to(pullHeading, {
             letterSpacing: "-0.036em",
@@ -671,12 +678,12 @@ export default function LeistungenPage() {
         gsap.set([...finalLineA, ...finalLineB], {
           yPercent: 24,
           opacity: 0.16,
-          filter: "blur(4px)",
+          ...withBlur(4),
         });
         gsap.to([...finalLineA, ...finalLineB], {
           yPercent: 0,
           opacity: 1,
-          filter: "blur(0px)",
+          ...withBlur(0),
           ease: "none",
           stagger: 0.09,
           scrollTrigger: {

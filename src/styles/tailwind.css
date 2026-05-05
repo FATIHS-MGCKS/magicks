@@ -2,7 +2,7 @@
 @source "../**/*.{js,ts,jsx,tsx}";
 
 @theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Instrument Serif", "Instrument Serif Fallback", ui-serif, Georgia, serif;
   --color-magicks-base: #f7f4ee;
   --color-magicks-elevated: #efebe2;

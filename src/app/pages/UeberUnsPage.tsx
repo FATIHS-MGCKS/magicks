@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { registerGsap, MAGICKS_EASE } from "../lib/gsap";
-import { parallaxDrift, presenceEnvelope, rackFocusTrack } from "../lib/scrollMotion";
+import { parallaxDrift, prefersCheapMotion, presenceEnvelope, rackFocusTrack } from "../lib/scrollMotion";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { SectionTransition } from "../components/service/SectionTransition";
 import { EditorialAnchor } from "../components/service/EditorialAnchor";
@@ -85,6 +85,12 @@ export default function UeberUnsPage() {
     if (!root) return;
 
     const ctx = gsap.context(() => {
+      const cheapMotion = prefersCheapMotion();
+      const withBlur = (amount: number): gsap.TweenVars =>
+        cheapMotion ? {} : { filter: `blur(${amount}px)` };
+      const withTracking = (value: string): gsap.TweenVars =>
+        cheapMotion ? {} : { letterSpacing: value };
+
       /* Hero — unified reveal timeline. Fewer overlapping beats, slightly
          slower overall pacing so the page opens with composure, not rush. */
       const heroEyebrow = root.querySelector("[data-ab-eyebrow]");
@@ -214,15 +220,15 @@ export default function UeberUnsPage() {
         gsap.set(principia, {
           opacity: 0.18,
           y: 14,
-          letterSpacing: "0.05em",
-          filter: "blur(4px)",
+          ...withTracking("0.05em"),
+          ...withBlur(4),
         });
 
         gsap.to(principia, {
           opacity: 1,
           y: 0,
-          filter: "blur(0px)",
-          letterSpacing: "-0.025em",
+          ...withBlur(0),
+          ...withTracking("-0.025em"),
           ease: "none",
           stagger: 0.06,
           scrollTrigger: {
@@ -237,8 +243,8 @@ export default function UeberUnsPage() {
         // Gentle release on exit — the stanza softens, it does not vanish.
         gsap.to(principia, {
           opacity: 0.5,
-          filter: "blur(2.2px)",
-          letterSpacing: "0.004em",
+          ...withBlur(2.2),
+          ...withTracking("0.004em"),
           ease: "none",
           stagger: 0.03,
           scrollTrigger: {
@@ -261,12 +267,12 @@ export default function UeberUnsPage() {
         gsap.set(methodRows, {
           opacity: 0.2,
           x: -14,
-          filter: "blur(3px)",
+          ...withBlur(3),
         });
         gsap.to(methodRows, {
           opacity: 1,
           x: 0,
-          filter: "blur(0px)",
+          ...withBlur(0),
           ease: "none",
           stagger: 0.08,
           scrollTrigger: {
@@ -286,11 +292,11 @@ export default function UeberUnsPage() {
         const werkSection =
           (werkRows[0] as HTMLElement).closest("section") ?? werkRows[0];
 
-        gsap.set(werkRows, { opacity: 0.22, y: 12, filter: "blur(3px)" });
+        gsap.set(werkRows, { opacity: 0.22, y: 12, ...withBlur(3) });
         gsap.to(werkRows, {
           opacity: 1,
           y: 0,
-          filter: "blur(0px)",
+          ...withBlur(0),
           ease: "none",
           stagger: 0.075,
           scrollTrigger: {
@@ -309,11 +315,11 @@ export default function UeberUnsPage() {
         const reasonsSection =
           (reasonLines[0] as HTMLElement).closest("section") ?? reasonLines[0];
 
-        gsap.set(reasonLines, { opacity: 0.18, y: 12, filter: "blur(4px)" });
+        gsap.set(reasonLines, { opacity: 0.18, y: 12, ...withBlur(4) });
         gsap.to(reasonLines, {
           opacity: 1,
           y: 0,
-          filter: "blur(0px)",
+          ...withBlur(0),
           ease: "none",
           stagger: 0.09,
           scrollTrigger: {
@@ -327,7 +333,7 @@ export default function UeberUnsPage() {
 
         gsap.to(reasonLines, {
           opacity: 0.46,
-          filter: "blur(2.2px)",
+          ...withBlur(2.2),
           ease: "none",
           stagger: 0.04,
           scrollTrigger: {
@@ -414,14 +420,14 @@ export default function UeberUnsPage() {
         gsap.set(finalHead, {
           opacity: 0.16,
           y: 12,
-          letterSpacing: "0.03em",
-          filter: "blur(4px)",
+          ...withTracking("0.03em"),
+          ...withBlur(4),
         });
         gsap.to(finalHead, {
           opacity: 1,
           y: 0,
-          letterSpacing: "-0.03em",
-          filter: "blur(0px)",
+          ...withTracking("-0.03em"),
+          ...withBlur(0),
           ease: "none",
           scrollTrigger: {
             trigger: finalSection,
