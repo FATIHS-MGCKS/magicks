@@ -28,7 +28,7 @@ export function ChapterMarker({
         aria-hidden
         className="mr-[0.75em] inline-block h-px w-[28px] bg-gradient-to-r from-white/0 via-white/35 to-white/35 sm:mr-[0.9em] sm:w-[56px]"
       />
-      <span className="font-mono text-[11.5px] font-medium uppercase leading-none tracking-[0.18em] text-white/55 sm:tracking-[0.34em] sm:text-[10.5px] sm:text-white/46">
+      <span className="font-mono text-[10.75px] font-medium uppercase leading-[1.12] tracking-[0.2em] text-white/58 sm:text-[11px] sm:tracking-[0.24em] sm:text-white/52">
         {prefix} — {label}
       </span>
       {variant === "end" ? (

@@ -27,6 +27,7 @@ import {
   PORTAL_SCHEMA_VERSION,
   type Activity,
   type ActivityChannel,
+  type BusinessProfile,
   type Campaign,
   type Customer,
   type Lead,
@@ -609,6 +610,25 @@ export const portalStore = {
 
   deleteLead(id: string): void {
     leads.remove(id);
+  },
+
+  /**
+   * Persistiert das tiefe Gemini-Business-Profil am Lead. Der Profil-Blob
+   * landet 1:1 im JSONB-Snapshot, keine Schema-Migration noetig. Wird vom
+   * BusinessProfileModal nach jedem Save und vor der finalen Prompt-
+   * Generierung aufgerufen, damit Edits persistent sind, falls das Modal
+   * geschlossen oder die Seite gewechselt wird.
+   */
+  setLeadBusinessProfile(
+    id: string,
+    profile: BusinessProfile,
+  ): Lead | undefined {
+    return this.updateLead(id, { businessProfile: profile });
+  },
+
+  /** Entfernt ein bestehendes Business-Profil (z.B. fuer Reset). */
+  clearLeadBusinessProfile(id: string): Lead | undefined {
+    return this.updateLead(id, { businessProfile: undefined });
   },
 
   /** Returns existing lead ids that match the given dedupe key. */

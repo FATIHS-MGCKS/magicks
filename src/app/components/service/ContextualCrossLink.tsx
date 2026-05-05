@@ -32,16 +32,22 @@ export function ContextualCrossLink({
     <aside className="relative">
       {/* Top gate — centered eyebrow riding a hairline rule */}
       <div className="mb-10 flex items-center gap-5 sm:mb-14 md:mb-16">
-        <span aria-hidden className="h-px w-10 bg-white/24 sm:w-16" />
-        <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/46 sm:text-[10.5px]">
+        <span
+          aria-hidden
+          className="h-px w-10 bg-[rgb(var(--magicks-line-rgb)/0.34)] sm:w-16"
+        />
+        <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[10.5px]">
           ↘︎ {eyebrow}
         </span>
-        <span aria-hidden className="h-px flex-1 bg-white/12" />
+        <span
+          aria-hidden
+          className="h-px flex-1 bg-[rgb(var(--magicks-line-rgb)/0.2)]"
+        />
       </div>
 
       <div className="grid gap-10 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] md:items-end md:gap-20 lg:gap-24">
         {/* Lead — editorial italic pull, two-line max */}
-        <p className="font-instrument max-w-[44rem] text-[1.45rem] leading-[1.35] tracking-[-0.015em] text-white/92 sm:text-[1.75rem] md:text-[2rem] lg:text-[2.2rem]">
+        <p className="font-instrument max-w-[44rem] text-[1.45rem] leading-[1.35] tracking-[-0.015em] text-[rgb(var(--magicks-ink-rgb)/0.9)] sm:text-[1.75rem] md:text-[2rem] lg:text-[2.2rem]">
           {lead}
         </p>
 
@@ -49,30 +55,30 @@ export function ContextualCrossLink({
         <div className="flex items-baseline justify-between gap-8 md:flex-col md:items-end md:gap-5 md:self-end md:text-right">
           <Link
             to={to}
-            className="group relative inline-flex items-baseline gap-3 text-[14.5px] font-medium text-white no-underline sm:text-[15.5px] md:text-[16px]"
+            className="group relative inline-flex items-baseline gap-3 text-[14.5px] font-medium text-[rgb(var(--magicks-ink-rgb)/0.9)] no-underline sm:text-[15.5px] md:text-[16px]"
             aria-label={linkLabel}
           >
             <span className="relative pb-2">
               <span className="font-ui">{linkLabel}</span>
               <span
                 aria-hidden
-                className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left bg-white/32"
+                className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left bg-[rgb(var(--magicks-line-rgb)/0.44)]"
               />
               <span
                 aria-hidden
-                className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white transition-transform duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
+                className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-[rgb(var(--magicks-ink-rgb)/0.9)] transition-transform duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
               />
             </span>
             <span
               aria-hidden
-              className="font-instrument text-[1.1em] italic text-white/82 transition-transform duration-[560ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
+              className="font-instrument text-[1.1em] italic text-[rgb(var(--magicks-ink-rgb)/0.74)] transition-transform duration-[560ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
             >
               ↗︎
             </span>
           </Link>
 
           {folio ? (
-            <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/36 sm:text-[10.5px]">
+            <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-[rgb(var(--magicks-ink-rgb)/0.38)] sm:text-[10.5px]">
               {folio}
             </span>
           ) : null}
@@ -81,8 +87,14 @@ export function ContextualCrossLink({
 
       {/* Bottom gate — mirrors the top, thinner */}
       <div className="mt-10 flex items-center gap-5 sm:mt-14 md:mt-16">
-        <span aria-hidden className="h-px flex-1 bg-white/10" />
-        <span aria-hidden className="h-px w-6 bg-white/22 sm:w-10" />
+        <span
+          aria-hidden
+          className="h-px flex-1 bg-[rgb(var(--magicks-line-rgb)/0.18)]"
+        />
+        <span
+          aria-hidden
+          className="h-px w-6 bg-[rgb(var(--magicks-line-rgb)/0.34)] sm:w-10"
+        />
       </div>
     </aside>
   );

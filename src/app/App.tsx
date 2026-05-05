@@ -19,6 +19,7 @@ const WebSoftwarePage = lazy(() => import("./pages/services/WebSoftwarePage"));
 const KiAutomationenPage = lazy(() => import("./pages/services/KiAutomationenPage"));
 
 const WebsiteImAboPage = lazy(() => import("./pages/seo/WebsiteImAboPage"));
+const WebsiteStarterPage = lazy(() => import("./pages/campaign/WebsiteStarterPage"));
 const WebdesignKasselPage = lazy(() => import("./pages/seo/WebdesignKasselPage"));
 const LandingPagesKasselPage = lazy(() => import("./pages/seo/LandingPagesKasselPage"));
 const ProduktkonfiguratorErstellenPage = lazy(() => import("./pages/seo/ProduktkonfiguratorErstellenPage"));
@@ -59,6 +60,7 @@ export default function App() {
 
           {/* Strategic SEO landings */}
           <Route path="/website-im-abo" element={<WebsiteImAboPage />} />
+          <Route path="/website-starter" element={<WebsiteStarterPage />} />
           <Route path="/webdesign-kassel" element={<WebdesignKasselPage />} />
           <Route path="/landingpages-kassel" element={<LandingPagesKasselPage />} />
           <Route path="/produktkonfigurator-erstellen" element={<ProduktkonfiguratorErstellenPage />} />

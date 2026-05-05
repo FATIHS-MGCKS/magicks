@@ -85,10 +85,10 @@ export function Bildwelt() {
             },
             defaults: { ease: "none" },
           })
-          .to(ambient, { opacity: 0.7, duration: 0.32, ease: "power2.out" }, 0)
-          .to(ambient, { opacity: 0.85, duration: 0.36, ease: "none" }, 0.32)
-          .to(ambient, { opacity: 0.4, duration: 0.32, ease: "power2.in" }, 0.68);
-        parallaxDrift(ambient, { trigger: root, from: -3, to: 5, scrub: true });
+          .to(ambient, { opacity: 0.56, duration: 0.32, ease: "power2.out" }, 0)
+          .to(ambient, { opacity: 0.72, duration: 0.36, ease: "none" }, 0.32)
+          .to(ambient, { opacity: 0.34, duration: 0.32, ease: "power2.in" }, 0.68);
+        parallaxDrift(ambient, { trigger: root, from: -2, to: 4, scrub: true });
       }
 
       // ─── Header & body envelopes ────────────────────────────────────
@@ -100,11 +100,12 @@ export function Bildwelt() {
         trigger: root,
         start: "top 96%",
         end: "top 4%",
-        yFrom: 14,
-        yTo: -8,
-        blur: 3,
-        holdRatio: 0.5,
-        exitWeight: 2.5,
+        yFrom: 12,
+        yTo: -6,
+        blur: 2.4,
+        opacityFloor: 0.26,
+        holdRatio: 0.58,
+        exitWeight: 2.2,
         scrub: 1.0,
       });
 
@@ -112,11 +113,12 @@ export function Bildwelt() {
         trigger: root,
         start: "top 92%",
         end: "top 0%",
-        yFrom: 24,
-        yTo: -10,
-        blur: 4.5,
-        holdRatio: 0.5,
-        exitWeight: 2.8,
+        yFrom: 18,
+        yTo: -8,
+        blur: 3.4,
+        opacityFloor: 0.22,
+        holdRatio: 0.56,
+        exitWeight: 2.4,
         scrub: 1.05,
       });
 
@@ -124,30 +126,30 @@ export function Bildwelt() {
         trigger: main ?? root,
         start: "top 86%",
         end: "bottom 22%",
-        blur: 3,
-        opacityFloor: 0.28,
+        blur: 2.4,
+        opacityFloor: 0.36,
         focusOpacity: 1,
-        holdRatio: 0.6,
+        holdRatio: 0.64,
       });
 
       focusEnvelope(support, {
         trigger: support ?? root,
         start: "top 84%",
         end: "bottom 22%",
-        blur: 2.5,
-        opacityFloor: 0.22,
+        blur: 2.2,
+        opacityFloor: 0.3,
         focusOpacity: 1,
-        holdRatio: 0.6,
+        holdRatio: 0.64,
       });
 
       // ─── Chips: focus envelope with light stagger ───────────────────
       focusEnvelope(chips as HTMLElement[], {
         start: "top 88%",
         end: "bottom 14%",
-        blur: 3,
-        opacityFloor: 0.24,
+        blur: 2.4,
+        opacityFloor: 0.3,
         focusOpacity: 1,
-        holdRatio: 0.54,
+        holdRatio: 0.58,
         stagger: 0.025,
       });
 
@@ -156,25 +158,26 @@ export function Bildwelt() {
         trigger: seoLine ?? root,
         start: "top 92%",
         end: "bottom 8%",
-        blur: 2.5,
-        opacityFloor: 0.2,
+        blur: 2.2,
+        opacityFloor: 0.28,
         focusOpacity: 1,
-        holdRatio: 0.56,
+        holdRatio: 0.6,
       });
 
       presenceEnvelope(cta, {
         trigger: cta ?? root,
         start: "top 92%",
         end: "bottom 0%",
-        yFrom: 16,
+        yFrom: 12,
         yTo: -6,
-        blur: 2.5,
-        holdRatio: 0.6,
+        blur: 2,
+        opacityFloor: 0.28,
+        holdRatio: 0.64,
       });
 
       sectionFarewell(farewell, {
         trigger: root,
-        peak: 1,
+        peak: 0.82,
         start: "bottom 80%",
         end: "bottom 0%",
         scrub: 1.0,
@@ -188,7 +191,7 @@ export function Bildwelt() {
     <section
       ref={rootRef}
       id="bausteine"
-      className="relative overflow-hidden bg-[#0A0A09] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16"
+      className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16"
       aria-labelledby="bildwelt-heading"
     >
       <div aria-hidden className="section-top-rule" />
@@ -201,7 +204,7 @@ export function Bildwelt() {
         className="pointer-events-none absolute inset-0 will-change-[opacity,transform]"
         style={{
           backgroundImage:
-            "radial-gradient(ellipse 56% 48% at 72% 38%, rgba(255,255,255,0.022), transparent 70%)",
+            "radial-gradient(ellipse 56% 48% at 72% 38%, rgba(34,44,64,0.07), transparent 70%)",
         }}
       />
 
@@ -215,7 +218,7 @@ export function Bildwelt() {
             <h2
               id="bildwelt-heading"
               data-bw-headline
-              className="font-instrument text-[2rem] leading-[1.04] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
+              className="font-instrument text-[2rem] leading-[1.07] tracking-[-0.024em] text-white sm:text-[2.5rem] md:text-[3.02rem] lg:text-[3.42rem]"
             >
               Bildwelt statt <em className="italic text-white/58">Platzhalter</em>.
             </h2>
@@ -223,7 +226,7 @@ export function Bildwelt() {
             <div className="mt-10 grid gap-6 sm:mt-12 md:grid-cols-[minmax(0,1.18fr)_minmax(0,1fr)] md:gap-12 md:gap-y-10">
               <p
                 data-bw-main
-                className="font-instrument max-w-[36rem] text-[1.12rem] leading-[1.62] tracking-[-0.005em] text-white/78 sm:text-[1.22rem] md:text-[1.32rem]"
+                className="font-instrument max-w-[36rem] text-[1.12rem] leading-[1.66] tracking-[-0.004em] text-white/78 sm:text-[1.22rem] md:text-[1.3rem]"
               >
                 Ein starker Webauftritt lebt nicht nur von Layout und Code. Deshalb können bei
                 MAGICKS auch Texte, SEO-Struktur, Fotos, Bildbearbeitung, Videos, Motion Design
@@ -232,7 +235,7 @@ export function Bildwelt() {
 
               <p
                 data-bw-support
-                className="font-ui max-w-[32rem] text-[14.5px] leading-[1.7] text-white/52 md:text-[15px]"
+                className="font-ui max-w-[32rem] text-[14.5px] leading-[1.72] text-white/52 md:text-[15px]"
               >
                 So bekommt jedes Projekt eine eigene visuelle Sprache — statt austauschbarer
                 Stockbilder und generischer Inhalte.
@@ -259,7 +262,7 @@ export function Bildwelt() {
                     <span className="font-instrument text-[15px] italic text-white/52">
                       {c.n}
                     </span>
-                    <span className="font-mono text-[11.5px] font-medium uppercase leading-none tracking-[0.18em] text-white/62 sm:text-[11px] sm:tracking-[0.26em]">
+                    <span className="font-mono text-[11.5px] font-medium uppercase leading-none tracking-[0.15em] text-white/62 sm:text-[11px] sm:tracking-[0.22em]">
                       {c.label}
                     </span>
                   </li>
@@ -274,7 +277,7 @@ export function Bildwelt() {
               data-bw-seoline
               className="mt-12 max-w-[44rem] border-t border-white/[0.08] pt-9 will-change-[opacity,filter] sm:mt-14 sm:pt-10 md:mt-16 md:pt-12"
             >
-              <p className="font-instrument text-[1.05rem] italic leading-[1.55] tracking-[-0.005em] text-white/68 sm:text-[1.12rem] md:text-[1.18rem]">
+              <p className="font-instrument text-[1.05rem] italic leading-[1.6] tracking-[-0.004em] text-white/68 sm:text-[1.12rem] md:text-[1.18rem]">
                 Gute digitale Auftritte müssen nicht nur gestaltet und gebaut werden. Sie
                 brauchen Struktur, Inhalte und technische Grundlagen, damit sie verstanden und
                 gefunden werden können.
@@ -291,7 +294,7 @@ export function Bildwelt() {
             >
               <Link
                 to="/content-bildwelt-medien"
-                className="font-ui group inline-flex min-h-11 items-center gap-3 py-1.5 text-[15px] text-white no-underline magicks-duration-hover magicks-ease-out transition-colors lg:min-h-0 lg:py-0"
+                className="font-ui group inline-flex min-h-11 items-center gap-3 py-1.5 text-[15.5px] font-medium tracking-[0.003em] text-white no-underline magicks-duration-hover magicks-ease-out transition-colors lg:min-h-0 lg:py-0"
               >
                 <span className="underline decoration-white/22 decoration-[0.5px] underline-offset-[6px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color] group-hover:decoration-white/80">
                   Mehr zu Content &amp; Medien
@@ -310,7 +313,7 @@ export function Bildwelt() {
 
               <Link
                 to="/seo-sichtbarkeit"
-                className="font-mono group inline-flex min-h-11 items-center gap-2 text-[11.5px] font-medium uppercase leading-none tracking-[0.18em] text-white/55 no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white sm:min-h-0 sm:text-[11px] sm:tracking-[0.28em]"
+                className="font-mono group inline-flex min-h-11 items-center gap-2 text-[11.5px] font-medium uppercase leading-none tracking-[0.15em] text-white/55 no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white sm:min-h-0 sm:text-[11px] sm:tracking-[0.22em]"
               >
                 SEO &amp; Sichtbarkeit
                 <span
@@ -331,7 +334,7 @@ export function Bildwelt() {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-40 will-change-[opacity]"
         style={{
           background:
-            "linear-gradient(180deg, transparent 0%, rgba(8,8,10,0.32) 58%, rgba(8,8,10,0.58) 100%)",
+            "linear-gradient(180deg, transparent 0%, rgba(46,56,76,0.08) 58%, rgba(46,56,76,0.14) 100%)",
         }}
       />
     </section>

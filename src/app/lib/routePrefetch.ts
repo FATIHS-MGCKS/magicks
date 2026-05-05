@@ -26,6 +26,7 @@ const prefetchers: Record<string, () => Promise<unknown>> = {
   "/ki-automationen-integrationen": () => import("../pages/services/KiAutomationenPage"),
 
   "/website-im-abo": () => import("../pages/seo/WebsiteImAboPage"),
+  "/website-starter": () => import("../pages/campaign/WebsiteStarterPage"),
   "/webdesign-kassel": () => import("../pages/seo/WebdesignKasselPage"),
   "/landingpages-kassel": () => import("../pages/seo/LandingPagesKasselPage"),
   "/produktkonfigurator-erstellen": () => import("../pages/seo/ProduktkonfiguratorErstellenPage"),

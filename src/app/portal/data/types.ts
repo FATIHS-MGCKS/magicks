@@ -148,6 +148,11 @@ export interface Lead {
   /** Strukturierte Web-Defekt-Karte. Wird nur fuer B/C-Leads MIT Website
    * gefuellt — A-Leads und Leads ohne Website lassen es leer. */
   webDefects?: LeadWebDefects;
+  /** Tiefes Gemini-Business-Profil (40-Feld-Schema) fuer Pitch-Prompt-Bau.
+   * Separater, deutlich teurerer Gemini-Call als der schlanke Auto-Check
+   * und nur auf manuellen Trigger. Wird auf dem Lead persistiert, damit
+   * der Nutzer spaeter nachjustieren oder re-recherchieren kann. */
+  businessProfile?: BusinessProfile;
   ratingSignal?: string;
   websiteCheck?: string;
   websiteCheckBucket?: WebsiteCheckBucket;
@@ -190,6 +195,77 @@ export interface LeadWebDefects {
   hasOnlineBooking?: boolean;
   domainAge?: string;
   notes?: string;
+}
+
+export type PreferredTheme = "Light Mode" | "Dark Mode" | "Auto";
+
+export const PREFERRED_THEMES: readonly PreferredTheme[] = [
+  "Light Mode",
+  "Dark Mode",
+  "Auto",
+];
+
+export interface BusinessProfileSource {
+  uri: string;
+  title?: string;
+}
+
+/**
+ * Tiefes, strukturiertes Business-Profil pro Lead — Input fuer den
+ * Pitch-Prompt-Builder. Felder stammen 1:1 aus dem Pitch-Prompt-Schema,
+ * damit `{{placeholder}}`-Substitution beim Prompt-Bau trivial bleibt.
+ *
+ * Objektive Felder werden von Gemini befuellt; die subjektiven (Theme,
+ * Brand-Colors, CTAs, Section-Focus, Tone-of-Voice, Visual-Mood,
+ * Image-Style, Positioning) passt der Nutzer in der Review-Phase des
+ * BusinessProfileModal an.
+ */
+export interface BusinessProfile {
+  business_name: string;
+  business_branch: string;
+  sub_branch: string;
+  website_url: string;
+  has_website: boolean;
+  google_business_profile_url: string;
+  google_business_category: string;
+  city: string;
+  region: string;
+  country: string;
+  address: string;
+  phone: string;
+  email: string;
+  opening_hours: string;
+  google_rating: string;
+  google_review_count: string;
+  review_source: string;
+  review_verification_status: string;
+  review_highlights: string[];
+  business_photos_available: boolean;
+  main_services: string[];
+  secondary_services: string[];
+  inferred_services: string[];
+  target_customers: string[];
+  unique_selling_points: string[];
+  current_website_problems: string[];
+  no_website_opportunity: string;
+  design_opportunities: string[];
+  competitor_reference_websites: string[];
+  recommended_positioning: string;
+  recommended_website_goal: string;
+  desired_style: string;
+  preferred_theme: PreferredTheme;
+  brand_colors: string[];
+  visual_mood: string;
+  image_style: string;
+  tone_of_voice: string;
+  primary_cta: string;
+  secondary_ctas: string[];
+  section_focus: string[];
+  special_notes: string[];
+  /** ISO-Timestamp der letzten erfolgreichen Gemini-Recherche. */
+  researchedAt?: string;
+  /** Grounding-Quellen aus der Google-Search-Recherche. */
+  sources?: BusinessProfileSource[];
 }
 
 export interface Campaign {

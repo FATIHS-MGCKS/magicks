@@ -5,6 +5,7 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { ChapterMarker } from "../../components/home/ChapterMarker";
 import { ContextualCrossLink } from "../../components/service/ContextualCrossLink";
 import { SectionTransition } from "../../components/service/SectionTransition";
+import { presenceEnvelope } from "../../lib/scrollMotion";
 import { RouteSEO } from "../../seo/RouteSEO";
 
 /* ------------------------------------------------------------------
@@ -279,58 +280,132 @@ export default function WebsiteImAboPage() {
 
       // ——— Generic scroll-triggered reveals ———
       reveals.forEach((el) => {
-        gsap.set(el, { opacity: 0, y: 22 });
-        gsap.to(el, {
-          opacity: 1,
-          y: 0,
-          duration: 1.0,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 82%", once: true },
+        presenceEnvelope(el, {
+          trigger: el,
+          start: "top 88%",
+          end: "bottom 20%",
+          yFrom: 18,
+          yTo: -10,
+          blur: 3,
+          opacityFloor: 0.18,
+          holdRatio: 0.52,
+          scrub: 0.9,
         });
       });
 
       // ——— Heart pull-quote — slow ceremonial reveal + letter-spacing settle ———
       if (heartLines.length) {
-        gsap.set(heartLines, { yPercent: 108, opacity: 0 });
-        if (heartHeading) gsap.set(heartHeading, { letterSpacing: "0.006em" });
-        const tl = gsap
-          .timeline({
-            scrollTrigger: { trigger: heartLines[0], start: "top 78%", once: true },
-          })
-          .to(heartLines, {
-            yPercent: 0,
-            opacity: 1,
-            duration: 1.5,
-            ease: "expo.out",
-            stagger: 0.14,
-          });
+        presenceEnvelope(heartLines, {
+          trigger: heartLines[0],
+          start: "top 84%",
+          end: "bottom 18%",
+          yFrom: 22,
+          yTo: -12,
+          blur: 3.6,
+          opacityFloor: 0.16,
+          holdRatio: 0.56,
+          stagger: 0.035,
+          scrub: 1.0,
+        });
         if (heartHeading) {
-          tl.to(
+          gsap.fromTo(
             heartHeading,
-            { letterSpacing: "-0.032em", duration: 1.8, ease: "power2.out" },
-            0.2,
+            { letterSpacing: "0.006em" },
+            {
+              letterSpacing: "-0.032em",
+              ease: "none",
+              scrollTrigger: {
+                trigger: heartLines[0],
+                start: "top 84%",
+                end: "bottom 22%",
+                scrub: 1.0,
+                invalidateOnRefresh: true,
+              },
+            },
           );
         }
       }
 
       // ——— Final CTA choreography ———
       if (finalLineA.length || finalLineB.length) {
-        gsap.set([...finalLineA, ...finalLineB], { yPercent: 118, opacity: 0 });
-        gsap.set(finalRule, { scaleX: 0, transformOrigin: "center" });
-        gsap.set(finalLedger, { opacity: 0, y: 14 });
-        gsap.set(finalCta, { opacity: 0, y: 18, scale: 0.96 });
         const trigger =
           (finalLineA[0] as HTMLElement | undefined)?.closest("section") ?? finalLineA[0];
-        gsap
-          .timeline({
-            scrollTrigger: { trigger, start: "top 72%", once: true },
-            defaults: { ease: "power4.out" },
-          })
-          .to(finalLineA, { yPercent: 0, opacity: 1, duration: 1.15, stagger: 0.07 }, 0)
-          .to(finalLineB, { yPercent: 0, opacity: 1, duration: 1.25, stagger: 0.07 }, 0.22)
-          .to(finalRule, { scaleX: 1, duration: 1.3, ease: "power2.inOut" }, 0.7)
-          .to(finalCta, { opacity: 1, y: 0, scale: 1, duration: 0.95, ease: "back.out(1.2)" }, 0.95)
-          .to(finalLedger, { opacity: 1, y: 0, duration: 0.95, stagger: 0.1 }, 1.1);
+
+        presenceEnvelope(finalLineA, {
+          trigger,
+          start: "top 84%",
+          end: "bottom 18%",
+          yFrom: 20,
+          yTo: -10,
+          blur: 3.2,
+          opacityFloor: 0.16,
+          holdRatio: 0.56,
+          stagger: 0.03,
+          scrub: 1.0,
+        });
+        presenceEnvelope(finalLineB, {
+          trigger,
+          start: "top 80%",
+          end: "bottom 16%",
+          yFrom: 22,
+          yTo: -10,
+          blur: 3.2,
+          opacityFloor: 0.16,
+          holdRatio: 0.56,
+          stagger: 0.03,
+          scrub: 1.0,
+        });
+
+        gsap.fromTo(
+          finalRule,
+          { scaleX: 0, transformOrigin: "center center" },
+          {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger,
+              start: "top 84%",
+              end: "top 46%",
+              scrub: 1.0,
+              invalidateOnRefresh: true,
+            },
+          },
+        );
+        gsap.to(finalRule, {
+          scaleX: 0.58,
+          ease: "none",
+          scrollTrigger: {
+            trigger,
+            start: "top 20%",
+            end: "bottom 0%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        presenceEnvelope(finalCta, {
+          trigger,
+          start: "top 82%",
+          end: "bottom 8%",
+          yFrom: 16,
+          yTo: -8,
+          blur: 2.6,
+          opacityFloor: 0.18,
+          holdRatio: 0.6,
+          scrub: 1.0,
+        });
+        presenceEnvelope(finalLedger, {
+          trigger,
+          start: "top 80%",
+          end: "bottom 10%",
+          yFrom: 14,
+          yTo: -8,
+          blur: 2.4,
+          opacityFloor: 0.22,
+          holdRatio: 0.58,
+          stagger: 0.02,
+          scrub: 1.0,
+        });
       }
     }, root);
 
@@ -343,7 +418,7 @@ export default function WebsiteImAboPage() {
 
       <main
         ref={rootRef}
-        className="relative bg-[#0A0A0A] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative bg-[var(--magicks-bg-base)] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
       >
         {/* =========================================================
            HERO
@@ -538,7 +613,7 @@ export default function WebsiteImAboPage() {
         {/* =========================================================
            AUDIENCE — "Für wen sich das Modell lohnt"
         ========================================================= */}
-        <section className="relative bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div className="layout-max">
             <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
               <div data-wa-reveal className="md:pt-2">
@@ -678,7 +753,7 @@ export default function WebsiteImAboPage() {
         {/* =========================================================
            HEART PULL-QUOTE — centered, emotional core, gated by rules
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 py-36 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 py-36 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64">
           <div
             aria-hidden
             className="pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[115vw] max-w-[1200px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.95]"
@@ -818,7 +893,7 @@ export default function WebsiteImAboPage() {
         {/* =========================================================
            TRIAD — the headline IS the three italic titles
         ========================================================= */}
-        <section className="relative bg-[#09090A] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-52 lg:px-16 lg:py-60">
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-52 lg:px-16 lg:py-60">
           <div className="layout-max">
             <div
               data-wa-reveal
@@ -901,13 +976,23 @@ export default function WebsiteImAboPage() {
                 to="/websites-landingpages"
               />
             </div>
+
+            <div data-wa-reveal className="mt-12 sm:mt-14 md:mt-16">
+              <ContextualCrossLink
+                eyebrow="Einfacher Einstieg"
+                folio="Angebot · Website Starter"
+                lead="Wenn Sie ohne eigene Website starten und erst einen klaren, professionellen Grundauftritt brauchen, ist der Website Starter der passende erste Schritt."
+                linkLabel="Website Starter ansehen"
+                to="/website-starter"
+              />
+            </div>
           </div>
         </section>
 
         {/* =========================================================
            FINAL CTA — calmer, reassuring, with ledger
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
           <div aria-hidden className="section-top-rule" />
 
           <div
@@ -994,7 +1079,7 @@ export default function WebsiteImAboPage() {
                     <span>Unverbindlich anfragen</span>
                     <span
                       aria-hidden
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0A0A0A] text-white magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
                     >
                       <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.4">
                         <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />

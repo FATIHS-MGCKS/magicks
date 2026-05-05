@@ -1,14 +1,39 @@
 @layer base {
   :root {
-    --magicks-base: #0a0a0a;
-    --magicks-elevated: #111111;
-    --magicks-lifted: #161616;
-    --magicks-glass: rgba(255, 255, 255, 0.035);
-    --magicks-border: rgba(255, 255, 255, 0.075);
-    --magicks-border-strong: rgba(255, 255, 255, 0.16);
-    --magicks-text-1: rgba(255, 255, 255, 0.95);
-    --magicks-text-2: rgba(255, 255, 255, 0.6);
-    --magicks-text-3: rgba(255, 255, 255, 0.38);
+    /* Stage 1 light foundation: calm off-white canvas + deep ink copy. */
+    --magicks-bg-canvas: #f3f0ea;
+    --magicks-bg-base: #f7f4ee;
+    --magicks-bg-elevated: #efebe2;
+    --magicks-bg-soft: #e8e3d9;
+    --magicks-bg-lifted: #fffdf9;
+    --magicks-bg-base-rgb: 247 244 238;
+    --magicks-bg-elevated-rgb: 239 235 226;
+    --magicks-bg-lifted-rgb: 255 253 249;
+
+    --magicks-ink-rgb: 24 28 37;
+    --magicks-line-rgb: 59 67 84;
+    --magicks-ink-strong: #141a23;
+
+    /* Stage 2 typography foundation: calmer rhythm, clearer hierarchy. */
+    --magicks-type-body-leading: 1.76;
+    --magicks-type-body-leading-tight: 1.7;
+    --magicks-type-display-leading: 1.07;
+    --magicks-type-display-leading-tight: 1;
+    --magicks-type-display-tracking: -0.026em;
+    --magicks-type-heading-tracking: -0.02em;
+    --magicks-type-label-tracking: 0.18em;
+    --magicks-type-label-tracking-wide: 0.23em;
+
+    /* Keep legacy variable names for existing component CSS. */
+    --magicks-base: var(--magicks-bg-base);
+    --magicks-elevated: var(--magicks-bg-elevated);
+    --magicks-lifted: var(--magicks-bg-lifted);
+    --magicks-glass: rgb(var(--magicks-ink-rgb) / 0.03);
+    --magicks-border: rgb(var(--magicks-line-rgb) / 0.14);
+    --magicks-border-strong: rgb(var(--magicks-line-rgb) / 0.28);
+    --magicks-text-1: rgb(var(--magicks-ink-rgb) / 0.95);
+    --magicks-text-2: rgb(var(--magicks-ink-rgb) / 0.68);
+    --magicks-text-3: rgb(var(--magicks-ink-rgb) / 0.46);
   }
 
   html {
@@ -19,27 +44,433 @@
   body {
     margin: 0;
     min-height: 100vh;
-    background-color: var(--magicks-base);
-    color: #fafafa;
+    background-color: var(--magicks-bg-canvas);
+    color: rgb(var(--magicks-ink-rgb) / 0.94);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Manrope", ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
     font-size: 16px;
-    line-height: 1.6;
-    letter-spacing: -0.01em;
+    line-height: 1.74;
+    letter-spacing: -0.005em;
   }
 
   h1,
   h2,
   h3 {
     @apply font-normal;
-    letter-spacing: -0.02em;
+    line-height: 1.1;
+    letter-spacing: -0.016em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   ::selection {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgb(var(--magicks-ink-rgb) / 0.15);
     color: #ffffff;
   }
+}
+
+/* -------------------------------------------------------------------------
+   Stage 1 compatibility remap:
+   Convert old dark utilities to the light token system without rewriting
+   every page file in one step.
+   Scope is strictly public site via `.magicks-light` wrapper.
+   ------------------------------------------------------------------------- */
+.magicks-light [class*="bg-[#070708]"],
+.magicks-light [class*="bg-[#07070A]"],
+.magicks-light [class*="bg-[#080809]"],
+.magicks-light [class*="bg-[#08080A]"] {
+  background-color: var(--magicks-bg-elevated) !important;
+}
+
+.magicks-light [class*="bg-[#090909]"],
+.magicks-light [class*="bg-[#09090A]"],
+.magicks-light [class*="bg-[#09090B]"],
+.magicks-light [class*="bg-[#0A0A09]"],
+.magicks-light [class*="bg-[#0A0A0A]"] {
+  background-color: var(--magicks-bg-base) !important;
+}
+
+.magicks-light [class*="bg-[#0A0A0B]"],
+.magicks-light [class*="bg-[#0B0A09]"],
+.magicks-light [class*="bg-[#0B0B0C]"],
+.magicks-light [class*="bg-[#0C0C0D]"],
+.magicks-light [class*="bg-[#0C0C0E]"] {
+  background-color: var(--magicks-bg-lifted) !important;
+}
+
+.magicks-light [class*="bg-[#070708]/"],
+.magicks-light [class*="bg-[#07070A]/"],
+.magicks-light [class*="bg-[#080809]/"],
+.magicks-light [class*="bg-[#08080A]/"],
+.magicks-light [class*="bg-[#09090A]/"],
+.magicks-light [class*="bg-[#09090B]/"],
+.magicks-light [class*="bg-[#0A0A0A]/"],
+.magicks-light [class*="bg-[#0C0C0D]/"] {
+  background-color: rgb(var(--magicks-ink-rgb) / 0.08) !important;
+}
+
+.magicks-light [class*="from-[#070708]/"],
+.magicks-light [class*="from-[#07070A]/"],
+.magicks-light [class*="from-[#080809]/"],
+.magicks-light [class*="from-[#08080A]/"],
+.magicks-light [class*="from-[#09090A]/"],
+.magicks-light [class*="from-[#09090B]/"],
+.magicks-light [class*="from-[#0A0A0A]/"],
+.magicks-light [class*="from-[#0C0C0D]/"] {
+  --tw-gradient-from: rgb(var(--magicks-ink-rgb) / 0.24) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(var(--magicks-ink-rgb) / 0) var(--tw-gradient-to-position) !important;
+}
+
+.magicks-light [class*="via-[#070708]/"],
+.magicks-light [class*="via-[#08080A]/"],
+.magicks-light [class*="via-[#09090A]/"],
+.magicks-light [class*="via-[#0A0A0A]/"] {
+  --tw-gradient-via: rgb(var(--magicks-ink-rgb) / 0.12) var(--tw-gradient-via-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to) !important;
+}
+
+.magicks-light [class*="to-[#070708]/"],
+.magicks-light [class*="to-[#08080A]/"],
+.magicks-light [class*="to-[#09090A]/"],
+.magicks-light [class*="to-[#0A0A0A]/"] {
+  --tw-gradient-to: rgb(var(--magicks-ink-rgb) / 0.04) var(--tw-gradient-to-position) !important;
+}
+
+.magicks-light [class~="text-zinc-100"],
+.magicks-light [class~="text-white"] {
+  color: rgb(var(--magicks-ink-rgb) / 0.95);
+}
+
+.magicks-light [class*="text-white/"] {
+  color: rgb(var(--magicks-ink-rgb) / 0.68);
+}
+
+.magicks-light [class*="text-white/95"] { color: rgb(var(--magicks-ink-rgb) / 0.95); }
+.magicks-light [class*="text-white/94"] { color: rgb(var(--magicks-ink-rgb) / 0.94); }
+.magicks-light [class*="text-white/92"] { color: rgb(var(--magicks-ink-rgb) / 0.92); }
+.magicks-light [class*="text-white/90"] { color: rgb(var(--magicks-ink-rgb) / 0.9); }
+.magicks-light [class*="text-white/88"] { color: rgb(var(--magicks-ink-rgb) / 0.88); }
+.magicks-light [class*="text-white/86"] { color: rgb(var(--magicks-ink-rgb) / 0.86); }
+.magicks-light [class*="text-white/85"] { color: rgb(var(--magicks-ink-rgb) / 0.85); }
+.magicks-light [class*="text-white/84"] { color: rgb(var(--magicks-ink-rgb) / 0.84); }
+.magicks-light [class*="text-white/82"] { color: rgb(var(--magicks-ink-rgb) / 0.82); }
+.magicks-light [class*="text-white/80"] { color: rgb(var(--magicks-ink-rgb) / 0.8); }
+.magicks-light [class*="text-white/78"] { color: rgb(var(--magicks-ink-rgb) / 0.78); }
+.magicks-light [class*="text-white/76"] { color: rgb(var(--magicks-ink-rgb) / 0.76); }
+.magicks-light [class*="text-white/75"] { color: rgb(var(--magicks-ink-rgb) / 0.75); }
+.magicks-light [class*="text-white/74"] { color: rgb(var(--magicks-ink-rgb) / 0.74); }
+.magicks-light [class*="text-white/72"] { color: rgb(var(--magicks-ink-rgb) / 0.72); }
+.magicks-light [class*="text-white/70"] { color: rgb(var(--magicks-ink-rgb) / 0.7); }
+.magicks-light [class*="text-white/68"] { color: rgb(var(--magicks-ink-rgb) / 0.68); }
+.magicks-light [class*="text-white/66"] { color: rgb(var(--magicks-ink-rgb) / 0.66); }
+.magicks-light [class*="text-white/65"] { color: rgb(var(--magicks-ink-rgb) / 0.65); }
+.magicks-light [class*="text-white/64"] { color: rgb(var(--magicks-ink-rgb) / 0.64); }
+.magicks-light [class*="text-white/62"] { color: rgb(var(--magicks-ink-rgb) / 0.62); }
+.magicks-light [class*="text-white/60"] { color: rgb(var(--magicks-ink-rgb) / 0.6); }
+.magicks-light [class*="text-white/58"] { color: rgb(var(--magicks-ink-rgb) / 0.58); }
+.magicks-light [class*="text-white/56"] { color: rgb(var(--magicks-ink-rgb) / 0.56); }
+.magicks-light [class*="text-white/55"] { color: rgb(var(--magicks-ink-rgb) / 0.55); }
+.magicks-light [class*="text-white/54"] { color: rgb(var(--magicks-ink-rgb) / 0.54); }
+.magicks-light [class*="text-white/52"] { color: rgb(var(--magicks-ink-rgb) / 0.52); }
+.magicks-light [class*="text-white/50"] { color: rgb(var(--magicks-ink-rgb) / 0.5); }
+.magicks-light [class*="text-white/48"] { color: rgb(var(--magicks-ink-rgb) / 0.48); }
+.magicks-light [class*="text-white/46"] { color: rgb(var(--magicks-ink-rgb) / 0.46); }
+.magicks-light [class*="text-white/45"] { color: rgb(var(--magicks-ink-rgb) / 0.45); }
+.magicks-light [class*="text-white/44"] { color: rgb(var(--magicks-ink-rgb) / 0.44); }
+.magicks-light [class*="text-white/42"] { color: rgb(var(--magicks-ink-rgb) / 0.42); }
+.magicks-light [class*="text-white/40"] { color: rgb(var(--magicks-ink-rgb) / 0.4); }
+.magicks-light [class*="text-white/38"] { color: rgb(var(--magicks-ink-rgb) / 0.38); }
+.magicks-light [class*="text-white/36"] { color: rgb(var(--magicks-ink-rgb) / 0.36); }
+.magicks-light [class*="text-white/34"] { color: rgb(var(--magicks-ink-rgb) / 0.34); }
+.magicks-light [class*="text-white/32"] { color: rgb(var(--magicks-ink-rgb) / 0.32); }
+.magicks-light [class*="text-white/30"] { color: rgb(var(--magicks-ink-rgb) / 0.3); }
+.magicks-light [class*="text-white/28"] { color: rgb(var(--magicks-ink-rgb) / 0.28); }
+.magicks-light [class*="text-white/24"] { color: rgb(var(--magicks-ink-rgb) / 0.24); }
+.magicks-light [class*="text-white/22"] { color: rgb(var(--magicks-ink-rgb) / 0.22); }
+.magicks-light [class*="text-white/18"] { color: rgb(var(--magicks-ink-rgb) / 0.18); }
+.magicks-light [class*="text-white/16"] { color: rgb(var(--magicks-ink-rgb) / 0.16); }
+.magicks-light [class*="text-white/14"] { color: rgb(var(--magicks-ink-rgb) / 0.14); }
+.magicks-light [class*="text-white/10"] { color: rgb(var(--magicks-ink-rgb) / 0.1); }
+.magicks-light [class*="text-white/0"] { color: rgb(var(--magicks-ink-rgb) / 0); }
+
+.magicks-light [class*="border-white/"],
+.magicks-light [class*="border-white/[0."] {
+  border-color: rgb(var(--magicks-line-rgb) / 0.18);
+}
+
+.magicks-light [class*="border-white/85"] { border-color: rgb(var(--magicks-line-rgb) / 0.85); }
+.magicks-light [class*="border-white/70"] { border-color: rgb(var(--magicks-line-rgb) / 0.7); }
+.magicks-light [class*="border-white/60"] { border-color: rgb(var(--magicks-line-rgb) / 0.6); }
+.magicks-light [class*="border-white/50"] { border-color: rgb(var(--magicks-line-rgb) / 0.5); }
+.magicks-light [class*="border-white/40"] { border-color: rgb(var(--magicks-line-rgb) / 0.4); }
+.magicks-light [class*="border-white/30"] { border-color: rgb(var(--magicks-line-rgb) / 0.3); }
+.magicks-light [class*="border-white/24"] { border-color: rgb(var(--magicks-line-rgb) / 0.24); }
+.magicks-light [class*="border-white/22"] { border-color: rgb(var(--magicks-line-rgb) / 0.22); }
+.magicks-light [class*="border-white/10"] { border-color: rgb(var(--magicks-line-rgb) / 0.1); }
+
+.magicks-light [class*="bg-white/"],
+.magicks-light [class*="bg-white/[0."] {
+  background-color: rgb(var(--magicks-ink-rgb) / 0.03);
+}
+
+.magicks-light [class*="bg-white/92"] { background-color: rgb(var(--magicks-ink-rgb) / 0.16); }
+.magicks-light [class*="bg-white/85"] { background-color: rgb(var(--magicks-ink-rgb) / 0.14); }
+.magicks-light [class*="bg-white/80"] { background-color: rgb(var(--magicks-ink-rgb) / 0.12); }
+.magicks-light [class*="bg-white/70"] { background-color: rgb(var(--magicks-ink-rgb) / 0.1); }
+.magicks-light [class*="bg-white/60"] { background-color: rgb(var(--magicks-ink-rgb) / 0.08); }
+.magicks-light [class*="bg-white/50"] { background-color: rgb(var(--magicks-ink-rgb) / 0.07); }
+.magicks-light [class*="bg-white/40"] { background-color: rgb(var(--magicks-ink-rgb) / 0.06); }
+.magicks-light [class*="bg-white/30"] { background-color: rgb(var(--magicks-ink-rgb) / 0.05); }
+.magicks-light [class*="bg-white/20"] { background-color: rgb(var(--magicks-ink-rgb) / 0.04); }
+.magicks-light [class*="bg-white/10"] { background-color: rgb(var(--magicks-ink-rgb) / 0.03); }
+.magicks-light [class*="bg-white/8"] { background-color: rgb(var(--magicks-ink-rgb) / 0.03); }
+
+.magicks-light [class*="shadow-[0_34px_80px"],
+.magicks-light [class*="shadow-[0_44px_90px"],
+.magicks-light [class*="shadow-[0_34px_80px_-32px"],
+.magicks-light [class*="shadow-[0_44px_90px_-28px"] {
+  box-shadow:
+    0 26px 64px -34px rgba(20, 28, 44, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Keep dark icon chips dark inside bright CTA pills. */
+.magicks-light [class*="rounded-full"][class*="bg-[#0A0A0A]"][class*="text-white"] {
+  background-color: var(--magicks-ink-strong) !important;
+  color: var(--magicks-bg-lifted) !important;
+}
+
+.magicks-light [class*="from-white/"] {
+  --tw-gradient-from: rgb(var(--magicks-line-rgb) / 0.34) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(var(--magicks-line-rgb) / 0) var(--tw-gradient-to-position) !important;
+}
+
+.magicks-light [class*="via-white/"] {
+  --tw-gradient-via: rgb(var(--magicks-line-rgb) / 0.22) var(--tw-gradient-via-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to) !important;
+}
+
+.magicks-light [class*="to-white/"] {
+  --tw-gradient-to: rgb(var(--magicks-line-rgb) / 0.24) var(--tw-gradient-to-position) !important;
+}
+
+/* -------------------------------------------------------------------------
+   Stage 2 typography calibration:
+   Retune headline rhythm, body readability and mono label severity for the
+   light premium direction while keeping the existing component structure.
+   ------------------------------------------------------------------------- */
+.magicks-light :is(h1, h2, h3, h4)[class*="font-instrument"] {
+  letter-spacing: var(--magicks-type-heading-tracking);
+}
+
+.magicks-light [class*="font-instrument"][class*="tracking-[-0.04"] {
+  letter-spacing: -0.03em !important;
+}
+
+.magicks-light [class*="font-instrument"][class*="tracking-[-0.03"] {
+  letter-spacing: var(--magicks-type-display-tracking) !important;
+}
+
+.magicks-light [class*="font-instrument"][class*="tracking-[-0.02"] {
+  letter-spacing: -0.016em !important;
+}
+
+.magicks-light [class*="font-instrument"][class*="leading-[0.9"] {
+  line-height: var(--magicks-type-display-leading-tight) !important;
+}
+
+.magicks-light [class*="font-instrument"][class*="leading-[1.0"] {
+  line-height: var(--magicks-type-display-leading) !important;
+}
+
+.magicks-light [class*="font-instrument"][class*="leading-[1.1"] {
+  line-height: 1.2 !important;
+}
+
+.magicks-light p[class*="font-ui"][class*="text-[14"] {
+  line-height: var(--magicks-type-body-leading-tight) !important;
+}
+
+.magicks-light p[class*="font-ui"][class*="text-[15"] {
+  line-height: var(--magicks-type-body-leading) !important;
+}
+
+.magicks-light p[class*="font-ui"][class*="text-[16"] {
+  line-height: var(--magicks-type-body-leading) !important;
+}
+
+.magicks-light p[class*="font-instrument"][class*="text-[1."] {
+  line-height: 1.64 !important;
+}
+
+.magicks-light .font-mono[class*="leading-none"] {
+  line-height: 1.18 !important;
+}
+
+.magicks-light .font-mono[class*="text-[9px]"] {
+  font-size: 10px !important;
+}
+
+.magicks-light .font-mono[class*="text-[9.5px]"] {
+  font-size: 10.25px !important;
+}
+
+.magicks-light .font-mono[class*="text-[10px]"] {
+  font-size: 10.75px !important;
+}
+
+.magicks-light .font-mono[class*="text-[10.5px]"] {
+  font-size: 11.1px !important;
+}
+
+.magicks-light .font-mono[class*="text-[11px]"] {
+  font-size: 11.35px !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.48em]"] {
+  letter-spacing: 0.28em !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.46em]"] {
+  letter-spacing: 0.27em !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.44em]"] {
+  letter-spacing: 0.26em !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.42em]"] {
+  letter-spacing: var(--magicks-type-label-tracking-wide) !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.4em]"] {
+  letter-spacing: 0.25em !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.38em]"] {
+  letter-spacing: 0.24em !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.36em]"] {
+  letter-spacing: 0.2em !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.34em]"] {
+  letter-spacing: 0.19em !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.32em]"] {
+  letter-spacing: 0.18em !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.3em]"] {
+  letter-spacing: 0.17em !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.28em]"] {
+  letter-spacing: 0.16em !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.26em]"] {
+  letter-spacing: 0.15em !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.24em]"] {
+  letter-spacing: 0.14em !important;
+}
+
+.magicks-light .font-mono[class*="tracking-[0.22em]"] {
+  letter-spacing: 0.13em !important;
+}
+
+/* -------------------------------------------------------------------------
+   Stage 3 page personality pass:
+   Add subtle page-specific hero atmospheres so non-homepage sections feel
+   related to the new light system while preserving distinct identities.
+   ------------------------------------------------------------------------- */
+.magicks-light [data-wl-hero] {
+  background-image: radial-gradient(68% 58% at 18% 42%, rgba(114, 142, 186, 0.14), transparent 68%);
+}
+
+.magicks-light [data-wa-hero] {
+  background-image: radial-gradient(72% 62% at 22% 44%, rgba(168, 150, 126, 0.13), transparent 70%);
+}
+
+.magicks-light [data-ss-hero] {
+  background-image:
+    radial-gradient(64% 56% at 78% 42%, rgba(160, 128, 88, 0.14), transparent 68%),
+    radial-gradient(56% 48% at 26% 72%, rgba(130, 106, 78, 0.08), transparent 70%);
+}
+
+.magicks-light [data-ws-hero] {
+  background-image:
+    radial-gradient(70% 60% at 16% 42%, rgba(104, 132, 164, 0.14), transparent 69%),
+    radial-gradient(52% 44% at 82% 68%, rgba(84, 114, 150, 0.08), transparent 70%);
+}
+
+.magicks-light [data-ki-hero] {
+  background-image:
+    radial-gradient(68% 58% at 22% 44%, rgba(94, 136, 130, 0.14), transparent 68%),
+    radial-gradient(54% 46% at 84% 66%, rgba(96, 122, 146, 0.08), transparent 70%);
+}
+
+.magicks-light [data-pk-hero] {
+  background-image:
+    radial-gradient(66% 56% at 24% 42%, rgba(146, 124, 100, 0.14), transparent 68%),
+    radial-gradient(50% 44% at 82% 70%, rgba(126, 104, 84, 0.08), transparent 70%);
+}
+
+.magicks-light [data-ku-hero] {
+  background-image:
+    radial-gradient(68% 58% at 20% 42%, rgba(98, 130, 140, 0.13), transparent 69%),
+    radial-gradient(48% 42% at 84% 70%, rgba(104, 122, 146, 0.07), transparent 70%);
+}
+
+.magicks-light [data-wk-hero] {
+  background-image:
+    radial-gradient(70% 60% at 22% 44%, rgba(120, 136, 166, 0.14), transparent 69%),
+    radial-gradient(52% 44% at 82% 68%, rgba(132, 122, 108, 0.08), transparent 70%);
+}
+
+.magicks-light [data-lp-hero] {
+  background-image:
+    radial-gradient(68% 58% at 24% 44%, rgba(122, 146, 176, 0.14), transparent 69%),
+    radial-gradient(50% 44% at 84% 70%, rgba(108, 134, 158, 0.08), transparent 70%);
+}
+
+.magicks-light [data-ab-hero] {
+  background-image: radial-gradient(72% 62% at 20% 42%, rgba(132, 142, 160, 0.12), transparent 70%);
+}
+
+.magicks-light [data-kon-hero] {
+  background-image: radial-gradient(72% 62% at 22% 44%, rgba(142, 148, 162, 0.11), transparent 70%);
+}
+
+.magicks-light [data-pj-hero],
+.magicks-light [data-cs-hero] {
+  background-image: radial-gradient(70% 60% at 22% 42%, rgba(126, 142, 166, 0.12), transparent 70%);
+}
+
+.magicks-light [data-ku-dateline],
+.magicks-light [data-wk-dateline],
+.magicks-light [data-lp-dateline] {
+  letter-spacing: 0.34em !important;
+  color: rgb(var(--magicks-ink-rgb) / 0.52) !important;
+}
+
+.magicks-light [data-wk-gutter-label],
+.magicks-light [data-lp-axis-stop],
+.magicks-light [data-pj-axis-stop] {
+  color: rgb(var(--magicks-ink-rgb) / 0.5) !important;
+}
+
+.magicks-light [data-kon-form-container] {
+  backdrop-filter: blur(2px);
 }
 
 .font-instrument {

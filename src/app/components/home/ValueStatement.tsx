@@ -136,9 +136,9 @@ export function ValueStatement() {
             },
             defaults: { ease: "none" },
           })
-          .to(ambient, { opacity: 0.9, duration: 0.35, ease: "power2.out" }, 0)
-          .to(ambient, { opacity: 1, duration: 0.3, ease: "none" }, 0.35)
-          .to(ambient, { opacity: 0.55, duration: 0.35, ease: "power2.in" }, 0.65);
+          .to(ambient, { opacity: 0.72, duration: 0.35, ease: "power2.out" }, 0)
+          .to(ambient, { opacity: 0.86, duration: 0.3, ease: "none" }, 0.35)
+          .to(ambient, { opacity: 0.48, duration: 0.35, ease: "power2.in" }, 0.65);
       }
 
       // ─── Volumetric God Ray: slow diagonal sweep ─────────────────────
@@ -147,11 +147,11 @@ export function ValueStatement() {
       if (godray) {
         gsap.fromTo(
           godray,
-          { opacity: 0, xPercent: -15, yPercent: -20 },
+          { opacity: 0, xPercent: -12, yPercent: -16 },
           {
-            opacity: 1,
-            xPercent: 10,
-            yPercent: 10,
+            opacity: 0.66,
+            xPercent: 8,
+            yPercent: 8,
             ease: "none",
             scrollTrigger: {
               trigger: root,
@@ -172,10 +172,10 @@ export function ValueStatement() {
         start: "top 74%",
         end: "bottom 38%",
         scrub: 0.95,
-        blur: 5.5,
-        softOpacity: 0.32,
+        blur: 4.2,
+        softOpacity: 0.44,
         reachOpacity: 1,
-        holdRatio: 0.58,
+        holdRatio: 0.62,
         onProgress: (_idx, progress) => {
           if (!focusBand || !sentences.length) return;
           // Position the band along the paragraph height. We interpolate
@@ -190,7 +190,7 @@ export function ValueStatement() {
           const hi = Math.min(centers.length - 1, lo + 1);
           const t = indexFloat - lo;
           const y = centers[lo] + (centers[hi] - centers[lo]) * t;
-          gsap.set(focusBand, { y, opacity: 0.85 });
+          gsap.set(focusBand, { y, opacity: 0.74 });
         },
       });
 
@@ -239,24 +239,17 @@ export function ValueStatement() {
       // MagicksSignatureReveal which has its own ScrollTrigger for the
       // photographic exposure effect.
       if (sign) {
-        gsap.set(sign, { opacity: 0, y: 14, filter: "blur(3px)" });
-        gsap.fromTo(
-          sign,
-          { opacity: 0, y: 14, filter: "blur(3px)" },
-          {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 0.85,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: sign,
-              start: "top 88%",
-              end: "bottom 12%",
-              toggleActions: "play reverse play reverse",
-            },
-          },
-        );
+        presenceEnvelope(sign, {
+          trigger: sign,
+          start: "top 90%",
+          end: "bottom 14%",
+          yFrom: 12,
+          yTo: -8,
+          blur: 2.6,
+          opacityFloor: 0.18,
+          holdRatio: 0.62,
+          scrub: 1.0,
+        });
       }
 
       // ─── Section farewell: ink-shadow bottom fade ────────────────────
@@ -276,7 +269,7 @@ export function ValueStatement() {
     <section
       ref={rootRef}
       id="denken"
-      className="relative bg-[#0B0B0C] px-5 py-32 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64"
+      className="relative bg-[var(--magicks-bg-lifted)] px-5 py-32 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64"
       aria-labelledby="value-heading"
     >
       <div aria-hidden className="section-top-rule" />
@@ -292,10 +285,10 @@ export function ValueStatement() {
           className="absolute -inset-[50%] h-[200%] w-[200%] origin-top-left opacity-0"
           style={{
             background:
-              "linear-gradient(135deg, transparent 35%, rgba(255,255,255,0.02) 45%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.015) 55%, transparent 65%)",
+              "linear-gradient(135deg, transparent 34%, rgba(255,255,255,0.38) 45%, rgba(222,214,202,0.48) 50%, rgba(255,255,255,0.26) 56%, transparent 68%)",
             transform: "translate3d(0, -20%, 0) rotate(-15deg)",
             filter: "blur(40px)",
-            mixBlendMode: "screen",
+            mixBlendMode: "soft-light",
           }}
         />
       </div>
@@ -308,7 +301,7 @@ export function ValueStatement() {
         className="pointer-events-none absolute inset-0 will-change-[opacity]"
         style={{
           backgroundImage:
-            "radial-gradient(ellipse 56% 42% at 62% 46%, rgba(255,255,255,0.028), transparent 68%)",
+            "radial-gradient(ellipse 56% 42% at 62% 46%, rgba(34,44,64,0.1), transparent 68%), radial-gradient(ellipse 46% 34% at 24% 62%, rgba(255,255,255,0.22), transparent 74%)",
         }}
       />
 
@@ -318,7 +311,11 @@ export function ValueStatement() {
             <ChapterMarker num="01" label="Denken" />
           </div>
 
-          <div className="relative max-w-[56rem]">
+          <div className="relative max-w-[54rem]">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -inset-x-4 -inset-y-5 rounded-[1.45rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[linear-gradient(170deg,rgba(255,255,255,0.56)_0%,rgba(246,241,233,0.38)_100%)] sm:-inset-x-6 sm:-inset-y-6 md:-inset-x-8 md:-inset-y-8"
+            />
             {/* Luminous focus band — thin horizontal light that rides along
                 the sentence currently in focus. Its Y is driven by the
                 rack-focus track's onProgress callback, so position and
@@ -329,8 +326,8 @@ export function ValueStatement() {
               className="pointer-events-none absolute left-[-2rem] top-0 hidden h-[1.2em] w-[calc(100%+4rem)] will-change-[transform,opacity] md:block"
               style={{
                 background:
-                  "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 22%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.05) 78%, transparent 100%)",
-                mixBlendMode: "screen",
+                  "linear-gradient(90deg, transparent 0%, rgba(24,30,44,0.03) 22%, rgba(24,30,44,0.08) 50%, rgba(24,30,44,0.03) 78%, transparent 100%)",
+                mixBlendMode: "multiply",
                 transform: "translateY(0) translateZ(0)",
               }}
             />
@@ -338,7 +335,7 @@ export function ValueStatement() {
             <h2
               id="value-heading"
               data-value-heading
-              className="relative font-instrument text-[1.9rem] leading-[1.22] tracking-[-0.025em] text-white sm:text-[2.35rem] md:text-[2.9rem] lg:text-[3.3rem]"
+              className="relative z-10 font-instrument text-[1.95rem] leading-[1.32] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.94)] sm:text-[2.38rem] md:text-[2.92rem] lg:text-[3.3rem]"
             >
               <span data-value-dropcap className="drop-cap will-change-[opacity,transform,filter]">
                 W
@@ -352,14 +349,14 @@ export function ValueStatement() {
 
               <span
                 data-value-sentence
-                className="mt-10 block text-white/55 will-change-[opacity,filter] sm:mt-12"
+                className="mt-10 block text-[rgb(var(--magicks-ink-rgb)/0.64)] will-change-[opacity,filter] sm:mt-12"
               >
                 {SENTENCES[1].text}
               </span>
 
               <span
                 data-value-sentence
-                className="mt-10 block will-change-[opacity,filter] sm:mt-12"
+                className="mt-10 block text-[rgb(var(--magicks-ink-rgb)/0.88)] will-change-[opacity,filter] sm:mt-12"
               >
                 {SENTENCES[2].text}
               </span>
@@ -372,24 +369,24 @@ export function ValueStatement() {
                 services list reads as a follow-on footnote. */}
             <figure
               data-value-sign
-              className="mx-auto mt-14 flex w-full max-w-[34rem] flex-col items-center will-change-[opacity,transform,filter] sm:mt-16 sm:ml-auto sm:mr-0 sm:max-w-[36rem] md:mt-20 md:max-w-[42rem]"
+              className="relative z-10 mx-auto mt-14 flex w-full max-w-[34rem] flex-col items-center will-change-[opacity,transform,filter] sm:mt-16 sm:ml-auto sm:mr-0 sm:max-w-[36rem] md:mt-20 md:max-w-[42rem]"
             >
               <MagicksSignatureReveal className="w-full max-w-[28rem] sm:max-w-[32rem] md:max-w-[38rem]" />
 
-              <figcaption className="font-mono mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 self-stretch text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-white/45 sm:mt-7 sm:gap-x-6 sm:text-[10px] sm:tracking-[0.32em] sm:text-white/42">
+              <figcaption className="font-mono mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 self-stretch text-[10.75px] font-medium uppercase leading-none tracking-[0.14em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:mt-7 sm:gap-x-6 sm:text-[11px] sm:tracking-[0.2em] sm:text-[rgb(var(--magicks-ink-rgb)/0.42)]">
                 <span className="flex items-center gap-2 sm:gap-3">
-                  <span aria-hidden className="h-px w-5 bg-white/26 sm:w-8" />
+                  <span aria-hidden className="h-px w-5 bg-[rgb(var(--magicks-line-rgb)/0.28)] sm:w-8" />
                   <span>Studio · Kassel</span>
                 </span>
-                <span className="text-white/34">N51°19′ · E9°29′</span>
+                <span className="text-[rgb(var(--magicks-ink-rgb)/0.34)]">N51°19′ · E9°29′</span>
               </figcaption>
             </figure>
 
-            <div className="mt-16 sm:mt-20 md:mt-24">
+            <div className="relative z-10 mt-16 sm:mt-20 md:mt-24">
               <div aria-hidden className="relative h-px w-full">
                 <span
                   data-value-rule
-                  className="absolute inset-0 block bg-gradient-to-r from-white/35 via-white/12 to-transparent"
+                  className="absolute inset-0 block bg-gradient-to-r from-[rgb(var(--magicks-line-rgb)/0.4)] via-[rgb(var(--magicks-line-rgb)/0.12)] to-transparent"
                 />
               </div>
 
@@ -400,10 +397,10 @@ export function ValueStatement() {
                     data-value-index
                     className="flex items-baseline gap-2 will-change-[opacity,filter]"
                   >
-                    <span className="font-instrument text-[15px] italic text-white/55">
+                    <span className="font-instrument text-[15px] italic text-[rgb(var(--magicks-ink-rgb)/0.55)]">
                       {it.n}
                     </span>
-                    <span className="font-mono text-[11.5px] font-medium uppercase leading-none tracking-[0.18em] text-white/60 sm:text-[11px] sm:tracking-[0.26em]">
+                    <span className="font-mono text-[11.5px] font-medium uppercase leading-none tracking-[0.13em] text-[rgb(var(--magicks-ink-rgb)/0.6)] sm:text-[11.25px] sm:tracking-[0.18em]">
                       {it.label}
                     </span>
                   </li>
@@ -423,7 +420,7 @@ export function ValueStatement() {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-40 will-change-[opacity]"
         style={{
           background:
-            "linear-gradient(180deg, transparent 0%, rgba(8,8,10,0.35) 55%, rgba(8,8,10,0.62) 100%)",
+            "linear-gradient(180deg, transparent 0%, rgba(46,56,76,0.06) 55%, rgba(46,56,76,0.12) 100%)",
         }}
       />
     </section>

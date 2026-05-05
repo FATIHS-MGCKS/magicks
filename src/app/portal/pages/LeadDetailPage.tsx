@@ -26,6 +26,7 @@ import {
   type LeadWebDefects,
 } from "../data/types";
 import { AutoCheckModal } from "../components/AutoCheckModal";
+import { BusinessProfileModal } from "../components/BusinessProfileModal";
 
 export default function LeadDetailPage() {
   const { id = "" } = useParams<{ id: string }>();
@@ -60,6 +61,7 @@ export default function LeadDetailPage() {
   const [projectName, setProjectName] = useState("");
   const [projectType, setProjectType] = useState<ProjectType>("Website");
   const [autoCheckOpen, setAutoCheckOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   if (!lead) {
     return (
@@ -158,6 +160,24 @@ export default function LeadDetailPage() {
             </button>
             <button
               type="button"
+              onClick={() => setProfileOpen(true)}
+              disabled={!geminiReady}
+              title={
+                geminiReady
+                  ? "Tiefes 40-Feld-Business-Profil recherchieren und Pitch-Prompt erzeugen"
+                  : "Bitte unter Einstellungen → KI-Recherche einen Gemini-API-Key hinterlegen"
+              }
+              className="rounded-md border border-sky-300/30 bg-sky-300/[0.10] px-3 py-1.5 text-[12.5px] font-medium text-sky-100 transition hover:bg-sky-300/[0.18] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Business-Profil (Gemini)
+              {lead.businessProfile?.researchedAt ? (
+                <span className="ml-1.5 text-[10.5px] font-normal text-sky-200/70">
+                  · {formatRelative(lead.businessProfile.researchedAt)}
+                </span>
+              ) : null}
+            </button>
+            <button
+              type="button"
               onClick={() => setShowCustomerForm((v) => !v)}
               disabled={!!customer}
               className="rounded-md border border-white/15 bg-white/95 px-3 py-1.5 text-[12.5px] font-medium text-black transition hover:bg-white disabled:opacity-50"
@@ -206,33 +226,60 @@ export default function LeadDetailPage() {
                 {lead.nextBestStep}
               </div>
             </div>
-            {lead.enrichedAt ? (
-              <div
-                className="flex items-center gap-2.5 rounded-md border border-amber-300/25 bg-amber-300/[0.06] px-3 py-1.5"
-                title={`Letzter Auto-Check: ${formatDateTime(lead.enrichedAt)}`}
-              >
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full rounded-full bg-amber-300/40 opacity-75" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-amber-300/85" />
-                </span>
-                <div>
-                  <div className="text-[9.5px] uppercase tracking-[0.16em] text-amber-200/70">
-                    Auto-Check
-                  </div>
-                  <div className="text-[12px] text-amber-100/95">
-                    {formatRelative(lead.enrichedAt)}
-                    {lead.pitchSuggestion ? " · Pitch verfügbar" : ""}
+            <div className="flex flex-wrap items-start gap-2.5">
+              {lead.enrichedAt ? (
+                <div
+                  className="flex items-center gap-2.5 rounded-md border border-amber-300/25 bg-amber-300/[0.06] px-3 py-1.5"
+                  title={`Letzter Auto-Check: ${formatDateTime(lead.enrichedAt)}`}
+                >
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-amber-300/40 opacity-75" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-amber-300/85" />
+                  </span>
+                  <div>
+                    <div className="text-[9.5px] uppercase tracking-[0.16em] text-amber-200/70">
+                      Auto-Check
+                    </div>
+                    <div className="text-[12px] text-amber-100/95">
+                      {formatRelative(lead.enrichedAt)}
+                      {lead.pitchSuggestion ? " · Pitch verfügbar" : ""}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : geminiReady ? (
-              <div
-                className="text-[11px] text-white/35"
-                title="Auto-Check (Gemini) wurde für diesen Lead noch nicht ausgeführt."
-              >
-                Auto-Check noch nicht ausgeführt
-              </div>
-            ) : null}
+              ) : geminiReady ? (
+                <div
+                  className="text-[11px] text-white/35"
+                  title="Auto-Check (Gemini) wurde für diesen Lead noch nicht ausgeführt."
+                >
+                  Auto-Check noch nicht ausgeführt
+                </div>
+              ) : null}
+
+              {lead.businessProfile?.researchedAt ? (
+                <button
+                  type="button"
+                  onClick={() => setProfileOpen(true)}
+                  className="flex items-center gap-2.5 rounded-md border border-sky-300/25 bg-sky-300/[0.06] px-3 py-1.5 text-left transition hover:bg-sky-300/[0.12]"
+                  title={`Letzte Business-Profil-Recherche: ${formatDateTime(lead.businessProfile.researchedAt)}`}
+                >
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-sky-300/40 opacity-75" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-sky-300/85" />
+                  </span>
+                  <div>
+                    <div className="text-[9.5px] uppercase tracking-[0.16em] text-sky-200/70">
+                      Business-Profil
+                    </div>
+                    <div className="text-[12px] text-sky-100/95">
+                      {formatRelative(lead.businessProfile.researchedAt)}
+                      {lead.businessProfile.sources?.length
+                        ? ` · ${lead.businessProfile.sources.length} Quellen`
+                        : ""}
+                    </div>
+                  </div>
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
       </section>
@@ -729,6 +776,13 @@ export default function LeadDetailPage() {
 
       {autoCheckOpen ? (
         <AutoCheckModal lead={lead} onClose={() => setAutoCheckOpen(false)} />
+      ) : null}
+
+      {profileOpen ? (
+        <BusinessProfileModal
+          lead={lead}
+          onClose={() => setProfileOpen(false)}
+        />
       ) : null}
     </>
   );

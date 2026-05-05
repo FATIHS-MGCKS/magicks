@@ -86,7 +86,7 @@ const ALIGN_CLASS: Record<EditorialAnchorAlign, string> = {
  *  - L4: inner 1px white top highlight → paper-edge catch-light
  */
 const PAPER_LIFT_SHADOW =
-  "shadow-[0_1px_2px_0_rgba(0,0,0,0.42),0_6px_14px_-2px_rgba(0,0,0,0.62),0_56px_140px_-64px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.08)]";
+  "shadow-[0_1px_1px_0_rgba(20,28,44,0.12),0_14px_32px_-18px_rgba(20,28,44,0.34),0_44px_120px_-72px_rgba(20,28,44,0.42),inset_0_1px_0_rgba(255,255,255,0.7)]";
 
 export function EditorialAnchor({
   src,
@@ -102,7 +102,7 @@ export function EditorialAnchor({
   className = "",
   loading = "lazy",
   filter = "saturate(0.95) contrast(1.03) brightness(0.98)",
-  overlayClass = "pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/55 via-transparent to-[#0A0A0A]/10",
+  overlayClass = "pointer-events-none absolute inset-0 bg-gradient-to-t from-[rgb(var(--magicks-ink-rgb)/0.24)] via-[rgb(var(--magicks-ink-rgb)/0.04)] to-transparent",
 }: Props) {
   const revealProps = revealAttr ? { [revealAttr]: "" } : {};
   const figureStyle: CSSProperties = { maxWidth };
@@ -169,7 +169,7 @@ export function EditorialAnchor({
     >
       <div
         ref={frameRef}
-        className={`relative w-full overflow-hidden rounded-[0.95rem] border border-white/[0.1] bg-[#0A0A0A] ${PAPER_LIFT_SHADOW}`}
+        className={`relative w-full overflow-hidden rounded-[0.95rem] border border-[rgb(var(--magicks-line-rgb)/0.18)] bg-[var(--magicks-bg-lifted)] ${PAPER_LIFT_SHADOW}`}
         style={frameStyle}
       >
         <img
@@ -193,12 +193,15 @@ export function EditorialAnchor({
         {folio ? (
           <div
             aria-hidden
-            className="font-mono pointer-events-none absolute left-4 top-4 flex items-center gap-2 text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/58 sm:left-5 sm:top-5"
+            className="font-mono pointer-events-none absolute left-4 top-4 flex items-center gap-2 text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-[rgb(var(--magicks-ink-rgb)/0.56)] sm:left-5 sm:top-5"
           >
             <span>{folio}</span>
             {context ? (
               <>
-                <span aria-hidden className="h-px w-5 bg-white/28" />
+                <span
+                  aria-hidden
+                  className="h-px w-5 bg-[rgb(var(--magicks-line-rgb)/0.32)]"
+                />
                 <span>{context}</span>
               </>
             ) : null}
@@ -207,12 +210,19 @@ export function EditorialAnchor({
       </div>
 
       {leftCaption ? (
-        <figcaption className="font-mono mt-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-[10px] font-medium uppercase leading-none tracking-[0.32em] text-white/42">
+        <figcaption className="font-mono mt-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-[10px] font-medium uppercase leading-none tracking-[0.32em] text-[rgb(var(--magicks-ink-rgb)/0.42)]">
           <span className="flex items-center gap-3">
-            <span aria-hidden className="h-px w-8 bg-white/26" />
+            <span
+              aria-hidden
+              className="h-px w-8 bg-[rgb(var(--magicks-line-rgb)/0.28)]"
+            />
             <span>{leftCaption}</span>
           </span>
-          {rightCaption ? <span className="text-white/34">{rightCaption}</span> : null}
+          {rightCaption ? (
+            <span className="text-[rgb(var(--magicks-ink-rgb)/0.34)]">
+              {rightCaption}
+            </span>
+          ) : null}
         </figcaption>
       ) : null}
     </figure>

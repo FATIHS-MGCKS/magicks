@@ -23,6 +23,10 @@ const servicesNav = [
   { label: "Website im Abo", to: "/website-im-abo" },
 ];
 
+const secondaryOfferNav = [
+  { label: "Website Starter (für Betriebe ohne Website)", to: "/website-starter" },
+];
+
 const legalNav = [
   { label: "Impressum", to: "/impressum" },
   { label: "Datenschutz", to: "/datenschutz" },
@@ -36,7 +40,7 @@ const locationNav = [
 ];
 
 const linkClass =
-  "font-ui inline-flex min-h-[44px] items-center text-[14.5px] text-white/50 magicks-duration-hover magicks-ease-out transition-colors hover:text-white lg:min-h-[40px]";
+  "font-ui inline-flex min-h-[44px] items-center text-[15px] font-medium tracking-[0.004em] text-[var(--magicks-text-2)] magicks-duration-hover magicks-ease-out transition-colors hover:text-[var(--magicks-text-1)] lg:min-h-[40px]";
 
 export function Footer() {
   const rootRef = useRef<HTMLElement>(null);
@@ -71,14 +75,17 @@ export function Footer() {
   }, [reduced]);
 
   return (
-    <footer ref={rootRef} className="relative overflow-hidden border-t border-white/[0.06] bg-[#0A0A0A] px-5 pb-8 pt-14 md:pt-16">
+    <footer
+      ref={rootRef}
+      className="relative overflow-hidden border-t border-[rgb(var(--magicks-line-rgb)/0.14)] bg-[var(--magicks-bg-base)] px-5 pb-8 pt-14 md:pt-16"
+    >
       {/* Ambient Pulse — deep background glow */}
       <div
         data-footer-pulse
         aria-hidden
         className="pointer-events-none absolute inset-0 z-0 opacity-20 will-change-[opacity]"
         style={{
-          background: "radial-gradient(circle at 50% 120%, rgba(255,255,255,0.03) 0%, transparent 60%)",
+          background: "radial-gradient(circle at 50% 120%, rgba(20,28,44,0.08) 0%, transparent 64%)",
         }}
       />
 
@@ -93,21 +100,21 @@ export function Footer() {
             >
               <MagicksLogo className="h-8 w-auto md:h-9" />
             </Link>
-            <p className="font-ui mt-4 text-[14.5px] leading-relaxed text-white/46">
+            <p className="font-ui mt-4 text-[15px] leading-[1.74] text-[var(--magicks-text-2)]">
               Digitale Markenauftritte und digitale Lösungen — mit Klarheit, technischer Präzision und
               unternehmerischem Fokus.
             </p>
-            <p className="font-ui mt-4 text-[13px] leading-relaxed text-white/38">
+            <p className="font-ui mt-4 text-[14px] leading-[1.7] text-[var(--magicks-text-3)]">
               Kassel &amp; Nordhessen — bundesweit remote im Einsatz.
             </p>
 
             {/* Secondary location / SEO links — quiet, restrained */}
-            <ul className="mt-8 space-y-1 border-t border-white/[0.05] pt-6 sm:space-y-2">
+            <ul className="mt-8 space-y-1 border-t border-[rgb(var(--magicks-line-rgb)/0.12)] pt-6 sm:space-y-2">
               {locationNav.map((item) => (
                 <li key={item.to}>
                   <PrefetchLink
                     to={item.to}
-                    className="font-ui inline-flex min-h-[44px] items-center text-[12.5px] text-white/36 magicks-duration-hover magicks-ease-out transition-colors hover:text-white/72 lg:min-h-[36px]"
+                    className="font-ui inline-flex min-h-[44px] items-center text-[13.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.52)] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.82)] lg:min-h-[36px]"
                   >
                     {item.label}
                   </PrefetchLink>
@@ -146,6 +153,24 @@ export function Footer() {
                 </li>
               ))}
             </ul>
+
+            <div className="mt-6 border-t border-[rgb(var(--magicks-line-rgb)/0.12)] pt-4">
+              <p className="font-mono mb-2 text-[9.5px] font-medium uppercase tracking-[0.3em] text-[rgb(var(--magicks-ink-rgb)/0.44)]">
+                Angebot
+              </p>
+              <ul className="space-y-1.5">
+                {secondaryOfferNav.map((item) => (
+                  <li key={item.to}>
+                    <PrefetchLink
+                      to={item.to}
+                      className="font-ui inline-flex min-h-[40px] items-center text-[13.5px] leading-[1.6] text-[rgb(var(--magicks-ink-rgb)/0.58)] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.84)]"
+                    >
+                      {item.label}
+                    </PrefetchLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* Legal */}
@@ -165,14 +190,14 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/[0.06] pt-8 text-center sm:flex-row sm:gap-4 sm:text-left md:mt-16">
-          <p className="font-ui text-[12.5px] leading-relaxed text-white/40 sm:text-[13px]">
+        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-[rgb(var(--magicks-line-rgb)/0.14)] pt-8 text-center sm:flex-row sm:gap-4 sm:text-left md:mt-16">
+          <p className="font-ui text-[13.5px] leading-[1.64] text-[rgb(var(--magicks-ink-rgb)/0.58)]">
             © {new Date().getFullYear()} MAGICKS Studio. Alle Rechte vorbehalten.
           </p>
-          <p className="font-ui text-[12.5px] text-white/34">
+          <p className="font-ui text-[13.5px] text-[rgb(var(--magicks-ink-rgb)/0.52)]">
             <a
               href="mailto:hello@magicks.de"
-              className="inline-flex min-h-[44px] items-center break-all magicks-duration-hover magicks-ease-out transition-colors hover:text-white/70 lg:min-h-[32px]"
+              className="inline-flex min-h-[44px] items-center break-all magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.78)] lg:min-h-[32px]"
             >
               hello@magicks.de
             </a>

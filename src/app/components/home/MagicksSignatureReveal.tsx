@@ -114,13 +114,10 @@ export function MagicksSignatureReveal({
           trigger: root,
           // Fire earlier on small viewports so the reveal aligns with
           // the figure entering the bottom of the screen.
-          start: startTrigger ?? (isMobile ? "top 92%" : "top 82%"),
-          // The figure leaves when its bottom passes 15% of viewport top.
-          // Combined with toggleActions below, this means the timeline
-          // reverses elegantly as the user scrolls past, then plays
-          // forward again on the way back.
-          end: "bottom 15%",
-          toggleActions: "play reverse play reverse",
+          start: startTrigger ?? (isMobile ? "top 94%" : "top 86%"),
+          // Scrubbed exposure: fully bidirectional and scroll-position bound.
+          end: "bottom 18%",
+          scrub: 0.9,
           invalidateOnRefresh: true,
         },
       });

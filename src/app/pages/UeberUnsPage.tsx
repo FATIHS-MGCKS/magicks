@@ -194,10 +194,11 @@ export default function UeberUnsPage() {
       presenceEnvelope(reveals, {
         start: "top 90%",
         end: "bottom 12%",
-        yFrom: 20,
-        yTo: -12,
-        blur: 4,
-        holdRatio: 0.5,
+        yFrom: 16,
+        yTo: -10,
+        blur: 3.2,
+        opacityFloor: 0.2,
+        holdRatio: 0.56,
         scrub: 0.95,
       });
 
@@ -211,10 +212,10 @@ export default function UeberUnsPage() {
           (principia[0] as HTMLElement).closest("section") ?? principia[0];
 
         gsap.set(principia, {
-          opacity: 0,
-          y: 18,
+          opacity: 0.18,
+          y: 14,
           letterSpacing: "0.05em",
-          filter: "blur(5px)",
+          filter: "blur(4px)",
         });
 
         gsap.to(principia, {
@@ -235,8 +236,8 @@ export default function UeberUnsPage() {
 
         // Gentle release on exit — the stanza softens, it does not vanish.
         gsap.to(principia, {
-          opacity: 0.38,
-          filter: "blur(3px)",
+          opacity: 0.5,
+          filter: "blur(2.2px)",
           letterSpacing: "0.004em",
           ease: "none",
           stagger: 0.03,
@@ -258,9 +259,9 @@ export default function UeberUnsPage() {
           (methodRows[0] as HTMLElement).closest("section") ?? methodRows[0];
 
         gsap.set(methodRows, {
-          opacity: 0,
-          x: -18,
-          filter: "blur(4px)",
+          opacity: 0.2,
+          x: -14,
+          filter: "blur(3px)",
         });
         gsap.to(methodRows, {
           opacity: 1,
@@ -285,7 +286,7 @@ export default function UeberUnsPage() {
         const werkSection =
           (werkRows[0] as HTMLElement).closest("section") ?? werkRows[0];
 
-        gsap.set(werkRows, { opacity: 0, y: 14, filter: "blur(4px)" });
+        gsap.set(werkRows, { opacity: 0.22, y: 12, filter: "blur(3px)" });
         gsap.to(werkRows, {
           opacity: 1,
           y: 0,
@@ -308,7 +309,7 @@ export default function UeberUnsPage() {
         const reasonsSection =
           (reasonLines[0] as HTMLElement).closest("section") ?? reasonLines[0];
 
-        gsap.set(reasonLines, { opacity: 0, y: 14, filter: "blur(5px)" });
+        gsap.set(reasonLines, { opacity: 0.18, y: 12, filter: "blur(4px)" });
         gsap.to(reasonLines, {
           opacity: 1,
           y: 0,
@@ -325,8 +326,8 @@ export default function UeberUnsPage() {
         });
 
         gsap.to(reasonLines, {
-          opacity: 0.3,
-          filter: "blur(3px)",
+          opacity: 0.46,
+          filter: "blur(2.2px)",
           ease: "none",
           stagger: 0.04,
           scrollTrigger: {
@@ -350,7 +351,7 @@ export default function UeberUnsPage() {
         const statementSection =
           (statementWords[0] as HTMLElement).closest("section") ?? statementWords[0];
 
-        gsap.set(statementWords, { yPercent: 120, opacity: 0 });
+        gsap.set(statementWords, { yPercent: 92, opacity: 0.14 });
         gsap.to(statementWords, {
           yPercent: 0,
           opacity: 1,
@@ -368,7 +369,7 @@ export default function UeberUnsPage() {
         // Gentle release — the statement softens slightly but stays
         // legible until the user is clearly past it.
         gsap.to(statementWords, {
-          opacity: 0.32,
+          opacity: 0.46,
           ease: "none",
           stagger: 0.02,
           scrollTrigger: {
@@ -388,10 +389,11 @@ export default function UeberUnsPage() {
         presenceEnvelope(invBlocks, {
           start: "top 88%",
           end: "bottom 12%",
-          yFrom: 22,
-          yTo: -12,
-          blur: 4,
-          holdRatio: 0.5,
+          yFrom: 16,
+          yTo: -10,
+          blur: 3.2,
+          opacityFloor: 0.2,
+          holdRatio: 0.56,
           stagger: 0.12,
           scrub: 1.0,
         });
@@ -410,10 +412,10 @@ export default function UeberUnsPage() {
 
       if (finalHead && finalSection) {
         gsap.set(finalHead, {
-          opacity: 0,
-          y: 16,
+          opacity: 0.16,
+          y: 12,
           letterSpacing: "0.03em",
-          filter: "blur(5px)",
+          filter: "blur(4px)",
         });
         gsap.to(finalHead, {
           opacity: 1,
@@ -423,8 +425,8 @@ export default function UeberUnsPage() {
           ease: "none",
           scrollTrigger: {
             trigger: finalSection,
-            start: "top 80%",
-            end: "top 28%",
+            start: "top 82%",
+            end: "top 32%",
             scrub: 1.1,
             invalidateOnRefresh: true,
           },
@@ -436,8 +438,8 @@ export default function UeberUnsPage() {
           trigger: finalSection,
           start: "top 72%",
           end: "top 22%",
-          blur: 4,
-          opacityFloor: 0,
+          blur: 3,
+          opacityFloor: 0.24,
           stagger: 0.09,
           scrub: 1.0,
         });
@@ -452,7 +454,7 @@ export default function UeberUnsPage() {
   return (
     <>
       <RouteSEO path="/ueber-uns" />
-      <div ref={rootRef} className="bg-[#0A0A0A]">
+      <div ref={rootRef} className="bg-[var(--magicks-bg-base)]">
         {/* ════════════════════════════════════════════════════════════
               § PRÄAMBEL — Hero
           ════════════════════════════════════════════════════════════ */}
@@ -489,21 +491,24 @@ export default function UeberUnsPage() {
                   </span>
                 </h1>
 
-                <div className="mt-10 max-w-[40rem] space-y-5 md:mt-14">
+                <div className="mt-10 max-w-[42rem] space-y-5 md:mt-14">
                   <p data-ab-lead className="font-ui text-[15.5px] leading-[1.7] text-white/74 md:text-[16.5px]">
                     MAGICKS Studio steht für eine andere Art, digitale Projekte anzugehen.
                   </p>
-                  <p data-ab-lead className="font-ui text-[15.5px] leading-[1.7] text-white/62 md:text-[16.5px]">
+                  <p data-ab-lead className="font-ui text-[15.5px] leading-[1.72] text-white/64 md:text-[16.5px]">
                     Kein aufgeblähter Prozess, keine sinnlosen Meetings, kein Design by Committee.
                   </p>
-                  <p data-ab-lead className="font-ui text-[15.5px] leading-[1.7] text-white/54 md:text-[16.5px]">
+                  <p data-ab-lead className="font-ui text-[15.5px] leading-[1.72] text-white/60 md:text-[16.5px]">
                     Wir entwickeln digitale Lösungen mit Anspruch — direkt, technisch sauber und mit dem Ziel, dass das
                     Ergebnis nicht nur gut aussieht, sondern im Alltag wirklich funktioniert.
                   </p>
                 </div>
 
                 {/* CTA baseline rail — mirrors the § Einladung rail so all CTAs read as one system */}
-                <div data-ab-cta className="mt-14 max-w-[40rem] border-t border-white/[0.14] pt-5 md:mt-16 md:pt-6">
+                <div
+                  data-ab-cta
+                  className="mt-14 max-w-[42rem] border-t border-[rgb(var(--magicks-line-rgb)/0.2)] pt-5 md:mt-16 md:pt-6"
+                >
                   <div className="flex items-baseline justify-between gap-6">
                     <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.36em] text-white/50 sm:text-[10.5px]">
                       § 00 · /kontakt
@@ -637,7 +642,7 @@ export default function UeberUnsPage() {
           ════════════════════════════════════════════════════════════ */}
         <section
           aria-label="Studio-Blick"
-          className="relative overflow-hidden bg-[#09090B] px-5 py-28 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16 lg:py-48"
+          className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16 lg:py-48"
         >
           <div className="layout-max relative">
             <div className="mx-auto max-w-[54rem]">
@@ -678,7 +683,7 @@ export default function UeberUnsPage() {
         {/* ════════════════════════════════════════════════════════════
               § 03 — METHODE  (stanza + 4-row register)
           ════════════════════════════════════════════════════════════ */}
-        <section className="relative bg-[#08080A] px-5 py-24 sm:px-8 sm:py-28 md:px-12 md:py-36 lg:px-16 lg:py-44">
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-24 sm:px-8 sm:py-28 md:px-12 md:py-36 lg:px-16 lg:py-44">
           <div className="layout-max">
             <div className="grid gap-10 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] md:gap-16 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-24">
               <div data-ab-reveal className="md:pt-1">
@@ -749,7 +754,7 @@ export default function UeberUnsPage() {
         {/* ════════════════════════════════════════════════════════════
               § 04 — PRINCIPIA  (six aphorisms)
           ════════════════════════════════════════════════════════════ */}
-        <section className="relative bg-[#070708] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-52 lg:px-16 lg:py-60">
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-52 lg:px-16 lg:py-60">
           <PrincipiaTexture />
           <div className="layout-max relative">
             <div className="mx-auto max-w-[68rem]">
@@ -911,7 +916,7 @@ export default function UeberUnsPage() {
         {/* ════════════════════════════════════════════════════════════
               § 06 — VERTRAUEN  (4-reasons stanza)
           ════════════════════════════════════════════════════════════ */}
-        <section className="relative bg-[#08080A] px-5 py-24 sm:px-8 sm:py-28 md:px-12 md:py-36 lg:px-16 lg:py-44">
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-24 sm:px-8 sm:py-28 md:px-12 md:py-36 lg:px-16 lg:py-44">
           <div className="layout-max">
             <div className="mx-auto max-w-[54rem]">
               <div data-ab-reveal className="flex flex-col items-center text-center">
@@ -959,7 +964,7 @@ export default function UeberUnsPage() {
           ════════════════════════════════════════════════════════════ */}
         <section
           data-ab-statement
-          className="relative overflow-hidden bg-[#070708] px-5 py-36 sm:px-8 sm:py-48 md:px-12 md:py-56 lg:px-16 lg:py-[16rem]"
+          className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 py-36 sm:px-8 sm:py-48 md:px-12 md:py-56 lg:px-16 lg:py-[16rem]"
         >
           <StatementTexture />
           <div className="layout-max relative">
@@ -1075,7 +1080,7 @@ export default function UeberUnsPage() {
         {/* ════════════════════════════════════════════════════════════
               § END — Final CTA
           ════════════════════════════════════════════════════════════ */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 pb-36 pt-32 sm:px-8 sm:pb-48 sm:pt-44 md:px-12 md:pb-56 md:pt-52 lg:px-16 lg:pt-60">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-36 pt-32 sm:px-8 sm:pb-48 sm:pt-44 md:px-12 md:pb-56 md:pt-52 lg:px-16 lg:pt-60">
           <FinalTexture />
           <div className="layout-max relative">
             <div className="mx-auto flex max-w-[54rem] flex-col items-center text-center">
@@ -1304,23 +1309,26 @@ function StudioImprint() {
   ];
 
   return (
-    <div className="relative">
+    <div className="relative rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.18)] bg-[linear-gradient(160deg,rgba(255,255,255,0.68),rgba(255,255,255,0.46))] px-5 py-5 shadow-[0_20px_54px_rgba(18,24,38,0.08)] backdrop-blur-[2px] sm:px-6 sm:py-6">
       {/* Top rule */}
-      <span aria-hidden className="block h-px w-full bg-gradient-to-r from-white/0 via-white/22 to-white/0" />
+      <span
+        aria-hidden
+        className="block h-px w-full bg-gradient-to-r from-transparent via-[rgb(var(--magicks-line-rgb)/0.45)] to-transparent"
+      />
 
-      <dl className="divide-y divide-white/[0.06]">
+      <dl className="divide-y divide-[rgb(var(--magicks-line-rgb)/0.2)]">
         {rows.map((r) => (
           <div
             key={r.label}
             data-ab-colo-row
             className="grid grid-cols-[minmax(0,5.5rem)_minmax(0,1fr)] items-baseline gap-5 py-4 md:gap-6 md:py-[1.1rem]"
           >
-            <dt className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.38em] text-white/44 sm:text-[10px]">
+            <dt className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[10px]">
               {r.label}
             </dt>
             <dd
-              className={`font-instrument text-[1.05rem] leading-[1.24] tracking-[-0.01em] text-white sm:text-[1.12rem] md:text-[1.2rem] ${
-                r.italic ? "italic text-white/86" : ""
+              className={`font-instrument text-[1.05rem] leading-[1.24] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:text-[1.12rem] md:text-[1.2rem] ${
+                r.italic ? "italic text-[rgb(var(--magicks-ink-rgb)/0.8)]" : ""
               }`}
             >
               {r.value}
@@ -1330,11 +1338,14 @@ function StudioImprint() {
       </dl>
 
       {/* Bottom rule */}
-      <span aria-hidden className="block h-px w-full bg-gradient-to-r from-white/0 via-white/22 to-white/0" />
+      <span
+        aria-hidden
+        className="block h-px w-full bg-gradient-to-r from-transparent via-[rgb(var(--magicks-line-rgb)/0.45)] to-transparent"
+      />
 
       {/* Signature — right-hung, micro mono, reads as the imprint's date/place line */}
       <div className="mt-4 flex items-baseline justify-end">
-        <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.42em] text-white/36 sm:text-[9.5px]">
+        <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-[rgb(var(--magicks-ink-rgb)/0.4)] sm:text-[9.5px]">
           · Edition MMXXVI ·
         </span>
       </div>

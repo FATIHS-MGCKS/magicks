@@ -41,7 +41,9 @@ export default function ImpressumPage() {
             Angaben gemäß § 5 TMG sowie Angaben zum verantwortlichen
             Ansprechpartner nach § 18 Abs. 2 MStV. Nachstehend finden Sie die
             gesetzlich vorgeschriebenen Informationen zu{" "}
-            <span className="text-white/82">MAGICKS Studio</span>.
+            <span className="text-[rgb(var(--magicks-ink-rgb)/0.82)]">
+              MAGICKS Studio
+            </span>
           </>
         }
       >
@@ -68,16 +70,16 @@ export default function ImpressumPage() {
             E-Mail:{" "}
             <a
               href="mailto:hello@magicks.de"
-              className="text-white no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color] hover:underline hover:decoration-white/60"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.9)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[color,text-decoration-color] hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] hover:underline hover:decoration-[rgb(var(--magicks-line-rgb)/0.54)]"
             >
               hello@magicks.de
             </a>
           </p>
-          <p className="text-white/56">
+          <p className="text-[rgb(var(--magicks-ink-rgb)/0.56)]">
             Für Projekt­anfragen und Rückfragen nutzen Sie bevorzugt die{" "}
             <Link
               to="/kontakt"
-              className="text-white/82 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.82)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.94)] hover:underline"
             >
               Kontaktseite
             </Link>
@@ -113,13 +115,13 @@ export default function ImpressumPage() {
               href="https://ec.europa.eu/consumers/odr"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/88 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.84)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.94)] hover:underline"
             >
               ec.europa.eu/consumers/odr
             </a>
             . Unsere E-Mail-Adresse finden Sie oben in diesem Impressum.
           </p>
-          <p className="text-white/60">
+          <p className="text-[rgb(var(--magicks-ink-rgb)/0.6)]">
             Wir sind nicht bereit oder verpflichtet, an Streitbeilegungs­verfahren
             vor einer Verbraucher­schlichtungs­stelle teilzunehmen.
           </p>
@@ -196,21 +198,21 @@ export default function ImpressumPage() {
           Placed outside <LegalLayout> because the layout's children
           sit inside a `divide-y` stack and the footer needs to sit
           as a separate paragraph below the dividers. */}
-      <div className="bg-[#0A0A0A] px-5 pb-24 sm:px-8 sm:pb-28 md:px-12 md:pb-36 lg:px-16">
+      <div className="bg-[var(--magicks-bg-base)] px-5 pb-24 sm:px-8 sm:pb-28 md:px-12 md:pb-36 lg:px-16">
         <div className="layout-max">
           <LegalFooter>
             Bei Fragen zu rechtlichen Angaben oder zur Kontaktaufnahme nutzen
             Sie bitte die{" "}
             <Link
               to="/kontakt"
-              className="text-white/82 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.82)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.94)] hover:underline"
             >
               Kontaktseite
             </Link>{" "}
             oder schreiben Sie direkt an{" "}
             <a
               href="mailto:hello@magicks.de"
-              className="text-white/82 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.82)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.94)] hover:underline"
             >
               hello@magicks.de
             </a>
@@ -218,7 +220,7 @@ export default function ImpressumPage() {
             unserer{" "}
             <Link
               to="/datenschutz"
-              className="text-white/82 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.82)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.94)] hover:underline"
             >
               Datenschutz­erklärung
             </Link>

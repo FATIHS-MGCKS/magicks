@@ -81,7 +81,7 @@ export function LegalLayout({
   }, [reduced]);
 
   return (
-    <main className="relative overflow-hidden bg-[#0A0A0A] text-white">
+    <main className="relative overflow-hidden bg-[var(--magicks-bg-base)] text-[var(--magicks-text-1)]">
       {/* ============================================================
          Header
          ============================================================ */}
@@ -93,30 +93,33 @@ export function LegalLayout({
           <div className="max-w-[48rem]">
             {/* Top folio — matches the convention on /kontakt & /ueber-uns */}
             <div className="flex items-center gap-4">
-              <span aria-hidden className="h-px w-10 bg-white/28 sm:w-14" />
+              <span
+                aria-hidden
+                className="h-px w-10 bg-[rgb(var(--magicks-line-rgb)/0.28)] sm:w-14"
+              />
               <span
                 data-legal-folio
-                className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/50 sm:text-[10.5px]"
+              className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.3em] text-[rgb(var(--magicks-ink-rgb)/0.5)] sm:text-[11px]"
               >
                 {folio}
               </span>
               <span
                 aria-hidden
                 data-legal-rule
-                className="h-px flex-1 bg-white/10"
+                className="h-px flex-1 bg-[rgb(var(--magicks-line-rgb)/0.18)]"
               />
             </div>
 
             <h1
               data-legal-h1
-              className="mt-10 font-instrument text-[2.35rem] leading-[1.04] tracking-[-0.032em] text-white sm:mt-12 sm:text-[3rem] md:mt-14 md:text-[3.5rem] lg:text-[3.95rem]"
+              className="mt-10 font-instrument text-[2.35rem] leading-[1.08] tracking-[-0.026em] text-[rgb(var(--magicks-ink-rgb)/0.94)] sm:mt-12 sm:text-[3rem] md:mt-14 md:text-[3.5rem] lg:text-[3.95rem]"
             >
               {h1}
             </h1>
 
             <p
               data-legal-lead
-              className="font-ui mt-8 max-w-[44rem] text-[16px] leading-[1.7] text-white/68 sm:mt-10 sm:text-[16.5px] md:text-[17px]"
+              className="font-ui mt-8 max-w-[44rem] text-[16.5px] leading-[1.74] text-[rgb(var(--magicks-ink-rgb)/0.68)] sm:mt-10 sm:text-[17px] md:text-[17.5px]"
             >
               {lead}
             </p>
@@ -124,7 +127,7 @@ export function LegalLayout({
             {stand && (
               <p
                 data-legal-stand
-                className="font-mono mt-7 text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/40 sm:text-[10.5px]"
+                className="font-mono mt-7 text-[10.5px] font-medium uppercase leading-none tracking-[0.28em] text-[rgb(var(--magicks-ink-rgb)/0.4)] sm:text-[11px]"
               >
                 · {stand} ·
               </p>
@@ -138,8 +141,10 @@ export function LegalLayout({
          ============================================================ */}
       <div className="relative px-5 pb-24 pt-8 sm:px-8 sm:pb-28 sm:pt-12 md:px-12 md:pb-36 md:pt-16 lg:px-16">
         <div className="layout-max">
-          <div className="max-w-[68rem] border-t border-white/[0.1]">
-            <div className="divide-y divide-white/[0.06]">{children}</div>
+          <div className="max-w-[68rem] border-t border-[rgb(var(--magicks-line-rgb)/0.16)]">
+            <div className="divide-y divide-[rgb(var(--magicks-line-rgb)/0.12)]">
+              {children}
+            </div>
           </div>
 
           {footer ? (
@@ -176,15 +181,15 @@ export function LegalSection({ folio, title, children, id }: LegalSectionProps) 
       className="grid gap-6 py-10 md:grid-cols-[minmax(0,0.4fr)_minmax(0,1fr)] md:gap-12 md:py-14 lg:gap-16 lg:py-16"
     >
       <div className="md:sticky md:top-24 md:self-start">
-        <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/44 sm:text-[10.5px]">
+        <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.28em] text-[rgb(var(--magicks-ink-rgb)/0.44)] sm:text-[11px]">
           {folio}
         </p>
-        <h2 className="mt-5 font-instrument text-[1.35rem] leading-[1.16] tracking-[-0.02em] text-white sm:text-[1.5rem] md:mt-6 md:text-[1.7rem] lg:text-[1.85rem]">
+        <h2 className="mt-5 font-instrument text-[1.35rem] leading-[1.2] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.9)] sm:text-[1.52rem] md:mt-6 md:text-[1.72rem] lg:text-[1.9rem]">
           {title}
         </h2>
       </div>
 
-      <div className="font-ui space-y-5 text-[15px] leading-[1.72] text-white/72 sm:text-[15.5px] md:text-[16px]">
+      <div className="font-ui space-y-5 text-[15.5px] leading-[1.76] text-[rgb(var(--magicks-ink-rgb)/0.72)] sm:text-[16px] md:text-[16.5px]">
         {children}
       </div>
     </section>
@@ -203,13 +208,13 @@ type LegalAddressProps = {
 
 export function LegalAddress({ lines }: LegalAddressProps) {
   return (
-    <address className="font-ui not-italic space-y-[0.2rem] text-[15px] leading-[1.65] text-white/82 sm:text-[15.5px] md:text-[16px]">
+    <address className="font-ui not-italic space-y-[0.2rem] text-[15.5px] leading-[1.68] text-[rgb(var(--magicks-ink-rgb)/0.82)] sm:text-[16px] md:text-[16.5px]">
       {lines.map((line, i) => (
         <div
           key={i}
           className={
             line.strong
-              ? "font-instrument text-[1.15rem] italic leading-[1.25] tracking-[-0.01em] text-white sm:text-[1.2rem] md:text-[1.28rem]"
+              ? "font-instrument text-[1.18rem] italic leading-[1.28] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:text-[1.24rem] md:text-[1.32rem]"
               : ""
           }
         >
@@ -226,8 +231,8 @@ export function LegalAddress({ lines }: LegalAddressProps) {
 
 export function LegalFooter({ children }: { children: ReactNode }) {
   return (
-    <div className="mt-14 max-w-[48rem] border-t border-white/[0.08] pt-10 md:mt-16 md:pt-12">
-      <p className="font-ui text-[14px] leading-[1.7] text-white/52 md:text-[14.5px]">
+    <div className="mt-14 max-w-[48rem] border-t border-[rgb(var(--magicks-line-rgb)/0.14)] pt-10 md:mt-16 md:pt-12">
+      <p className="font-ui text-[14.5px] leading-[1.74] text-[rgb(var(--magicks-ink-rgb)/0.52)] md:text-[15px]">
         {children}
       </p>
     </div>

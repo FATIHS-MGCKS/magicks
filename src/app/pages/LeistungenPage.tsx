@@ -427,8 +427,8 @@ export default function LeistungenPage() {
       /* ——— Hero camera push ——— */
       if (heroCopy && heroSection) {
         gsap.to(heroCopy, {
-          yPercent: -6,
-          opacity: 0.44,
+          yPercent: -4,
+          opacity: 0.58,
           ease: "none",
           scrollTrigger: {
             trigger: heroSection,
@@ -458,11 +458,11 @@ export default function LeistungenPage() {
       presenceEnvelope(reveals, {
         start: "top 92%",
         end: "bottom 10%",
-        yFrom: 22,
-        yTo: -14,
-        blur: 4,
-        opacityFloor: 0,
-        holdRatio: 0.48,
+        yFrom: 18,
+        yTo: -10,
+        blur: 3.2,
+        opacityFloor: 0.2,
+        holdRatio: 0.56,
         scrub: 0.9,
       });
 
@@ -503,10 +503,11 @@ export default function LeistungenPage() {
         presenceEnvelope(plate as Element, {
           start: "top 86%",
           end: "bottom 14%",
-          yFrom: 20,
-          yTo: -14,
-          blur: 4,
-          holdRatio: 0.54,
+          yFrom: 16,
+          yTo: -10,
+          blur: 3.2,
+          opacityFloor: 0.2,
+          holdRatio: 0.58,
           scrub: 0.95,
         });
 
@@ -603,9 +604,9 @@ export default function LeistungenPage() {
         // Line-by-line presence, driven by the section as a whole so
         // each line reads in sequence rather than snapping together.
         gsap.set(pullLines, {
-          yPercent: 26,
-          opacity: 0,
-          filter: "blur(6px)",
+          yPercent: 20,
+          opacity: 0.16,
+          filter: "blur(4px)",
         });
         gsap.to(pullLines, {
           yPercent: 0,
@@ -624,9 +625,9 @@ export default function LeistungenPage() {
 
         // Release on exit — gentle, symmetric.
         gsap.to(pullLines, {
-          opacity: 0.22,
-          filter: "blur(5px)",
-          yPercent: -16,
+          opacity: 0.42,
+          filter: "blur(2.8px)",
+          yPercent: -10,
           ease: "none",
           stagger: 0.08,
           scrollTrigger: {
@@ -668,9 +669,9 @@ export default function LeistungenPage() {
 
         // Lines lift into focus with the section's entry zone.
         gsap.set([...finalLineA, ...finalLineB], {
-          yPercent: 36,
-          opacity: 0,
-          filter: "blur(6px)",
+          yPercent: 24,
+          opacity: 0.16,
+          filter: "blur(4px)",
         });
         gsap.to([...finalLineA, ...finalLineB], {
           yPercent: 0,
@@ -705,7 +706,7 @@ export default function LeistungenPage() {
 
         // CTA gathers presence — restrained, no springy scale-up.
         if (finalCta) {
-          gsap.set(finalCta, { opacity: 0, y: 16 });
+          gsap.set(finalCta, { opacity: 0.18, y: 12 });
           gsap.to(finalCta, {
             opacity: 1,
             y: 0,
@@ -726,8 +727,8 @@ export default function LeistungenPage() {
             trigger: finalSection,
             start: "top 58%",
             end: "top 22%",
-            blur: 3,
-            opacityFloor: 0.22,
+            blur: 2.4,
+            opacityFloor: 0.32,
             scrub: 1.0,
           });
         }
@@ -743,7 +744,7 @@ export default function LeistungenPage() {
 
       <main
         ref={rootRef}
-        className="relative bg-[#0A0A0A] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative bg-[var(--magicks-bg-base)] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
       >
         {/* =========================================================
            HERO — register index composition
@@ -985,7 +986,7 @@ export default function LeistungenPage() {
            Rendered as an editorial sequence. Each plate alternates
            anchor (left / right) to build a zigzag reading rhythm.
         ========================================================= */}
-        <section className="relative bg-[#09090A]">
+        <section className="relative bg-[var(--magicks-bg-elevated)]">
           {/*
            * A shared top/bottom frame — hairline rails with centered
            * register folio. Frames the 4 plates as one editorial
@@ -1074,6 +1075,31 @@ export default function LeistungenPage() {
                   anchor={plate.anchor}
                   hook={plate.hook}
                 />
+                {i === 0 && (
+                  <div className="px-5 sm:px-8 md:px-12 lg:px-16">
+                    <div className="layout-max">
+                      <div
+                        data-leis-reveal
+                        className="mx-auto max-w-[52rem] border-t border-white/[0.14] pb-5 pt-5 sm:pb-7 sm:pt-6"
+                      >
+                        <Link
+                          to="/website-starter"
+                          className="group inline-flex items-baseline gap-2 text-[14px] text-white/78 no-underline sm:text-[14.5px]"
+                        >
+                          <span className="font-ui underline decoration-white/24 decoration-[0.5px] underline-offset-[5px] transition-[text-decoration-color] duration-[620ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:decoration-white/78">
+                            Noch keine Website? Zum Website Starter
+                          </span>
+                          <span
+                            aria-hidden
+                            className="font-instrument text-[1.05em] italic text-white/70 transition-transform duration-[560ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[2px]"
+                          >
+                            ↗︎
+                          </span>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {i < PLATES.length - 1 && (
                   <div aria-hidden className="px-5 sm:px-8 md:px-12 lg:px-16">
                     <div className="layout-max">
@@ -1124,7 +1150,7 @@ export default function LeistungenPage() {
            lighter four-up grid (smaller folios, thinner rules) so
            it never reads like a fifth main service block.
         ========================================================= */}
-        <section className="relative bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div className="layout-max">
             <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
               <div data-leis-reveal className="md:pt-2">
@@ -1311,7 +1337,7 @@ export default function LeistungenPage() {
            studio's statement of position rather than a caption /
            body split.
         ========================================================= */}
-        <section className="relative bg-[#09090A] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-48 lg:px-16 lg:py-56">
+        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-48 lg:px-16 lg:py-56">
           <div className="layout-max">
             <div className="mx-auto max-w-[58rem]">
               <div data-leis-reveal className="mb-14 flex items-center gap-5 sm:mb-20">
@@ -1363,7 +1389,7 @@ export default function LeistungenPage() {
            "Websites, die wirken. Systeme, die funktionieren.
            Automationen, die entlasten."
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 py-36 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 py-36 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.85]"
@@ -1457,7 +1483,7 @@ export default function LeistungenPage() {
            § 05 — "Nicht sicher, was davon zu deinem Projekt passt?"
            Consultative cross-link to /kontakt.
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div className="layout-max">
             <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-20 lg:gap-24">
               <div data-leis-reveal>
@@ -1536,7 +1562,7 @@ export default function LeistungenPage() {
            rail, italic display heading, native <details>/<summary>
            per item, hairline rules between answers.
         ========================================================= */}
-        <section className="relative bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div className="layout-max">
             <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
               <div data-leis-reveal className="md:pt-2">
@@ -1659,7 +1685,7 @@ export default function LeistungenPage() {
         {/* =========================================================
            FINAL CTA — register plate composition.
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
           <div aria-hidden className="section-top-rule" />
 
           {/*
@@ -1782,7 +1808,7 @@ export default function LeistungenPage() {
                     <span>Lass uns über dein Projekt sprechen</span>
                     <span
                       aria-hidden
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0A0A0A] text-white magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
                     >
                       <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.4">
                         <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />

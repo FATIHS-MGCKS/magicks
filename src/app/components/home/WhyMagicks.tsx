@@ -109,8 +109,8 @@ export function WhyMagicks() {
       // registers that the room is lit, and the lighting is alive.
       atmosphericField(atmos01, {
         trigger: root,
-        baseOpacity: 0.32,
-        peakOpacity: 1,
+        baseOpacity: 0.24,
+        peakOpacity: 0.82,
         scale: [1.04, 1.0],
         scrub: 1.3,
       });
@@ -118,8 +118,8 @@ export function WhyMagicks() {
 
       atmosphericField(atmos02, {
         trigger: root,
-        baseOpacity: 0.48,
-        peakOpacity: 0.9,
+        baseOpacity: 0.34,
+        peakOpacity: 0.76,
         scale: [1.02, 1.0],
         scrub: 1.6,
       });
@@ -127,8 +127,8 @@ export function WhyMagicks() {
 
       atmosphericField(atmos03, {
         trigger: root,
-        baseOpacity: 0.3,
-        peakOpacity: 0.75,
+        baseOpacity: 0.22,
+        peakOpacity: 0.64,
         scale: [1.03, 1.0],
         scrub: 1.8,
       });
@@ -141,8 +141,8 @@ export function WhyMagicks() {
       if (atmosShaft) {
         atmosphericField(atmosShaft, {
           trigger: root,
-          baseOpacity: 0.06,
-          peakOpacity: 0.22,
+          baseOpacity: 0.04,
+          peakOpacity: 0.16,
           scale: [1, 1],
           scrub: 1.7,
         });
@@ -273,8 +273,8 @@ export function WhyMagicks() {
           tl.to(
             line,
             {
-              yPercent: -28,
-              opacity: 0.18,
+              yPercent: -20,
+              opacity: 0.32,
               duration: exitEnd - exitStart,
               ease: "power2.in",
             },
@@ -292,7 +292,7 @@ export function WhyMagicks() {
             end: "bottom 22%",
             blur: 3,
             opacityFloor: 0.12,
-            focusOpacity: 0.78,
+            focusOpacity: 0.72,
             holdRatio: 0.46,
           });
         }
@@ -315,7 +315,7 @@ export function WhyMagicks() {
     <section
       ref={rootRef}
       id="warum"
-      className="relative overflow-hidden bg-[#090909] px-5 py-32 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64"
+      className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-32 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64"
       aria-labelledby="why-heading"
     >
       <div aria-hidden className="section-top-rule" />
@@ -327,7 +327,7 @@ export function WhyMagicks() {
         className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage:
-            "radial-gradient(ellipse 72% 44% at 50% -4%, rgba(255,255,255,0.036), transparent 62%)",
+            "radial-gradient(ellipse 72% 44% at 50% -4%, rgba(40,50,70,0.1), transparent 62%)",
         }}
       />
 
@@ -338,7 +338,7 @@ export function WhyMagicks() {
         className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage:
-            "radial-gradient(ellipse 52% 40% at 88% 86%, rgba(255,255,255,0.026), transparent 60%)",
+            "radial-gradient(ellipse 52% 40% at 88% 86%, rgba(56,68,92,0.08), transparent 60%)",
         }}
       />
 
@@ -349,7 +349,7 @@ export function WhyMagicks() {
         className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage:
-            "radial-gradient(ellipse 44% 34% at 8% 18%, rgba(255,255,255,0.018), transparent 60%)",
+            "radial-gradient(ellipse 44% 34% at 8% 18%, rgba(166,152,124,0.1), transparent 60%)",
         }}
       />
 
@@ -357,7 +357,7 @@ export function WhyMagicks() {
       <div
         data-why-atmos-band
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-[rgb(var(--magicks-line-rgb)/0.12)] to-transparent"
       />
 
       {/* Depth layer 05 — the diagonal "window shaft".
@@ -373,7 +373,7 @@ export function WhyMagicks() {
           className="absolute left-1/2 top-[-20%] h-[140%] w-[42%] -translate-x-1/2 [filter:blur(14px)] will-change-transform sm:[filter:blur(24px)] md:[filter:blur(40px)]"
           style={{
             background:
-              "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.018) 28%, rgba(255,255,255,0.045) 50%, rgba(255,255,255,0.018) 72%, transparent 100%)",
+              "linear-gradient(90deg, transparent 0%, rgba(58,70,94,0.02) 28%, rgba(58,70,94,0.07) 50%, rgba(58,70,94,0.02) 72%, transparent 100%)",
             transform: "translateX(-50%) rotate(12deg)",
           }}
         />
@@ -382,7 +382,7 @@ export function WhyMagicks() {
       {/* Depth layer 06 — gentle bottom falloff, static hand-off to About */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#070707] via-transparent to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[var(--magicks-bg-elevated)] via-transparent to-transparent"
       />
 
       <div className="relative layout-max">
@@ -394,11 +394,11 @@ export function WhyMagicks() {
           <div data-why-intro>
             <h2
               id="why-heading"
-              className="font-instrument text-[1.9rem] leading-[1.05] tracking-[-0.025em] text-white sm:text-[2.4rem] md:text-[2.95rem] lg:text-[3.3rem]"
+              className="font-instrument text-[1.95rem] leading-[1.12] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:text-[2.4rem] md:text-[2.92rem] lg:text-[3.28rem]"
             >
-              Haltung in der Arbeit. <em className="italic text-white/50">Nicht nur im Text.</em>
+              Haltung in der Arbeit. <em className="italic text-[rgb(var(--magicks-ink-rgb)/0.54)]">Nicht nur im Text.</em>
             </h2>
-            <p className="font-ui mt-8 max-w-xl text-[14.5px] leading-[1.7] text-white/50 md:mt-10 md:text-[15.5px]">
+            <p className="font-ui mt-8 max-w-xl text-[15.5px] leading-[1.76] text-[rgb(var(--magicks-ink-rgb)/0.58)] md:mt-10 md:text-[16px]">
               Vier Prinzipien geben unserer Arbeit Richtung. Sie helfen uns, Projekte bewusst
               auszuwählen, Entscheidungen klar zu treffen und digitale Lösungen zu entwickeln,
               die auch langfristig Bestand haben.
@@ -414,14 +414,14 @@ export function WhyMagicks() {
           <div
             data-why-gutter
             aria-hidden
-            className="pointer-events-none absolute inset-y-16 left-[92px] hidden w-px origin-top bg-gradient-to-b from-transparent via-white/[0.045] to-transparent will-change-[transform,opacity] md:block lg:left-[108px]"
+            className="pointer-events-none absolute inset-y-16 left-[92px] hidden w-px origin-top bg-gradient-to-b from-transparent via-[rgb(var(--magicks-line-rgb)/0.12)] to-transparent will-change-[transform,opacity] md:block lg:left-[108px]"
           />
           {PRINCIPLES.map((p, i) => (
             <li
               key={p.sup}
               data-why-row
               className={`relative grid items-start gap-x-5 gap-y-5 py-12 [grid-template-areas:'sup_sup'_'headline_note'] [grid-template-columns:minmax(0,1fr)_minmax(0,38%)] sm:gap-x-8 sm:py-16 sm:[grid-template-columns:minmax(0,1fr)_minmax(0,40%)] md:gap-x-16 md:py-24 md:[grid-template-areas:'sup_headline_note'] md:[grid-template-columns:minmax(56px,80px)_minmax(0,1fr)_minmax(220px,360px)] lg:gap-x-20 lg:py-28 ${
-                i > 0 ? "border-t border-white/[0.06]" : ""
+                i > 0 ? "border-t border-[rgb(var(--magicks-line-rgb)/0.12)]" : ""
               }`}
             >
               {/* Hanging superscript numeral.
@@ -443,9 +443,9 @@ export function WhyMagicks() {
                   two lines once a marginalia column sits next to it
                   on phone widths. */}
               <h3
-                className={`font-instrument tracking-[-0.028em] [grid-area:headline] ${
-                  p.tone === "hush" ? "text-white/82" : "text-white"
-                } text-[1.65rem] leading-[1.02] sm:text-[2.3rem] sm:leading-[1] md:text-[4rem] md:leading-[0.98] lg:text-[4.6rem] xl:text-[5.2rem]`}
+                className={`font-instrument tracking-[-0.02em] [grid-area:headline] ${
+                  p.tone === "hush" ? "text-white/78" : "text-white"
+                } text-[1.62rem] leading-[1.1] sm:text-[2.24rem] sm:leading-[1.08] md:text-[3.8rem] md:leading-[1.03] lg:text-[4.38rem] xl:text-[4.95rem]`}
               >
                 <span className="block overflow-hidden">
                   <span data-why-line className="block will-change-transform">
@@ -456,7 +456,7 @@ export function WhyMagicks() {
                   <span className="block overflow-hidden">
                     <span
                       data-why-line
-                      className={`block will-change-transform ${i % 2 === 1 ? "italic text-white/58" : ""}`}
+                      className={`block will-change-transform ${i % 2 === 1 ? "italic text-white/62" : ""}`}
                     >
                       {p.line2}
                     </span>
@@ -472,9 +472,9 @@ export function WhyMagicks() {
               <aside className="[grid-area:note] md:pt-[1.1rem]">
                 <div
                   data-why-note
-                  className="relative pl-4 before:absolute before:left-0 before:top-1 before:h-[calc(100%-8px)] before:w-px before:bg-gradient-to-b before:from-white/30 before:via-white/10 before:to-transparent"
+                  className="relative rounded-[0.85rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgba(255,252,246,0.5)] py-2.5 pl-4 pr-2.5 before:absolute before:left-0 before:top-1 before:h-[calc(100%-8px)] before:w-px before:bg-gradient-to-b before:from-[rgb(var(--magicks-line-rgb)/0.26)] before:via-[rgb(var(--magicks-line-rgb)/0.12)] before:to-transparent"
                 >
-                  <p className="font-instrument max-w-[32ch] text-[1.05rem] leading-[1.55] tracking-[-0.01em] text-white/65 will-change-[opacity,filter] sm:text-[1.15rem] sm:leading-[1.6] md:text-[1.2rem]">
+                  <p className="font-instrument max-w-[32ch] text-[1.1rem] leading-[1.68] tracking-[-0.006em] text-white/64 will-change-[opacity,filter] sm:text-[1.18rem] sm:leading-[1.7] md:text-[1.24rem]">
                     {p.note}
                   </p>
                 </div>
@@ -491,7 +491,7 @@ export function WhyMagicks() {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-52 will-change-[opacity]"
         style={{
           background:
-            "linear-gradient(180deg, transparent 0%, rgba(7,7,9,0.38) 60%, rgba(7,7,9,0.66) 100%)",
+            "linear-gradient(180deg, transparent 0%, rgba(46,56,76,0.05) 60%, rgba(46,56,76,0.12) 100%)",
         }}
       />
     </section>

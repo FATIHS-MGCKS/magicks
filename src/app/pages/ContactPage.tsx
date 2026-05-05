@@ -228,8 +228,8 @@ export default function ContactPage() {
 
         if (heroCopy) {
           gsap.to(heroCopy, {
-            yPercent: -5,
-            opacity: 0.46,
+            yPercent: -4,
+            opacity: 0.58,
             ease: "none",
             scrollTrigger: {
               trigger: heroEl,
@@ -244,7 +244,7 @@ export default function ContactPage() {
           parallaxDrift(heroTexture, {
             trigger: heroEl,
             from: 0,
-            to: -20,
+            to: -14,
             start: "top top",
             end: "bottom top",
             scrub: true,
@@ -293,10 +293,11 @@ export default function ContactPage() {
           presenceEnvelope(steps, {
             start: "top 88%",
             end: "bottom 12%",
-            yFrom: 24,
-            yTo: -14,
-            blur: 4,
-            holdRatio: 0.52,
+            yFrom: 20,
+            yTo: -10,
+            blur: 3.2,
+            opacityFloor: 0.2,
+            holdRatio: 0.56,
             stagger: 0.08,
             scrub: 0.95,
           });
@@ -313,7 +314,7 @@ export default function ContactPage() {
       const ctx = gsap.context(() => {
         const vows = gsap.utils.toArray<HTMLElement>("[data-kon-vow]");
         if (vows.length) {
-          gsap.set(vows, { opacity: 0, y: 16, filter: "blur(5px)" });
+          gsap.set(vows, { opacity: 0.18, y: 12, filter: "blur(4px)" });
           gsap.to(vows, {
             opacity: 1,
             y: 0,
@@ -331,8 +332,8 @@ export default function ContactPage() {
           // Quiet release so the stanza doesn't stay at full weight
           // after the reader has moved on.
           gsap.to(vows, {
-            opacity: 0.3,
-            filter: "blur(3px)",
+            opacity: 0.46,
+            filter: "blur(2.2px)",
             ease: "none",
             stagger: 0.04,
             scrollTrigger: {
@@ -357,7 +358,7 @@ export default function ContactPage() {
       const ctx = gsap.context(() => {
         const words = gsap.utils.toArray<HTMLElement>("[data-kon-stm-word]");
         if (words.length) {
-          gsap.set(words, { yPercent: 102, opacity: 0 });
+          gsap.set(words, { yPercent: 92, opacity: 0.16 });
           gsap.to(words, {
             yPercent: 0,
             opacity: 1,
@@ -373,7 +374,7 @@ export default function ContactPage() {
           });
           // Gentle softening on exit — the statement does not snap out.
           gsap.to(words, {
-            opacity: 0.3,
+            opacity: 0.46,
             ease: "none",
             stagger: 0.02,
             scrollTrigger: {
@@ -411,9 +412,9 @@ export default function ContactPage() {
 
         if (frontispiece) {
           gsap.set(frontispiece, {
-            opacity: 0,
-            y: 24,
-            filter: "blur(5px)",
+            opacity: 0.2,
+            y: 18,
+            filter: "blur(3.6px)",
           });
           gsap.to(frontispiece, {
             opacity: 1,
@@ -431,7 +432,7 @@ export default function ContactPage() {
         }
 
         if (form) {
-          gsap.set(form, { opacity: 0, y: 26 });
+          gsap.set(form, { opacity: 0.24, y: 18 });
           gsap.to(form, {
             opacity: 1,
             y: 0,
@@ -449,7 +450,7 @@ export default function ContactPage() {
           // floor is deliberately high — the form never feels
           // abandoned once the user moves past it.
           gsap.to(form, {
-            opacity: 0.78,
+            opacity: 0.84,
             ease: "none",
             scrollTrigger: {
               trigger: formEl,
@@ -476,7 +477,7 @@ export default function ContactPage() {
     <>
       <RouteSEO path="/kontakt" />
 
-      <main className="relative overflow-hidden bg-[#0A0A0A] text-white">
+      <main className="relative overflow-hidden bg-[var(--magicks-bg-base)] text-[var(--magicks-text-1)]">
         {/* ============================================================
            § Anfrage — Hero
            ============================================================ */}
@@ -585,7 +586,7 @@ export default function ContactPage() {
         {/* ============================================================
            § 01 — Einordnung
            ============================================================ */}
-        <section className="relative overflow-hidden bg-[#0A0A0A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-40 lg:px-16 lg:py-44">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-40 lg:px-16 lg:py-44">
           <div className="layout-max relative">
             <div className="grid gap-10 md:grid-cols-[minmax(0,0.35fr)_minmax(0,1fr)] md:gap-x-14 lg:gap-x-20">
               <div>
@@ -621,7 +622,7 @@ export default function ContactPage() {
         {/* ============================================================
            § 02 — Unterstützung (editorial register, not a bullet dump)
            ============================================================ */}
-        <section className="relative overflow-hidden bg-[#08080A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-40 lg:px-16 lg:py-44">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-40 lg:px-16 lg:py-44">
           <span aria-hidden className="section-top-rule" />
 
           <div className="layout-max relative">
@@ -716,7 +717,7 @@ export default function ContactPage() {
            ============================================================ */}
         <section
           ref={processRef}
-          className="relative overflow-hidden bg-[#0A0A0A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16 lg:py-52"
+          className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16 lg:py-52"
         >
           <ProcessTexture />
 
@@ -791,7 +792,7 @@ export default function ContactPage() {
            ============================================================ */}
         <section
           ref={expectRef}
-          className="relative overflow-hidden bg-[#08080A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16 lg:py-52"
+          className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16 lg:py-52"
         >
           <span aria-hidden className="section-top-rule" />
 
@@ -847,7 +848,7 @@ export default function ContactPage() {
            same pattern; centering it differentiates the beat and sets
            up the ceremonial pivot below.
            ============================================================ */}
-        <section className="relative overflow-hidden bg-[#0A0A0A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-40 lg:px-16 lg:py-44">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-40 lg:px-16 lg:py-44">
           <div className="layout-max relative">
             <div className="mx-auto max-w-[50rem] text-center">
               <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/42 sm:text-[10.5px]">
@@ -879,7 +880,7 @@ export default function ContactPage() {
            ============================================================ */}
         <section
           ref={statementRef}
-          className="relative overflow-hidden bg-[#070708] px-5 py-32 sm:px-8 sm:py-44 md:px-12 md:py-52 lg:px-16 lg:py-[14rem]"
+          className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 py-32 sm:px-8 sm:py-44 md:px-12 md:py-52 lg:px-16 lg:py-[14rem]"
         >
           <StatementTexture />
           <div className="layout-max relative">
@@ -935,7 +936,7 @@ export default function ContactPage() {
            ============================================================ */}
         <section
           ref={formRef}
-          className="relative overflow-hidden bg-[#08080A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16 lg:py-52"
+          className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16 lg:py-52"
         >
           <span aria-hidden className="section-top-rule" />
           <FormTexture />
@@ -954,14 +955,14 @@ export default function ContactPage() {
                 Erzähl uns, worum es <em className="italic text-white/74">geht</em>.
               </h2>
 
-              <p className="font-ui mx-auto mt-7 max-w-[36rem] text-[15.5px] leading-[1.7] text-white/68 sm:mt-8 sm:text-[16px] md:text-[16.5px]">
+              <p className="font-ui mx-auto mt-7 max-w-[37rem] text-[15.5px] leading-[1.74] text-white/70 sm:mt-8 sm:text-[16px] md:text-[16.5px]">
                 Je klarer du dein Vorhaben beschreibst, desto gezielter können wir einschätzen, was sinnvoll ist.
                 Ganz unkompliziert reicht zum Start schon:
               </p>
 
               {/* Prompt checklist — left-aligned inside centered column so
                   it reads as a prep sheet rather than a centered list. */}
-              <ul className="mx-auto mt-10 max-w-[34rem] space-y-3 border-l border-white/[0.12] pl-5 text-left sm:mt-12 sm:space-y-[0.9rem]">
+              <ul className="mx-auto mt-10 max-w-[34rem] space-y-3 border-l border-[rgb(var(--magicks-line-rgb)/0.2)] pl-5 text-left sm:mt-12 sm:space-y-[0.9rem]">
                 {BRIEF_PROMPTS.map((prompt, i) => (
                   <li
                     key={prompt}
@@ -996,7 +997,7 @@ export default function ContactPage() {
                 so it doesn't stretch edge-to-edge, but clearly dominant. */}
             <div
               data-kon-form-container
-              className="mx-auto mt-16 max-w-[58rem] sm:mt-20 md:mt-24"
+              className="mx-auto mt-16 max-w-[58rem] rounded-[1.1rem] border border-[rgb(var(--magicks-line-rgb)/0.2)] bg-[linear-gradient(160deg,rgba(255,255,255,0.72),rgba(255,255,255,0.5))] px-4 py-5 shadow-[0_20px_58px_rgba(20,24,36,0.08)] sm:mt-20 sm:px-6 sm:py-7 md:mt-24 md:px-8 md:py-9"
             >
               <ProjectIntakeForm />
             </div>
@@ -1006,7 +1007,7 @@ export default function ContactPage() {
         {/* ============================================================
            § Direkt — alternative contact
            ============================================================ */}
-        <section className="relative overflow-hidden bg-[#0A0A0A] px-5 py-24 sm:px-8 sm:py-28 md:px-12 md:py-32 lg:px-16 lg:py-36">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-24 sm:px-8 sm:py-28 md:px-12 md:py-32 lg:px-16 lg:py-36">
           <span aria-hidden className="section-top-rule" />
 
           <div className="layout-max relative">
@@ -1025,7 +1026,7 @@ export default function ContactPage() {
                 </p>
               </div>
 
-              <div className="relative border-t border-white/[0.14] pt-8 md:border-l md:border-t-0 md:pl-10 md:pt-2 lg:pl-14">
+              <div className="relative border-t border-[rgb(var(--magicks-line-rgb)/0.2)] pt-8 md:border-l md:border-t-0 md:pl-10 md:pt-2 lg:pl-14">
                 <a
                   href="mailto:hello@magicks.de"
                   className="group inline-flex flex-col gap-3 no-underline"
@@ -1062,7 +1063,7 @@ export default function ContactPage() {
            secondary index. This reads as "main way out, or direct
            entries" rather than a flat list of five equal links.
            ============================================================ */}
-        <section className="relative overflow-hidden bg-[#08080A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-40 lg:px-16 lg:py-44">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-40 lg:px-16 lg:py-44">
           <span aria-hidden className="section-top-rule" />
 
           <div className="layout-max relative">
@@ -1145,7 +1146,7 @@ export default function ContactPage() {
         {/* ============================================================
            § End — final CTA
            ============================================================ */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 pt-28 pb-24 sm:px-8 sm:pt-36 sm:pb-28 md:px-12 md:pt-44 md:pb-32 lg:px-16 lg:pt-52 lg:pb-36">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pt-28 pb-24 sm:px-8 sm:pt-36 sm:pb-28 md:px-12 md:pt-44 md:pb-32 lg:px-16 lg:pt-52 lg:pb-36">
           <EndTexture />
 
           <div className="layout-max relative">

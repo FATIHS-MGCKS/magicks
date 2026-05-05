@@ -82,7 +82,7 @@ export function ServicePageShell(props: ServicePageShellProps) {
   } = props;
 
   return (
-    <main className="relative bg-[#0A0A0A] pb-24 pt-[7rem] sm:pb-28 sm:pt-[8rem] md:pb-36 md:pt-[9rem] lg:pb-44">
+    <main className="relative bg-[var(--magicks-bg-base)] pb-24 pt-[7rem] sm:pb-28 sm:pt-[8rem] md:pb-36 md:pt-[9rem] lg:pb-44">
       {/* Hero */}
       <section className="relative px-5 pb-20 sm:px-8 sm:pb-24 md:px-12 md:pb-28 lg:px-16">
         <div className="layout-max">
@@ -91,15 +91,15 @@ export function ServicePageShell(props: ServicePageShellProps) {
               <ChapterMarker num={chapter.num} label={chapter.label} />
             </div>
 
-            <p className="font-mono mb-5 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/50 sm:text-[10.5px]">
+            <p className="font-mono mb-5 text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/50 sm:text-[11px] sm:tracking-[0.22em]">
               {eyebrow}
             </p>
 
-            <h1 className="font-instrument text-[2.1rem] leading-[1.02] tracking-[-0.035em] text-white sm:text-[2.8rem] md:text-[3.4rem] lg:text-[3.9rem] xl:text-[4.3rem]">
+            <h1 className="font-instrument text-[2.1rem] leading-[1.05] tracking-[-0.03em] text-white sm:text-[2.8rem] md:text-[3.4rem] lg:text-[3.9rem] xl:text-[4.3rem]">
               {h1}
             </h1>
 
-            <p className="font-ui mt-8 max-w-[46rem] text-[15px] leading-[1.68] text-white/60 sm:mt-10 md:text-[17px] md:leading-[1.65]">
+            <p className="font-ui mt-8 max-w-[46rem] text-[15.5px] leading-[1.74] text-white/60 sm:mt-10 md:text-[17.5px] md:leading-[1.72]">
               {lead}
             </p>
           </div>
@@ -115,7 +115,7 @@ export function ServicePageShell(props: ServicePageShellProps) {
               <span aria-hidden className="block font-instrument text-[6rem] leading-[0.5] text-white/16 sm:text-[8rem]">
                 “
               </span>
-              <p className="font-instrument mt-4 text-[1.45rem] leading-[1.35] tracking-[-0.015em] text-white sm:text-[1.7rem] md:text-[2rem] md:leading-[1.3]">
+              <p className="font-instrument mt-4 text-[1.45rem] leading-[1.4] tracking-[-0.012em] text-white sm:text-[1.7rem] md:text-[2rem] md:leading-[1.36]">
                 {positioning}
               </p>
             </blockquote>
@@ -129,18 +129,18 @@ export function ServicePageShell(props: ServicePageShellProps) {
         <div className="layout-max">
           <div className="grid gap-10 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20">
             <div className="md:pt-2">
-              <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/46">
+              <p className="font-mono text-[10.75px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 sm:tracking-[0.22em]">
                 Enthalten
               </p>
             </div>
 
             <div>
-              <h2 className="font-instrument text-[1.7rem] leading-[1.1] tracking-[-0.025em] text-white sm:text-[2.1rem] md:text-[2.6rem]">
+              <h2 className="font-instrument text-[1.78rem] leading-[1.14] tracking-[-0.022em] text-white sm:text-[2.2rem] md:text-[2.68rem]">
                 Was <em className="italic text-white/58">Teil der Arbeit</em> ist.
               </h2>
 
               {includesIntro ? (
-                <p className="font-ui mt-6 max-w-xl text-[14.5px] leading-[1.68] text-white/55 md:text-[15.5px]">
+                <p className="font-ui mt-6 max-w-xl text-[15px] leading-[1.72] text-white/55 md:text-[16px]">
                   {includesIntro}
                 </p>
               ) : null}
@@ -150,14 +150,14 @@ export function ServicePageShell(props: ServicePageShellProps) {
                   <li key={item.title} className="relative pl-10 sm:pl-12">
                     <span
                       aria-hidden
-                      className="font-mono absolute left-0 top-[0.2rem] text-[11px] font-medium leading-none tracking-[0.26em] text-white/38"
+                      className="font-mono absolute left-0 top-[0.2rem] text-[11.25px] font-medium leading-none tracking-[0.18em] text-white/38"
                     >
                       {String(i + 1).padStart(2, "0")}
                     </span>
-                    <h3 className="font-instrument text-[1.2rem] leading-[1.2] tracking-[-0.015em] text-white md:text-[1.3rem]">
+                    <h3 className="font-instrument text-[1.22rem] leading-[1.24] tracking-[-0.012em] text-white md:text-[1.34rem]">
                       {item.title}
                     </h3>
-                    <p className="font-ui mt-2 text-[14px] leading-[1.6] text-white/52 md:text-[14.5px]">
+                    <p className="font-ui mt-2 text-[14.5px] leading-[1.68] text-white/52 md:text-[15px]">
                       {item.body}
                     </p>
                   </li>
@@ -174,23 +174,23 @@ export function ServicePageShell(props: ServicePageShellProps) {
         <div className="layout-max">
           <div className="grid gap-10 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20">
             <div className="md:pt-2">
-              <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/46">
+              <p className="font-mono text-[10.75px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 sm:tracking-[0.22em]">
                 Für wen
               </p>
             </div>
 
             <div>
-              <h2 className="font-instrument text-[1.7rem] leading-[1.1] tracking-[-0.025em] text-white sm:text-[2.1rem] md:text-[2.6rem]">
+              <h2 className="font-instrument text-[1.78rem] leading-[1.14] tracking-[-0.022em] text-white sm:text-[2.2rem] md:text-[2.68rem]">
                 Wer davon am meisten <em className="italic text-white/58">profitiert</em>.
               </h2>
 
               <ul className="mt-10 space-y-6 border-t border-white/[0.06] md:mt-12">
                 {audience.map((item) => (
                   <li key={item.title} className="border-b border-white/[0.06] py-5 md:py-7">
-                    <h3 className="font-instrument text-[1.15rem] leading-[1.22] tracking-[-0.01em] text-white md:text-[1.28rem]">
+                    <h3 className="font-instrument text-[1.18rem] leading-[1.26] tracking-[-0.008em] text-white md:text-[1.32rem]">
                       {item.title}
                     </h3>
-                    <p className="font-ui mt-2 max-w-2xl text-[14px] leading-[1.65] text-white/56 md:text-[15px]">
+                    <p className="font-ui mt-2 max-w-2xl text-[14.5px] leading-[1.7] text-white/56 md:text-[15.5px]">
                       {item.body}
                     </p>
                   </li>
@@ -207,27 +207,27 @@ export function ServicePageShell(props: ServicePageShellProps) {
         <div className="layout-max">
           <div className="grid gap-10 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20">
             <div className="md:pt-2">
-              <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/46">
+              <p className="font-mono text-[10.75px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 sm:tracking-[0.22em]">
                 Herangehensweise
               </p>
             </div>
 
             <div>
-              <h2 className="font-instrument text-[1.7rem] leading-[1.1] tracking-[-0.025em] text-white sm:text-[2.1rem] md:text-[2.6rem]">
+              <h2 className="font-instrument text-[1.78rem] leading-[1.14] tracking-[-0.022em] text-white sm:text-[2.2rem] md:text-[2.68rem]">
                 Wie MAGICKS es <em className="italic text-white/58">angeht</em>.
               </h2>
 
               <ol className="mt-10 space-y-7 md:mt-12 md:space-y-8">
                 {approach.map((item, i) => (
                   <li key={item.title} className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-5 md:gap-7">
-                    <span className="font-mono text-[11px] font-medium leading-none tracking-[0.26em] text-white/45 md:text-[12px]">
+                    <span className="font-mono text-[11.25px] font-medium leading-none tracking-[0.18em] text-white/45 md:text-[12px]">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <div>
-                      <h3 className="font-instrument text-[1.2rem] leading-[1.22] tracking-[-0.015em] text-white md:text-[1.32rem]">
+                      <h3 className="font-instrument text-[1.22rem] leading-[1.26] tracking-[-0.012em] text-white md:text-[1.34rem]">
                         {item.title}
                       </h3>
-                      <p className="font-ui mt-2 max-w-xl text-[14px] leading-[1.65] text-white/55 md:text-[15px]">
+                      <p className="font-ui mt-2 max-w-xl text-[14.5px] leading-[1.7] text-white/55 md:text-[15.5px]">
                         {item.body}
                       </p>
                     </div>
@@ -236,7 +236,7 @@ export function ServicePageShell(props: ServicePageShellProps) {
               </ol>
 
               {closing ? (
-                <p className="font-ui mt-14 max-w-[44rem] text-[15px] leading-[1.7] text-white/58 md:text-[16px]">
+                <p className="font-ui mt-14 max-w-[44rem] text-[15.5px] leading-[1.74] text-white/58 md:text-[16.5px]">
                   {closing}
                 </p>
               ) : null}
@@ -251,22 +251,22 @@ export function ServicePageShell(props: ServicePageShellProps) {
         <div className="layout-max">
           <div className="grid items-center gap-8 rounded-[1rem] border border-white/[0.08] bg-white/[0.015] px-7 py-10 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-14 sm:px-10 sm:py-14 md:px-14 md:py-16">
             <div className="max-w-[42rem]">
-              <h2 className="font-instrument text-[1.75rem] leading-[1.05] tracking-[-0.03em] text-white sm:text-[2.1rem] md:text-[2.45rem]">
+              <h2 className="font-instrument text-[1.78rem] leading-[1.08] tracking-[-0.026em] text-white sm:text-[2.16rem] md:text-[2.52rem]">
                 {ctaHeading}
               </h2>
-              <p className="font-ui mt-5 text-[14.5px] leading-[1.7] text-white/58 md:text-[15.5px]">
+              <p className="font-ui mt-5 text-[15px] leading-[1.74] text-white/58 md:text-[16px]">
                 {ctaCopy}
               </p>
             </div>
 
             <Link
               to={ctaHref}
-              className="group inline-flex shrink-0 items-center gap-3 self-start rounded-full border border-white/22 bg-white px-6 py-3.5 text-[14px] font-medium tracking-[-0.005em] text-[#0A0A0A] no-underline shadow-[0_22px_52px_-28px_rgba(0,0,0,0.85)] magicks-duration-hover magicks-ease-out transition-[transform,box-shadow] hover:-translate-y-[1px] hover:shadow-[0_30px_72px_-26px_rgba(0,0,0,0.95)] active:translate-y-0 active:scale-[0.985] sm:text-[15px] md:text-[16px]"
+              className="group inline-flex shrink-0 items-center gap-3 self-start rounded-full border border-[rgb(var(--magicks-line-rgb)/0.22)] bg-[var(--magicks-ink-strong)] px-6 py-3.5 text-[14.5px] font-medium tracking-[0.001em] text-[var(--magicks-bg-lifted)] no-underline shadow-[0_22px_52px_-28px_rgba(20,28,44,0.48)] magicks-duration-hover magicks-ease-out transition-[transform,box-shadow] hover:-translate-y-[1px] hover:shadow-[0_30px_72px_-26px_rgba(20,28,44,0.62)] active:translate-y-0 active:scale-[0.985] sm:text-[15.5px] md:text-[16.5px]"
             >
               <span>{ctaLabel}</span>
               <span
                 aria-hidden
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0A0A0A] text-white magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--magicks-bg-lifted)] text-[var(--magicks-ink-strong)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
               >
                 <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.4">
                   <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />
@@ -282,7 +282,7 @@ export function ServicePageShell(props: ServicePageShellProps) {
         <section className="relative px-5 pb-0 pt-8 sm:px-8 md:px-12 lg:px-16">
           <div className="layout-max">
             <div className="border-t border-white/[0.06] pt-12 md:pt-16">
-              <p className="font-mono mb-10 text-[10.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 md:mb-14">
+              <p className="font-mono mb-10 text-[10.75px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 md:mb-14 sm:tracking-[0.22em]">
                 Verwandte Leistungen
               </p>
 
@@ -294,17 +294,17 @@ export function ServicePageShell(props: ServicePageShellProps) {
                       className="group block border-b border-white/[0.06] py-5 no-underline md:py-6"
                     >
                       <div className="flex items-baseline justify-between gap-6">
-                        <h3 className="font-instrument text-[1.2rem] leading-[1.22] tracking-[-0.015em] text-white magicks-duration-hover magicks-ease-out transition-colors group-hover:text-white md:text-[1.32rem]">
+                        <h3 className="font-instrument text-[1.22rem] leading-[1.24] tracking-[-0.012em] text-white magicks-duration-hover magicks-ease-out transition-colors group-hover:text-white md:text-[1.34rem]">
                           {r.label}
                         </h3>
                         <span
                           aria-hidden
-                          className="font-mono shrink-0 text-[11px] font-medium uppercase leading-none tracking-[0.28em] text-white/38 magicks-duration-hover magicks-ease-out transition-colors group-hover:text-white/72"
+                          className="font-mono shrink-0 text-[11.25px] font-medium uppercase leading-none tracking-[0.18em] text-white/38 magicks-duration-hover magicks-ease-out transition-colors group-hover:text-white/72"
                         >
                           Ansehen →
                         </span>
                       </div>
-                      <p className="font-ui mt-2 max-w-2xl text-[13.5px] leading-[1.62] text-white/50 md:text-[14.5px]">
+                      <p className="font-ui mt-2 max-w-2xl text-[14px] leading-[1.68] text-white/50 md:text-[15px]">
                         {r.description}
                       </p>
                     </Link>

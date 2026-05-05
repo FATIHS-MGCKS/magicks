@@ -57,11 +57,11 @@ export function Hero() {
         return;
       }
 
-      // Pre-roll: the entire stage is black. Overlays, video and type arrive together.
-      gsap.set(wipe, { opacity: 1 });
-      gsap.set(vignette, { opacity: 0 });
-      gsap.set(bottomFade, { opacity: 0 });
-      gsap.set(credit, { opacity: 0, x: -6 });
+      // Pre-roll: a light editorial veil that quickly clears into focus.
+      gsap.set(wipe, { opacity: 0.82 });
+      gsap.set(vignette, { opacity: 0.16 });
+      gsap.set(bottomFade, { opacity: 0.14 });
+      gsap.set(credit, { opacity: 0, x: -4 });
       // Letter-spacing initial value must stay inside the "same-wrap" zone so
       // the animated settlement never crosses a line-wrap threshold. Measured
       // at 320 / 375 / 390 / 768 / 1024 / 1440 px the H1 stays on 3 lines for
@@ -77,11 +77,11 @@ export function Hero() {
       // so visually the subline reveals *with* the wipe — but to the browser
       // (and to LCP), the H2 text is considered rendered immediately,
       // eliminating the prior ~1.4 s LCP delay on the homepage.
-      gsap.set(subline, { opacity: 0.62, y: 0 });
-      gsap.set(cta, { opacity: 0, y: 14 });
+      gsap.set(subline, { opacity: 0.66, y: 0 });
+      gsap.set(cta, { opacity: 0, y: 12 });
       gsap.set(ctaRule, { scaleX: 0, transformOrigin: "left center" });
       gsap.set(cue, { opacity: 0 });
-      gsap.set(cueLabel, { opacity: 0, y: 6 });
+      gsap.set(cueLabel, { opacity: 0, y: 4 });
 
       const tl = gsap.timeline({
         delay: 0.25,
@@ -89,9 +89,9 @@ export function Hero() {
       });
 
       // Pre-roll wipe dissolves — overlays fade in with it.
-      tl.to(wipe, { opacity: 0, duration: 1.4, ease: "power2.inOut" }, 0)
-        .to(vignette, { opacity: 1, duration: 2.0, ease: "power2.out" }, 0.15)
-        .to(bottomFade, { opacity: 1, duration: 2.0, ease: "power2.out" }, 0.15);
+      tl.to(wipe, { opacity: 0, duration: 1.12, ease: "power2.inOut" }, 0)
+        .to(vignette, { opacity: 0.72, duration: 1.7, ease: "power2.out" }, 0.1)
+        .to(bottomFade, { opacity: 0.64, duration: 1.8, ease: "power2.out" }, 0.1);
 
       // Headline — mask-reveal with a slow letter-spacing settlement.
       // Line B holds slightly longer than line A for cadence.
@@ -100,8 +100,8 @@ export function Hero() {
         {
           yPercent: 0,
           opacity: 1,
-          duration: 1.3,
-          stagger: 0.085,
+          duration: 1.2,
+          stagger: 0.078,
           ease: "power4.out",
         },
         0.55,
@@ -121,8 +121,8 @@ export function Hero() {
           {
             yPercent: 0,
             opacity: 1,
-            duration: 1.4,
-            stagger: 0.1,
+          duration: 1.28,
+          stagger: 0.09,
             ease: "power4.out",
           },
           0.92,
@@ -139,7 +139,7 @@ export function Hero() {
         );
 
       // Credit glides in from the edge once the headline has anchored.
-      tl.to(credit, { opacity: 0.52, x: 0, duration: 1.35, ease: "power2.out" }, 1.25);
+      tl.to(credit, { opacity: 0.48, x: 0, duration: 1.2, ease: "power2.out" }, 1.2);
 
       // Subline was previously tweened from opacity:0 → 0.62 at t=1.45.
       // It now starts at its final state (see `gsap.set` above) so the H2
@@ -148,12 +148,12 @@ export function Hero() {
       // until ~t=1.4, preserving the cinematic entry.
 
       // CTA arrives last — text first, then the underline draws.
-      tl.to(cta, { opacity: 1, y: 0, duration: 1.1 }, 1.7)
-        .to(ctaRule, { scaleX: 1, duration: 1.25, ease: "power2.inOut" }, 1.85);
+      tl.to(cta, { opacity: 1, y: 0, duration: 0.95 }, 1.62)
+        .to(ctaRule, { scaleX: 1, duration: 1.1, ease: "power2.inOut" }, 1.76);
 
       // Scroll cue surfaces quietly.
-      tl.to(cue, { opacity: 1, duration: 1.0, ease: "power2.out" }, 2.25)
-        .to(cueLabel, { opacity: 0.6, y: 0, duration: 0.9 }, 2.4);
+      tl.to(cue, { opacity: 1, duration: 0.9, ease: "power2.out" }, 2.05)
+        .to(cueLabel, { opacity: 0.56, y: 0, duration: 0.78 }, 2.18);
 
       // ─── Scroll-coupled cinematic step-back ──────────────────────────
       // The hero never "snaps" away. Instead it recedes in layered depth
@@ -164,9 +164,9 @@ export function Hero() {
       // 01 — video plane gently pushes and drifts. `scrub: 1.1` adds a
       // film-magazine inertia so the push never feels UI-like.
       gsap.to(scaler, {
-        scale: 1.14,
-        yPercent: -5,
-        filter: "blur(2px)",
+        scale: 1.08,
+        yPercent: -3,
+        filter: "blur(1.2px)",
         ease: "none",
         scrollTrigger: {
           trigger: root,
@@ -183,7 +183,7 @@ export function Hero() {
         depth,
         { opacity: 0 },
         {
-          opacity: 1,
+          opacity: 0.62,
           ease: "none",
           scrollTrigger: {
             trigger: root,
@@ -198,9 +198,9 @@ export function Hero() {
       // eye off the hero and priming the next section.
       gsap.fromTo(
         vignette,
-        { opacity: 1 },
+        { opacity: 0.94 },
         {
-          opacity: 1.25,
+          opacity: 1.04,
           ease: "none",
           scrollTrigger: {
             trigger: root,
@@ -214,14 +214,14 @@ export function Hero() {
       // 04 — copy exhale: lifts, softens, and loses contrast before the
       // frame goes. No opacity wall — blur+y carries most of the farewell.
       gsap.to(copy, {
-        yPercent: -14,
-        opacity: 0,
-        filter: "blur(3px)",
+        yPercent: -10,
+        opacity: 0.26,
+        filter: "blur(2.2px)",
         ease: "none",
         scrollTrigger: {
           trigger: root,
           start: "top top",
-          end: "bottom 8%",
+          end: "bottom 12%",
           scrub: 0.9,
         },
       });
@@ -234,7 +234,7 @@ export function Hero() {
         scrollTrigger: {
           trigger: root,
           start: "top top",
-          end: "bottom 72%",
+          end: "bottom 78%",
           scrub: 0.6,
         },
       });
@@ -246,7 +246,7 @@ export function Hero() {
   return (
     <section
       ref={rootRef}
-      className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-[#070708]"
+      className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-[var(--magicks-bg-base)]"
       aria-labelledby="hero-heading"
     >
       {/* Camera push layer */}
@@ -260,10 +260,14 @@ export function Hero() {
 
       {/* Overlay stack — four deliberate layers, each a different job */}
 
-      {/* 1 — global color grade: pulls the whole frame 18% darker + adds a cool tone */}
+      {/* 1 — global color grade: soft ivory wash for light-theme legibility */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[rgba(8,8,10,0.22)]"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(248,245,238,0.11) 0%, rgba(245,241,232,0.08) 52%, rgba(241,236,227,0.12) 100%)",
+        }}
       />
 
       {/* 2 — edge vignette: keeps the eye centered, feels like a film-gate */}
@@ -273,7 +277,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 82% 62% at 50% 52%, transparent 0%, transparent 42%, rgba(7,7,8,0.52) 92%, rgba(7,7,8,0.78) 100%)",
+            "radial-gradient(ellipse 84% 64% at 50% 52%, transparent 0%, transparent 43%, rgba(236,230,220,0.38) 90%, rgba(232,225,214,0.56) 100%)",
         }}
       />
 
@@ -283,7 +287,17 @@ export function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(100deg, rgba(7,7,8,0.55) 0%, rgba(7,7,8,0.22) 28%, transparent 58%)",
+            "linear-gradient(102deg, rgba(249,246,239,0.58) 0%, rgba(247,243,235,0.34) 34%, rgba(247,243,235,0.1) 66%, transparent 100%)",
+        }}
+      />
+
+      {/* 3b — center reading bed: keeps copy readable across brighter frames */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-[20%] h-[52%] w-[min(92vw,1120px)] -translate-x-1/2 rounded-[2.25rem]"
+        style={{
+          background:
+            "radial-gradient(ellipse 76% 66% at 50% 50%, rgba(255,255,255,0.26) 0%, rgba(248,245,238,0.1) 56%, transparent 100%)",
         }}
       />
 
@@ -294,7 +308,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%]"
         style={{
           background:
-            "linear-gradient(180deg, transparent 0%, rgba(7,7,8,0.4) 42%, rgba(7,7,8,0.78) 78%, #070708 100%)",
+            "linear-gradient(180deg, transparent 0%, rgba(239,234,224,0.18) 36%, rgba(236,231,221,0.44) 72%, var(--magicks-bg-lifted) 100%)",
         }}
       />
 
@@ -308,7 +322,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-0 opacity-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(7,7,9,0.12) 0%, rgba(7,7,9,0.32) 50%, rgba(7,7,9,0.58) 100%)",
+            "linear-gradient(180deg, rgba(34,44,62,0.01) 0%, rgba(34,44,62,0.05) 52%, rgba(34,44,62,0.09) 100%)",
         }}
       />
 
@@ -316,7 +330,7 @@ export function Hero() {
       <div
         data-hero-wipe
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[#070708]"
+        className="pointer-events-none absolute inset-0 bg-[var(--magicks-bg-base)]"
       />
 
       {/* Left-edge cinema credit */}
@@ -332,13 +346,13 @@ export function Hero() {
       {/* Main content column */}
       <div
         data-hero-copy
-        className="relative z-10 flex flex-1 items-center px-6 pb-28 pt-24 sm:px-10 sm:pb-32 md:px-20 md:pb-36 md:pt-32 lg:px-20 lg:pb-40 xl:px-28"
+        className="relative z-10 flex flex-1 items-center px-6 pb-[7.5rem] pt-24 sm:px-10 sm:pb-[8.5rem] md:px-20 md:pb-[9.5rem] md:pt-32 lg:px-20 lg:pb-[10.5rem] xl:px-28"
       >
         <div className="layout-max w-full">
           <div className="mx-auto max-w-[min(46rem,84vw)] text-center md:max-w-[min(58rem,90vw)] lg:max-w-[min(68rem,88vw)] xl:max-w-[min(76rem,86vw)]">
             <h1
               id="hero-heading"
-              className="font-instrument text-[3.05rem] leading-[0.94] tracking-[-0.038em] text-white sm:text-[4.25rem] md:text-[5.5rem] lg:text-[6.55rem] xl:text-[7.5rem]"
+              className="font-instrument text-[2.95rem] leading-[1.01] tracking-[-0.028em] text-[rgb(var(--magicks-ink-rgb)/0.97)] sm:text-[4.1rem] md:text-[5.3rem] lg:text-[6.25rem] xl:text-[7.05rem]"
             >
               <span className="block lg:whitespace-nowrap">
                 {LINE_A.map((w, i) => (
@@ -352,7 +366,7 @@ export function Hero() {
                   </span>
                 ))}
               </span>
-              <span className="mt-1 block italic text-white/80 sm:mt-2">
+              <span className="mt-1 block italic text-[rgb(var(--magicks-ink-rgb)/0.78)] sm:mt-2">
                 {LINE_B.map((w, i) => (
                   <span
                     key={`b-${i}`}
@@ -377,10 +391,10 @@ export function Hero() {
                 rather than three disconnected layers. */}
             <h2
               data-hero-subline
-              className="font-instrument mx-auto mt-7 max-w-[40ch] text-[15.5px] leading-[1.55] tracking-[-0.002em] text-white/82 sm:mt-9 sm:max-w-[48ch] sm:text-[17px] md:mt-11 md:max-w-[56ch] md:text-[19px] lg:max-w-[62ch] lg:text-[20.5px]"
+              className="font-instrument mx-auto mt-8 max-w-[46ch] text-[16.5px] leading-[1.68] tracking-[-0.002em] text-[rgb(var(--magicks-ink-rgb)/0.74)] sm:mt-10 sm:max-w-[54ch] sm:text-[18px] md:mt-11 md:max-w-[62ch] md:text-[20px] lg:max-w-[66ch] lg:text-[20.5px]"
             >
-              <em className="italic text-white/95 block">Technologie, die sich nach Premium anfühlt.</em>
-              <span className="block text-white/65 mt-1">Ein digitaler Eindruck, der im Gedächtnis bleibt.</span>
+              <em className="block italic text-[rgb(var(--magicks-ink-rgb)/0.94)]">Technologie, die sich nach Premium anfühlt.</em>
+              <span className="mt-1.5 block text-[rgb(var(--magicks-ink-rgb)/0.68)]">Ein digitaler Eindruck, der im Gedächtnis bleibt.</span>
             </h2>
 
             {/* Text-link CTA — magazine-style dual underline, no glass pill.
@@ -395,7 +409,7 @@ export function Hero() {
                 // baseline locks onto the label's baseline so it never
                 // drifts low on mobile. min-h-11 + py-1 keep the touch
                 // target ≥ 44 px below lg without affecting alignment.
-                className="group relative inline-flex min-h-11 items-baseline gap-3 py-1 text-[16px] font-medium tracking-[-0.005em] text-white no-underline sm:text-[17px] md:text-[18.5px] lg:min-h-0 lg:py-0"
+                className="group relative inline-flex min-h-11 items-baseline gap-3 py-1 font-ui text-[16.5px] font-medium tracking-[0.001em] text-[rgb(var(--magicks-ink-rgb)/0.9)] no-underline sm:text-[17.5px] md:text-[18.5px] lg:min-h-0 lg:py-0"
                 aria-label="Projekt besprechen"
               >
                 <span className="relative pb-3">
@@ -407,20 +421,20 @@ export function Hero() {
                   <span
                     data-hero-cta-rule
                     aria-hidden
-                    className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left bg-white/28"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left bg-[rgb(var(--magicks-line-rgb)/0.34)]"
                   />
 
                   {/* Hover sweep — draws 100% across on a long cinematic curve */}
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white/92 transition-transform duration-[920ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-[rgb(var(--magicks-ink-rgb)/0.88)] transition-transform duration-[920ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
                   />
 
                   {/* Second underline — sub-hairline below, slower, so the
                       word carries a quiet double-rule after hover settles. */}
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute inset-x-0 -bottom-[3px] block h-px origin-left scale-x-0 bg-white/30 transition-transform duration-[1180ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
+                    className="pointer-events-none absolute inset-x-0 -bottom-[3px] block h-px origin-left scale-x-0 bg-[rgb(var(--magicks-line-rgb)/0.24)] transition-transform duration-[1180ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
                   />
                 </span>
 
@@ -431,7 +445,7 @@ export function Hero() {
                   // the arrow through the system emoji font and the
                   // glyph looks different from the desktop italic
                   // serif rendering. The selector is invisible.
-                  className="font-instrument text-[1.05em] italic text-white/85 transition-transform duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[4px] group-focus-visible:-translate-y-[3px] group-focus-visible:translate-x-[4px]"
+                  className="font-instrument text-[1.05em] italic text-[rgb(var(--magicks-ink-rgb)/0.8)] transition-transform duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[4px] group-focus-visible:-translate-y-[3px] group-focus-visible:translate-x-[4px]"
                   style={{ fontVariantEmoji: "text" }}
                 >
                   {"\u2197\uFE0E"}
@@ -442,17 +456,22 @@ export function Hero() {
         </div>
       </div>
 
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[rgb(var(--magicks-line-rgb)/0.2)] to-transparent"
+      />
+
       {/* Scroll cue — thin breathing line + tiny § 00 folio */}
       <div
         aria-hidden
         className="pointer-events-none absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-3 sm:bottom-8"
       >
-        <span data-hero-cue className="relative block h-11 w-px overflow-hidden bg-white/10">
-          <span className="absolute inset-x-0 top-0 block h-1/2 bg-gradient-to-b from-white/75 to-transparent magicks-hero-cue-line" />
+        <span data-hero-cue className="relative block h-11 w-px overflow-hidden bg-[rgb(var(--magicks-line-rgb)/0.18)]">
+          <span className="absolute inset-x-0 top-0 block h-1/2 bg-gradient-to-b from-[rgb(var(--magicks-ink-rgb)/0.72)] to-transparent magicks-hero-cue-line" />
         </span>
         <span
           data-hero-cue-label
-          className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.32em] text-white/55 sm:text-[10px] sm:tracking-[0.42em]"
+          className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-ink-rgb)/0.5)] sm:text-[10.75px] sm:tracking-[0.22em]"
         >
           § 00
         </span>

@@ -102,28 +102,28 @@ function ServiceImage({ s }: { s: Service }) {
 
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-30 bg-[radial-gradient(ellipse_120%_80%_at_50%_120%,rgba(10,10,10,0.45),transparent_62%)]"
+        className="pointer-events-none absolute inset-0 z-30 bg-[radial-gradient(ellipse_120%_78%_at_50%_4%,rgba(255,255,255,0.24),transparent_64%)]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-30 bg-gradient-to-t from-[#0A0A0B]/48 via-transparent to-[#0A0A0B]/14"
+        className="pointer-events-none absolute inset-0 z-30 bg-gradient-to-t from-[rgba(28,36,52,0.24)] via-[rgba(28,36,52,0.02)] to-[rgba(255,255,255,0.2)]"
       />
 
       <div className="pointer-events-none absolute left-5 top-5 z-40 flex items-center gap-3 sm:left-6 sm:top-6">
-        <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/68 sm:text-[10.5px]">
+        <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgba(255,255,255,0.84)] sm:text-[10.75px] sm:tracking-[0.24em]">
           § {s.number}
         </span>
-        <span aria-hidden className="h-px w-7 bg-white/32" />
-        <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/58 sm:text-[10.5px]">
+        <span aria-hidden className="h-px w-7 bg-[rgba(255,255,255,0.42)]" />
+        <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgba(255,255,255,0.72)] sm:text-[10.75px] sm:tracking-[0.24em]">
           {s.kicker}
         </span>
       </div>
 
       <div className="pointer-events-none absolute bottom-5 left-5 right-5 z-40 flex items-baseline justify-between gap-4 sm:bottom-6 sm:left-6 sm:right-6">
-        <span className="font-instrument text-[14px] italic text-white/75 sm:text-[15px]">
+        <span className="font-instrument text-[14px] italic text-[rgba(255,255,255,0.84)] sm:text-[15px]">
           {s.title}
         </span>
-        <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 sm:text-[10.5px]">
+        <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.14em] text-[rgba(255,255,255,0.64)] sm:text-[10.75px] sm:tracking-[0.18em]">
           {s.metric}
         </span>
       </div>
@@ -173,10 +173,10 @@ export function Services() {
             },
             defaults: { ease: "none" },
           })
-          .to(ambient, { opacity: 0.8, duration: 0.32, ease: "power2.out" }, 0)
-          .to(ambient, { opacity: 1, duration: 0.36, ease: "none" }, 0.32)
-          .to(ambient, { opacity: 0.42, duration: 0.32, ease: "power2.in" }, 0.68);
-        parallaxDrift(ambient, { trigger: root, from: -4, to: 6, scrub: true });
+          .to(ambient, { opacity: 0.66, duration: 0.32, ease: "power2.out" }, 0)
+          .to(ambient, { opacity: 0.82, duration: 0.36, ease: "none" }, 0.32)
+          .to(ambient, { opacity: 0.38, duration: 0.32, ease: "power2.in" }, 0.68);
+        parallaxDrift(ambient, { trigger: root, from: -3, to: 4, scrub: true });
       }
 
       // ─── Section header ──────────────────────────────────────────────
@@ -197,18 +197,18 @@ export function Services() {
       if (buildParts.length > 0) {
         gsap.fromTo(
           buildParts,
-          { yPercent: 120, opacity: 0, rotateX: -60, transformOrigin: "50% 100%" },
+          { yPercent: 86, opacity: 0, rotateX: -34, transformOrigin: "50% 100%" },
           {
             yPercent: 0,
             opacity: 1,
             rotateX: 0,
-            stagger: 0.18,
+            stagger: 0.14,
             ease: "power3.out",
             scrollTrigger: {
               trigger: root,
               start: "top 85%",
-              end: "top 15%",
-              scrub: 1.5,
+              end: "top 24%",
+              scrub: 1.2,
             },
           },
         );
@@ -235,14 +235,15 @@ export function Services() {
         const nextCard = cards[i + 1];
 
         gsap.to(card, {
-          scale: 0.94,
-          opacity: 0.4,
+          scale: 0.972,
+          opacity: 0.74,
+          filter: "blur(1px)",
           ease: "none",
           scrollTrigger: {
             trigger: nextCard,
             start: "top 85%", // Start scaling when the next card comes into view
             end: "top 35%",   // Finish scaling when the next card reaches its sticky position
-            scrub: true,
+            scrub: 0.85,
           },
         });
       });
@@ -260,7 +261,7 @@ export function Services() {
     <section
       ref={rootRef}
       id="leistungen"
-      className="relative bg-[#0A0A0B] px-5 pb-28 pt-24 sm:px-8 sm:pb-36 sm:pt-28 md:px-12 md:pb-44 md:pt-36 lg:px-16"
+      className="relative bg-[var(--magicks-bg-base)] px-5 pb-28 pt-24 sm:px-8 sm:pb-36 sm:pt-28 md:px-12 md:pb-44 md:pt-36 lg:px-16"
       aria-labelledby="services-heading"
     >
       <div aria-hidden className="section-top-rule" />
@@ -274,7 +275,7 @@ export function Services() {
         className="pointer-events-none absolute inset-0 will-change-[opacity,transform]"
         style={{
           backgroundImage:
-            "radial-gradient(ellipse 60% 50% at 28% 38%, rgba(255,255,255,0.025), transparent 72%)",
+            "radial-gradient(ellipse 62% 52% at 24% 36%, rgba(34,44,64,0.1), transparent 72%), radial-gradient(ellipse 44% 36% at 78% 66%, rgba(255,255,255,0.22), transparent 78%)",
         }}
       />
 
@@ -288,7 +289,7 @@ export function Services() {
             <h2
               id="services-heading"
               data-services-headline
-              className="font-instrument text-[2rem] leading-[1.02] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.15rem] lg:text-[3.6rem]"
+              className="font-instrument text-[2rem] leading-[1.08] tracking-[-0.022em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:text-[2.5rem] md:text-[3.05rem] lg:text-[3.45rem]"
               style={{ perspective: "1000px" }}
             >
               <span className="inline-block overflow-hidden pb-1 -mb-1">
@@ -297,7 +298,7 @@ export function Services() {
               <span className="inline-block overflow-hidden pb-1 -mb-1">
                 <span data-build-part className="inline-block will-change-transform">wir</span>
               </span>{" "}
-              <em className="italic text-white/58 inline-block">
+              <em className="inline-block italic text-[rgb(var(--magicks-ink-rgb)/0.6)]">
                 {"bauen".split("").map((char, i) => (
                   <span key={i} className="inline-block overflow-hidden pb-1 -mb-1">
                     <span data-build-part className="inline-block will-change-transform">{char}</span>
@@ -310,10 +311,10 @@ export function Services() {
             </h2>
             <div
               data-services-caption
-              className="relative pl-5 before:absolute before:left-0 before:top-2 before:h-[calc(100%-16px)] before:w-px before:bg-gradient-to-b before:from-white/30 before:via-white/10 before:to-transparent"
+              className="relative pl-5 before:absolute before:left-0 before:top-2 before:h-[calc(100%-16px)] before:w-px before:bg-gradient-to-b before:from-[rgb(var(--magicks-line-rgb)/0.28)] before:via-[rgb(var(--magicks-line-rgb)/0.1)] before:to-transparent"
             >
-              <p className="font-instrument max-w-[26rem] text-[1.15rem] leading-[1.6] tracking-[-0.01em] text-white/65 md:text-[1.25rem]">
-                Vier Bereiche für digitale Arbeit, die <em className="italic text-white/90">sichtbar besser</em> wirkt und im Alltag <em className="italic text-white/90">sauber funktioniert</em> — von Websites und Konfiguratoren bis zu Web-Software und Automationen.
+              <p className="font-instrument max-w-[28rem] text-[1.2rem] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.66)] md:text-[1.26rem]">
+                Vier Bereiche für digitale Arbeit, die <em className="italic text-[rgb(var(--magicks-ink-rgb)/0.88)]">sichtbar besser</em> wirkt und im Alltag <em className="italic text-[rgb(var(--magicks-ink-rgb)/0.88)]">sauber funktioniert</em> — von Websites und Konfiguratoren bis zu Web-Software und Automationen.
               </p>
             </div>
           </div>
@@ -325,8 +326,8 @@ export function Services() {
               <article
                 key={s.slug}
                 data-service-card
-                className="sticky z-10 w-full border border-white/[0.08] rounded-3xl bg-[#0A0A0B] p-8 sm:p-10 md:p-12 origin-top will-change-[transform,opacity] shadow-[0_0_40px_rgba(0,0,0,0.5)]"
-                style={{ top: `calc(6rem + ${i * 2.5}rem)` }}
+                className="sticky z-10 w-full origin-top rounded-[1.75rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[linear-gradient(165deg,rgba(255,255,255,0.86)_0%,rgba(246,242,233,0.72)_100%)] p-8 shadow-[0_28px_72px_-46px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.8)] will-change-[transform,opacity] sm:p-10 md:p-12"
+                style={{ top: `calc(6rem + ${i * 2.4}rem)` }}
               >
                 <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-14 xl:gap-20">
                   {/* Left — Text Content */}
@@ -337,61 +338,61 @@ export function Services() {
                     {/* Lens Flare — cinematic lighting on hover */}
                     <div
                       aria-hidden
-                      className="pointer-events-none absolute left-0 top-0 h-px w-[120px] -translate-y-1/2 -translate-x-full bg-gradient-to-r from-transparent via-amber-200/80 to-transparent blur-[2px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100"
+                      className="pointer-events-none absolute left-0 top-0 h-px w-[120px] -translate-y-1/2 -translate-x-full bg-gradient-to-r from-transparent via-[rgba(255,248,236,0.9)] to-transparent blur-[2px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100"
                       style={{ mixBlendMode: "screen" }}
                     />
                     <div
                       aria-hidden
-                      className="pointer-events-none absolute left-0 top-0 h-[3px] w-[60px] -translate-y-1/2 -translate-x-full bg-gradient-to-r from-transparent via-white to-transparent blur-[4px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100"
+                      className="pointer-events-none absolute left-0 top-0 h-[3px] w-[60px] -translate-y-1/2 -translate-x-full bg-gradient-to-r from-transparent via-[rgb(var(--magicks-line-rgb)/0.62)] to-transparent blur-[4px] magicks-duration-hover magicks-ease-out transition-[opacity,transform] opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100"
                       style={{ mixBlendMode: "screen" }}
                     />
 
                     <div
                       aria-hidden
-                      className="absolute left-0 top-0 h-full w-[2px] origin-top bg-white magicks-duration-hover magicks-ease-out transition-[transform,opacity] scale-y-0 opacity-0 group-hover:scale-y-100 group-hover:opacity-100 group-focus-visible:scale-y-100 group-focus-visible:opacity-100"
+                      className="absolute left-0 top-0 h-full w-[2px] origin-top bg-[rgb(var(--magicks-line-rgb)/0.32)] magicks-duration-hover magicks-ease-out transition-[transform,opacity,background-color] scale-y-0 opacity-0 group-hover:scale-y-100 group-hover:opacity-100 group-hover:bg-[rgb(var(--magicks-line-rgb)/0.52)] group-focus-visible:scale-y-100 group-focus-visible:opacity-100 group-focus-visible:bg-[rgb(var(--magicks-line-rgb)/0.52)]"
                     />
 
                     <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-x-5 gap-y-1.5 sm:gap-x-7 md:grid-cols-[52px_minmax(0,1fr)_auto] md:gap-x-10">
-                      <span className="font-mono pt-[0.55rem] text-[12px] font-medium leading-none tracking-[0.18em] text-white/45 magicks-duration-hover magicks-ease-out transition-colors sm:text-[12px] sm:tracking-[0.28em] group-hover:text-white group-focus-visible:text-white">
+                      <span className="font-mono pt-[0.55rem] text-[12px] font-medium leading-none tracking-[0.12em] text-[rgb(var(--magicks-ink-rgb)/0.46)] magicks-duration-hover magicks-ease-out transition-colors sm:text-[12px] sm:tracking-[0.18em] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.82)] group-focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.82)]">
                         {s.number}
                       </span>
 
                       <div>
                         <div className="mb-2 flex items-center gap-3">
-                          <span className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.2em] text-white/40 magicks-duration-hover magicks-ease-out transition-colors sm:text-[10.5px] sm:tracking-[0.3em] group-hover:text-white/72 group-focus-visible:text-white/72">
+                          <span className="font-mono text-[11.25px] font-medium uppercase leading-none tracking-[0.14em] text-[rgb(var(--magicks-ink-rgb)/0.42)] magicks-duration-hover magicks-ease-out transition-colors sm:text-[11px] sm:tracking-[0.2em] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.7)] group-focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.7)]">
                             {s.kicker}
                           </span>
                           <span
                             aria-hidden
-                            className="h-px w-5 bg-white/15 magicks-duration-hover magicks-ease-out transition-[width,background-color] group-hover:w-10 group-hover:bg-white/40 group-focus-visible:w-10 group-focus-visible:bg-white/40"
+                            className="h-px w-5 bg-[rgb(var(--magicks-line-rgb)/0.2)] magicks-duration-hover magicks-ease-out transition-[width,background-color] group-hover:w-10 group-hover:bg-[rgb(var(--magicks-line-rgb)/0.42)] group-focus-visible:w-10 group-focus-visible:bg-[rgb(var(--magicks-line-rgb)/0.42)]"
                           />
                         </div>
 
-                        <h3 className="font-instrument text-[1.65rem] leading-[1.1] tracking-[-0.02em] text-white/82 magicks-duration-hover magicks-ease-out transition-colors sm:text-[2rem] md:text-[2.3rem] lg:text-[2.45rem] group-hover:text-white group-focus-visible:text-white">
+                        <h3 className="font-instrument text-[1.62rem] leading-[1.2] tracking-[-0.014em] text-[rgb(var(--magicks-ink-rgb)/0.84)] magicks-duration-hover magicks-ease-out transition-colors sm:text-[1.95rem] md:text-[2.25rem] lg:text-[2.38rem] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.95)] group-focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.95)]">
                           {s.title}
                         </h3>
 
-                        <p className="font-ui mt-3 max-w-md text-[14px] leading-[1.62] text-white/52 sm:text-[14.5px] md:mt-4 md:text-[15px]">
+                        <p className="font-ui mt-3 max-w-md text-[14.5px] leading-[1.74] text-[rgb(var(--magicks-ink-rgb)/0.58)] md:mt-4 md:text-[15px]">
                           {s.teaser}
                         </p>
 
                         {/* Inline media — mobile/tablet only */}
-                        <div className="relative mt-6 aspect-[16/10] w-full overflow-hidden rounded-[0.85rem] border border-white/[0.08] lg:hidden">
+                        <div className="relative mt-6 aspect-[16/10] w-full overflow-hidden rounded-[0.85rem] border border-[rgb(var(--magicks-line-rgb)/0.14)] bg-[var(--magicks-bg-base)] shadow-[0_20px_46px_-34px_rgba(20,28,44,0.32)] lg:hidden">
                           <ServiceImage s={s} />
                         </div>
 
-                        <span className="mt-6 inline-flex min-h-[40px] items-center gap-3 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.25em] text-white/40 magicks-duration-hover magicks-ease-out transition-colors sm:min-h-0 sm:text-[11px] sm:tracking-[0.3em] group-hover:text-white group-focus-visible:text-white">
+                        <span className="mt-6 inline-flex min-h-[40px] items-center gap-3 font-mono text-[11px] font-medium uppercase leading-none tracking-[0.16em] text-[rgb(var(--magicks-ink-rgb)/0.46)] magicks-duration-hover magicks-ease-out transition-colors sm:min-h-0 sm:text-[11.25px] sm:tracking-[0.2em] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.9)] group-focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.9)]">
                           Ansehen
                           <span
                             aria-hidden
-                            className="h-px w-5 bg-white/20 magicks-duration-hover magicks-ease-out transition-[width,background-color] group-hover:w-12 group-hover:bg-white group-focus-visible:w-12 group-focus-visible:bg-white"
+                            className="h-px w-5 bg-[rgb(var(--magicks-line-rgb)/0.26)] magicks-duration-hover magicks-ease-out transition-[width,background-color] group-hover:w-12 group-hover:bg-[rgb(var(--magicks-line-rgb)/0.56)] group-focus-visible:w-12 group-focus-visible:bg-[rgb(var(--magicks-line-rgb)/0.56)]"
                           />
                         </span>
                       </div>
 
                       <span
                         aria-hidden
-                        className="mt-[0.5rem] hidden h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-transparent text-white magicks-duration-hover magicks-ease-out transition-[background-color,border-color,transform] md:flex group-hover:-translate-y-[1px] group-hover:translate-x-[1px] group-hover:border-white/40 group-hover:bg-white/10 group-focus-visible:-translate-y-[1px] group-focus-visible:translate-x-[1px] group-focus-visible:border-white/40 group-focus-visible:bg-white/10"
+                        className="mt-[0.5rem] hidden h-8 w-8 items-center justify-center rounded-full border border-[rgb(var(--magicks-line-rgb)/0.18)] bg-transparent text-[rgb(var(--magicks-ink-rgb)/0.72)] magicks-duration-hover magicks-ease-out transition-[background-color,border-color,transform,color] md:flex group-hover:-translate-y-[1px] group-hover:translate-x-[1px] group-hover:border-[rgb(var(--magicks-line-rgb)/0.36)] group-hover:bg-[rgb(var(--magicks-ink-rgb)/0.06)] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.9)] group-focus-visible:-translate-y-[1px] group-focus-visible:translate-x-[1px] group-focus-visible:border-[rgb(var(--magicks-line-rgb)/0.36)] group-focus-visible:bg-[rgb(var(--magicks-ink-rgb)/0.06)] group-focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.9)]"
                       >
                         <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.4">
                           <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />
@@ -402,7 +403,7 @@ export function Services() {
 
                   {/* Right — Image (Desktop only) */}
                   <aside aria-hidden className="hidden lg:block relative">
-                    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1rem] border border-white/[0.08] bg-[#0C0C0E] shadow-[0_48px_120px_-60px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.04)]">
+                    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.48),rgba(240,235,226,0.8))] shadow-[0_42px_98px_-58px_rgba(19,26,40,0.28),inset_0_1px_0_rgba(255,255,255,0.76)]">
                       <ServiceImage s={s} />
                     </div>
                   </aside>
@@ -421,7 +422,7 @@ export function Services() {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-44 will-change-[opacity]"
         style={{
           background:
-            "linear-gradient(180deg, transparent 0%, rgba(8,8,10,0.32) 58%, rgba(8,8,10,0.58) 100%)",
+            "linear-gradient(180deg, transparent 0%, rgba(46,56,76,0.05) 58%, rgba(46,56,76,0.12) 100%)",
         }}
       />
     </section>

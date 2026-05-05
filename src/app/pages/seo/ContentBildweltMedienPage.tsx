@@ -196,8 +196,8 @@ export default function ContentBildweltMedienPage() {
 
       if (heroCopy && heroSection) {
         gsap.to(heroCopy, {
-          yPercent: -6,
-          opacity: 0.46,
+          yPercent: -4,
+          opacity: 0.6,
           ease: "none",
           scrollTrigger: {
             trigger: heroSection,
@@ -223,10 +223,11 @@ export default function ContentBildweltMedienPage() {
       presenceEnvelope(reveals, {
         start: "top 90%",
         end: "bottom 10%",
-        yFrom: 22,
-        yTo: -14,
-        blur: 4,
-        holdRatio: 0.5,
+        yFrom: 18,
+        yTo: -10,
+        blur: 3.2,
+        opacityFloor: 0.2,
+        holdRatio: 0.56,
         scrub: 0.95,
       });
 
@@ -238,9 +239,9 @@ export default function ContentBildweltMedienPage() {
           finalLineB[0];
 
         gsap.set([...finalLineA, ...finalLineB], {
-          yPercent: 36,
-          opacity: 0,
-          filter: "blur(6px)",
+          yPercent: 24,
+          opacity: 0.16,
+          filter: "blur(4px)",
         });
         gsap.to([...finalLineA, ...finalLineB], {
           yPercent: 0,
@@ -273,7 +274,7 @@ export default function ContentBildweltMedienPage() {
         }
 
         if (finalCta) {
-          gsap.set(finalCta, { opacity: 0, y: 16 });
+          gsap.set(finalCta, { opacity: 0.18, y: 12 });
           gsap.to(finalCta, {
             opacity: 1,
             y: 0,
@@ -293,8 +294,8 @@ export default function ContentBildweltMedienPage() {
             trigger: finalSection,
             start: "top 58%",
             end: "top 22%",
-            blur: 3,
-            opacityFloor: 0.24,
+            blur: 2.4,
+            opacityFloor: 0.32,
             scrub: 1.0,
           });
         }

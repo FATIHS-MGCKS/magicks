@@ -17,7 +17,10 @@ export function SiteLayout() {
   }, [pathname, hash]);
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] font-sans text-zinc-100" style={{ overflowX: "clip" }}>
+    <div
+      className="magicks-light min-h-screen bg-[var(--magicks-bg-canvas)] font-sans text-[var(--magicks-text-1)]"
+      style={{ overflowX: "clip" }}
+    >
       <div aria-hidden className="magicks-grain" />
       <Navbar />
       <Outlet />

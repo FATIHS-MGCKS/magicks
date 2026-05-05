@@ -56,9 +56,9 @@ export function FinalCTA() {
       // like a light source coming up, not an effect turning on.
       atmosphericField(halo, {
         trigger: root,
-        baseOpacity: 0,
-        peakOpacity: 1,
-        scale: [0.88, 1.02],
+        baseOpacity: 0.06,
+        peakOpacity: 0.88,
+        scale: [0.92, 1.01],
         scrub: 1.8,
         start: "top bottom",
         end: "bottom top",
@@ -70,7 +70,7 @@ export function FinalCTA() {
         atmosphericField(grid, {
           trigger: root,
           baseOpacity: 0,
-          peakOpacity: 0.32,
+          peakOpacity: 0.24,
           scale: [1.04, 1.0],
           scrub: 2.0,
         });
@@ -87,7 +87,7 @@ export function FinalCTA() {
           ground,
           { opacity: 0 },
           {
-            opacity: 1,
+            opacity: 0.72,
             ease: "none",
             scrollTrigger: {
               trigger: root,
@@ -135,7 +135,7 @@ export function FinalCTA() {
           eStart,
         );
         tl.to(w, { yPercent: 0, opacity: 1, duration: 0.7 - eEnd, ease: "none" }, eEnd);
-        tl.to(w, { yPercent: -18, opacity: 0.32, duration: 0.28, ease: "power2.in" }, 0.7);
+        tl.to(w, { yPercent: -14, opacity: 0.46, duration: 0.28, ease: "power2.in" }, 0.7);
       };
 
       lineAWords.forEach((w, i) => animateMaskedWord(w, 0.05 + i * 0.04, 0.26 + i * 0.04));
@@ -175,10 +175,11 @@ export function FinalCTA() {
         trigger: cta ?? root,
         start: "top 90%",
         end: "bottom 10%",
-        yFrom: 22,
-        yTo: -10,
-        blur: 3,
-        holdRatio: 0.62,
+        yFrom: 14,
+        yTo: -7,
+        blur: 2.2,
+        opacityFloor: 0.2,
+        holdRatio: 0.64,
       });
 
       // ─── Ledger block: focus envelope ────────────────────────────────
@@ -186,9 +187,9 @@ export function FinalCTA() {
         start: "top 86%",
         end: "bottom 12%",
         blur: 3,
-        opacityFloor: 0.18,
+        opacityFloor: 0.24,
         focusOpacity: 1,
-        holdRatio: 0.58,
+        holdRatio: 0.62,
       });
 
       // ─── Run-end colophon: softer tail ───────────────────────────────
@@ -196,9 +197,9 @@ export function FinalCTA() {
         start: "top 95%",
         end: "bottom 50%",
         blur: 2.5,
-        opacityFloor: 0.12,
-        focusOpacity: 0.55,
-        holdRatio: 0.66,
+        opacityFloor: 0.18,
+        focusOpacity: 0.5,
+        holdRatio: 0.68,
       });
     }, root);
 
@@ -212,7 +213,7 @@ export function FinalCTA() {
     <section
       ref={rootRef}
       id="kontakt"
-      className="relative overflow-hidden bg-[#070708] px-5 pb-24 pt-32 sm:px-8 sm:pb-28 sm:pt-40 md:px-12 md:pb-32 md:pt-48 lg:px-16 lg:pb-40 lg:pt-56"
+      className="relative overflow-hidden bg-[var(--magicks-bg-soft)] px-5 pb-24 pt-32 sm:px-8 sm:pb-28 sm:pt-40 md:px-12 md:pb-32 md:pt-48 lg:px-16 lg:pb-40 lg:pt-56"
       aria-labelledby="fc-heading"
     >
       <div aria-hidden className="section-top-rule" />
@@ -223,7 +224,7 @@ export function FinalCTA() {
         className="pointer-events-none absolute left-1/2 top-[44%] z-0 aspect-square w-[130vw] max-w-[1300px] -translate-x-1/2 -translate-y-1/2 rounded-full will-change-[opacity,transform]"
         style={{
           background:
-            "radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.018) 28%, transparent 62%)",
+            "radial-gradient(circle at center, rgba(255,255,255,0.36) 0%, rgba(230,222,210,0.22) 32%, transparent 68%)",
         }}
       />
       <div
@@ -232,14 +233,14 @@ export function FinalCTA() {
         className="pointer-events-none absolute inset-0 will-change-[opacity,transform]"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)",
+            "linear-gradient(rgba(46,56,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(46,56,76,0.06) 1px, transparent 1px)",
           backgroundSize: "56px 56px",
           maskImage: "radial-gradient(ellipse 72% 62% at 50% 46%, black, transparent)",
         }}
       />
 
       <div className="relative z-10 layout-max">
-        <div className="mx-auto max-w-[68rem] text-center">
+        <div className="mx-auto max-w-[68rem] rounded-[2rem] border border-[rgb(var(--magicks-line-rgb)/0.16)] bg-[linear-gradient(170deg,rgba(255,255,255,0.8)_0%,rgba(245,241,232,0.68)_100%)] px-6 py-12 text-center shadow-[0_32px_90px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.84)] sm:px-10 sm:py-14 md:px-14 md:py-20">
           <div data-fc-chapter className="mb-14 inline-flex will-change-[opacity,transform] sm:mb-20">
             <ChapterMarker num="Kontakt / 05" label="Abschluss" align="center" />
           </div>
@@ -247,7 +248,7 @@ export function FinalCTA() {
           <h2
             id="fc-heading"
             data-fc-heading
-            className="font-instrument text-[3.2rem] leading-[0.9] tracking-[-0.04em] text-white sm:text-[4.8rem] md:text-[6.2rem] lg:text-[7.6rem] xl:text-[8.4rem]"
+            className="font-instrument text-[3.05rem] leading-[1.01] tracking-[-0.026em] text-[rgb(var(--magicks-ink-rgb)/0.94)] sm:text-[4.65rem] md:text-[5.95rem] lg:text-[7.2rem] xl:text-[7.95rem]"
           >
             <span className="block">
               {LINE_A.map((w, i) => (
@@ -258,7 +259,7 @@ export function FinalCTA() {
                 </span>
               ))}
             </span>
-            <span className="mt-1 block italic text-white/84 sm:mt-2">
+            <span className="mt-1 block italic text-[rgb(var(--magicks-ink-rgb)/0.72)] sm:mt-2">
               {LINE_B.map((w, i) => (
                 <span key={i} className="mr-[0.18em] inline-block overflow-hidden align-bottom">
                   <span data-fc-b className="inline-block will-change-transform">
@@ -271,16 +272,16 @@ export function FinalCTA() {
 
           {/* Editorial rule — draws in from center */}
           <div className="mx-auto mt-12 flex w-full max-w-[42rem] items-center gap-4 sm:mt-16">
-            <span aria-hidden className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/40">
+            <span aria-hidden className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.16em] text-[rgb(var(--magicks-ink-rgb)/0.34)]">
               ·
             </span>
             <div aria-hidden className="relative h-px flex-1">
               <span
                 data-fc-rule
-                className="absolute inset-0 block bg-gradient-to-r from-transparent via-white/60 to-transparent"
+                className="absolute inset-0 block bg-gradient-to-r from-transparent via-[rgb(var(--magicks-line-rgb)/0.42)] to-transparent"
               />
             </div>
-            <span aria-hidden className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/40">
+            <span aria-hidden className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.16em] text-[rgb(var(--magicks-ink-rgb)/0.34)]">
               ·
             </span>
           </div>
@@ -290,12 +291,12 @@ export function FinalCTA() {
             <div data-fc-cta className="flex justify-center will-change-[opacity,transform,filter] sm:justify-start">
               <Link
                 to="/kontakt"
-                className="group relative inline-flex max-w-full items-center gap-2.5 whitespace-nowrap rounded-full border border-white/22 bg-white py-3 pl-5 pr-2 text-[14px] font-medium tracking-wide text-[#0A0A0A] no-underline shadow-[0_2px_4px_-1px_rgba(0,0,0,0.35),0_34px_80px_-32px_rgba(0,0,0,0.92),inset_0_1px_0_rgba(255,255,255,0.48)] magicks-ease-out [transition:transform_640ms_cubic-bezier(0.22,1,0.36,1),box-shadow_640ms_cubic-bezier(0.22,1,0.36,1),letter-spacing_640ms_cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:tracking-[0.03em] hover:shadow-[0_3px_6px_-1px_rgba(0,0,0,0.42),0_56px_120px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.6)] active:translate-y-0 active:scale-[0.99] sm:gap-3 sm:py-4 sm:pl-8 sm:pr-3 sm:text-[15px] md:text-[16px]"
+                className="group relative inline-flex max-w-full items-center gap-2.5 whitespace-nowrap rounded-full border border-[rgb(var(--magicks-line-rgb)/0.22)] bg-[var(--magicks-ink-strong)] py-3 pl-5 pr-2 text-[15.5px] font-medium tracking-[0.008em] text-[var(--magicks-bg-lifted)] no-underline shadow-[0_2px_4px_-1px_rgba(20,28,44,0.18),0_28px_66px_-30px_rgba(20,28,44,0.42),inset_0_1px_0_rgba(255,255,255,0.14)] magicks-ease-out [transition:transform_640ms_cubic-bezier(0.22,1,0.36,1),box-shadow_640ms_cubic-bezier(0.22,1,0.36,1),letter-spacing_640ms_cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:tracking-[0.018em] hover:shadow-[0_3px_6px_-1px_rgba(20,28,44,0.22),0_42px_100px_-28px_rgba(20,28,44,0.52),inset_0_1px_0_rgba(255,255,255,0.18)] active:translate-y-0 active:scale-[0.99] sm:gap-3 sm:py-4 sm:pl-8 sm:pr-3 sm:text-[16px] md:text-[16.5px]"
               >
                 <span>Unverbindlich anfragen</span>
                 <span
                   aria-hidden
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0A0A0A] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] [transition:transform_720ms_cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-[2px] group-hover:-translate-y-[1px] sm:h-9 sm:w-9"
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--magicks-bg-lifted)] text-[var(--magicks-ink-strong)] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] [transition:transform_720ms_cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-[2px] group-hover:-translate-y-[1px] sm:h-9 sm:w-9"
                 >
                   <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.4">
                     <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />
@@ -304,24 +305,24 @@ export function FinalCTA() {
               </Link>
             </div>
 
-            <div className="flex flex-col gap-4 border-l border-white/[0.08] pl-6 sm:pl-10 md:pl-12">
+            <div className="flex flex-col gap-4 border-l border-[rgb(var(--magicks-line-rgb)/0.12)] pl-6 sm:pl-10 md:pl-12">
               <div data-fc-ledger className="flex flex-col gap-1 will-change-[opacity,filter]">
-                <span className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.2em] text-white/45 sm:text-[10.5px] sm:tracking-[0.32em] sm:text-white/40">
+                <span className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.12em] text-[rgb(var(--magicks-ink-rgb)/0.42)] sm:text-[10.5px] sm:tracking-[0.2em] sm:text-[rgb(var(--magicks-ink-rgb)/0.38)]">
                   Direkt
                 </span>
                 <a
                   href="mailto:hello@magicks.de"
-                  className="font-instrument inline-flex min-h-11 items-center break-all text-[1.2rem] italic text-white no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white/82 sm:text-[1.45rem] md:text-[1.6rem] lg:min-h-0"
+                  className="font-instrument inline-flex min-h-11 items-center break-all text-[1.2rem] italic text-[rgb(var(--magicks-ink-rgb)/0.94)] no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.76)] sm:text-[1.45rem] md:text-[1.6rem] lg:min-h-0"
                 >
                   hello@magicks.de
                 </a>
               </div>
 
               <div data-fc-ledger className="flex flex-col gap-1.5 will-change-[opacity,filter]">
-                <span className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.2em] text-white/45 sm:text-[10.5px] sm:tracking-[0.32em] sm:text-white/40">
+                <span className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.12em] text-[rgb(var(--magicks-ink-rgb)/0.42)] sm:text-[10.5px] sm:tracking-[0.2em] sm:text-[rgb(var(--magicks-ink-rgb)/0.38)]">
                   Antwort
                 </span>
-                <span className="font-ui text-[13.5px] leading-[1.5] text-white/62 sm:text-[14.5px]">
+                <span className="font-ui text-[14px] leading-[1.64] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:text-[14.5px]">
                   In der Regel binnen 24 Stunden — werktags.
                 </span>
               </div>
@@ -332,23 +333,23 @@ export function FinalCTA() {
         {/* Ground-light wash — rises from below as the page closes.
           Atmospheric; builds through the entire section, peaks near
           the bottom. Mature, cinematic, never loud. */}
-      <div
-        data-fc-ground
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[55%] will-change-[opacity]"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 100% at 50% 100%, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.012) 36%, transparent 68%)",
-        }}
-      />
+        <div
+          data-fc-ground
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[55%] will-change-[opacity]"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 100% at 50% 100%, rgba(46,56,76,0.12) 0%, rgba(46,56,76,0.05) 36%, transparent 68%)",
+          }}
+        />
 
       {/* Bottom-edge run-end — cinema colophon */}
-        <div className="mt-20 flex flex-col items-center justify-between gap-3 border-t border-white/[0.06] pt-7 text-center sm:mt-32 sm:flex-row sm:gap-4 sm:text-left">
-          <span data-fc-runend className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.2em] text-white/50 will-change-[opacity,filter] sm:text-[10.5px] sm:tracking-[0.34em] sm:text-white/45">
+        <div className="mt-20 flex flex-col items-center justify-between gap-3 border-t border-[rgb(var(--magicks-line-rgb)/0.12)] pt-7 text-center sm:mt-32 sm:flex-row sm:gap-4 sm:text-left">
+          <span data-fc-runend className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.14em] text-[rgb(var(--magicks-ink-rgb)/0.5)] will-change-[opacity,filter] sm:text-[10.5px] sm:tracking-[0.2em] sm:text-[rgb(var(--magicks-ink-rgb)/0.45)]">
             § End — Magicks · MMXXVI
           </span>
-          <span data-fc-runend aria-hidden className="hidden h-px w-20 bg-white/14 will-change-[opacity,filter] sm:block" />
-          <span data-fc-runend className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.2em] text-white/50 will-change-[opacity,filter] sm:text-[10.5px] sm:tracking-[0.34em] sm:text-white/45">
+          <span data-fc-runend aria-hidden className="hidden h-px w-20 bg-[rgb(var(--magicks-line-rgb)/0.18)] will-change-[opacity,filter] sm:block" />
+          <span data-fc-runend className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.14em] text-[rgb(var(--magicks-ink-rgb)/0.5)] will-change-[opacity,filter] sm:text-[10.5px] sm:tracking-[0.2em] sm:text-[rgb(var(--magicks-ink-rgb)/0.45)]">
             Kassel / DE · DE & EN
           </span>
         </div>

@@ -488,10 +488,11 @@ export default function LandingPagesKasselPage() {
       presenceEnvelope(reveals, {
         start: "top 88%",
         end: "bottom 14%",
-        yFrom: 22,
-        yTo: -14,
-        blur: 4,
-        holdRatio: 0.52,
+        yFrom: 18,
+        yTo: -10,
+        blur: 3.2,
+        opacityFloor: 0.2,
+        holdRatio: 0.58,
         scrub: 0.95,
       });
 
@@ -499,7 +500,7 @@ export default function LandingPagesKasselPage() {
       if (vokabularTokens.length) {
         const vSection =
           (vokabularTokens[0] as HTMLElement).closest("section") ?? vokabularTokens[0];
-        gsap.set(vokabularTokens, { opacity: 0, y: 14, filter: "blur(4px)" });
+        gsap.set(vokabularTokens, { opacity: 0.18, y: 10, filter: "blur(3px)" });
         gsap.to(vokabularTokens, {
           opacity: 1,
           y: 0,
@@ -530,7 +531,7 @@ export default function LandingPagesKasselPage() {
           fokusLineB[0];
 
         const fokusAll = [...fokusLineA, ...fokusLineB];
-        gsap.set(fokusAll, { yPercent: 118, opacity: 0 });
+        gsap.set(fokusAll, { yPercent: 92, opacity: 0.16 });
         gsap.to(fokusAll, {
           yPercent: 0,
           opacity: 1,
@@ -545,7 +546,7 @@ export default function LandingPagesKasselPage() {
           },
         });
         gsap.to(fokusAll, {
-          opacity: 0.3,
+          opacity: 0.44,
           ease: "none",
           stagger: 0.03,
           scrollTrigger: {
@@ -566,10 +567,11 @@ export default function LandingPagesKasselPage() {
         presenceEnvelope(triptych, {
           start: "top 88%",
           end: "bottom 14%",
-          yFrom: 22,
-          yTo: -14,
-          blur: 4,
-          holdRatio: 0.54,
+          yFrom: 16,
+          yTo: -10,
+          blur: 3.2,
+          opacityFloor: 0.2,
+          holdRatio: 0.58,
           stagger: 0.14,
           scrub: 1.0,
         });
@@ -587,9 +589,9 @@ export default function LandingPagesKasselPage() {
           finalLineB[0];
 
         gsap.set([...finalLineA, ...finalLineB], {
-          yPercent: 36,
-          opacity: 0,
-          filter: "blur(6px)",
+          yPercent: 24,
+          opacity: 0.16,
+          filter: "blur(4px)",
         });
         gsap.to([...finalLineA, ...finalLineB], {
           yPercent: 0,
@@ -622,7 +624,7 @@ export default function LandingPagesKasselPage() {
         }
 
         if (finalCta) {
-          gsap.set(finalCta, { opacity: 0, y: 16 });
+          gsap.set(finalCta, { opacity: 0.18, y: 12 });
           gsap.to(finalCta, {
             opacity: 1,
             y: 0,
@@ -642,8 +644,8 @@ export default function LandingPagesKasselPage() {
             trigger: finalSection,
             start: "top 58%",
             end: "top 22%",
-            blur: 3,
-            opacityFloor: 0.24,
+            blur: 2.4,
+            opacityFloor: 0.32,
             scrub: 1.0,
           });
         }
@@ -659,7 +661,7 @@ export default function LandingPagesKasselPage() {
 
       <main
         ref={rootRef}
-        className="relative bg-[#0A0A0A] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative bg-[var(--magicks-bg-base)] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
       >
         {/* =========================================================
            § 00 — HERO (Campaign Sheet · Focal Axis)
@@ -760,12 +762,12 @@ export default function LandingPagesKasselPage() {
                       {stop.tone === "filled" ? (
                         <span
                           aria-hidden
-                          className="relative block h-[11px] w-[11px] rounded-full bg-white shadow-[0_0_0_3px_rgba(10,10,10,1)]"
+                          className="relative block h-[11px] w-[11px] rounded-full bg-[var(--magicks-ink-strong)] shadow-[0_0_0_3px_rgba(247,244,238,1)]"
                         />
                       ) : (
                         <span
                           aria-hidden
-                          className="relative block h-[11px] w-[11px] rounded-full border border-white/62 bg-[#0A0A0A] shadow-[0_0_0_3px_rgba(10,10,10,1)]"
+                          className="relative block h-[11px] w-[11px] rounded-full border border-[rgb(var(--magicks-line-rgb)/0.46)] bg-[rgb(var(--magicks-bg-base-rgb)/0.96)] shadow-[0_0_0_3px_rgba(247,244,238,1)]"
                         />
                       )}
                       <span className="tabular-nums">{stop.label}</span>
@@ -952,7 +954,7 @@ export default function LandingPagesKasselPage() {
            Two-column register. The headline pivots on "keine normale
            Unterseite." — italicised for typographic rhythm.
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#080809] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.22]"
@@ -1137,7 +1139,7 @@ export default function LandingPagesKasselPage() {
            the em-dash. Body sits in a tight reading column below. Reads
            as an editor's terminology note, not an SEO block.
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.2]"
@@ -1377,7 +1379,7 @@ export default function LandingPagesKasselPage() {
            Opens with a hairline `section-top-rule` to carry the
            silent transition from § 03 without a chapter sliver.
         ========================================================= */}
-        <section className="relative bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div aria-hidden className="section-top-rule" />
           <div className="layout-max">
             <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:items-end md:gap-20 lg:gap-28">
@@ -1463,7 +1465,7 @@ export default function LandingPagesKasselPage() {
            paragraphs so the "Homepage → Landing Page" pivot reads
            typographically. Visually the strongest page moment.
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#080809] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-52 lg:px-16 lg:py-64">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-52 lg:px-16 lg:py-64">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.6]"
@@ -1555,7 +1557,7 @@ export default function LandingPagesKasselPage() {
                       className="relative flex h-[14px] w-[14px] items-center justify-center"
                     >
                       <span
-                        className="absolute inset-0 block rotate-45 border border-white/68 bg-[#080809]"
+                        className="absolute inset-0 block rotate-45 border border-white/68 bg-[var(--magicks-bg-lifted)]"
                       />
                       <span
                         className="absolute h-[5px] w-[5px] rotate-45 bg-white"
@@ -1726,7 +1728,7 @@ export default function LandingPagesKasselPage() {
            that surfaces the 4 required internal routes as confident
            editorial anchors — no gatefolds, no cards, just letters.
         ========================================================= */}
-        <section className="relative bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div className="layout-max">
             <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
               <div data-lp-reveal className="md:pt-2">
@@ -1873,7 +1875,7 @@ export default function LandingPagesKasselPage() {
            pill — a deliberate commitment curve that lands in § END's
            filled pill.
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#080809] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.55]"
@@ -1996,7 +1998,7 @@ export default function LandingPagesKasselPage() {
            centered pill CTA, and a 4-field ledger with LP-specific
            labels (Sheet · Studio · Fokus · Edition).
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
           <div aria-hidden className="section-top-rule" />
 
           {/* Focal plate — a centered radial halo, restrained, no bright
@@ -2057,7 +2059,7 @@ export default function LandingPagesKasselPage() {
                     aria-hidden
                     className="absolute left-1/2 top-1/2 flex h-[14px] w-[14px] -translate-x-1/2 -translate-y-1/2 items-center justify-center"
                   >
-                    <span className="absolute inset-0 block rotate-45 border border-white/70 bg-[#070708] shadow-[0_0_0_3px_rgba(7,7,8,1)]" />
+                    <span className="absolute inset-0 block rotate-45 border border-white/70 bg-[var(--magicks-bg-lifted)] shadow-[0_0_0_3px_rgba(247,244,238,1)]" />
                     <span className="absolute h-[4px] w-[4px] rotate-45 bg-white" />
                   </span>
                 </div>
@@ -2092,7 +2094,7 @@ export default function LandingPagesKasselPage() {
                     <span>Lass uns über dein Projekt sprechen</span>
                     <span
                       aria-hidden
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0A0A0A] text-white magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
                     >
                       <svg
                         viewBox="0 0 14 14"

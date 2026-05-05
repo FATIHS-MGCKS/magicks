@@ -151,17 +151,17 @@ export function ProjectIntakeForm() {
     return (
       <div
         aria-live="polite"
-        className="relative mx-auto max-w-[56rem] border-t border-b border-white/[0.12] px-1 py-14 text-center sm:py-16 md:py-20"
+        className="relative mx-auto max-w-[56rem] border-y border-[rgb(var(--magicks-line-rgb)/0.22)] px-1 py-14 text-center sm:py-16 md:py-20"
       >
-        <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.48em] text-white/44 sm:text-[10.5px]">
+        <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.3em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[11px]">
           § Status · {status === "handoff" ? "Übergabe an Mail-Programm" : "Übergabe unterbrochen"}
         </p>
 
-        <p className="font-instrument mt-8 text-[2rem] italic leading-[1.06] tracking-[-0.025em] text-white sm:mt-10 sm:text-[2.55rem] md:text-[3rem]">
+        <p className="font-instrument mt-8 text-[2rem] italic leading-[1.06] tracking-[-0.025em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:mt-10 sm:text-[2.55rem] md:text-[3rem]">
           {status === "handoff" ? "Danke — der Rest läuft jetzt per Mail." : "Da ist etwas schiefgegangen."}
         </p>
 
-        <p className="font-ui mx-auto mt-6 max-w-[36rem] text-[15px] leading-[1.7] text-white/68 md:text-[16px]">
+        <p className="font-ui mx-auto mt-6 max-w-[36rem] text-[15.5px] leading-[1.72] text-[rgb(var(--magicks-ink-rgb)/0.66)] md:text-[16.5px]">
           {status === "handoff"
             ? "Dein Mail-Programm wurde geöffnet und die Anfrage ist vorbereitet. Wenn sich nichts geöffnet hat, schick uns deine Nachricht einfach direkt an die Studio-Adresse."
             : "Bitte schick uns deine Nachricht direkt an die Studio-Adresse — wir melden uns auf demselben Weg zurück."}
@@ -170,17 +170,20 @@ export function ProjectIntakeForm() {
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-8">
           <a
             href="mailto:hello@magicks.de"
-            className="font-instrument text-[1.2rem] italic tracking-[-0.01em] text-white no-underline transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:text-white/82 sm:text-[1.3rem] md:text-[1.4rem]"
+            className="font-instrument text-[1.2rem] italic tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.9)] no-underline transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:text-[rgb(var(--magicks-ink-rgb)/0.74)] sm:text-[1.3rem] md:text-[1.4rem]"
           >
             hello@magicks.de
           </a>
 
-          <span aria-hidden className="hidden h-3 w-px bg-white/22 sm:inline-block" />
+          <span
+            aria-hidden
+            className="hidden h-3 w-px bg-[rgb(var(--magicks-line-rgb)/0.28)] sm:inline-block"
+          />
 
           <button
             type="button"
             onClick={resetAndRewrite}
-            className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/56 no-underline transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:text-white"
+            className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.24em] text-[rgb(var(--magicks-ink-rgb)/0.56)] no-underline transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:text-[rgb(var(--magicks-ink-rgb)/0.9)]"
           >
             ↺ Neue Anfrage beginnen
           </button>
@@ -201,7 +204,10 @@ export function ProjectIntakeForm() {
     >
       {/* Opening hairline — the section already carries the folio above,
           so the form opens with a pure rule rather than a repeated label. */}
-      <span aria-hidden className="block h-px w-full bg-white/[0.14]" />
+      <span
+        aria-hidden
+        className="block h-px w-full bg-[rgb(var(--magicks-line-rgb)/0.2)]"
+      />
 
       {/* Fields */}
       <div className="grid grid-cols-1 gap-x-12 gap-y-0 sm:grid-cols-2">
@@ -295,8 +301,8 @@ export function ProjectIntakeForm() {
                     className={[
                       "group relative inline-flex items-baseline gap-2 rounded-full border px-4 py-[0.55rem] text-[13px] font-medium outline-none transition-[color,border-color,background-color] duration-[520ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] sm:px-5 sm:py-[0.65rem] sm:text-[13.5px] md:text-[14px]",
                       active
-                        ? "border-white/85 bg-white/10 text-white"
-                        : "border-white/[0.14] bg-transparent text-white/68 hover:border-white/34 hover:text-white focus-visible:border-white/34 focus-visible:text-white",
+                        ? "border-[rgb(var(--magicks-line-rgb)/0.52)] bg-[rgb(var(--magicks-ink-rgb)/0.08)] text-[rgb(var(--magicks-ink-rgb)/0.9)]"
+                        : "border-[rgb(var(--magicks-line-rgb)/0.22)] bg-transparent text-[rgb(var(--magicks-ink-rgb)/0.66)] hover:border-[rgb(var(--magicks-line-rgb)/0.34)] hover:text-[rgb(var(--magicks-ink-rgb)/0.9)] focus-visible:border-[rgb(var(--magicks-line-rgb)/0.34)] focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.9)]",
                     ].join(" ")}
                   >
                     <span className="font-ui">{opt.label}</span>
@@ -306,8 +312,10 @@ export function ProjectIntakeForm() {
                     <span
                       aria-hidden
                       className={[
-                        "font-mono hidden text-[9.5px] font-medium uppercase leading-none tracking-[0.3em] transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] sm:inline",
-                        active ? "text-white/60" : "text-white/34 group-hover:text-white/50",
+                        "font-mono hidden text-[10px] font-medium uppercase leading-none tracking-[0.2em] transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] sm:inline",
+                        active
+                          ? "text-[rgb(var(--magicks-ink-rgb)/0.58)]"
+                          : "text-[rgb(var(--magicks-ink-rgb)/0.36)] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.52)]",
                       ].join(" ")}
                     >
                       · {opt.hint}
@@ -344,13 +352,13 @@ export function ProjectIntakeForm() {
       </div>
 
       {/* Submit rail — mirrors /ueber-uns § Einladung CTA pattern */}
-      <div className="mt-14 border-t border-white/[0.14] pt-6 sm:mt-16 md:mt-20 md:pt-8">
+      <div className="mt-14 border-t border-[rgb(var(--magicks-line-rgb)/0.2)] pt-6 sm:mt-16 md:mt-20 md:pt-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
           <div className="flex flex-col gap-1.5">
-            <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.36em] text-white/50 sm:text-[10.5px]">
+            <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-[rgb(var(--magicks-ink-rgb)/0.5)] sm:text-[11px]">
               § Anfrage · hello@magicks.de
             </span>
-            <span id={`${uid}-hint`} className="font-ui text-[12.5px] leading-[1.55] text-white/46 sm:text-[13px]">
+            <span id={`${uid}-hint`} className="font-ui text-[13px] leading-[1.6] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[13.5px]">
               Kein Druck, keine Agenturschleife — erste Einschätzung in der Regel innerhalb von 24 Stunden.
             </span>
           </div>
@@ -360,7 +368,7 @@ export function ProjectIntakeForm() {
               submit button on larger screens. */}
           <button
             type="submit"
-            className="group inline-flex w-full items-center justify-center gap-3 rounded-full bg-white px-9 py-[1.05rem] text-[15.5px] font-semibold text-[#0A0A0A] no-underline shadow-[0_34px_80px_-32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.45)] transition-[transform,box-shadow] duration-[560ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[2px] hover:shadow-[0_44px_90px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.55)] sm:w-auto sm:gap-3.5 sm:self-auto sm:px-10 sm:py-[1.2rem] sm:text-[16px] md:px-11 md:text-[16.5px]"
+            className="group inline-flex w-full items-center justify-center gap-3 rounded-full border border-[rgb(var(--magicks-line-rgb)/0.28)] bg-[var(--magicks-ink-strong)] px-9 py-[1.05rem] text-[15.5px] font-semibold text-[var(--magicks-bg-lifted)] no-underline shadow-[0_28px_64px_-34px_rgba(20,28,44,0.52),inset_0_1px_0_rgba(255,255,255,0.18)] transition-[transform,box-shadow] duration-[560ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[2px] hover:shadow-[0_38px_82px_-30px_rgba(20,28,44,0.62),inset_0_1px_0_rgba(255,255,255,0.24)] sm:w-auto sm:gap-3.5 sm:self-auto sm:px-10 sm:py-[1.2rem] sm:text-[16px] md:px-11 md:text-[16.5px]"
           >
             <span>Nachricht senden</span>
             <span
@@ -373,16 +381,18 @@ export function ProjectIntakeForm() {
         </div>
 
         {/* Footnote — privacy + honest handoff reassurance */}
-        <div className="mt-7 flex flex-col items-start gap-3 text-[12px] text-white/38 sm:mt-9 sm:flex-row sm:items-center sm:gap-6">
-          <span className="font-mono uppercase leading-none tracking-[0.32em]">
+        <div className="mt-7 flex flex-col items-start gap-3 text-[12.5px] text-[rgb(var(--magicks-ink-rgb)/0.38)] sm:mt-9 sm:flex-row sm:items-center sm:gap-6">
+          <span className="font-mono uppercase leading-none tracking-[0.22em]">
             · Kein Newsletter · Keine Weitergabe ·
           </span>
-          <span className="hidden h-3 w-px bg-white/14 sm:inline-block" />
-          <span className="font-ui text-[12.5px] leading-[1.55]">
+          <span
+            className="hidden h-3 w-px bg-[rgb(var(--magicks-line-rgb)/0.2)] sm:inline-block"
+          />
+          <span className="font-ui text-[13px] leading-[1.6]">
             Mit dem Absenden stimmst du unseren{" "}
             <Link
               to="/datenschutz"
-              className="underline decoration-white/22 underline-offset-[3px] transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:text-white hover:decoration-white/60"
+              className="underline decoration-[rgb(var(--magicks-line-rgb)/0.3)] underline-offset-[3px] transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:text-[rgb(var(--magicks-ink-rgb)/0.92)] hover:decoration-[rgb(var(--magicks-line-rgb)/0.58)]"
             >
               Datenschutzhinweisen
             </Link>{" "}
@@ -400,7 +410,7 @@ export function ProjectIntakeForm() {
    ================================================================ */
 
 const inputClass =
-  "font-instrument peer block w-full appearance-none border-0 border-b border-white/[0.14] bg-transparent py-4 text-[1.15rem] leading-[1.3] tracking-[-0.01em] text-white outline-none transition-[border-color,color] duration-[520ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] placeholder:text-white/30 focus:border-white/85 sm:text-[1.22rem] md:text-[1.28rem]";
+  "font-instrument peer block w-full appearance-none border-0 border-b border-[rgb(var(--magicks-line-rgb)/0.24)] bg-transparent py-4 text-[1.15rem] leading-[1.36] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.9)] outline-none transition-[border-color,color] duration-[520ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] placeholder:text-[rgb(var(--magicks-ink-rgb)/0.34)] focus:border-[rgb(var(--magicks-line-rgb)/0.56)] sm:text-[1.22rem] md:text-[1.28rem]";
 
 type FieldProps = {
   id: string;
@@ -423,18 +433,23 @@ function Field({ id, label, number, required, hint, error, children }: FieldProp
       <div className="mb-3 flex items-baseline justify-between gap-4">
         <label
           htmlFor={id}
-          className="flex items-baseline gap-2 text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/56 sm:text-[10.5px]"
+          className="flex items-baseline gap-2 text-[10.5px] font-medium uppercase leading-none tracking-[0.28em] text-[rgb(var(--magicks-ink-rgb)/0.56)] sm:text-[11px]"
         >
-          <span className="font-mono text-white/34">{number}</span>
+          <span className="font-mono text-[rgb(var(--magicks-ink-rgb)/0.34)]">
+            {number}
+          </span>
           <span className="font-mono">{label}</span>
           {required && (
-            <span aria-hidden className="font-mono text-white/34">
+            <span
+              aria-hidden
+              className="font-mono text-[rgb(var(--magicks-ink-rgb)/0.34)]"
+            >
               *
             </span>
           )}
         </label>
         {hint && !error && (
-          <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.38em] text-white/36 sm:text-[10px]">
+          <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.24em] text-[rgb(var(--magicks-ink-rgb)/0.36)] sm:text-[10.5px]">
             {hint}
           </span>
         )}
@@ -443,9 +458,9 @@ function Field({ id, label, number, required, hint, error, children }: FieldProp
       {error && (
         <p
           id={`${id}-err`}
-          className="font-instrument mt-3 flex items-baseline gap-2 text-[13.5px] italic leading-[1.45] text-white/78 sm:text-[14px]"
+          className="font-instrument mt-3 flex items-baseline gap-2 text-[13.5px] italic leading-[1.45] text-[rgb(var(--magicks-ink-rgb)/0.78)] sm:text-[14px]"
         >
-          <span aria-hidden className="font-mono text-[9.5px] not-italic uppercase tracking-[0.32em] text-white/46">
+          <span aria-hidden className="font-mono text-[10px] not-italic uppercase tracking-[0.2em] text-[rgb(var(--magicks-ink-rgb)/0.46)]">
             Hinweis
           </span>
           {error}
@@ -467,15 +482,20 @@ type FieldGroupProps = {
 /** Non-input field group — for the Projektart chip-radio cluster. */
 function FieldGroup({ label, number, required, error, errorId, children }: FieldGroupProps) {
   return (
-    <div className="relative border-t border-white/[0.08] py-7 sm:py-8">
+    <div className="relative border-t border-[rgb(var(--magicks-line-rgb)/0.14)] py-7 sm:py-8">
       <div className="mb-1 flex items-baseline gap-4">
         <span
-          className="flex items-baseline gap-2 text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/56 sm:text-[10.5px]"
+          className="flex items-baseline gap-2 text-[10.5px] font-medium uppercase leading-none tracking-[0.28em] text-[rgb(var(--magicks-ink-rgb)/0.56)] sm:text-[11px]"
         >
-          <span className="font-mono text-white/34">{number}</span>
+          <span className="font-mono text-[rgb(var(--magicks-ink-rgb)/0.34)]">
+            {number}
+          </span>
           <span className="font-mono">{label}</span>
           {required && (
-            <span aria-hidden className="font-mono text-white/34">
+            <span
+              aria-hidden
+              className="font-mono text-[rgb(var(--magicks-ink-rgb)/0.34)]"
+            >
               *
             </span>
           )}
@@ -485,9 +505,9 @@ function FieldGroup({ label, number, required, error, errorId, children }: Field
       {error && (
         <p
           id={errorId}
-          className="font-instrument mt-4 flex items-baseline gap-2 text-[13.5px] italic leading-[1.45] text-white/78 sm:text-[14px]"
+          className="font-instrument mt-4 flex items-baseline gap-2 text-[13.5px] italic leading-[1.45] text-[rgb(var(--magicks-ink-rgb)/0.78)] sm:text-[14px]"
         >
-          <span aria-hidden className="font-mono text-[9.5px] not-italic uppercase tracking-[0.32em] text-white/46">
+          <span aria-hidden className="font-mono text-[10px] not-italic uppercase tracking-[0.2em] text-[rgb(var(--magicks-ink-rgb)/0.46)]">
             Hinweis
           </span>
           {error}

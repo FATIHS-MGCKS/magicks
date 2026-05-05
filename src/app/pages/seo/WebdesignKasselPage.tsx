@@ -407,8 +407,8 @@ export default function WebdesignKasselPage() {
       // Subtle camera-push on scroll — content parallaxes up just a touch
       if (heroCopy && heroSection) {
         gsap.to(heroCopy, {
-          yPercent: -6,
-          opacity: 0.45,
+          yPercent: -4,
+          opacity: 0.6,
           ease: "none",
           scrollTrigger: {
             trigger: heroSection,
@@ -438,10 +438,11 @@ export default function WebdesignKasselPage() {
       presenceEnvelope(reveals, {
         start: "top 90%",
         end: "bottom 10%",
-        yFrom: 22,
-        yTo: -14,
-        blur: 4,
-        holdRatio: 0.5,
+        yFrom: 18,
+        yTo: -10,
+        blur: 3.2,
+        opacityFloor: 0.2,
+        holdRatio: 0.56,
         scrub: 0.95,
       });
 
@@ -456,9 +457,9 @@ export default function WebdesignKasselPage() {
           positioningLines[0];
 
         gsap.set(positioningLines, {
-          yPercent: 22,
-          opacity: 0,
-          filter: "blur(5px)",
+          yPercent: 16,
+          opacity: 0.16,
+          filter: "blur(4px)",
         });
         gsap.to(positioningLines, {
           yPercent: 0,
@@ -477,9 +478,9 @@ export default function WebdesignKasselPage() {
         // Exit softening — keeps the stanza present but no longer
         // demanding once the reader has moved past it.
         gsap.to(positioningLines, {
-          opacity: 0.28,
-          filter: "blur(4px)",
-          yPercent: -14,
+          opacity: 0.44,
+          filter: "blur(2.4px)",
+          yPercent: -10,
           ease: "none",
           stagger: 0.06,
           scrollTrigger: {
@@ -519,9 +520,9 @@ export default function WebdesignKasselPage() {
           finalLineB[0];
 
         gsap.set([...finalLineA, ...finalLineB], {
-          yPercent: 36,
-          opacity: 0,
-          filter: "blur(6px)",
+          yPercent: 24,
+          opacity: 0.16,
+          filter: "blur(4px)",
         });
         gsap.to([...finalLineA, ...finalLineB], {
           yPercent: 0,
@@ -554,7 +555,7 @@ export default function WebdesignKasselPage() {
         }
 
         if (finalCta) {
-          gsap.set(finalCta, { opacity: 0, y: 16 });
+          gsap.set(finalCta, { opacity: 0.18, y: 12 });
           gsap.to(finalCta, {
             opacity: 1,
             y: 0,
@@ -574,8 +575,8 @@ export default function WebdesignKasselPage() {
             trigger: finalSection,
             start: "top 58%",
             end: "top 22%",
-            blur: 3,
-            opacityFloor: 0.24,
+            blur: 2.4,
+            opacityFloor: 0.32,
             scrub: 1.0,
           });
         }
@@ -591,7 +592,7 @@ export default function WebdesignKasselPage() {
 
       <main
         ref={rootRef}
-        className="relative bg-[#0A0A0A] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative bg-[var(--magicks-bg-base)] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
       >
         {/* =========================================================
            § 00 — HERO (Studio · Bureau dateline)
@@ -832,7 +833,7 @@ export default function WebdesignKasselPage() {
         {/* =========================================================
            § 01 — POSITIONIERUNG (ceremonial statement)
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#080809] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-52 lg:px-16 lg:py-64">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-52 lg:px-16 lg:py-64">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.6]"
@@ -1066,7 +1067,7 @@ export default function WebdesignKasselPage() {
         {/* =========================================================
            § 03 — BEZUG (Audience — regional anchor register)
         ========================================================= */}
-        <section className="relative bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div className="layout-max">
             <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
               <div data-wk-reveal className="md:pt-2">
@@ -1211,7 +1212,7 @@ export default function WebdesignKasselPage() {
            page with grace, so the site reads naturally for buyers at
            every vocabulary register without ever feeling like SEO.
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           {/* Credo plate texture — tight horizontal rules, narrower
               pitch than the hero plate. Signals "statement page"
               without repeating § 01 Positionierung's ceremony. */}
@@ -1341,7 +1342,7 @@ export default function WebdesignKasselPage() {
            and given full section weight; the three related routes are
            elevated to full-width ContextualCrossLink gatefolds.
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#080809] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.55]"
@@ -1510,7 +1511,7 @@ export default function WebdesignKasselPage() {
         {/* =========================================================
            § END — FINAL CTA (bureau cartouche)
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
           <div aria-hidden className="section-top-rule" />
 
           {/* Plate corner crop marks — four cardinal anchors, Kassel-
@@ -1621,7 +1622,7 @@ export default function WebdesignKasselPage() {
                     <span>Unverbindlich anfragen</span>
                     <span
                       aria-hidden
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0A0A0A] text-white magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
                     >
                       <svg
                         viewBox="0 0 14 14"

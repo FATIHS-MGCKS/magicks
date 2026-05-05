@@ -116,7 +116,7 @@ function ProjectDetail({ project }: { project: Project }) {
        * and breathing scale so it feels spatial rather than static
        * once the reader starts scrolling. */
       if (heroCover) {
-        gsap.set(heroCover, { opacity: 0, scale: 1.015 });
+        gsap.set(heroCover, { opacity: 0.16, scale: 1.012 });
         gsap.to(heroCover, {
           opacity: 1,
           scale: 1,
@@ -127,7 +127,7 @@ function ProjectDetail({ project }: { project: Project }) {
 
         parallaxDrift(heroCover, {
           from: 0,
-          to: -8,
+          to: -6,
           start: "top top",
           end: "bottom top",
           scrub: true,
@@ -135,8 +135,8 @@ function ProjectDetail({ project }: { project: Project }) {
 
         breathingScale(heroCover, {
           from: 1,
-          peak: 1.014,
-          to: 1.005,
+          peak: 1.011,
+          to: 1.004,
           start: "top bottom",
           end: "bottom top",
           scrub: 1.1,
@@ -154,10 +154,11 @@ function ProjectDetail({ project }: { project: Project }) {
       presenceEnvelope(reveals, {
         start: "top 90%",
         end: "bottom 10%",
-        yFrom: 20,
-        yTo: -14,
-        blur: 4,
-        holdRatio: 0.52,
+        yFrom: 16,
+        yTo: -10,
+        blur: 3.2,
+        opacityFloor: 0.2,
+        holdRatio: 0.58,
         scrub: 0.95,
       });
 
@@ -173,7 +174,7 @@ function ProjectDetail({ project }: { project: Project }) {
         parallaxDrift(heroMasthead, {
           trigger: heroSection,
           from: 0,
-          to: -16,
+          to: -10,
           start: "top top",
           end: "bottom top",
           scrub: true,
@@ -189,10 +190,10 @@ function ProjectDetail({ project }: { project: Project }) {
       const finalHead = root.querySelector<HTMLElement>("[data-cs-final-head]");
       if (finalSection && finalHead) {
         gsap.set(finalHead, {
-          opacity: 0,
-          y: 18,
+          opacity: 0.16,
+          y: 12,
           letterSpacing: "0.034em",
-          filter: "blur(5px)",
+          filter: "blur(3.8px)",
         });
         gsap.to(finalHead, {
           opacity: 1,
@@ -202,8 +203,8 @@ function ProjectDetail({ project }: { project: Project }) {
           ease: "none",
           scrollTrigger: {
             trigger: finalSection,
-            start: "top 78%",
-            end: "top 28%",
+            start: "top 82%",
+            end: "top 34%",
             scrub: 1.1,
             invalidateOnRefresh: true,
           },
@@ -225,7 +226,7 @@ function ProjectDetail({ project }: { project: Project }) {
 
       <main
         ref={rootRef}
-        className="relative bg-[#0A0A0A] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative bg-[var(--magicks-bg-base)] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
       >
         {/* =========================================================
            § 00 — HERO · TYPOGRAPHIC MASTHEAD
@@ -259,7 +260,7 @@ function ProjectDetail({ project }: { project: Project }) {
                 className="flex items-center gap-4 sm:gap-5"
               >
                 <span aria-hidden className="h-px w-10 bg-white/24 sm:w-14" />
-                <span className="font-mono flex items-center gap-3 whitespace-nowrap text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/52 sm:gap-4 sm:text-[10px] md:text-[10.5px]">
+                <span className="font-mono flex items-center gap-3 whitespace-nowrap text-[10px] font-medium uppercase leading-none tracking-[0.24em] text-white/52 sm:gap-4 sm:text-[10.5px] sm:tracking-[0.22em] md:text-[10.75px]">
                   <Link
                     to="/projekte"
                     className="text-white/56 no-underline transition-colors hover:text-white/88"
@@ -280,7 +281,7 @@ function ProjectDetail({ project }: { project: Project }) {
             <div className="max-w-[62rem]">
               <p
                 data-cs-reveal
-                className="font-mono mb-7 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-medium uppercase leading-none tracking-[0.36em] text-white/54 sm:mb-9 sm:text-[10.5px]"
+                className="font-mono mb-7 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/54 sm:mb-9 sm:text-[11px] sm:tracking-[0.22em]"
               >
                 <span className="text-white/72">{project.category}</span>
                 {project.industry ? (
@@ -295,14 +296,14 @@ function ProjectDetail({ project }: { project: Project }) {
 
               <h1
                 data-cs-reveal
-                className="font-instrument text-[2.35rem] leading-[1.0] tracking-[-0.036em] text-white sm:text-[3.1rem] md:text-[3.95rem] lg:text-[4.65rem] xl:text-[5.2rem]"
+                className="font-instrument text-[2.35rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[3.1rem] md:text-[3.95rem] lg:text-[4.65rem] xl:text-[5.2rem]"
               >
                 {project.title}
               </h1>
 
               <p
                 data-cs-reveal
-                className="font-instrument mt-10 max-w-[42rem] text-[1.28rem] italic leading-[1.38] tracking-[-0.012em] text-white/90 sm:text-[1.44rem] md:mt-12 md:text-[1.58rem]"
+                className="font-instrument mt-10 max-w-[42rem] text-[1.34rem] italic leading-[1.44] tracking-[-0.009em] text-white/90 sm:text-[1.5rem] md:mt-12 md:text-[1.64rem]"
               >
                 {project.intro}
               </p>
@@ -310,7 +311,7 @@ function ProjectDetail({ project }: { project: Project }) {
               {project.supportingIntro ? (
                 <p
                   data-cs-reveal
-                  className="font-ui mt-7 max-w-[42rem] border-t border-white/[0.08] pt-6 text-[14.5px] leading-[1.72] text-white/62 md:mt-9 md:text-[15.5px]"
+                  className="font-ui mt-7 max-w-[42rem] border-t border-[rgb(var(--magicks-line-rgb)/0.18)] pt-6 text-[15px] leading-[1.76] text-white/62 md:mt-9 md:text-[16px]"
                 >
                   {project.supportingIntro}
                 </p>
@@ -324,13 +325,13 @@ function ProjectDetail({ project }: { project: Project }) {
               >
                 <Link
                   to="/kontakt"
-                  className="group relative inline-flex items-center gap-3 rounded-full border border-white/28 bg-white/[0.02] py-3 pl-7 pr-3 text-[14.5px] font-medium tracking-wide text-white no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] magicks-duration-hover magicks-ease-out transition-[transform,border-color,background-color,box-shadow] hover:-translate-y-[1px] hover:border-white/48 hover:bg-white/[0.05] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] active:translate-y-0 active:scale-[0.985] md:text-[15.5px]"
+                  className="group relative inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-line-rgb)/0.3)] bg-[rgb(var(--magicks-ink-rgb)/0.04)] py-3 pl-7 pr-3 text-[15px] font-medium tracking-[0.008em] text-[rgb(var(--magicks-ink-rgb)/0.9)] no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.22)] magicks-duration-hover magicks-ease-out transition-[transform,border-color,background-color,box-shadow] hover:-translate-y-[1px] hover:border-[rgb(var(--magicks-line-rgb)/0.45)] hover:bg-[rgb(var(--magicks-ink-rgb)/0.07)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.36)] active:translate-y-0 active:scale-[0.985] md:text-[16px]"
                   aria-label="Projekt anfragen"
                 >
                   <span className="font-ui">Projekt anfragen</span>
                   <span
                     aria-hidden
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#0A0A0A] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
                   >
                     <svg
                       viewBox="0 0 14 14"
@@ -361,7 +362,7 @@ function ProjectDetail({ project }: { project: Project }) {
                       aria-hidden
                       className="h-[6px] w-[6px] rounded-full bg-white/84 tick-breathing"
                     />
-                    <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/66 transition-colors duration-[420ms] group-hover/live:text-white/92 sm:text-[11px]">
+                    <span className="font-mono text-[10.75px] font-medium uppercase leading-none tracking-[0.22em] text-white/66 transition-colors duration-[420ms] group-hover/live:text-white/92 sm:text-[11.25px] sm:tracking-[0.2em]">
                       Live
                     </span>
                     <span
@@ -409,10 +410,10 @@ function ProjectDetail({ project }: { project: Project }) {
           <div data-cs-reveal className="layout-max">
             {/* Rail label */}
             <div className="flex items-center justify-between gap-4 border-t border-white/[0.08] py-4 md:py-5">
-              <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/46 sm:text-[10px]">
+              <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 sm:text-[10.5px] sm:tracking-[0.22em]">
                 Projektakte · Register
               </span>
-              <span className="font-mono tabular-nums text-[9.5px] font-medium uppercase leading-none tracking-[0.38em] text-white/34 sm:text-[10px]">
+              <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.22em] text-white/34 sm:text-[10.5px] sm:tracking-[0.2em]">
                 04 Einträge
               </span>
             </div>
@@ -464,7 +465,7 @@ function ProjectDetail({ project }: { project: Project }) {
         {/* =========================================================
            § — PROJEKT-EINBLICKE (gallery)
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#080809] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.16]"
@@ -480,11 +481,11 @@ function ProjectDetail({ project }: { project: Project }) {
               className="mb-12 flex items-center gap-5 sm:mb-16"
             >
               <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
-              <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/46 sm:text-[10.5px]">
+              <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 sm:text-[11px] sm:tracking-[0.22em]">
                 § {String(project.case.length + 1).padStart(2, "0")} — Projekt-Einblicke
               </span>
               <span aria-hidden className="h-px flex-1 bg-white/12" />
-              <span className="font-mono tabular-nums hidden whitespace-nowrap text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/36 sm:inline sm:text-[10px]">
+              <span className="font-mono tabular-nums hidden whitespace-nowrap text-[10px] font-medium uppercase leading-none tracking-[0.22em] text-white/36 sm:inline sm:text-[10.5px] sm:tracking-[0.2em]">
                 {String(gallerySlots.length).padStart(2, "0")} Plates
               </span>
             </div>
@@ -492,13 +493,13 @@ function ProjectDetail({ project }: { project: Project }) {
             <div className="max-w-[58rem]">
               <h2
                 data-cs-reveal
-                className="font-instrument text-[2rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.65rem] xl:text-[3.95rem]"
+                className="font-instrument text-[2rem] leading-[1.06] tracking-[-0.026em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.65rem] xl:text-[3.95rem]"
               >
                 Projekt-Einblicke
               </h2>
               <p
                 data-cs-reveal
-                className="font-instrument mt-7 max-w-[42rem] text-[1.18rem] italic leading-[1.42] tracking-[-0.01em] text-white/76 sm:text-[1.3rem] md:mt-9 md:text-[1.4rem]"
+                className="font-instrument mt-7 max-w-[42rem] text-[1.24rem] italic leading-[1.48] tracking-[-0.008em] text-white/76 sm:text-[1.36rem] md:mt-9 md:text-[1.46rem]"
               >
                 Seitenansichten, Kompositionen, Details —{" "}
                 <em className="not-italic text-white/50">
@@ -535,13 +536,13 @@ function ProjectDetail({ project }: { project: Project }) {
               <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
                 <div data-cs-reveal className="md:pt-2">
                   <div className="flex flex-col gap-4">
-                    <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
+                    <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/48 sm:text-[11px] sm:tracking-[0.22em]">
                       § {String(project.case.length + 2).padStart(2, "0")} — Leistung
                     </p>
                     <ChapterMarker num="LP" label="Umfang" />
                     <span
                       aria-hidden
-                      className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/34 sm:text-[10.5px]"
+                      className="font-mono tabular-nums text-[10.5px] font-medium uppercase leading-none tracking-[0.2em] text-white/34 sm:text-[11px] sm:tracking-[0.18em]"
                     >
                       {String(project.services.length).padStart(2, "0")}{" "}
                       Positionen
@@ -552,7 +553,7 @@ function ProjectDetail({ project }: { project: Project }) {
                 <div>
                   <h2
                     data-cs-reveal
-                    className="font-instrument max-w-[52rem] text-[2rem] leading-[1.05] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
+                    className="font-instrument max-w-[52rem] text-[2rem] leading-[1.08] tracking-[-0.024em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
                   >
                     Leistung im Überblick
                   </h2>
@@ -582,10 +583,10 @@ function ProjectDetail({ project }: { project: Project }) {
                               : "md:pl-8 lg:pl-10"
                           }`}
                         >
-                          <span className="font-mono tabular-nums pt-[0.24rem] text-[10.5px] font-medium leading-none tracking-[0.28em] text-white/52 md:text-[11.5px]">
+                          <span className="font-mono tabular-nums pt-[0.24rem] text-[10.75px] font-medium leading-none tracking-[0.18em] text-white/52 md:text-[11.5px]">
                             {String(i + 1).padStart(2, "0")}
                           </span>
-                          <p className="font-instrument max-w-[24rem] text-[1.22rem] leading-[1.3] tracking-[-0.012em] text-white/94 sm:text-[1.38rem] md:text-[1.52rem]">
+                          <p className="font-instrument max-w-[24rem] text-[1.26rem] leading-[1.36] tracking-[-0.01em] text-white/94 sm:text-[1.42rem] md:text-[1.56rem]">
                             {service}
                           </p>
                         </li>
@@ -602,12 +603,12 @@ function ProjectDetail({ project }: { project: Project }) {
            § — PASSENDE LEISTUNGEN (related links)
         ========================================================= */}
         {project.relatedServices && project.relatedServices.length > 0 ? (
-          <section className="relative overflow-hidden bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+          <section className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
             <div className="relative layout-max">
               <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
                 <div data-cs-reveal className="md:pt-2">
                   <div className="flex flex-col gap-4">
-                    <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
+                    <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/48 sm:text-[11px] sm:tracking-[0.22em]">
                       § {String(project.case.length + 3).padStart(2, "0")} —
                       Anschluss
                     </p>
@@ -618,14 +619,14 @@ function ProjectDetail({ project }: { project: Project }) {
                 <div>
                   <h2
                     data-cs-reveal
-                    className="font-instrument max-w-[52rem] text-[2rem] leading-[1.04] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
+                    className="font-instrument max-w-[52rem] text-[2rem] leading-[1.07] tracking-[-0.024em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
                   >
                     Passende Leistungen
                   </h2>
 
                   <p
                     data-cs-reveal
-                    className="font-ui mt-7 max-w-[44rem] text-[15.5px] leading-[1.72] text-white/66 md:mt-9 md:text-[16.5px]"
+                    className="font-ui mt-7 max-w-[44rem] text-[16px] leading-[1.76] text-white/66 md:mt-9 md:text-[17px]"
                   >
                     Dieses Projekt knüpft an mehrere Leistungen des Studios an
                     — von der Website-Umsetzung bis zur regionalen
@@ -672,16 +673,16 @@ function ProjectDetail({ project }: { project: Project }) {
                         />
 
                         <div className="relative flex items-baseline justify-between gap-5">
-                          <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.38em] text-white/46 md:text-[10.5px]">
+                          <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 md:text-[10.75px] md:tracking-[0.22em]">
                             {link.eyebrow ?? "Verwandt"}
                           </span>
-                          <span className="font-mono tabular-nums text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/36 md:text-[10px]">
+                          <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.22em] text-white/36 md:text-[10.5px] md:tracking-[0.2em]">
                             LK-{String.fromCharCode(65 + i)}
                           </span>
                         </div>
 
                         <div className="relative mt-6 flex items-baseline justify-between gap-6 md:mt-8">
-                          <h3 className="font-instrument text-[1.7rem] leading-[1.06] tracking-[-0.024em] text-white transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover/rl:translate-x-[2px] sm:text-[2.05rem] md:text-[2.35rem] lg:text-[2.6rem]">
+                          <h3 className="font-instrument text-[1.7rem] leading-[1.1] tracking-[-0.02em] text-white transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover/rl:translate-x-[2px] sm:text-[2.05rem] md:text-[2.35rem] lg:text-[2.6rem]">
                             {link.label}
                           </h3>
                           <span
@@ -705,7 +706,7 @@ function ProjectDetail({ project }: { project: Project }) {
         ========================================================= */}
         <section
           data-cs-final
-          className="relative overflow-hidden bg-[#070708] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56"
+          className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56"
         >
           <div aria-hidden className="section-top-rule" />
 
@@ -734,7 +735,7 @@ function ProjectDetail({ project }: { project: Project }) {
             <div className="mx-auto max-w-[72rem] text-center">
               <p
                 data-cs-reveal
-                className="font-mono mb-6 text-[9.5px] font-medium uppercase leading-none tracking-[0.46em] text-white/42 sm:mb-8 sm:text-[10px]"
+                className="font-mono mb-6 text-[10px] font-medium uppercase leading-none tracking-[0.24em] text-white/42 sm:mb-8 sm:text-[10.5px] sm:tracking-[0.22em]"
               >
                 Projektakte · Ende
               </p>
@@ -750,7 +751,7 @@ function ProjectDetail({ project }: { project: Project }) {
 
               <h2
                 data-cs-final-head
-                className="font-instrument text-[2.15rem] leading-[1.02] tracking-[-0.036em] text-white sm:text-[2.95rem] md:text-[3.85rem] lg:text-[4.6rem] xl:text-[5.15rem]"
+                className="font-instrument text-[2.15rem] leading-[1.05] tracking-[-0.03em] text-white sm:text-[2.95rem] md:text-[3.85rem] lg:text-[4.6rem] xl:text-[5.15rem]"
               >
                 Du willst einen Auftritt, der sichtbar wird{" "}
                 <em className="italic text-white/72">
@@ -760,7 +761,7 @@ function ProjectDetail({ project }: { project: Project }) {
 
               <p
                 data-cs-reveal
-                className="font-ui mx-auto mt-12 max-w-[46rem] text-[15.5px] leading-[1.72] text-white/66 md:mt-14 md:text-[17px]"
+                className="font-ui mx-auto mt-12 max-w-[46rem] text-[16px] leading-[1.76] text-white/66 md:mt-14 md:text-[17.5px]"
               >
                 Wir entwickeln Websites und digitale Auftritte, die klar wirken,
                 technisch sauber funktionieren und eine starke Grundlage für
@@ -773,12 +774,12 @@ function ProjectDetail({ project }: { project: Project }) {
               >
                 <Link
                   to="/kontakt"
-                  className="group relative inline-flex items-center gap-3 rounded-full border border-white/22 bg-white py-4 pl-8 pr-3 text-[15px] font-medium tracking-wide text-[#0A0A0A] no-underline shadow-[0_34px_80px_-32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.45)] magicks-duration-hover magicks-ease-out transition-[transform,box-shadow] hover:-translate-y-[2px] hover:shadow-[0_44px_90px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.55)] active:translate-y-0 active:scale-[0.985] md:text-[16px]"
+                  className="group relative inline-flex items-center gap-3 rounded-full border border-white/22 bg-white py-4 pl-8 pr-3 text-[15.5px] font-medium tracking-[0.008em] text-[#0A0A0A] no-underline shadow-[0_34px_80px_-32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.45)] magicks-duration-hover magicks-ease-out transition-[transform,box-shadow] hover:-translate-y-[2px] hover:shadow-[0_44px_90px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.55)] active:translate-y-0 active:scale-[0.985] md:text-[16.5px]"
                 >
                   <span>Projekt anfragen</span>
                   <span
                     aria-hidden
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0A0A0A] text-white magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
                   >
                     <svg
                       viewBox="0 0 14 14"
@@ -806,7 +807,7 @@ function ProjectDetail({ project }: { project: Project }) {
                 <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
                 <Link
                   to="/projekte"
-                  className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/54 no-underline transition-colors hover:text-white/82 sm:text-[10.5px]"
+                  className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/54 no-underline transition-colors hover:text-white/82 sm:text-[11px] sm:tracking-[0.22em]"
                 >
                   ← Alle Projekte
                 </Link>
@@ -865,7 +866,7 @@ function CaseSection({
     : [];
   const hasItems = section.items && section.items.length > 0;
 
-  const bg = index % 2 === 0 ? "bg-[#09090A]" : "bg-transparent";
+  const bg = index % 2 === 0 ? "bg-[var(--magicks-bg-elevated)]" : "bg-transparent";
 
   const variant = section.variant ?? (hasItems && !paragraphs.length ? "plate" : "default");
 
@@ -1196,7 +1197,7 @@ function HeroCoverWide({
 
   if (cover) {
     return (
-      <div className="relative aspect-[4/3] w-full overflow-hidden border border-white/[0.08] bg-[#08080A] sm:aspect-[3/2] md:aspect-[16/9] lg:aspect-[21/9]">
+      <div className="relative aspect-[4/3] w-full overflow-hidden border border-white/[0.08] bg-[var(--magicks-bg-lifted)] sm:aspect-[3/2] md:aspect-[16/9] lg:aspect-[21/9]">
         <img
           src={cover.src}
           alt={cover.alt}
@@ -1213,7 +1214,7 @@ function HeroCoverWide({
 
   return (
     <div
-      className="relative aspect-[4/3] w-full overflow-hidden border border-white/[0.08] bg-[#08080A] sm:aspect-[3/2] md:aspect-[16/9] lg:aspect-[21/9]"
+      className="relative aspect-[4/3] w-full overflow-hidden border border-white/[0.08] bg-[var(--magicks-bg-lifted)] sm:aspect-[3/2] md:aspect-[16/9] lg:aspect-[21/9]"
       role="img"
       aria-label={`${title} — Bildmaterial folgt`}
     >
@@ -1249,7 +1250,7 @@ function HeroCoverWide({
         aria-hidden
         className="absolute left-1/2 top-1/2 flex h-[22px] w-[22px] -translate-x-1/2 -translate-y-1/2 items-center justify-center"
       >
-        <span className="absolute inset-0 block rotate-45 border border-white/62 bg-[#08080A]" />
+        <span className="absolute inset-0 block rotate-45 border border-white/62 bg-[var(--magicks-bg-lifted)]" />
         <span className="absolute h-[8px] w-[8px] rotate-45 bg-white/84" />
       </div>
 
@@ -1354,7 +1355,7 @@ function GalleryTile({
 
   const plate = slot ? (
     <div
-      className={`relative w-full overflow-hidden border border-white/[0.08] bg-[#08080A] ${aspectClass} ${
+      className={`relative w-full overflow-hidden border border-white/[0.08] bg-[var(--magicks-bg-lifted)] ${aspectClass} ${
         linked ? "transition-colors duration-[480ms] group-hover/plate:border-white/[0.18]" : ""
       }`}
     >
@@ -1410,7 +1411,7 @@ function GalleryTile({
         )
       ) : (
         <div
-          className={`relative w-full overflow-hidden border border-white/[0.08] bg-[#08080A] ${aspectClass}`}
+          className={`relative w-full overflow-hidden border border-white/[0.08] bg-[var(--magicks-bg-lifted)] ${aspectClass}`}
           role="img"
           aria-label={`${projectTitle} — Bild ${index + 1} folgt`}
         >
@@ -1450,7 +1451,7 @@ function GalleryTile({
               span >= 8 ? "h-[18px] w-[18px]" : "h-[14px] w-[14px]"
             }`}
           >
-            <span className="absolute inset-0 block rotate-45 border border-white/60 bg-[#08080A]" />
+            <span className="absolute inset-0 block rotate-45 border border-white/60 bg-[var(--magicks-bg-lifted)]" />
             <span
               className={`absolute rotate-45 bg-white/80 ${
                 span >= 8 ? "h-[6px] w-[6px]" : "h-[5px] w-[5px]"
@@ -1491,11 +1492,11 @@ function GalleryTileCaption({
 }) {
   return (
     <div className="pointer-events-none absolute inset-x-5 bottom-5 flex items-end justify-between gap-5 md:inset-x-7 md:bottom-7">
-      <span className="font-mono tabular-nums text-[9.5px] font-medium uppercase leading-none tracking-[0.38em] text-white/46 md:text-[10px]">
+      <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.22em] text-white/46 md:text-[10.5px] md:tracking-[0.2em]">
         Plate · {String(index + 1).padStart(2, "0")}
       </span>
       <span
-        className={`font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] md:text-[10px] ${
+        className={`font-mono text-[10px] font-medium uppercase leading-none tracking-[0.24em] md:text-[10.5px] md:tracking-[0.22em] ${
           empty ? "text-white/34" : "text-white/52"
         }`}
       >
@@ -1545,11 +1546,11 @@ function MetaCell({
         !first ? "sm:border-l sm:border-white/[0.08] sm:pl-5 md:pl-7" : ""
       }`}
     >
-      <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/36 sm:text-[9.5px]">
+      <span className="font-mono text-[9.75px] font-medium uppercase leading-none tracking-[0.22em] text-white/36 sm:text-[10px] sm:tracking-[0.2em]">
         {k}
       </span>
       {typeof v === "string" ? (
-        <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.28em] text-white/68 sm:text-[10.5px]">
+        <span className="font-mono tabular-nums text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-white/68 sm:text-[11px] sm:tracking-[0.16em]">
           {v}
         </span>
       ) : (
@@ -1581,17 +1582,17 @@ function ProjectNotFound() {
         description="Das angefragte Projekt existiert nicht mehr oder wurde umbenannt. Zur Projektübersicht von MAGICKS Studio."
         robots="noindex, follow"
       />
-      <main className="relative bg-[#0A0A0A] pb-32 pt-[8.5rem]">
+      <main className="relative bg-[var(--magicks-bg-base)] pb-32 pt-[8.5rem]">
         <div className="layout-max px-5 text-center md:px-12">
-          <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/46">
+          <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 sm:tracking-[0.22em]">
             § 00 — Nicht gefunden
           </p>
-          <h1 className="font-instrument mt-6 text-[1.9rem] leading-[1.1] tracking-[-0.03em] text-white sm:text-[2.3rem] md:text-[2.7rem]">
+          <h1 className="font-instrument mt-6 text-[1.9rem] leading-[1.12] tracking-[-0.026em] text-white sm:text-[2.3rem] md:text-[2.7rem]">
             Dieses Projekt existiert{" "}
             <em className="italic text-white/62">nicht mehr</em> oder wurde
             umbenannt.
           </h1>
-          <p className="font-ui mx-auto mt-6 max-w-[36rem] text-[15px] leading-[1.72] text-white/62 md:text-[16px]">
+          <p className="font-ui mx-auto mt-6 max-w-[36rem] text-[15.5px] leading-[1.76] text-white/62 md:text-[16.5px]">
             Alle veröffentlichten Arbeiten findest du in der aktuellen
             Studio-Auswahl.
           </p>

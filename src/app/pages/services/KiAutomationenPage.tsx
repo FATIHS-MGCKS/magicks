@@ -6,6 +6,7 @@ import { ChapterMarker } from "../../components/home/ChapterMarker";
 import { ContextualCrossLink } from "../../components/service/ContextualCrossLink";
 import { EditorialAnchor } from "../../components/service/EditorialAnchor";
 import { SectionTransition } from "../../components/service/SectionTransition";
+import { presenceEnvelope } from "../../lib/scrollMotion";
 import { RouteSEO } from "../../seo/RouteSEO";
 
 /* ------------------------------------------------------------------
@@ -164,7 +165,7 @@ function FlowMesh() {
               <div
                 key={node.idx}
                 data-ki-node
-                className="relative flex flex-col gap-2 border border-white/[0.14] bg-[#0A0A0A] px-3 py-2.5 sm:px-3.5 sm:py-3"
+                className="relative flex flex-col gap-2 border border-white/[0.14] bg-[var(--magicks-bg-lifted)] px-3 py-2.5 sm:px-3.5 sm:py-3"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.3em] text-white/44 sm:text-[9.5px]">
@@ -188,7 +189,7 @@ function FlowMesh() {
           {/* Central KI hub — emphasized */}
           <div
             data-ki-hub
-            className="relative flex flex-col items-center justify-center gap-3 border border-white/[0.24] bg-[#0C0C0D] px-4 py-6 sm:px-5 sm:py-8"
+            className="relative flex flex-col items-center justify-center gap-3 border border-white/[0.24] bg-[var(--magicks-bg-lifted)] px-4 py-6 sm:px-5 sm:py-8"
           >
             <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.36em] text-white/50 sm:text-[9.5px]">
               Core · Hub
@@ -214,7 +215,7 @@ function FlowMesh() {
               <div
                 key={node.idx}
                 data-ki-node
-                className="relative flex flex-col gap-2 border border-white/[0.14] bg-[#0A0A0A] px-3 py-2.5 sm:px-3.5 sm:py-3"
+                className="relative flex flex-col gap-2 border border-white/[0.14] bg-[var(--magicks-bg-lifted)] px-3 py-2.5 sm:px-3.5 sm:py-3"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.3em] text-white/44 sm:text-[9.5px]">
@@ -380,7 +381,7 @@ export default function KiAutomationenPage() {
         )
         .to(
           heroHub,
-          { opacity: 1, scale: 1, duration: 0.95, ease: "back.out(1.4)" },
+          { opacity: 1, scale: 1, duration: 0.95, ease: "power3.out" },
           2.12,
         )
         .to(heroCredit, { opacity: 1, y: 0, duration: 1.0 }, 2.35);
@@ -462,58 +463,132 @@ export default function KiAutomationenPage() {
 
       // ——— Generic scroll reveals ———
       reveals.forEach((el) => {
-        gsap.set(el, { opacity: 0, y: 22 });
-        gsap.to(el, {
-          opacity: 1,
-          y: 0,
-          duration: 1.0,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 82%", once: true },
+        presenceEnvelope(el, {
+          trigger: el,
+          start: "top 88%",
+          end: "bottom 20%",
+          yFrom: 18,
+          yTo: -10,
+          blur: 3,
+          opacityFloor: 0.18,
+          holdRatio: 0.52,
+          scrub: 0.9,
         });
       });
 
       // ——— Ceremonial pull statement ———
       if (pullLines.length) {
-        gsap.set(pullLines, { yPercent: 110, opacity: 0 });
-        if (pullHeading) gsap.set(pullHeading, { letterSpacing: "0.008em" });
-        const ptl = gsap
-          .timeline({
-            scrollTrigger: { trigger: pullLines[0], start: "top 78%", once: true },
-          })
-          .to(pullLines, {
-            yPercent: 0,
-            opacity: 1,
-            duration: 1.45,
-            ease: "power4.out",
-            stagger: 0.14,
-          });
+        presenceEnvelope(pullLines, {
+          trigger: pullLines[0],
+          start: "top 84%",
+          end: "bottom 18%",
+          yFrom: 22,
+          yTo: -12,
+          blur: 3.6,
+          opacityFloor: 0.16,
+          holdRatio: 0.56,
+          stagger: 0.035,
+          scrub: 1.0,
+        });
         if (pullHeading) {
-          ptl.to(
+          gsap.fromTo(
             pullHeading,
-            { letterSpacing: "-0.038em", duration: 1.75, ease: "power2.out" },
-            0.2,
+            { letterSpacing: "0.008em" },
+            {
+              letterSpacing: "-0.038em",
+              ease: "none",
+              scrollTrigger: {
+                trigger: pullLines[0],
+                start: "top 84%",
+                end: "bottom 22%",
+                scrub: 1.0,
+                invalidateOnRefresh: true,
+              },
+            },
           );
         }
       }
 
       // ——— Final CTA choreography ———
       if (finalLineA.length || finalLineB.length) {
-        gsap.set([...finalLineA, ...finalLineB], { yPercent: 118, opacity: 0 });
-        gsap.set(finalRule, { scaleX: 0, transformOrigin: "center" });
-        gsap.set(finalLedger, { opacity: 0, y: 14 });
-        gsap.set(finalCta, { opacity: 0, y: 18, scale: 0.96 });
         const trigger =
           (finalLineA[0] as HTMLElement | undefined)?.closest("section") ?? finalLineA[0];
-        gsap
-          .timeline({
-            scrollTrigger: { trigger, start: "top 72%", once: true },
-            defaults: { ease: "power4.out" },
-          })
-          .to(finalLineA, { yPercent: 0, opacity: 1, duration: 1.15, stagger: 0.07 }, 0)
-          .to(finalLineB, { yPercent: 0, opacity: 1, duration: 1.25, stagger: 0.07 }, 0.25)
-          .to(finalRule, { scaleX: 1, duration: 1.3, ease: "power2.inOut" }, 0.7)
-          .to(finalCta, { opacity: 1, y: 0, scale: 1, duration: 0.95, ease: "back.out(1.2)" }, 0.95)
-          .to(finalLedger, { opacity: 1, y: 0, duration: 0.95, stagger: 0.1 }, 1.1);
+
+        presenceEnvelope(finalLineA, {
+          trigger,
+          start: "top 84%",
+          end: "bottom 18%",
+          yFrom: 20,
+          yTo: -10,
+          blur: 3.2,
+          opacityFloor: 0.16,
+          holdRatio: 0.56,
+          stagger: 0.03,
+          scrub: 1.0,
+        });
+        presenceEnvelope(finalLineB, {
+          trigger,
+          start: "top 80%",
+          end: "bottom 16%",
+          yFrom: 22,
+          yTo: -10,
+          blur: 3.2,
+          opacityFloor: 0.16,
+          holdRatio: 0.56,
+          stagger: 0.03,
+          scrub: 1.0,
+        });
+
+        gsap.fromTo(
+          finalRule,
+          { scaleX: 0, transformOrigin: "center center" },
+          {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger,
+              start: "top 84%",
+              end: "top 46%",
+              scrub: 1.0,
+              invalidateOnRefresh: true,
+            },
+          },
+        );
+        gsap.to(finalRule, {
+          scaleX: 0.58,
+          ease: "none",
+          scrollTrigger: {
+            trigger,
+            start: "top 20%",
+            end: "bottom 0%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        presenceEnvelope(finalCta, {
+          trigger,
+          start: "top 82%",
+          end: "bottom 8%",
+          yFrom: 16,
+          yTo: -8,
+          blur: 2.6,
+          opacityFloor: 0.18,
+          holdRatio: 0.6,
+          scrub: 1.0,
+        });
+        presenceEnvelope(finalLedger, {
+          trigger,
+          start: "top 80%",
+          end: "bottom 10%",
+          yFrom: 14,
+          yTo: -8,
+          blur: 2.4,
+          opacityFloor: 0.22,
+          holdRatio: 0.58,
+          stagger: 0.02,
+          scrub: 1.0,
+        });
       }
     }, root);
 
@@ -526,7 +601,7 @@ export default function KiAutomationenPage() {
 
       <main
         ref={rootRef}
-        className="relative bg-[#0A0A0A] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative bg-[var(--magicks-bg-base)] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
       >
         {/* =========================================================
            HERO — connected-flow energy
@@ -801,7 +876,7 @@ export default function KiAutomationenPage() {
            AUDIENCE — "Für Unternehmen, die weniger manuell arbeiten wollen"
            Each case is routed to a flow-stage — reads as a signal path.
         ========================================================= */}
-        <section className="relative bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div className="layout-max">
             <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
               <div data-ki-reveal className="md:pt-2">
@@ -967,7 +1042,7 @@ export default function KiAutomationenPage() {
         {/* =========================================================
            APPROACH — "Wie wir KI und Automationen denken"
         ========================================================= */}
-        <section className="relative bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div className="layout-max">
             <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:gap-20 lg:gap-28">
               <div data-ki-reveal>
@@ -1119,7 +1194,7 @@ export default function KiAutomationenPage() {
            CEREMONIAL PULL-STATEMENT — three-line declaration
            IN → LOGIK → OUT coordinate column in the left gutter.
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 py-36 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 py-36 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.85]"
@@ -1247,7 +1322,7 @@ export default function KiAutomationenPage() {
            4-field colophon reads as a protocol signature rather than
            a product back-cover (Shops) or blueprint cartouche (WS).
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
           <div aria-hidden className="section-top-rule" />
 
           {/* Protocol plate corner crop marks — flow stages at corners
@@ -1359,7 +1434,7 @@ export default function KiAutomationenPage() {
                     <span>Projekt besprechen</span>
                     <span
                       aria-hidden
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0A0A0A] text-white magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
                     >
                       <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.4">
                         <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />

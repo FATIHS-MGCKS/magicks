@@ -74,7 +74,7 @@ export function About() {
           { xPercent: -100, opacity: 0 },
           {
             xPercent: 100,
-            opacity: 1,
+            opacity: 0.62,
             ease: "none",
             scrollTrigger: {
               trigger: root,
@@ -96,7 +96,7 @@ export function About() {
         quote,
         { opacity: 0, y: 18, scale: 0.96 },
         {
-          opacity: 0.58,
+          opacity: 0.46,
           y: 0,
           scale: 1,
           ease: "none",
@@ -109,8 +109,8 @@ export function About() {
         },
       );
       gsap.to(quote, {
-        opacity: 0.1,
-        scale: 1.03,
+        opacity: 0.16,
+        scale: 1.02,
         ease: "none",
         scrollTrigger: {
           trigger: root,
@@ -168,13 +168,13 @@ export function About() {
 
       if (left && center && right) {
         gsap.set(center, {
-          scale: 1.55,
+          scale: 1.34,
           opacity: 0,
           transformOrigin: "0% 50%",
           willChange: "transform, opacity",
         });
-        gsap.set(left, { x: -90, opacity: 0, willChange: "transform, opacity" });
-        gsap.set(right, { x: 90, opacity: 0, willChange: "transform, opacity" });
+        gsap.set(left, { x: -72, opacity: 0, willChange: "transform, opacity" });
+        gsap.set(right, { x: 72, opacity: 0, willChange: "transform, opacity" });
 
         // Total timeline length ≈ 4.0 s; ScrollTrigger maps it onto
         // the 67 %-of-viewport scroll distance. Tween positions are
@@ -185,7 +185,7 @@ export function About() {
             trigger: headingTrigger,
             start: "top 95%",
             end: "top 28%",
-            scrub: 1.4,
+            scrub: 1.15,
             invalidateOnRefresh: true,
           },
           defaults: { ease: "power2.inOut" },
@@ -257,7 +257,7 @@ export function About() {
       // on meaning.
       if (emphasis.length) {
         emphasis.forEach((em) => {
-          gsap.set(em, { color: "rgba(255,255,255,0.72)" });
+          gsap.set(em, { color: "rgb(var(--magicks-ink-rgb) / 0.72)" });
           gsap
             .timeline({
               scrollTrigger: {
@@ -269,9 +269,9 @@ export function About() {
               },
               defaults: { ease: "none" },
             })
-            .to(em, { color: "rgba(255,255,255,1)", duration: 0.45, ease: "power2.out" }, 0)
-            .to(em, { color: "rgba(255,255,255,1)", duration: 0.25, ease: "none" }, 0.45)
-            .to(em, { color: "rgba(255,255,255,0.78)", duration: 0.3, ease: "power2.in" }, 0.7);
+            .to(em, { color: "rgb(var(--magicks-ink-rgb) / 0.96)", duration: 0.45, ease: "power2.out" }, 0)
+            .to(em, { color: "rgb(var(--magicks-ink-rgb) / 0.96)", duration: 0.25, ease: "none" }, 0.45)
+            .to(em, { color: "rgb(var(--magicks-ink-rgb) / 0.78)", duration: 0.3, ease: "power2.in" }, 0.7);
         });
       }
 
@@ -315,10 +315,19 @@ export function About() {
     <section
       ref={rootRef}
       id="ueber"
-      className="relative overflow-hidden bg-[#0B0A09] px-5 py-36 sm:px-8 sm:py-48 md:px-12 md:py-64 lg:px-12 lg:py-72 xl:px-16"
+      className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 py-36 sm:px-8 sm:py-48 md:px-12 md:py-64 lg:px-12 lg:py-72 xl:px-16"
       aria-labelledby="about-heading"
     >
       <div aria-hidden className="section-top-rule" />
+
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage:
+            "radial-gradient(ellipse 58% 42% at 18% 12%, rgba(34,44,64,0.09), transparent 68%), radial-gradient(ellipse 44% 36% at 84% 74%, rgba(255,255,255,0.16), transparent 72%)",
+        }}
+      />
 
       {/* Edge Glow — wandering light along the top border */}
       <div
@@ -327,7 +336,7 @@ export function About() {
       >
         <div
           data-about-edgeglow
-          className="h-full w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent blur-[1px] will-change-[transform,opacity]"
+          className="h-full w-1/2 bg-gradient-to-r from-transparent via-[rgb(var(--magicks-line-rgb)/0.3)] to-transparent blur-[1px] will-change-[transform,opacity]"
         />
       </div>
 
@@ -335,7 +344,7 @@ export function About() {
       <div
         data-about-quote
         aria-hidden
-        className="pointer-events-none absolute left-4 top-24 z-0 font-instrument leading-[0.72] text-white/18 will-change-[opacity,transform] sm:left-10 sm:top-28 sm:text-[12rem] md:left-16 md:top-32 md:text-[18rem] lg:left-24 lg:top-36 lg:text-[22rem]"
+        className="pointer-events-none absolute left-4 top-24 z-0 font-instrument leading-[0.72] text-[rgb(var(--magicks-line-rgb)/0.18)] will-change-[opacity,transform] sm:left-10 sm:top-28 sm:text-[12rem] md:left-16 md:top-32 md:text-[18rem] lg:left-24 lg:top-36 lg:text-[22rem]"
         style={{ fontSize: "clamp(8rem, 18vw, 22rem)" }}
       >
         “
@@ -363,7 +372,7 @@ export function About() {
             <h2
               id="about-heading"
               data-about-heading
-              className="font-instrument text-[2.4rem] leading-[0.96] tracking-[-0.038em] text-white sm:text-[3.2rem] md:text-[3.8rem] lg:text-[4.4rem] xl:text-[5rem]"
+              className="font-instrument text-[2.35rem] leading-[1.04] tracking-[-0.026em] text-white sm:text-[3.2rem] md:text-[3.8rem] lg:text-[4.4rem] xl:text-[4.95rem]"
             >
               <span className="block lg:whitespace-nowrap">
                 <span
@@ -393,25 +402,25 @@ export function About() {
               <div aria-hidden className="relative h-px w-full max-w-[34rem]">
                 <span
                   data-about-rule
-                  className="absolute inset-0 block bg-gradient-to-r from-white/28 via-white/10 to-transparent"
+                  className="absolute inset-0 block bg-gradient-to-r from-[rgb(var(--magicks-line-rgb)/0.28)] via-[rgb(var(--magicks-line-rgb)/0.12)] to-transparent"
                 />
               </div>
 
               <div
                 data-about-body
-                className="mt-8 max-w-[40rem] will-change-[opacity,filter] sm:mt-10"
+                className="mt-8 max-w-[44rem] rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[linear-gradient(168deg,rgba(255,253,248,0.52)_0%,rgba(245,241,234,0.46)_100%)] px-6 py-6 will-change-[opacity,filter] sm:mt-10 sm:px-7 sm:py-7"
               >
-                <p className="font-instrument text-[1.15rem] leading-[1.68] tracking-[-0.005em] text-white/78 sm:text-[1.25rem] md:text-[1.35rem]">
+                <p className="font-instrument text-[1.2rem] leading-[1.76] tracking-[-0.002em] text-white/74 sm:text-[1.3rem] md:text-[1.4rem]">
                   MAGICKS ist ein kleines, fokussiertes Studio aus Kassel. Wenige Projekte pro
                   Jahr — dafür mit voller Aufmerksamkeit.
                 </p>
-                <p className="font-instrument mt-5 text-[1.15rem] leading-[1.68] tracking-[-0.005em] text-white/78 sm:mt-6 sm:text-[1.25rem] md:mt-7 md:text-[1.35rem]">
+                <p className="font-instrument mt-6 text-[1.2rem] leading-[1.76] tracking-[-0.002em] text-white/74 sm:mt-7 sm:text-[1.3rem] md:mt-8 md:text-[1.4rem]">
                   Design, Code und Automation entstehen bei uns als{" "}
                   <em data-about-emphasis className="italic text-white">eine Arbeit</em>, nicht
                   als getrennte Abteilungen. Routine darf schneller werden. Konzept, Struktur und
                   Qualität bleiben bewusst menschlich.
                 </p>
-                <p className="font-instrument mt-5 text-[1.15rem] leading-[1.68] tracking-[-0.005em] text-white/78 sm:mt-6 sm:text-[1.25rem] md:mt-7 md:text-[1.35rem]">
+                <p className="font-instrument mt-6 text-[1.2rem] leading-[1.76] tracking-[-0.002em] text-white/74 sm:mt-7 sm:text-[1.3rem] md:mt-8 md:text-[1.4rem]">
                   Direkter Kontakt zu den Menschen, die bauen. Keine unnötigen Schleifen. Kein
                   Weiterreichen.
                 </p>
@@ -420,18 +429,18 @@ export function About() {
 
             <div
               data-about-cta
-              className="mt-16 flex flex-wrap items-center gap-x-8 gap-y-4 will-change-[opacity,transform,filter] sm:mt-20"
+              className="mt-[4.5rem] flex flex-wrap items-center gap-x-8 gap-y-4 will-change-[opacity,transform,filter] sm:mt-[5.5rem]"
             >
               <Link
                 to="/ueber-uns"
-                className="font-ui group inline-flex min-h-11 items-center gap-3 py-1.5 text-[15px] text-white no-underline magicks-duration-hover magicks-ease-out transition-colors lg:min-h-0 lg:py-0"
+                className="font-ui group inline-flex min-h-11 items-center gap-3 py-1.5 text-[16px] font-medium tracking-[0.006em] text-[rgb(var(--magicks-ink-rgb)/0.9)] no-underline magicks-duration-hover magicks-ease-out transition-colors lg:min-h-0 lg:py-0"
               >
-                <span className="underline decoration-white/22 decoration-[0.5px] underline-offset-[6px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color] group-hover:decoration-white/80">
+                <span className="underline decoration-[rgb(var(--magicks-line-rgb)/0.32)] decoration-[0.5px] underline-offset-[6px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color,color] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] group-hover:decoration-[rgb(var(--magicks-line-rgb)/0.62)]">
                   Mehr über das Studio
                 </span>
                 <span
                   aria-hidden
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-white/65 magicks-duration-hover magicks-ease-out transition-[background,border,color,transform] group-hover:translate-x-[1px] group-hover:border-white/32 group-hover:bg-white/8 group-hover:text-white"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-[rgb(var(--magicks-line-rgb)/0.16)] text-[rgb(var(--magicks-ink-rgb)/0.62)] magicks-duration-hover magicks-ease-out transition-[background,border,color,transform] group-hover:translate-x-[1px] group-hover:border-[rgb(var(--magicks-line-rgb)/0.34)] group-hover:bg-[rgb(var(--magicks-ink-rgb)/0.06)] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.9)]"
                 >
                   <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.4">
                     <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />
@@ -439,7 +448,7 @@ export function About() {
                 </span>
               </Link>
 
-              <span className="font-mono text-[11px] font-medium uppercase leading-snug tracking-[0.18em] text-white/42 sm:text-[10.5px] sm:leading-none sm:tracking-[0.3em] sm:text-white/38">
+              <span className="font-mono text-[11.25px] font-medium uppercase leading-snug tracking-[0.12em] text-[rgb(var(--magicks-ink-rgb)/0.44)] sm:text-[11px] sm:leading-none sm:tracking-[0.18em] sm:text-[rgb(var(--magicks-ink-rgb)/0.4)]">
                 Kassel · Nordhessen · Remote bundesweit
               </span>
             </div>
@@ -454,7 +463,7 @@ export function About() {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-56 will-change-[opacity]"
         style={{
           background:
-            "linear-gradient(180deg, transparent 0%, rgba(7,6,5,0.32) 58%, rgba(7,6,5,0.6) 100%)",
+            "linear-gradient(180deg, transparent 0%, rgba(46,56,76,0.05) 58%, rgba(46,56,76,0.12) 100%)",
         }}
       />
     </section>

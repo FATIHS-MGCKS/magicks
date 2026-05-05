@@ -5,6 +5,7 @@ import { ChapterMarker } from "../../components/home/ChapterMarker";
 import { SectionTransition } from "../../components/service/SectionTransition";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { registerGsap } from "../../lib/gsap";
+import { presenceEnvelope } from "../../lib/scrollMotion";
 import { RouteSEO } from "../../seo/RouteSEO";
 
 /* ------------------------------------------------------------------
@@ -510,62 +511,132 @@ export default function KiAutomationUnternehmenPage() {
          slightly longer duration (1.1s) reads as more restrained
          and less "pop-in" than the first draft. */
       reveals.forEach((el) => {
-        gsap.set(el, { opacity: 0, y: 18 });
-        gsap.to(el, {
-          opacity: 1,
-          y: 0,
-          duration: 1.1,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 86%", once: true },
+        presenceEnvelope(el, {
+          trigger: el,
+          start: "top 88%",
+          end: "bottom 20%",
+          yFrom: 18,
+          yTo: -10,
+          blur: 3,
+          opacityFloor: 0.18,
+          holdRatio: 0.52,
+          scrub: 0.9,
         });
       });
 
       /* ——— Ceremonial pull statement (Weniger manuell…) ——— */
       if (pullLines.length) {
-        gsap.set(pullLines, { yPercent: 110, opacity: 0 });
-        if (pullHeading) gsap.set(pullHeading, { letterSpacing: "0.008em" });
-        const tl = gsap
-          .timeline({
-            scrollTrigger: { trigger: pullLines[0], start: "top 78%", once: true },
-          })
-          .to(pullLines, {
-            yPercent: 0,
-            opacity: 1,
-            duration: 1.45,
-            ease: "power4.out",
-            stagger: 0.14,
-          });
+        presenceEnvelope(pullLines, {
+          trigger: pullLines[0],
+          start: "top 84%",
+          end: "bottom 18%",
+          yFrom: 22,
+          yTo: -12,
+          blur: 3.6,
+          opacityFloor: 0.16,
+          holdRatio: 0.56,
+          stagger: 0.035,
+          scrub: 1.0,
+        });
         if (pullHeading) {
-          tl.to(
+          gsap.fromTo(
             pullHeading,
-            { letterSpacing: "-0.036em", duration: 1.8, ease: "power2.out" },
-            0.2,
+            { letterSpacing: "0.008em" },
+            {
+              letterSpacing: "-0.036em",
+              ease: "none",
+              scrollTrigger: {
+                trigger: pullLines[0],
+                start: "top 84%",
+                end: "bottom 22%",
+                scrub: 1.0,
+                invalidateOnRefresh: true,
+              },
+            },
           );
         }
       }
 
       /* ——— Final CTA choreography ——— */
       if (finalLineA.length || finalLineB.length) {
-        gsap.set([...finalLineA, ...finalLineB], { yPercent: 118, opacity: 0 });
-        gsap.set(finalRule, { scaleX: 0, transformOrigin: "center" });
-        gsap.set(finalLedger, { opacity: 0, y: 14 });
-        gsap.set(finalCta, { opacity: 0, y: 18, scale: 0.96 });
         const trigger =
           (finalLineA[0] as HTMLElement | undefined)?.closest("section") ?? finalLineA[0];
-        gsap
-          .timeline({
-            scrollTrigger: { trigger, start: "top 72%", once: true },
-            defaults: { ease: "power4.out" },
-          })
-          .to(finalLineA, { yPercent: 0, opacity: 1, duration: 1.15, stagger: 0.07 }, 0)
-          .to(finalLineB, { yPercent: 0, opacity: 1, duration: 1.25, stagger: 0.07 }, 0.25)
-          .to(finalRule, { scaleX: 1, duration: 1.3, ease: "power2.inOut" }, 0.7)
-          .to(
-            finalCta,
-            { opacity: 1, y: 0, scale: 1, duration: 0.95, ease: "back.out(1.2)" },
-            0.95,
-          )
-          .to(finalLedger, { opacity: 1, y: 0, duration: 0.95, stagger: 0.1 }, 1.1);
+
+        presenceEnvelope(finalLineA, {
+          trigger,
+          start: "top 84%",
+          end: "bottom 18%",
+          yFrom: 20,
+          yTo: -10,
+          blur: 3.2,
+          opacityFloor: 0.16,
+          holdRatio: 0.56,
+          stagger: 0.03,
+          scrub: 1.0,
+        });
+        presenceEnvelope(finalLineB, {
+          trigger,
+          start: "top 80%",
+          end: "bottom 16%",
+          yFrom: 22,
+          yTo: -10,
+          blur: 3.2,
+          opacityFloor: 0.16,
+          holdRatio: 0.56,
+          stagger: 0.03,
+          scrub: 1.0,
+        });
+
+        gsap.fromTo(
+          finalRule,
+          { scaleX: 0, transformOrigin: "center center" },
+          {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger,
+              start: "top 84%",
+              end: "top 46%",
+              scrub: 1.0,
+              invalidateOnRefresh: true,
+            },
+          },
+        );
+        gsap.to(finalRule, {
+          scaleX: 0.58,
+          ease: "none",
+          scrollTrigger: {
+            trigger,
+            start: "top 20%",
+            end: "bottom 0%",
+            scrub: 1.0,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        presenceEnvelope(finalCta, {
+          trigger,
+          start: "top 82%",
+          end: "bottom 8%",
+          yFrom: 16,
+          yTo: -8,
+          blur: 2.6,
+          opacityFloor: 0.18,
+          holdRatio: 0.6,
+          scrub: 1.0,
+        });
+        presenceEnvelope(finalLedger, {
+          trigger,
+          start: "top 80%",
+          end: "bottom 10%",
+          yFrom: 14,
+          yTo: -8,
+          blur: 2.4,
+          opacityFloor: 0.22,
+          holdRatio: 0.58,
+          stagger: 0.02,
+          scrub: 1.0,
+        });
       }
     }, root);
 
@@ -578,7 +649,7 @@ export default function KiAutomationUnternehmenPage() {
 
       <main
         ref={rootRef}
-        className="relative bg-[#0A0A0A] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative bg-[var(--magicks-bg-base)] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
       >
         {/* ============================================================
            § 00 — HERO
@@ -840,7 +911,7 @@ export default function KiAutomationUnternehmenPage() {
            right. Reads as a confident positioning statement, not a
            marketing tagline.
         ============================================================ */}
-        <section className="relative overflow-hidden bg-[#09090A] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-48 lg:px-16">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-48 lg:px-16">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.5]"
@@ -1010,7 +1081,7 @@ export default function KiAutomationUnternehmenPage() {
            studio signature plate that frames the rest as "selected"
            rather than exhaustive.
         ============================================================ */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.55]"
@@ -1133,7 +1204,7 @@ export default function KiAutomationUnternehmenPage() {
                               the grid, not an interactive card. */}
                           <article
                             data-ku-reveal
-                            className="relative flex min-h-[13rem] flex-col justify-between border-b border-white/[0.08] bg-[#08080A] px-5 py-7 sm:min-h-[15rem] sm:px-6 sm:py-9 md:min-h-[17rem] md:px-9 md:py-12 lg:px-11"
+                            className="relative flex min-h-[13rem] flex-col justify-between border-b border-white/[0.08] bg-[var(--magicks-bg-lifted)] px-5 py-7 sm:min-h-[15rem] sm:px-6 sm:py-9 md:min-h-[17rem] md:px-9 md:py-12 lg:px-11"
                           >
                             {/* Bracket frame — all four corners so the cell
                                 reads as a signature plate, not a missing
@@ -1278,7 +1349,7 @@ export default function KiAutomationUnternehmenPage() {
            paragraphs + a three-row "Diagnose" rail that mirrors the
            brief's thinking verbs (Zeit / Fehler / Wiederholung).
         ============================================================ */}
-        <section className="relative bg-[#09090A] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-48 lg:px-16">
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-48 lg:px-16">
           <div className="layout-max">
             <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:gap-20 lg:gap-28">
               <div data-ku-reveal>
@@ -1488,7 +1559,7 @@ export default function KiAutomationUnternehmenPage() {
            § 07 — KONTEXT · "KI-Automation ist selten eine Einzellösung"
            Context intro + 2×2 related-routes plate grid.
         ============================================================ */}
-        <section className="relative overflow-hidden bg-[#080809] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.5]"
@@ -1684,7 +1755,7 @@ export default function KiAutomationUnternehmenPage() {
         {/* ============================================================
            § END — FINAL CTA
         ============================================================ */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
           <div aria-hidden className="section-top-rule" />
 
           {/* Plate corner crop marks — silent brackets only, no
@@ -1804,7 +1875,7 @@ export default function KiAutomationUnternehmenPage() {
                     <span>{FINAL_CTA_BUTTON}</span>
                     <span
                       aria-hidden
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0A0A0A] text-white magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
                     >
                       <svg
                         viewBox="0 0 14 14"

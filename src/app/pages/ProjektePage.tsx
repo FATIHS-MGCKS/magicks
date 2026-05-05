@@ -129,10 +129,11 @@ export default function ProjektePage() {
       presenceEnvelope(reveals, {
         start: "top 90%",
         end: "bottom 10%",
-        yFrom: 22,
-        yTo: -14,
-        blur: 4,
-        holdRatio: 0.5,
+        yFrom: 18,
+        yTo: -10,
+        blur: 3.2,
+        opacityFloor: 0.2,
+        holdRatio: 0.56,
         scrub: 0.95,
       });
 
@@ -171,8 +172,8 @@ export default function ProjektePage() {
 
       if (heroCopy && heroSection) {
         gsap.to(heroCopy, {
-          yPercent: -5,
-          opacity: 0.5,
+          yPercent: -4,
+          opacity: 0.64,
           ease: "none",
           scrollTrigger: {
             trigger: heroSection,
@@ -187,7 +188,7 @@ export default function ProjektePage() {
         parallaxDrift(heroTexture, {
           trigger: heroSection,
           from: 0,
-          to: -28,
+          to: -18,
           start: "top top",
           end: "bottom top",
           scrub: true,
@@ -202,10 +203,10 @@ export default function ProjektePage() {
       const finalHead = root.querySelector<HTMLElement>("[data-pj-final-head]");
       if (finalSection && finalHead) {
         gsap.set(finalHead, {
-          opacity: 0,
-          y: 18,
+          opacity: 0.16,
+          y: 12,
           letterSpacing: "0.034em",
-          filter: "blur(5px)",
+          filter: "blur(3.8px)",
         });
         gsap.to(finalHead, {
           opacity: 1,
@@ -215,8 +216,8 @@ export default function ProjektePage() {
           ease: "none",
           scrollTrigger: {
             trigger: finalSection,
-            start: "top 78%",
-            end: "top 28%",
+            start: "top 82%",
+            end: "top 34%",
             scrub: 1.1,
             invalidateOnRefresh: true,
           },
@@ -233,7 +234,7 @@ export default function ProjektePage() {
 
       <main
         ref={rootRef}
-        className="relative bg-[#0A0A0A] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative bg-[var(--magicks-bg-base)] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
       >
         {/* =========================================================
            § 00 — HERO
@@ -315,12 +316,12 @@ export default function ProjektePage() {
                       {stop.tone === "filled" ? (
                         <span
                           aria-hidden
-                          className="relative block h-[11px] w-[11px] rounded-full bg-white shadow-[0_0_0_3px_rgba(10,10,10,1)]"
+                          className="relative block h-[11px] w-[11px] rounded-full bg-[var(--magicks-ink-strong)] shadow-[0_0_0_3px_rgba(247,244,238,1)]"
                         />
                       ) : (
                         <span
                           aria-hidden
-                          className="relative block h-[11px] w-[11px] rounded-full border border-white/62 bg-[#0A0A0A] shadow-[0_0_0_3px_rgba(10,10,10,1)]"
+                          className="relative block h-[11px] w-[11px] rounded-full border border-[rgb(var(--magicks-line-rgb)/0.46)] bg-[rgb(var(--magicks-bg-base-rgb)/0.96)] shadow-[0_0_0_3px_rgba(247,244,238,1)]"
                         />
                       )}
                       <span className="tabular-nums">{stop.label}</span>
@@ -331,14 +332,14 @@ export default function ProjektePage() {
 
               <p
                 data-pj-reveal
-                className="font-mono mb-8 text-[10px] font-medium uppercase leading-none tracking-[0.36em] text-white/52 sm:mb-10 sm:text-[10.5px]"
+                className="font-mono mb-8 text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/52 sm:mb-10 sm:text-[11px] sm:tracking-[0.22em]"
               >
                 {HERO_EYEBROW}
               </p>
 
               <h1
                 data-pj-reveal
-                className="font-instrument max-w-[60rem] text-[2.2rem] leading-[1.0] tracking-[-0.034em] text-white sm:text-[2.95rem] md:text-[3.8rem] lg:text-[4.45rem] xl:text-[4.95rem]"
+                className="font-instrument max-w-[60rem] text-[2.2rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.95rem] md:text-[3.8rem] lg:text-[4.45rem] xl:text-[4.95rem]"
               >
                 Ausgewählte <em className="italic text-white/68">Projekte</em>{" "}
                 von MAGICKS Studio.
@@ -347,13 +348,13 @@ export default function ProjektePage() {
               <div className="mt-10 max-w-[46rem] sm:mt-12 md:mt-14">
                 <p
                   data-pj-reveal
-                  className="font-instrument text-[1.28rem] italic leading-[1.38] tracking-[-0.01em] text-white/86 sm:text-[1.48rem] md:text-[1.62rem]"
+                  className="font-instrument text-[1.32rem] italic leading-[1.44] tracking-[-0.008em] text-white/86 sm:text-[1.52rem] md:text-[1.66rem]"
                 >
                   {HERO_LEAD_1}
                 </p>
                 <p
                   data-pj-reveal
-                  className="font-ui mt-5 text-[15px] leading-[1.72] text-white/64 md:text-[16px]"
+                  className="font-ui mt-5 text-[15.5px] leading-[1.76] text-white/64 md:text-[16.5px]"
                 >
                   {HERO_LEAD_2}
                 </p>
@@ -366,7 +367,7 @@ export default function ProjektePage() {
               >
                 <Link
                   to="/kontakt"
-                  className="group relative inline-flex items-baseline gap-3 text-[15px] font-medium tracking-[-0.005em] text-white no-underline sm:text-[16px] md:text-[17px]"
+                  className="group relative inline-flex items-baseline gap-3 text-[15.5px] font-medium tracking-[0.001em] text-white no-underline sm:text-[16.5px] md:text-[17.5px]"
                   aria-label="Projekt anfragen"
                 >
                   <span className="relative pb-3">
@@ -397,7 +398,7 @@ export default function ProjektePage() {
         {/* =========================================================
            § 01 — CREDO
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#080809] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.2]"
@@ -410,13 +411,13 @@ export default function ProjektePage() {
             <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
               <div data-pj-reveal className="md:pt-2">
                 <div className="flex flex-col gap-4">
-                  <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
+                  <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/48 sm:text-[11px] sm:tracking-[0.22em]">
                     § 01 — Kuration
                   </p>
                   <ChapterMarker num="01" label="Credo" />
                   <span
                     aria-hidden
-                    className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/34 sm:text-[10.5px]"
+                    className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.2em] text-white/34 sm:text-[11px] sm:tracking-[0.18em]"
                   >
                     Substanz · Auswahl · Linie
                   </span>
@@ -426,7 +427,7 @@ export default function ProjektePage() {
               <div>
                 <h2
                   data-pj-reveal
-                  className="font-instrument max-w-[58rem] text-[2.25rem] leading-[1.02] tracking-[-0.032em] text-white sm:text-[2.95rem] md:text-[3.7rem] lg:text-[4.3rem] xl:text-[4.75rem]"
+                  className="font-instrument max-w-[58rem] text-[2.25rem] leading-[1.05] tracking-[-0.028em] text-white sm:text-[2.95rem] md:text-[3.7rem] lg:text-[4.3rem] xl:text-[4.75rem]"
                 >
                   <span className="block">{CREDO_HEADLINE_A}</span>
                   <em className="mt-2 block italic text-white/62 sm:mt-3 md:mt-4">
@@ -437,13 +438,13 @@ export default function ProjektePage() {
                 <div className="mt-10 max-w-[44rem] space-y-5 md:mt-14 md:space-y-6">
                   <p
                     data-pj-reveal
-                    className="font-instrument text-[1.24rem] italic leading-[1.38] tracking-[-0.01em] text-white/88 sm:text-[1.36rem] md:text-[1.48rem]"
+                    className="font-instrument text-[1.28rem] italic leading-[1.44] tracking-[-0.008em] text-white/88 sm:text-[1.4rem] md:text-[1.52rem]"
                   >
                     {CREDO_P1_A}
                   </p>
                   <p
                     data-pj-reveal
-                    className="font-ui text-[15.5px] leading-[1.72] text-white/68 md:text-[16.5px]"
+                    className="font-ui text-[16px] leading-[1.76] text-white/68 md:text-[17px]"
                   >
                     {CREDO_P1_B}
                   </p>
@@ -460,10 +461,10 @@ export default function ProjektePage() {
                         i > 0 ? "md:border-l md:border-white/[0.08] md:pl-8 lg:pl-10" : ""
                       }`}
                     >
-                      <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.38em] text-white/42 md:text-[10.5px]">
+                      <span className="font-mono tabular-nums text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/42 md:text-[11px] md:tracking-[0.22em]">
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <p className="font-instrument max-w-[19rem] text-[1.14rem] italic leading-[1.34] tracking-[-0.01em] text-white/92 md:text-[1.22rem]">
+                      <p className="font-instrument max-w-[19rem] text-[1.16rem] italic leading-[1.38] tracking-[-0.008em] text-white/92 md:text-[1.24rem]">
                         {line}
                       </p>
                     </li>
@@ -479,14 +480,14 @@ export default function ProjektePage() {
         {/* =========================================================
            § 02 — PROJEKTE (unified editorial list)
         ========================================================= */}
-        <section className="relative overflow-hidden bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
           <div className="relative layout-max">
             <div
               data-pj-reveal
               className="mb-14 flex items-center gap-5 sm:mb-20"
             >
               <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
-              <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/46 sm:text-[10.5px]">
+              <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 sm:text-[11px] sm:tracking-[0.22em]">
                 § 02 — Auswahl · {String(projects.length).padStart(2, "0")}{" "}
                 {projects.length === 1 ? "Arbeit" : "Arbeiten"}
               </span>
@@ -513,7 +514,7 @@ export default function ProjektePage() {
               // replaced by the compact list above.
               <div
                 data-pj-reveal
-                className="relative mt-20 overflow-hidden border border-white/[0.09] bg-[#07070A] md:mt-28"
+                className="relative mt-20 overflow-hidden border border-white/[0.09] bg-[var(--magicks-bg-lifted)] md:mt-28"
               >
                 <div
                   aria-hidden
@@ -538,10 +539,10 @@ export default function ProjektePage() {
 
                 {/* Top plate rail */}
                 <div className="relative flex items-center justify-between gap-4 border-b border-white/[0.08] px-6 py-4 sm:px-8 md:px-12 md:py-5">
-                  <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/56 sm:text-[10.5px]">
+                  <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/56 sm:text-[11px] sm:tracking-[0.22em]">
                     Nächste Ausgabe
                   </span>
-                  <span className="font-mono tabular-nums text-[9.5px] font-medium uppercase leading-none tracking-[0.38em] text-white/38 sm:text-[10px]">
+                  <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.22em] text-white/38 sm:text-[10.5px] sm:tracking-[0.2em]">
                     Vol. 02 · in Arbeit
                   </span>
                 </div>
@@ -562,10 +563,10 @@ export default function ProjektePage() {
                       aria-hidden
                       className="relative flex h-[18px] w-[18px] items-center justify-center"
                     >
-                      <span className="absolute inset-0 block rotate-45 border border-white/64 bg-[#07070A]" />
+                      <span className="absolute inset-0 block rotate-45 border border-white/64 bg-[var(--magicks-bg-lifted)]" />
                       <span className="absolute h-[6px] w-[6px] rotate-45 bg-white/84" />
                     </div>
-                    <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/52 sm:text-[10.5px]">
+                    <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/52 sm:text-[11px] sm:tracking-[0.22em]">
                       Studio · Kassel · MMXXVI
                     </span>
                   </div>
@@ -684,7 +685,7 @@ export default function ProjektePage() {
         ========================================================= */}
         <section
           data-pj-final
-          className="relative overflow-hidden bg-[#070708] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56"
+          className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56"
         >
           <div aria-hidden className="section-top-rule" />
 
@@ -727,14 +728,14 @@ export default function ProjektePage() {
 
               <h2
                 data-pj-final-head
-                className="font-instrument text-[2.2rem] leading-[1.02] tracking-[-0.036em] text-white sm:text-[3rem] md:text-[3.95rem] lg:text-[4.75rem] xl:text-[5.3rem]"
+                className="font-instrument text-[2.2rem] leading-[1.05] tracking-[-0.03em] text-white sm:text-[3rem] md:text-[3.95rem] lg:text-[4.75rem] xl:text-[5.3rem]"
               >
                 {FINAL_CTA_HEADLINE}
               </h2>
 
               <p
                 data-pj-reveal
-                className="font-ui mx-auto mt-12 max-w-[46rem] text-[15.5px] leading-[1.72] text-white/66 md:mt-14 md:text-[17px]"
+                className="font-ui mx-auto mt-12 max-w-[46rem] text-[16px] leading-[1.76] text-white/66 md:mt-14 md:text-[17.5px]"
               >
                 {FINAL_CTA_BODY}
               </p>
@@ -745,12 +746,12 @@ export default function ProjektePage() {
               >
                 <Link
                   to="/kontakt"
-                  className="group relative inline-flex items-center gap-3 rounded-full border border-white/22 bg-white py-4 pl-8 pr-3 text-[15px] font-medium tracking-wide text-[#0A0A0A] no-underline shadow-[0_34px_80px_-32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.45)] magicks-duration-hover magicks-ease-out transition-[transform,box-shadow] hover:-translate-y-[2px] hover:shadow-[0_44px_90px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.55)] active:translate-y-0 active:scale-[0.985] md:text-[16px]"
+                  className="group relative inline-flex items-center gap-3 rounded-full border border-white/22 bg-white py-4 pl-8 pr-3 text-[15.5px] font-medium tracking-[0.008em] text-[#0A0A0A] no-underline shadow-[0_34px_80px_-32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.45)] magicks-duration-hover magicks-ease-out transition-[transform,box-shadow] hover:-translate-y-[2px] hover:shadow-[0_44px_90px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.55)] active:translate-y-0 active:scale-[0.985] md:text-[16.5px]"
                 >
                   <span>Lass uns über dein Projekt sprechen</span>
                   <span
                     aria-hidden
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0A0A0A] text-white magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
                   >
                     <svg
                       viewBox="0 0 14 14"
@@ -789,10 +790,10 @@ export default function ProjektePage() {
                       i > 0 ? "sm:border-l sm:border-white/[0.08] sm:pl-5 md:pl-7" : ""
                     }`}
                   >
-                    <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/36 sm:text-[9.5px]">
+                    <span className="font-mono text-[9.75px] font-medium uppercase leading-none tracking-[0.22em] text-white/36 sm:text-[10px] sm:tracking-[0.2em]">
                       {item.k}
                     </span>
-                    <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.28em] text-white/68 sm:text-[10.5px]">
+                    <span className="font-mono tabular-nums text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-white/68 sm:text-[11px] sm:tracking-[0.16em]">
                       {item.v}
                     </span>
                   </div>
@@ -821,24 +822,27 @@ function CompactProjectRow({
   index: number;
 }) {
   return (
-    <li data-pj-reveal className="border-b border-white/[0.08]">
+    <li data-pj-reveal className="border-b border-[rgb(var(--magicks-line-rgb)/0.16)]">
       <Link
         to={`/projekte/${project.slug}`}
-        className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-6 py-8 no-underline md:grid-cols-[auto_minmax(0,1.5fr)_minmax(0,2fr)_auto] md:gap-10 md:py-10"
+        className="group grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 py-8 no-underline md:grid-cols-[auto_minmax(0,1.5fr)_minmax(0,2fr)_auto] md:gap-10 md:py-10"
       >
-        <span className="font-mono tabular-nums hidden text-[10.5px] font-medium uppercase leading-none tracking-[0.38em] text-white/42 md:inline">
+        <span className="font-mono tabular-nums text-[10.75px] font-medium uppercase leading-none tracking-[0.22em] text-white/44 md:tracking-[0.2em]">
           {String(index).padStart(2, "0")}
         </span>
         <div className="flex flex-col gap-2">
-          <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/44 md:text-[10.5px]">
+          <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-white/44 md:text-[10.75px] md:tracking-[0.2em]">
             {project.category}
             {project.industry ? <> &nbsp;·&nbsp; {project.industry}</> : null}
           </span>
-          <h3 className="font-instrument text-[1.35rem] leading-[1.1] tracking-[-0.02em] text-white md:text-[1.58rem] lg:text-[1.75rem]">
+          <h3 className="font-instrument text-[1.35rem] leading-[1.14] tracking-[-0.016em] text-white md:text-[1.58rem] lg:text-[1.75rem]">
             {project.title}
           </h3>
+          <p className="font-ui max-w-[34rem] text-[14.5px] leading-[1.66] text-white/62 md:hidden">
+            {project.teaser}
+          </p>
         </div>
-        <p className="font-ui hidden max-w-[34rem] text-[14.5px] leading-[1.65] text-white/62 md:block">
+        <p className="font-ui hidden max-w-[34rem] text-[15px] leading-[1.72] text-white/62 md:block">
           {project.teaser}
         </p>
         <span

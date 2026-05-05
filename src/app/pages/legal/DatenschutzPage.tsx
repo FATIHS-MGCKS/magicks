@@ -98,7 +98,7 @@ export default function DatenschutzPage() {
             E-Mail:{" "}
             <a
               href="mailto:hello@magicks.de"
-              className="text-white no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color] hover:underline hover:decoration-white/60"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.88)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[color,text-decoration-color] hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] hover:underline hover:decoration-[rgb(var(--magicks-ink-rgb)/0.46)]"
             >
               hello@magicks.de
             </a>
@@ -111,14 +111,14 @@ export default function DatenschutzPage() {
         <LegalSection folio="§ 03" title={<>Hosting &amp; Server-Log-Dateien</>}>
           <p>
             Diese Website wird bei{" "}
-            <span className="text-white/88">Hostinger International Ltd.</span>{" "}
+            <span className="text-[rgb(var(--magicks-ink-rgb)/0.88)]">Hostinger International Ltd.</span>{" "}
             gehostet (61 Lordou Vironos Street, 6023 Larnaca, Zypern). Die
             Ausliefer­ung erfolgt über Rechenzentren innerhalb der Europäischen
             Union. Beim Aufruf der Website werden durch den Hosting-Provider
             automatisch Informationen in sogenannten Server-Log-Dateien
             erfasst, die Ihr Browser übermittelt. Dazu zählen insbesondere:
           </p>
-          <ul className="list-none space-y-1.5 border-l border-white/[0.14] pl-5">
+          <ul className="list-none space-y-1.5 border-l border-[rgb(var(--magicks-line-rgb)/0.2)] pl-5">
             <li>IP-Adresse des anfragenden Endgeräts</li>
             <li>Datum und Uhrzeit des Zugriffs</li>
             <li>Name und URL der abgerufenen Datei</li>
@@ -141,7 +141,7 @@ export default function DatenschutzPage() {
               href="https://www.hostinger.com/legal/privacy-policy"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/88 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.88)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] hover:underline"
             >
               Datenschutz­erklärung von Hostinger
             </a>
@@ -160,7 +160,7 @@ export default function DatenschutzPage() {
             Auf unserer{" "}
             <Link
               to="/kontakt"
-              className="text-white/88 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.88)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] hover:underline"
             >
               Kontaktseite
             </Link>{" "}
@@ -181,7 +181,7 @@ export default function DatenschutzPage() {
             können Sie uns jederzeit direkt an{" "}
             <a
               href="mailto:hello@magicks.de"
-              className="text-white no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color] hover:underline hover:decoration-white/60"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.88)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[color,text-decoration-color] hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] hover:underline hover:decoration-[rgb(var(--magicks-ink-rgb)/0.46)]"
             >
               hello@magicks.de
             </a>{" "}
@@ -217,14 +217,14 @@ export default function DatenschutzPage() {
             Anbieter übertragen.
           </p>
 
-          <p className="text-white/82">
-            <strong className="text-white">Google Fonts</strong> — Instrument
+          <p className="text-[rgb(var(--magicks-ink-rgb)/0.8)]">
+            <strong className="text-[rgb(var(--magicks-ink-rgb)/0.92)]">Google Fonts</strong> — Instrument
             Serif und Manrope werden über{" "}
-            <code className="font-mono rounded bg-white/[0.05] px-1.5 py-0.5 text-[0.88em] text-white/78">
+            <code className="font-mono rounded border border-[rgb(var(--magicks-line-rgb)/0.24)] bg-[rgb(var(--magicks-ink-rgb)/0.05)] px-1.5 py-0.5 text-[0.88em] text-[rgb(var(--magicks-ink-rgb)/0.76)]">
               fonts.googleapis.com
             </code>{" "}
             bzw.{" "}
-            <code className="font-mono rounded bg-white/[0.05] px-1.5 py-0.5 text-[0.88em] text-white/78">
+            <code className="font-mono rounded border border-[rgb(var(--magicks-line-rgb)/0.24)] bg-[rgb(var(--magicks-ink-rgb)/0.05)] px-1.5 py-0.5 text-[0.88em] text-[rgb(var(--magicks-ink-rgb)/0.76)]">
               fonts.gstatic.com
             </code>{" "}
             bezogen. Anbieter ist Google Ireland Limited, Gordon House, Barrow
@@ -235,15 +235,15 @@ export default function DatenschutzPage() {
               href="https://policies.google.com/privacy"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/88 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.88)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] hover:underline"
             >
               Datenschutz­erklärung von Google
             </a>
             .
           </p>
 
-          <p className="text-white/82">
-            <strong className="text-white">System­schriften</strong> — Auf
+          <p className="text-[rgb(var(--magicks-ink-rgb)/0.8)]">
+            <strong className="text-[rgb(var(--magicks-ink-rgb)/0.92)]">System­schriften</strong> — Auf
             Apple-Geräten wird zusätzlich die System­schriftart{" "}
             <em>SF Pro Display</em>, auf Windows-Geräten <em>Segoe UI</em>{" "}
             verwendet. Diese Schriften liegen bereits lokal auf Ihrem Endgerät
@@ -268,9 +268,9 @@ export default function DatenschutzPage() {
             Auf der Startseite sowie auf einzelnen Leistungs­seiten werden
             lautlose Video­sequenzen (MP4) eingebettet, die über das
             Content-Delivery-Netzwerk{" "}
-            <strong className="text-white">Amazon CloudFront</strong>{" "}
+            <strong className="text-[rgb(var(--magicks-ink-rgb)/0.92)]">Amazon CloudFront</strong>{" "}
             ausgeliefert werden (
-            <code className="font-mono rounded bg-white/[0.05] px-1.5 py-0.5 text-[0.88em] text-white/78">
+            <code className="font-mono rounded border border-[rgb(var(--magicks-line-rgb)/0.24)] bg-[rgb(var(--magicks-ink-rgb)/0.05)] px-1.5 py-0.5 text-[0.88em] text-[rgb(var(--magicks-ink-rgb)/0.76)]">
               d8j0ntlcm91z4.cloudfront.net
             </code>
             ). Beim Laden dieser Medien wird Ihre IP-Adresse an das CDN von
@@ -293,13 +293,13 @@ export default function DatenschutzPage() {
         <LegalSection folio="§ 07" title={<>Cookies &amp; lokale Speicher</>}>
           <p>
             Diese Website setzt von sich aus{" "}
-            <strong className="text-white">keine Cookies</strong> zu Analyse-,
+            <strong className="text-[rgb(var(--magicks-ink-rgb)/0.92)]">keine Cookies</strong> zu Analyse-,
             Marketing- oder Tracking-Zwecken. Die Web-Anwendung nutzt weder{" "}
-            <code className="font-mono rounded bg-white/[0.05] px-1.5 py-0.5 text-[0.88em] text-white/78">
+            <code className="font-mono rounded border border-[rgb(var(--magicks-line-rgb)/0.24)] bg-[rgb(var(--magicks-ink-rgb)/0.05)] px-1.5 py-0.5 text-[0.88em] text-[rgb(var(--magicks-ink-rgb)/0.76)]">
               localStorage
             </code>{" "}
             noch{" "}
-            <code className="font-mono rounded bg-white/[0.05] px-1.5 py-0.5 text-[0.88em] text-white/78">
+            <code className="font-mono rounded border border-[rgb(var(--magicks-line-rgb)/0.24)] bg-[rgb(var(--magicks-ink-rgb)/0.05)] px-1.5 py-0.5 text-[0.88em] text-[rgb(var(--magicks-ink-rgb)/0.76)]">
               sessionStorage
             </code>{" "}
             für nutzungs­bezogene Daten.
@@ -326,7 +326,7 @@ export default function DatenschutzPage() {
         <LegalSection folio="§ 08" title={<>Analyse &amp; Tracking</>}>
           <p>
             Diese Website setzt{" "}
-            <strong className="text-white">
+            <strong className="text-[rgb(var(--magicks-ink-rgb)/0.92)]">
               derzeit keine Web-Analyse-, Tracking- oder Marketing-Tools ein.
             </strong>{" "}
             Es findet weder serverseitige Nutzungs­auswertung über uns noch
@@ -352,7 +352,7 @@ export default function DatenschutzPage() {
             Als betroffene Person stehen Ihnen folgende Rechte gegenüber uns
             zu:
           </p>
-          <ul className="list-none space-y-2 border-l border-white/[0.14] pl-5">
+          <ul className="list-none space-y-2 border-l border-[rgb(var(--magicks-line-rgb)/0.2)] pl-5">
             <li>Auskunft über die zu Ihnen gespeicherten Daten (Art. 15 DSGVO)</li>
             <li>Berichtigung unrichtiger Daten (Art. 16 DSGVO)</li>
             <li>Löschung Ihrer Daten (Art. 17 DSGVO)</li>
@@ -372,13 +372,13 @@ export default function DatenschutzPage() {
             E-Mail an{" "}
             <a
               href="mailto:hello@magicks.de"
-              className="text-white no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color] hover:underline hover:decoration-white/60"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.88)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[color,text-decoration-color] hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] hover:underline hover:decoration-[rgb(var(--magicks-ink-rgb)/0.46)]"
             >
               hello@magicks.de
             </a>
             . Unabhängig davon haben Sie das Recht, sich bei einer Datenschutz-
             Aufsichts­behörde zu beschweren. Zuständig für uns ist{" "}
-            <strong className="text-white">
+            <strong className="text-[rgb(var(--magicks-ink-rgb)/0.92)]">
               Der Hessische Beauftragte für Datenschutz und
               Informations­freiheit
             </strong>
@@ -416,7 +416,7 @@ export default function DatenschutzPage() {
             jeweils aktuelle Fassung kann jederzeit unter{" "}
             <Link
               to="/datenschutz"
-              className="text-white/88 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.88)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] hover:underline"
             >
               magicks.de/datenschutz
             </Link>{" "}
@@ -426,27 +426,27 @@ export default function DatenschutzPage() {
       </LegalLayout>
 
       {/* Footer block — closes the page with a clear next step. */}
-      <div className="bg-[#0A0A0A] px-5 pb-24 sm:px-8 sm:pb-28 md:px-12 md:pb-36 lg:px-16">
+      <div className="bg-[var(--magicks-bg-base)] px-5 pb-24 sm:px-8 sm:pb-28 md:px-12 md:pb-36 lg:px-16">
         <div className="layout-max">
           <LegalFooter>
             Bei Fragen rund um den Datenschutz schreiben Sie uns direkt an{" "}
             <a
               href="mailto:hello@magicks.de"
-              className="text-white/82 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.82)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.94)] hover:underline"
             >
               hello@magicks.de
             </a>{" "}
             oder nutzen Sie die{" "}
             <Link
               to="/kontakt"
-              className="text-white/82 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.82)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.94)] hover:underline"
             >
               Kontaktseite
             </Link>
             . Pflichtangaben gemäß § 5 TMG finden Sie im{" "}
             <Link
               to="/impressum"
-              className="text-white/82 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-white hover:underline"
+              className="text-[rgb(var(--magicks-ink-rgb)/0.82)] no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.94)] hover:underline"
             >
               Impressum
             </Link>

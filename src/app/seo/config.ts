@@ -225,6 +225,26 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
     ],
   },
 
+  "/website-starter": {
+    path: "/website-starter",
+    title: "Website Starter für lokale Betriebe – MAGICKS Studio",
+    description:
+      "Ihre erste professionelle Website – schnell, modern und bezahlbar. Für lokale Betriebe ohne eigene Website.",
+    ogType: "article",
+    ogImageAlt: "Website Starter für lokale Betriebe — MAGICKS Studio",
+    service: {
+      name: "Website Starter für lokale Betriebe",
+      serviceType: "Starter Website Package",
+      description:
+        "Professionelle Starter-Website für lokale Betriebe ohne eigene Website — klarer Einstieg mit technischer Betreuung.",
+      local: true,
+    },
+    breadcrumbs: [
+      { name: "Leistungen", path: "/leistungen" },
+      { name: "Website Starter", path: "/website-starter" },
+    ],
+  },
+
   "/webdesign-kassel": {
     path: "/webdesign-kassel",
     title: "Webdesign Kassel — Webagentur für Unternehmen | MAGICKS",
@@ -370,6 +390,7 @@ export const SITEMAP_PATHS: string[] = [
   "/web-software",
   "/ki-automationen-integrationen",
   "/website-im-abo",
+  "/website-starter",
   "/webdesign-kassel",
   "/landingpages-kassel",
   "/produktkonfigurator-erstellen",
