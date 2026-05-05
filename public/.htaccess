@@ -26,10 +26,14 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # ------------------------------------------------------------------
 # 2) Force apex/canonical host.
-#    Uncomment + adjust once a non-www vs. www decision is locked in.
+#    Keep legacy browser bookmarks and non-canonical hosts from landing on
+#    an unconfigured vhost. Any request that reaches this Hostinger space
+#    is normalized to the production apex.
 # ------------------------------------------------------------------
-# RewriteCond %{HTTP_HOST} ^www\.magicks\.studio$ [NC]
-# RewriteRule ^(.*)$ https://magicks.de/$1 [L,R=301]
+RewriteCond %{HTTP_HOST} ^www\.magicks\.de$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^magicks\.studio$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^www\.magicks\.studio$ [NC]
+RewriteRule ^(.*)$ https://magicks.de/$1 [L,R=301]
 
 # ------------------------------------------------------------------
 # 3) Legacy slug redirects — permanent (301).
