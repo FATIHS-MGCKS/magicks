@@ -395,7 +395,7 @@ export function ValueStatement() {
                   <p
                     key={block.text}
                     data-value-sentence
-                    className="font-ui mx-auto mt-12 max-w-[41rem] text-[0.98rem] font-normal leading-[1.68] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.7)] will-change-[opacity,filter] sm:mt-14 sm:text-[1.06rem] md:text-[1.1rem] lg:text-[1.16rem]"
+                    className="font-ui mx-auto mt-12 max-w-[41rem] text-[0.98rem] font-medium leading-[1.68] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.7)] will-change-[opacity,filter] sm:mt-14 sm:text-[1.06rem] md:text-[1.1rem] lg:text-[1.16rem]"
                   >
                     {block.text}
                   </p>
