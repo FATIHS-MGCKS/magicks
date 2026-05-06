@@ -380,10 +380,10 @@ export function ValueStatement() {
                     key={block.primary}
                     id="value-heading"
                     data-value-sentence
-                    className="mx-auto max-w-[20ch] font-instrument text-[clamp(2.8rem,6.5vw,4.8rem)] font-normal leading-[0.98] tracking-[-0.036em] text-[rgb(var(--magicks-ink-rgb)/0.97)] will-change-[opacity,filter] md:max-w-[20ch]"
+                    className="mx-auto max-w-[20ch] font-ui text-[clamp(2.55rem,6.5vw,4.45rem)] font-[650] leading-[0.98] tracking-[-0.052em] text-[rgb(var(--magicks-ink-rgb)/0.97)] will-change-[opacity,filter] md:max-w-[20ch]"
                   >
                     <span className="block">{block.primary}</span>
-                    <em className="mx-auto mt-2 block max-w-[18ch] text-[0.92em] font-normal italic tracking-[-0.035em] text-[rgb(var(--magicks-ink-rgb)/0.56)] sm:mt-3">
+                    <em className="mx-auto mt-2 block max-w-[18ch] text-[0.9em] font-[520] not-italic tracking-[-0.045em] text-[rgb(var(--magicks-ink-rgb)/0.56)] sm:mt-3">
                       {block.secondary}
                     </em>
                   </h2>
@@ -408,10 +408,10 @@ export function ValueStatement() {
                   data-value-sentence
                   className="mx-auto mt-12 max-w-[58rem] will-change-[opacity,filter] sm:mt-14"
                 >
-                  <p className="font-instrument text-[clamp(1.9rem,3.8vw,3.35rem)] italic leading-[1.05] tracking-[-0.028em] text-[rgb(var(--magicks-ink-rgb)/0.9)]">
+                  <p className="font-ui text-[clamp(1.85rem,3.7vw,3.2rem)] font-[650] leading-[1.04] tracking-[-0.046em] text-[rgb(var(--magicks-ink-rgb)/0.9)]">
                     {block.primary}
                   </p>
-                  <p className="font-instrument mx-auto mt-4 max-w-[31rem] text-[1.25rem] font-normal leading-[1.4] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.76)] sm:text-[1.35rem] md:text-[1.45rem]">
+                  <p className="font-ui mx-auto mt-4 max-w-[31rem] text-[1rem] font-[520] leading-[1.48] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.76)] sm:text-[1.08rem] md:text-[1.14rem]">
                     {block.secondary}
                   </p>
                 </div>
