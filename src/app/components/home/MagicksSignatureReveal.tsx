@@ -84,7 +84,7 @@ export function MagicksSignatureReveal({
       if (!magicks || !studio || !glow) return;
 
       if (reduced) {
-        gsap.set([magicks, studio], { opacity: 1, filter: "blur(0px)", "--m-end": "100%" });
+        gsap.set([magicks, studio], { opacity: 1, filter: "blur(0px) brightness(0)", "--m-end": "100%" });
         gsap.set(glow, { opacity: 0.15 });
         return;
       }
@@ -99,7 +99,7 @@ export function MagicksSignatureReveal({
 
       gsap.set([magicks, studio], {
         opacity: 0.01,
-        filter: `blur(${startBlur}px)`,
+        filter: `blur(${startBlur}px) brightness(0)`,
         "--m-end": "-30%",
       });
       gsap.set(glow, { opacity: 0 });
@@ -132,12 +132,12 @@ export function MagicksSignatureReveal({
       // entire time the sweep is moving across it.
       tl.to(magicks, { opacity: 1, duration: 0.18, ease: "none" }, 0);
       tl.to(magicks, { "--m-end": "120%", duration: magicksDur, ease: "power2.inOut" }, 0);
-      tl.to(magicks, { filter: "blur(0px)", duration: magicksDur * 0.75, ease: "power3.out" }, 0);
+      tl.to(magicks, { filter: "blur(0px) brightness(0)", duration: magicksDur * 0.75, ease: "power3.out" }, 0);
 
       // 3. Studio staggers in shortly after, identical physics.
       tl.to(studio, { opacity: 1, duration: 0.18, ease: "none" }, stagger);
       tl.to(studio, { "--m-end": "120%", duration: studioDur, ease: "power2.inOut" }, stagger);
-      tl.to(studio, { filter: "blur(0px)", duration: studioDur * 0.75, ease: "power3.out" }, stagger);
+      tl.to(studio, { filter: "blur(0px) brightness(0)", duration: studioDur * 0.75, ease: "power3.out" }, stagger);
 
     }, root);
 
@@ -182,7 +182,7 @@ export function MagicksSignatureReveal({
         className="pointer-events-none absolute inset-0 opacity-0"
         style={{
           // Multiple shadows create a more cinematic, diffuse bloom than a single one
-          filter: "drop-shadow(0 0 12px rgba(255,255,255,0.3)) drop-shadow(0 0 32px rgba(255,255,255,0.2))",
+          filter: "drop-shadow(0 0 12px rgba(0,0,0,0.15)) drop-shadow(0 0 32px rgba(0,0,0,0.08))",
           transform: "translateZ(0)",
         }}
       >

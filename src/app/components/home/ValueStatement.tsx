@@ -2,45 +2,62 @@ import { useLayoutEffect, useRef } from "react";
 import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import {
-  breathingScale,
   focusEnvelope,
   presenceEnvelope,
   rackFocusTrack,
   sectionFarewell,
 } from "../../lib/scrollMotion";
-import { ChapterMarker } from "./ChapterMarker";
 import { MagicksSignatureReveal } from "./MagicksSignatureReveal";
 
 /**
- * Three sentences. The lens rack-pulls down the paragraph as the user
- * scrolls — each sentence exists in layout from the start as soft-focused
- * ghost text, and every sentence's clarity is a direct function of scroll
+ * Four statement lines. The lens rack-pulls down the paragraph as the user
+ * scrolls — each line exists in layout from the start as soft-focused
+ * ghost text, and every line's clarity is a direct function of scroll
  * position. Scrolling back up reverses the pull cleanly.
  *
  * A luminous focus band (a thin horizontal light) rides beside the
- * active sentence as a physical "lens carriage" — it's never called out,
+ * active line as a physical "lens carriage" — it's never called out,
  * but the eye registers that something is *moving with the read*.
  */
-const SENTENCES: { text: string }[] = [
+type ValueStatementBlock =
+  | {
+      tone: "headline";
+      primary: string;
+      secondary: string;
+    }
+  | {
+      tone: "body";
+      text: string;
+    }
+  | {
+      tone: "closing";
+      primary: string;
+      secondary: string;
+    };
+
+const STATEMENT_BLOCKS: ValueStatementBlock[] = [
   {
-    // Drop-cap "W" is rendered separately — sentence continues with "ir …"
-    text: "ir sind MAGICKS Studio — und Standard war nie unser Anspruch.",
+    tone: "headline",
+    primary: "Der erste Eindruck entscheidet.",
+    secondary: "Der zweite bleibt.",
   },
   {
+    tone: "body",
     text:
-      "Wir entwickeln Websites, Web-Software und Automationen, die stark aussehen, sauber funktionieren und echte Arbeit abnehmen.",
+      "Ihre Website muss sichtbar sein, Vertrauen schaffen und vor allem im Kopf bleiben — so werden aus Besuchern richtige Anfragen.",
   },
   {
-    text:
-      "Studio-Qualität ohne lange Agenturwege — präzise umgesetzt und bereit für den Alltag.",
+    tone: "closing",
+    primary: "Genau das macht ein Digitales Erlebnis aus",
+    secondary: "und diese kreieren wir mit Leidenschaft.",
   },
 ];
 
 const INDEX_ITEMS = [
-  { n: "¹", label: "Markenauftritte" },
-  { n: "²", label: "Web-Software" },
-  { n: "³", label: "Automation" },
-  { n: "⁴", label: "KI mit Verantwortung" },
+  { label: "Markenauftritte" },
+  { label: "Web-Software" },
+  { label: "Automation" },
+  { label: "KI mit Verantwortung" },
 ];
 
 export function ValueStatement() {
@@ -55,14 +72,13 @@ export function ValueStatement() {
     let removeFocusBandListeners: (() => void) | null = null;
 
     const ctx = gsap.context(() => {
-      const chapter = root.querySelector<HTMLElement>("[data-value-chapter]");
-      const dropCap = root.querySelector<HTMLElement>("[data-value-dropcap]");
       const sentences = gsap.utils.toArray<HTMLElement>("[data-value-sentence]");
       const rule = root.querySelector<HTMLElement>("[data-value-rule]");
       const indexItems = gsap.utils.toArray<HTMLElement>("[data-value-index]");
       const heading = root.querySelector<HTMLElement>("[data-value-heading]");
       const focusBand = root.querySelector<HTMLElement>("[data-value-focusband]");
       const ambient = root.querySelector<HTMLElement>("[data-value-ambient]");
+      const spotlight = root.querySelector<HTMLElement>("[data-value-spotlight]");
       const godray = root.querySelector<HTMLElement>("[data-value-godray] > div");
       const farewell = root.querySelector<HTMLElement>("[data-value-farewell]");
       const sign = root.querySelector<HTMLElement>("[data-value-sign]");
@@ -82,7 +98,7 @@ export function ValueStatement() {
 
       if (reduced) {
         gsap.set(
-          [chapter, dropCap, ...sentences, rule, ...indexItems, focusBand, ambient, godray, farewell, sign].filter(Boolean) as HTMLElement[],
+          [...sentences, rule, ...indexItems, focusBand, ambient, spotlight, godray, farewell, sign].filter(Boolean) as HTMLElement[],
           {
             opacity: 1,
             y: 0,
@@ -96,47 +112,9 @@ export function ValueStatement() {
         return;
       }
 
-      // ─── Chapter: presence envelope, enters as hero finishes dissolving ─
-      // Asymmetric exit so the chapter marker still anchors the spread
-      // while the reader is mid-paragraph instead of vanishing on a
-      // single wheel notch.
-      presenceEnvelope(chapter, {
-        trigger: root,
-        start: "top 96%",
-        end: "top 0%",
-        yFrom: 14,
-        yTo: -10,
-        blur: 3,
-        holdRatio: 0.5,
-        exitWeight: 2.5,
-        scrub: 1.0,
-      });
-
-      // ─── Drop-cap: presence envelope + scroll-coupled breathing ───────
-      // The "W" is a fixed typographic anchor. It arrives cleanly, holds
-      // through the section, releases late. While it holds it also
-      // breathes at a different rate — the scale-pulse is so small it
-      // reads as *paper / eye settling*, not motion.
-      presenceEnvelope(dropCap, {
-        trigger: root,
-        start: "top 90%",
-        end: "bottom 40%",
-        yFrom: 28,
-        yTo: -12,
-        blur: 4.5,
-        holdRatio: 0.68,
-      });
-      breathingScale(dropCap, {
-        trigger: root,
-        from: 0.992,
-        peak: 1.014,
-        to: 0.998,
-        scrub: 1.5,
-      });
-
       // ─── Ambient field: a wide radial light follows the focus pull ────
-      // Anchored behind the paragraph. Builds as sentence 1 reaches focus,
-      // peaks through sentence 2, softens as sentence 3 lands its punch.
+      // Anchored behind the paragraph. Builds as line 1 reaches focus,
+      // peaks through lines 2-3, softens as line 4 lands the close.
       if (ambient) {
         gsap.set(ambient, { opacity: 0 });
         gsap
@@ -153,6 +131,28 @@ export function ValueStatement() {
           .to(ambient, { opacity: 0.72, duration: 0.35, ease: "power2.out" }, 0)
           .to(ambient, { opacity: 0.86, duration: 0.3, ease: "none" }, 0.35)
           .to(ambient, { opacity: 0.48, duration: 0.35, ease: "power2.in" }, 0.65);
+      }
+
+      // ─── Spotlight sweep: warm cinematic key light ────────────────────
+      // A broad key light glides across the statement as the rack-focus
+      // travels downward. It keeps the section cinematic without turning
+      // into a hard visual effect.
+      if (spotlight) {
+        gsap.set(spotlight, { opacity: 0, xPercent: -8, scale: 0.96 });
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: heading ?? root,
+              start: "top 82%",
+              end: "bottom 20%",
+              scrub: 1.25,
+              invalidateOnRefresh: true,
+            },
+            defaults: { ease: "none" },
+          })
+          .to(spotlight, { opacity: 0.56, xPercent: 0, scale: 1, duration: 0.4, ease: "power2.out" }, 0)
+          .to(spotlight, { opacity: 0.64, xPercent: 7, scale: 1.04, duration: 0.28, ease: "none" }, 0.4)
+          .to(spotlight, { opacity: 0.24, xPercent: 11, scale: 1.08, duration: 0.32, ease: "power2.in" }, 0.68);
       }
 
       // ─── Volumetric God Ray: slow diagonal sweep ─────────────────────
@@ -183,19 +183,19 @@ export function ValueStatement() {
       // track which sentence currently holds the lens.
       rackFocusTrack(sentences, {
         trigger: heading ?? root,
-        start: "top 74%",
-        end: "bottom 38%",
+        start: "top 82%",
+        end: "bottom 30%",
         scrub: 0.95,
-        blur: 4.2,
-        softOpacity: 0.44,
+        blur: 4.5,
+        softOpacity: 0.35,
         reachOpacity: 1,
-        holdRatio: 0.62,
+        holdRatio: 0.56,
         onProgress: (_idx, progress) => {
           if (!focusBand || !sentences.length) return;
           if (!cachedSentenceCenters.length) updateFocusBandGeometry();
           if (!cachedSentenceCenters.length) return;
           // Position the band along the paragraph height. We interpolate
-          // through the three sentence centers so the band moves
+          // through the sentence centers so the band moves
           // continuously, not in steps — even the "between" positions
           // read as the lens traversing space.
           const centers = cachedSentenceCenters;
@@ -222,7 +222,7 @@ export function ValueStatement() {
       // ─── Rule: scrubbed draw + gentle release ────────────────────────
       gsap.fromTo(
         rule,
-        { scaleX: 0, transformOrigin: "left center" },
+        { scaleX: 0, transformOrigin: "center" },
         {
           scaleX: 1,
           ease: "none",
@@ -297,7 +297,7 @@ export function ValueStatement() {
     <section
       ref={rootRef}
       id="denken"
-      className="relative bg-[var(--magicks-bg-lifted)] px-5 py-32 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64"
+      className="relative bg-[var(--magicks-bg-lifted)] px-5 pt-20 pb-32 sm:px-8 sm:pt-28 sm:pb-44 md:px-12 md:pt-32 md:pb-56 lg:px-16 lg:pt-40 lg:pb-64"
       aria-labelledby="value-heading"
     >
       <div aria-hidden className="section-top-rule" />
@@ -332,109 +332,134 @@ export function ValueStatement() {
             "radial-gradient(ellipse 56% 42% at 62% 46%, rgba(34,44,64,0.1), transparent 68%), radial-gradient(ellipse 46% 34% at 24% 62%, rgba(255,255,255,0.22), transparent 74%)",
         }}
       />
+      <div
+        data-value-spotlight
+        aria-hidden
+        className="pointer-events-none absolute inset-0 will-change-[opacity,transform]"
+        style={{
+          backgroundImage:
+            "radial-gradient(ellipse 54% 38% at 76% 34%, rgba(255,245,222,0.46), rgba(255,245,222,0.08) 44%, transparent 74%), radial-gradient(ellipse 36% 28% at 16% 68%, rgba(86,108,142,0.14), transparent 72%)",
+          mixBlendMode: "soft-light",
+        }}
+      />
 
       <div className="layout-max">
-        <div className="grid gap-10 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20">
-          <div data-value-chapter className="md:pt-2">
-            <ChapterMarker num="01" label="Denken" />
+        <div className="relative mx-auto max-w-[72rem]">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -inset-x-4 -inset-y-6 rounded-[2.35rem] border border-[rgb(var(--magicks-line-rgb)/0.045)] bg-[linear-gradient(145deg,rgba(255,255,255,0.38)_0%,rgba(248,244,236,0.2)_52%,rgba(236,230,219,0.08)_100%)] shadow-[0_42px_110px_-92px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.58)] sm:-inset-x-6 sm:-inset-y-8 md:-inset-x-10 md:-inset-y-10"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -inset-x-1 -inset-y-1 rounded-[2rem] bg-[radial-gradient(ellipse_68%_48%_at_70%_16%,rgba(255,255,255,0.64),transparent_70%)]"
+          />
+          {/* Luminous focus band — thin horizontal light that rides along
+              the line currently in focus. Its Y is driven by the
+              rack-focus track's onProgress callback, so position and
+              sharpness always belong to the same scroll frame. */}
+          <div
+            data-value-focusband
+            aria-hidden
+            className="pointer-events-none absolute left-[-2rem] top-0 hidden h-[1.2em] w-[calc(100%+4rem)] will-change-[transform,opacity] md:block"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent 0%, rgba(255,245,224,0.1) 20%, rgba(255,255,255,0.3) 50%, rgba(255,245,224,0.1) 80%, transparent 100%)",
+              mixBlendMode: "soft-light",
+              transform: "translateY(0) translateZ(0)",
+            }}
+          />
+
+          <div
+            data-value-heading
+            className="relative z-10 mx-auto flex max-w-[64rem] flex-col items-center text-center rounded-[1.85rem] px-1 py-1 sm:px-3 sm:py-3 md:px-4 md:py-4"
+          >
+            {STATEMENT_BLOCKS.map((block) => {
+              if (block.tone === "headline") {
+                return (
+                  <h2
+                    key={block.primary}
+                    id="value-heading"
+                    data-value-sentence
+                    className="mx-auto max-w-[20ch] font-instrument text-[clamp(2.8rem,6.5vw,4.8rem)] font-normal leading-[0.98] tracking-[-0.036em] text-[rgb(var(--magicks-ink-rgb)/0.97)] will-change-[opacity,filter] md:max-w-[20ch]"
+                  >
+                    <span className="block">{block.primary}</span>
+                    <em className="mx-auto mt-2 block max-w-[18ch] text-[0.92em] font-normal italic tracking-[-0.035em] text-[rgb(var(--magicks-ink-rgb)/0.56)] sm:mt-3">
+                      {block.secondary}
+                    </em>
+                  </h2>
+                );
+              }
+
+              if (block.tone === "body") {
+                return (
+                  <p
+                    key={block.text}
+                    data-value-sentence
+                    className="font-ui mx-auto mt-12 max-w-[41rem] text-[0.98rem] font-normal leading-[1.68] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.7)] will-change-[opacity,filter] sm:mt-14 sm:text-[1.06rem] md:text-[1.1rem] lg:text-[1.16rem]"
+                  >
+                    {block.text}
+                  </p>
+                );
+              }
+
+              return (
+                <div
+                  key={block.primary}
+                  data-value-sentence
+                  className="mx-auto mt-12 max-w-[58rem] will-change-[opacity,filter] sm:mt-14"
+                >
+                  <p className="font-instrument text-[clamp(1.9rem,3.8vw,3.35rem)] italic leading-[1.05] tracking-[-0.028em] text-[rgb(var(--magicks-ink-rgb)/0.9)]">
+                    {block.primary}
+                  </p>
+                  <p className="font-instrument mx-auto mt-4 max-w-[31rem] text-[1.25rem] font-normal leading-[1.4] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.76)] sm:text-[1.35rem] md:text-[1.45rem]">
+                    {block.secondary}
+                  </p>
+                </div>
+              );
+            })}
           </div>
 
-          <div className="relative max-w-[54rem]">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -inset-x-4 -inset-y-5 rounded-[1.45rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[linear-gradient(170deg,rgba(255,255,255,0.56)_0%,rgba(246,241,233,0.38)_100%)] sm:-inset-x-6 sm:-inset-y-6 md:-inset-x-8 md:-inset-y-8"
-            />
-            {/* Luminous focus band — thin horizontal light that rides along
-                the sentence currently in focus. Its Y is driven by the
-                rack-focus track's onProgress callback, so position and
-                sharpness always belong to the same scroll frame. */}
-            <div
-              data-value-focusband
-              aria-hidden
-              className="pointer-events-none absolute left-[-2rem] top-0 hidden h-[1.2em] w-[calc(100%+4rem)] will-change-[transform,opacity] md:block"
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent 0%, rgba(24,30,44,0.03) 22%, rgba(24,30,44,0.08) 50%, rgba(24,30,44,0.03) 78%, transparent 100%)",
-                mixBlendMode: "multiply",
-                transform: "translateY(0) translateZ(0)",
-              }}
-            />
+          {/* Editorial signature — signing hand directly below the
+              statement. Aligned to the right column, surrounded by
+              quiet whitespace. Sits before the services index so the
+              signature closes the statement and the list reads as a
+              follow-on footnote. */}
+          <figure
+            data-value-sign
+            className="relative z-10 mx-auto mt-14 flex w-full max-w-[28rem] flex-col items-center will-change-[opacity,transform,filter] sm:mt-16 sm:max-w-[32rem] md:mt-20 md:max-w-[36rem]"
+          >
+            <MagicksSignatureReveal className="w-full max-w-[24rem] sm:max-w-[28rem] md:max-w-[32rem]" />
 
-            <h2
-              id="value-heading"
-              data-value-heading
-              className="relative z-10 font-instrument text-[1.95rem] leading-[1.32] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.94)] sm:text-[2.38rem] md:text-[2.92rem] lg:text-[3.3rem]"
-            >
-              <span data-value-dropcap className="drop-cap will-change-[opacity,transform,filter]">
-                W
+            <figcaption className="font-mono mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 self-stretch text-[10.75px] font-medium uppercase leading-none tracking-[0.14em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:mt-7 sm:gap-x-6 sm:text-[11px] sm:tracking-[0.2em] sm:text-[rgb(var(--magicks-ink-rgb)/0.42)]">
+              <span className="flex items-center gap-2 sm:gap-3">
+                <span aria-hidden className="h-px w-5 bg-[rgb(var(--magicks-line-rgb)/0.28)] sm:w-8" />
+                <span>Studio · Kassel</span>
               </span>
+              <span className="text-[rgb(var(--magicks-ink-rgb)/0.34)]">N51°19′ · E9°29′</span>
+            </figcaption>
+          </figure>
+
+          <div className="relative z-10 mt-16 sm:mt-20 md:mt-24">
+            <div aria-hidden className="relative h-px w-full">
               <span
-                data-value-sentence
-                className="block will-change-[opacity,filter]"
-              >
-                {SENTENCES[0].text}
-              </span>
-
-              <span
-                data-value-sentence
-                className="mt-10 block text-[rgb(var(--magicks-ink-rgb)/0.64)] will-change-[opacity,filter] sm:mt-12"
-              >
-                {SENTENCES[1].text}
-              </span>
-
-              <span
-                data-value-sentence
-                className="mt-10 block text-[rgb(var(--magicks-ink-rgb)/0.88)] will-change-[opacity,filter] sm:mt-12"
-              >
-                {SENTENCES[2].text}
-              </span>
-            </h2>
-
-            {/* Editorial signature — signing hand directly below the
-                three-sentence declaration. Aligned to the right column,
-                surrounded by quiet whitespace. Sits before the services
-                index so the signature closes the *statement*, and the
-                services list reads as a follow-on footnote. */}
-            <figure
-              data-value-sign
-              className="relative z-10 mx-auto mt-14 flex w-full max-w-[34rem] flex-col items-center will-change-[opacity,transform,filter] sm:mt-16 sm:ml-auto sm:mr-0 sm:max-w-[36rem] md:mt-20 md:max-w-[42rem]"
-            >
-              <MagicksSignatureReveal className="w-full max-w-[28rem] sm:max-w-[32rem] md:max-w-[38rem]" />
-
-              <figcaption className="font-mono mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 self-stretch text-[10.75px] font-medium uppercase leading-none tracking-[0.14em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:mt-7 sm:gap-x-6 sm:text-[11px] sm:tracking-[0.2em] sm:text-[rgb(var(--magicks-ink-rgb)/0.42)]">
-                <span className="flex items-center gap-2 sm:gap-3">
-                  <span aria-hidden className="h-px w-5 bg-[rgb(var(--magicks-line-rgb)/0.28)] sm:w-8" />
-                  <span>Studio · Kassel</span>
-                </span>
-                <span className="text-[rgb(var(--magicks-ink-rgb)/0.34)]">N51°19′ · E9°29′</span>
-              </figcaption>
-            </figure>
-
-            <div className="relative z-10 mt-16 sm:mt-20 md:mt-24">
-              <div aria-hidden className="relative h-px w-full">
-                <span
-                  data-value-rule
-                  className="absolute inset-0 block bg-gradient-to-r from-[rgb(var(--magicks-line-rgb)/0.4)] via-[rgb(var(--magicks-line-rgb)/0.12)] to-transparent"
-                />
-              </div>
-
-              <ul className="mt-6 flex flex-wrap gap-x-7 gap-y-3 sm:mt-8 sm:gap-x-10">
-                {INDEX_ITEMS.map((it) => (
-                  <li
-                    key={it.label}
-                    data-value-index
-                    className="flex items-baseline gap-2 will-change-[opacity,filter]"
-                  >
-                    <span className="font-instrument text-[15px] italic text-[rgb(var(--magicks-ink-rgb)/0.55)]">
-                      {it.n}
-                    </span>
-                    <span className="font-mono text-[11.5px] font-medium uppercase leading-none tracking-[0.13em] text-[rgb(var(--magicks-ink-rgb)/0.6)] sm:text-[11.25px] sm:tracking-[0.18em]">
-                      {it.label}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+                data-value-rule
+                className="absolute inset-0 block bg-gradient-to-r from-transparent via-[rgb(var(--magicks-line-rgb)/0.3)] to-transparent"
+              />
             </div>
+
+            <ul className="mt-6 flex flex-wrap justify-center gap-x-7 gap-y-3 sm:mt-8 sm:gap-x-10">
+              {INDEX_ITEMS.map((it) => (
+                <li
+                  key={it.label}
+                  data-value-index
+                  className="flex items-baseline gap-2 will-change-[opacity,filter]"
+                >
+                  <span className="font-mono text-[11.5px] font-medium uppercase leading-none tracking-[0.13em] text-[rgb(var(--magicks-ink-rgb)/0.6)] sm:text-[11.25px] sm:tracking-[0.18em]">
+                    {it.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
