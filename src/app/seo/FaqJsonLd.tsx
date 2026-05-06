@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { SITE_URL } from "./config";
 
 /* ------------------------------------------------------------------
  * FaqJsonLd — head injector for FAQPage structured data.
@@ -44,7 +45,7 @@ export function FaqJsonLd({ id, items }: FaqJsonLdProps) {
     script.textContent = JSON.stringify({
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      "@id": `${typeof window !== "undefined" ? window.location.origin : "https://magicks.de"}${typeof window !== "undefined" ? window.location.pathname : "/"}#faq-${id}`,
+      "@id": `${SITE_URL}${typeof window !== "undefined" ? window.location.pathname : "/"}#faq-${id}`,
       mainEntity: items.map((item) => ({
         "@type": "Question",
         name: item.question,

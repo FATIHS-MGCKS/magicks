@@ -30,9 +30,7 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 #    an unconfigured vhost. Any request that reaches this Hostinger space
 #    is normalized to the production apex.
 # ------------------------------------------------------------------
-RewriteCond %{HTTP_HOST} ^www\.magicks\.de$ [NC,OR]
-RewriteCond %{HTTP_HOST} ^magicks\.studio$ [NC,OR]
-RewriteCond %{HTTP_HOST} ^www\.magicks\.studio$ [NC]
+RewriteCond %{HTTP_HOST} ^www\.magicks\.de$ [NC]
 RewriteRule ^(.*)$ https://magicks.de/$1 [L,R=301]
 
 # ------------------------------------------------------------------

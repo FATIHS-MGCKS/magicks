@@ -597,7 +597,7 @@ Schwabstr. 7a
 Deutschland
 
 E-Mail:    hello@magicks.de
-Web:       https://magicks.studio
+Web:       https://magicks.de
 Sprachen:  DE primär, EN sekundär
 Service:   Kassel · Baunatal · Vellmar · Fuldabrück · Kaufungen · Niestetal · Lohfelden · Calden · Nordhessen · bundesweit remote
 ```

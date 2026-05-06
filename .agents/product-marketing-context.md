@@ -39,8 +39,8 @@ einer Hand. KI als Werkzeug, das Tempo und Qualität gleichzeitig hebt.
 | **Sitz** | Kassel · Nordhessen · DE — bundesweit remote |
 | **Sprachen** | DE primär · EN sekundär |
 | **Hosting-Infrastruktur** | Hostinger (NICHT Vercel — bei jeder Erwähnung kontrollieren) |
-| **Kontakt-Email** | hello@magicks.de (NICHT hello@magicks.studio — überall korrigieren) |
-| **Domains** | magicks.de (kanonisch in Code, SEO und E-Mail) — magicks.studio ist abgelöst |
+| **Kontakt-Email** | hello@magicks.de (nicht die alte Studio-Mailadresse - ueberall korrigieren) |
+| **Domains** | magicks.de (kanonisch in Code, SEO und E-Mail) - die alte Studio-Domain ist abgeloest |
 | **Status** | Established 2024 · aktive Mandate seit MMXXIV |
 
 ---
@@ -508,7 +508,7 @@ Internetseite · Landing Page · Online-Auftritt**.
    im gesamten Site-Content **falsch** und muss bei jedem Vorkommen
    korrigiert werden.
 2. **E-Mail**: einzige korrekte Kontakt-Adresse ist `hello@magicks.de`.
-   `hello@magicks.studio` ist veraltet und muss überall ersetzt werden.
+   Die alte Studio-Mailadresse ist veraltet und muss ueberall ersetzt werden.
 3. **Personennamen / Logos** bestehender Kund·innen: nur mit
    ausdrücklicher Freigabe verwenden. Aktuell sind keine Testimonials
    freigegeben — nicht erfinden.
