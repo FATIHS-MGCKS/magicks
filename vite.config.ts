@@ -226,6 +226,25 @@ function homePagePreloadPlugin(): Plugin {
 export default defineConfig({
   plugins: [react(), tailwindcss(), magicksSitemapPlugin(), homePagePreloadPlugin()],
   build: {
+    // Explicit, broad transpile target.
+    //
+    // Vite 6 raised the default to `'baseline-widely-available'` which
+    // bottoms out at Chrome 107 / Edge 107 / Firefox 104 / Safari 16. On
+    // older Microsoft Edge builds (still common on managed corporate
+    // Windows installs and on machines where Edge auto-update was
+    // deferred) the modern syntax esbuild emits — RegExp `v` flag,
+    // `Array.prototype.findLast`, class field shorthand — surfaces as a
+    // module-level SyntaxError and the entire entry chunk fails to
+    // parse. The user sees an unrecoverable white page because no JS
+    // ever runs.
+    //
+    // Pinning to the older Vite default (`['es2020', 'edge88',
+    // 'firefox78', 'chrome87', 'safari14']`) is a safe-by-default that
+    // adds essentially zero kilobytes to the bundle (the Vite docs note
+    // the size delta is negligible) while extending support down to
+    // Edge 88 — which covers every Edge release Microsoft still ships
+    // updates for.
+    target: ["es2020", "edge88", "firefox78", "chrome87", "safari14"],
     // Bump the warning threshold — react-vendor (~180 KB) is an intentional
     // vendor split we control and the default 500 KB ceiling is already far
     // above every route chunk we ship.

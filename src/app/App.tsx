@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { AppErrorBoundary } from "./components/AppErrorBoundary";
 import { SiteLayout } from "./layouts/SiteLayout";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -37,60 +38,62 @@ const PortalApp = lazy(() => import("./portal/PortalApp"));
 
 export default function App() {
   return (
-    <Suspense fallback={null}>
-      <Routes>
-        <Route element={<SiteLayout />}>
-          {/* Core */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/leistungen" element={<LeistungenPage />} />
-          <Route path="/projekte" element={<ProjektePage />} />
-          <Route path="/projekte/:slug" element={<ProjectDetailPage />} />
-          <Route path="/ueber-uns" element={<UeberUnsPage />} />
-          <Route path="/kontakt" element={<ContactPage />} />
+    <AppErrorBoundary>
+      <Suspense fallback={null}>
+        <Routes>
+          <Route element={<SiteLayout />}>
+            {/* Core */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/leistungen" element={<LeistungenPage />} />
+            <Route path="/projekte" element={<ProjektePage />} />
+            <Route path="/projekte/:slug" element={<ProjectDetailPage />} />
+            <Route path="/ueber-uns" element={<UeberUnsPage />} />
+            <Route path="/kontakt" element={<ContactPage />} />
 
-          {/* Legal */}
-          <Route path="/impressum" element={<ImpressumPage />} />
-          <Route path="/datenschutz" element={<DatenschutzPage />} />
+            {/* Legal */}
+            <Route path="/impressum" element={<ImpressumPage />} />
+            <Route path="/datenschutz" element={<DatenschutzPage />} />
 
-          {/* Service landings */}
-          <Route path="/websites-landingpages" element={<WebsitesLandingPagesPage />} />
-          <Route path="/shops-produktkonfiguratoren" element={<ShopsKonfiguratorenPage />} />
-          <Route path="/web-software" element={<WebSoftwarePage />} />
-          <Route path="/ki-automationen-integrationen" element={<KiAutomationenPage />} />
+            {/* Service landings */}
+            <Route path="/websites-landingpages" element={<WebsitesLandingPagesPage />} />
+            <Route path="/shops-produktkonfiguratoren" element={<ShopsKonfiguratorenPage />} />
+            <Route path="/web-software" element={<WebSoftwarePage />} />
+            <Route path="/ki-automationen-integrationen" element={<KiAutomationenPage />} />
 
-          {/* Strategic SEO landings */}
-          <Route path="/website-im-abo" element={<WebsiteImAboPage />} />
-          <Route path="/website-starter" element={<WebsiteStarterPage />} />
-          <Route path="/webdesign-kassel" element={<WebdesignKasselPage />} />
-          <Route path="/landingpages-kassel" element={<LandingPagesKasselPage />} />
-          <Route path="/produktkonfigurator-erstellen" element={<ProduktkonfiguratorErstellenPage />} />
-          <Route path="/ki-automation-unternehmen" element={<KiAutomationUnternehmenPage />} />
+            {/* Strategic SEO landings */}
+            <Route path="/website-im-abo" element={<WebsiteImAboPage />} />
+            <Route path="/website-starter" element={<WebsiteStarterPage />} />
+            <Route path="/webdesign-kassel" element={<WebdesignKasselPage />} />
+            <Route path="/landingpages-kassel" element={<LandingPagesKasselPage />} />
+            <Route path="/produktkonfigurator-erstellen" element={<ProduktkonfiguratorErstellenPage />} />
+            <Route path="/ki-automation-unternehmen" element={<KiAutomationUnternehmenPage />} />
 
-          {/* Supporting capability landings */}
-          <Route path="/seo-sichtbarkeit" element={<SeoSichtbarkeitPage />} />
-          <Route path="/content-bildwelt-medien" element={<ContentBildweltMedienPage />} />
+            {/* Supporting capability landings */}
+            <Route path="/seo-sichtbarkeit" element={<SeoSichtbarkeitPage />} />
+            <Route path="/content-bildwelt-medien" element={<ContentBildweltMedienPage />} />
 
-          {/*
-           * Legacy routes.
-           *
-           * Client-side SPA redirect for deep links that land in the
-           * React app (e.g. via bookmarks or internal navigation). The
-           * host's `public/_redirects` additionally issues a proper
-           * 301 at the edge, which is what search engines will see.
-           */}
-          <Route path="/ueber-magicks" element={<Navigate to="/ueber-uns" replace />} />
+            {/*
+             * Legacy routes.
+             *
+             * Client-side SPA redirect for deep links that land in the
+             * React app (e.g. via bookmarks or internal navigation). The
+             * host's `public/_redirects` additionally issues a proper
+             * 301 at the edge, which is what search engines will see.
+             */}
+            <Route path="/ueber-magicks" element={<Navigate to="/ueber-uns" replace />} />
 
-          {/*
-           * 404 catch-all. We render a real not-found page with
-           * `noindex, follow` rather than silently redirecting to `/`,
-           * which Google would otherwise treat as a soft-404.
-           */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
+            {/*
+             * 404 catch-all. We render a real not-found page with
+             * `noindex, follow` rather than silently redirecting to `/`,
+             * which Google would otherwise treat as a soft-404.
+             */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
 
-        {/* Internal portal — own layout, own SEO, own catch-all. */}
-        <Route path="/portal/*" element={<PortalApp />} />
-      </Routes>
-    </Suspense>
+          {/* Internal portal — own layout, own SEO, own catch-all. */}
+          <Route path="/portal/*" element={<PortalApp />} />
+        </Routes>
+      </Suspense>
+    </AppErrorBoundary>
   );
 }
