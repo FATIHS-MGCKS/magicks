@@ -14,9 +14,9 @@ import {
  * converting. Sits between the ValueStatement (calm manifesto) and the
  * ProblemSolver / About-Us section (the answer).
  *
- * Visual language: editorial diagnosis cards. The section keeps the
- * restrained MAGICKS rhythm, but each problem now has a visible icon,
- * warmer color and enough typographic scale to read clearly on mobile.
+ * Visual language: a compact diagnosis list. It keeps the stronger
+ * mobile typography and visible icons without mirroring the later
+ * "Ihr Partner" reason-card grid.
  */
 
 type ProblemCard = {
@@ -223,45 +223,38 @@ export function ProblemSection() {
             </p>
           </div>
 
-          {/* Diagnosis cards — more visual than the old register, but still
-              restrained enough to lead into the answer section. */}
+          {/* Compact diagnosis list — calmer than cards, clearer than the
+              experimental signal stack, and visually distinct from Partner. */}
           <ul
             role="list"
-            className="mt-14 grid gap-4 sm:mt-16 sm:gap-5 md:mt-20 md:grid-cols-2 md:gap-6"
+            className="mt-14 divide-y divide-[rgb(var(--magicks-line-rgb)/0.13)] border-y border-[rgb(var(--magicks-line-rgb)/0.14)] sm:mt-16 md:mt-20"
           >
             {PROBLEM_CARDS.map((card, i) => (
               <li
                 key={card.title}
                 data-problem-card
-                className="group relative overflow-hidden rounded-[1.55rem] border border-[rgb(var(--magicks-line-rgb)/0.11)] bg-[linear-gradient(145deg,rgba(255,253,249,0.86)_0%,rgba(242,236,224,0.72)_100%)] p-5 shadow-[0_24px_70px_-56px_rgba(20,28,44,0.42),inset_0_1px_0_rgba(255,255,255,0.76)] will-change-[opacity,transform,filter] transition-[border-color,box-shadow,transform] duration-[680ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[2px] hover:border-[rgb(var(--magicks-accent-line-rgb)/0.28)] hover:shadow-[0_34px_92px_-56px_rgba(20,28,44,0.5),inset_0_1px_0_rgba(255,255,255,0.84)] sm:p-6 md:p-7"
+                className="group relative grid gap-4 py-6 will-change-[opacity,transform,filter] transition-colors duration-[680ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:bg-[rgb(var(--magicks-accent-rgb)/0.035)] sm:gap-5 sm:py-7 md:grid-cols-[3.5rem_minmax(11rem,0.72fr)_minmax(0,1fr)] md:items-center md:gap-8 md:px-4"
               >
-                <span aria-hidden className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.08)] blur-2xl transition-opacity duration-[680ms] group-hover:opacity-90" />
-
-                <div className="relative flex items-start justify-between gap-5">
+                <div className="flex items-center justify-between gap-4 md:contents">
                   <span
                     aria-hidden
-                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[rgb(var(--magicks-accent-rgb)/0.1)] text-[rgb(var(--magicks-accent-ink-rgb)/0.92)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:h-12 sm:w-12"
+                    className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.08)] text-[rgb(var(--magicks-accent-ink-rgb)/0.86)] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] sm:h-11 sm:w-11"
                   >
-                    <HomeIcon name={card.icon} size={20} strokeWidth={1.35} />
+                    <HomeIcon name={card.icon} size={18} strokeWidth={1.3} />
                   </span>
 
-                  <span className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-ink-rgb)/0.38)] sm:text-[11.5px]">
+                  <span className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-ink-rgb)/0.38)] sm:text-[11.5px] md:order-first md:text-left">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                 </div>
 
-                <h3 className="relative mt-6 max-w-[16ch] font-ui text-[1.55rem] font-[640] leading-[1.08] tracking-[-0.024em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[1.8rem] md:text-[2rem]">
+                <h3 className="max-w-[18ch] font-ui text-[1.32rem] font-[630] leading-[1.12] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[1.46rem] md:text-[1.58rem]">
                   {card.title}
                 </h3>
 
-                <p className="relative mt-4 max-w-[32rem] font-ui text-[1.02rem] font-[470] leading-[1.62] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.68)] sm:text-[1.08rem]">
+                <p className="max-w-[38rem] font-ui text-[1rem] font-[460] leading-[1.62] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.68)] sm:text-[1.06rem] md:text-[1.1rem]">
                   {card.text}
                 </p>
-
-                <span
-                  aria-hidden
-                  className="relative mt-6 block h-px w-full bg-gradient-to-r from-[rgb(var(--magicks-accent-rgb)/0.34)] via-[rgb(var(--magicks-line-rgb)/0.14)] to-transparent"
-                />
               </li>
             ))}
           </ul>
