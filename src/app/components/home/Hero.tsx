@@ -267,7 +267,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 78% 62% at 50% 45%, rgba(255,253,247,0.9) 0%, rgba(248,244,235,0.68) 42%, rgba(245,240,230,0.34) 66%, transparent 100%)",
+            "radial-gradient(ellipse 86% 70% at 50% 45%, rgba(255,253,247,0.82) 0%, rgba(251,247,239,0.66) 28%, rgba(248,244,235,0.44) 52%, rgba(245,240,230,0.18) 76%, transparent 100%)",
         }}
       />
 
@@ -277,7 +277,7 @@ export function Hero() {
         className="pointer-events-none absolute left-1/2 top-[13%] h-[66%] w-[min(82vw,920px)] -translate-x-1/2 rounded-[2.5rem]"
         style={{
           background:
-            "radial-gradient(ellipse 74% 66% at 50% 48%, rgba(255,255,255,0.58) 0%, rgba(248,244,235,0.32) 54%, transparent 100%)",
+            "radial-gradient(ellipse 78% 70% at 50% 48%, rgba(255,255,255,0.46) 0%, rgba(250,246,238,0.28) 46%, rgba(248,244,235,0.1) 72%, transparent 100%)",
         }}
       />
 
