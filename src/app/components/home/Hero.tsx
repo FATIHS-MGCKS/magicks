@@ -10,9 +10,9 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
  *
  * Composition:
  *   · vertical production credit (left edge)
- *   · two-line headline — "Digitaler Eindruck, / der überzeugt"
- *   · success-oriented subtext (Sie / Ihre)
- *   · text-link CTA with dual underline sweep
+ *   · centred two-line headline — "Digitaler Eindruck, / der überzeugt"
+ *   · success-oriented subtext in a high-contrast reading field
+ *   · centred CTA with dual underline sweep
  *   · thin scroll cue (bottom-centre)
  *
  * Typography keeps the headline's first line and subtext in Apple-system
@@ -40,7 +40,6 @@ export function Hero() {
       const subline = root.querySelector<HTMLElement>("[data-hero-subline]");
       const cta = root.querySelector<HTMLElement>("[data-hero-cta]");
       const cue = root.querySelector<HTMLElement>("[data-hero-cue]");
-      const scaler = root.querySelector<HTMLElement>("[data-hero-scaler]");
       const vignette = root.querySelector<HTMLElement>("[data-hero-vignette]");
       const bottomFade = root.querySelector<HTMLElement>("[data-hero-bottomfade]");
       const wipe = root.querySelector<HTMLElement>("[data-hero-wipe]");
@@ -153,30 +152,10 @@ export function Hero() {
       tl.to(cue, { opacity: 1, duration: 0.9, ease: "power2.out" }, 2.05);
 
       // ─── Scroll-coupled cinematic step-back ──────────────────────────
-      // The hero never "snaps" away. Instead it recedes in layered depth
-      // as the user scrolls toward the Value Statement. Every layer scrubs,
-      // which means scrolling back up reverses the entire composition and
-      // the frame reclaims its dominance.
+      // The video stays fixed in scale while scroll only adjusts atmosphere
+      // and copy presence. This avoids the distracting mobile zoom-in.
 
-      // 01 — video plane gently pushes and drifts. Keep this transform-only:
-      // animating filter/blur over video forces per-frame repainting and makes
-      // the scroll-coupled zoom stutter on mid-range GPUs.
-      const scalerExit: gsap.TweenVars = {
-        scale: 1.08,
-        yPercent: -3,
-        force3D: true,
-        ease: "none",
-        scrollTrigger: {
-          trigger: root,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1.1,
-          invalidateOnRefresh: true,
-        },
-      };
-      gsap.to(scaler, scalerExit);
-
-      // 02 — the depth layer darkens in two beats: a soft cool grade
+      // 01 — the depth layer darkens in two beats: a soft cool grade
       // first, then a stronger mid-frame falloff as the copy clears.
       gsap.fromTo(
         depth,
@@ -193,7 +172,7 @@ export function Hero() {
         },
       );
 
-      // 03 — vignette tightens toward the end of the scroll, pulling the
+      // 02 — vignette tightens toward the end of the scroll, pulling the
       // eye off the hero and priming the next section.
       gsap.fromTo(
         vignette,
@@ -210,7 +189,7 @@ export function Hero() {
         },
       );
 
-      // 04 — copy exhale: lifts and loses contrast before the frame goes.
+      // 03 — copy exhale: lifts and loses contrast before the frame goes.
       // This stays transform/opacity-only so it does not compete with the
       // video zoom for paint time during scroll.
       const copyExit: gsap.TweenVars = {
@@ -227,7 +206,7 @@ export function Hero() {
       };
       gsap.to(copy, copyExit);
 
-      // 05 — marginalia (cue + credit) dissolve earlier than the copy so
+      // 04 — marginalia (cue + credit) dissolve earlier than the copy so
       // the core headline holds the longest.
       gsap.to([cue, credit], {
         opacity: 0,
@@ -253,7 +232,7 @@ export function Hero() {
       {/* Camera push layer */}
       <div
         data-hero-scaler
-        className="absolute inset-0 origin-center will-change-transform [backface-visibility:hidden] [transform:translateZ(0)]"
+        className="absolute inset-0 origin-center"
         aria-hidden
       >
         <HeroVideoBackground />
@@ -282,23 +261,23 @@ export function Hero() {
         }}
       />
 
-      {/* 3 — left-column reading field: uses the calmer half of the video */}
+      {/* 3 — centred reading field: keeps the headline readable over video */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(100deg, rgba(255,253,247,0.88) 0%, rgba(248,244,235,0.72) 32%, rgba(245,240,230,0.34) 56%, transparent 78%)",
+            "radial-gradient(ellipse 78% 62% at 50% 45%, rgba(255,253,247,0.9) 0%, rgba(248,244,235,0.68) 42%, rgba(245,240,230,0.34) 66%, transparent 100%)",
         }}
       />
 
-      {/* 3b — left-side cinematic key light behind the headline */}
+      {/* 3b — centred cinematic key light behind the headline */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-[2vw] top-[14%] h-[64%] w-[min(54vw,760px)] rounded-[2.5rem]"
+        className="pointer-events-none absolute left-1/2 top-[13%] h-[66%] w-[min(82vw,920px)] -translate-x-1/2 rounded-[2.5rem]"
         style={{
           background:
-            "radial-gradient(ellipse 74% 66% at 24% 48%, rgba(255,255,255,0.48) 0%, rgba(248,244,235,0.26) 52%, transparent 100%)",
+            "radial-gradient(ellipse 74% 66% at 50% 48%, rgba(255,255,255,0.58) 0%, rgba(248,244,235,0.32) 54%, transparent 100%)",
         }}
       />
 
@@ -347,13 +326,13 @@ export function Hero() {
       {/* Main content column */}
       <div
         data-hero-copy
-        className="relative z-10 flex flex-1 items-center px-6 pb-[7.5rem] pt-24 sm:px-10 sm:pb-[8.5rem] md:px-14 md:pb-[9.5rem] md:pt-32 lg:px-18 lg:pb-[10.5rem] xl:px-24"
+        className="relative z-10 flex flex-1 items-center justify-center px-5 pb-[7.5rem] pt-24 text-center sm:px-8 sm:pb-[8.5rem] md:px-12 md:pb-[9.5rem] md:pt-32 lg:px-16 lg:pb-[10.5rem] xl:px-20"
       >
         <div className="layout-max w-full">
-          <div className="max-w-[min(45rem,88vw)] text-left md:max-w-[min(46rem,56vw)] lg:max-w-[min(50rem,50vw)] xl:max-w-[min(54rem,48vw)]">
+          <div className="mx-auto flex max-w-[min(58rem,92vw)] flex-col items-center">
             <h1
               id="hero-heading"
-              className="font-ui text-[3.18rem] leading-[1] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.98)] [text-shadow:0_1px_0_rgba(255,255,255,0.58)] sm:text-[4.4rem] md:text-[5.3rem] lg:text-[6.05rem] xl:text-[6.7rem]"
+              className="font-ui text-[3rem] leading-[0.98] tracking-[-0.038em] text-[rgb(var(--magicks-ink-rgb)/0.98)] [text-shadow:0_1px_0_rgba(255,255,255,0.68)] sm:text-[4.35rem] md:text-[5.45rem] lg:text-[6.35rem] xl:text-[7rem]"
             >
               <span className="block font-[620]">
                 {LINE_A.map((w, i) => (
@@ -367,7 +346,7 @@ export function Hero() {
                   </span>
                 ))}
               </span>
-              <span className="mt-1 block font-['Instrument_Serif'] font-[460] italic text-[rgb(var(--magicks-ink-rgb)/0.78)] sm:mt-2">
+              <span className="font-instrument mt-1 block font-[460] italic text-[rgb(var(--magicks-ink-rgb)/0.78)] sm:mt-2">
                 {LINE_B.map((w, i) => (
                   <span
                     key={`b-${i}`}
@@ -381,33 +360,37 @@ export function Hero() {
               </span>
             </h1>
 
-            {/* Quiet H2 subtext — success-oriented, formal address.
-                Apple-system throughout for crisp business clarity; the
-                left rule preserves the original editorial composition. */}
+            {/* Quiet H2 subtext — centred and placed on a calm surface so it
+                remains readable over the moving video frame. */}
             <h2
               data-hero-subline
-              className="font-ui mt-7 max-w-[33rem] border-l border-[rgb(var(--magicks-line-rgb)/0.24)] pl-5 text-[16px] font-[460] leading-[1.58] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.8)] sm:mt-8 sm:max-w-[36rem] sm:pl-6 sm:text-[17.5px] md:mt-9 md:text-[19px] lg:max-w-[39rem] lg:text-[20px]"
+              className="font-ui mx-auto mt-7 max-w-[38rem] rounded-[1.25rem] border border-[rgb(var(--magicks-line-rgb)/0.14)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.74)] px-5 py-4 text-center text-[16.5px] font-[520] leading-[1.54] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[0_24px_72px_-48px_rgba(20,28,44,0.38),inset_0_1px_0_rgba(255,255,255,0.76)] sm:mt-8 sm:max-w-[42rem] sm:px-7 sm:py-5 sm:text-[18px] md:mt-9 md:text-[19.5px] lg:text-[20.5px]"
             >
-              <span className="block">Seien Sie nicht einfach nur „online“.</span>
-              <span className="mt-1.5 block text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+              <span className="block">
+                Seien Sie nicht einfach nur{" "}
+                <span className="ml-1 whitespace-nowrap font-[620] text-emerald-700">
+                  <span
+                    aria-hidden
+                    className="relative -top-[0.06em] mr-1.5 inline-block h-[0.46em] w-[0.46em] rounded-full bg-emerald-500 align-middle shadow-[0_0_0_0.22em_rgba(16,185,129,0.14),0_0_1em_rgba(16,185,129,0.42)]"
+                  />
+                  „Online“
+                </span>
+                .
+              </span>
+              <span className="mt-1.5 block text-[rgb(var(--magicks-ink-rgb)/0.98)]">
                 Überzeugen Sie Ihre Kunden von sich.
               </span>
             </h2>
 
-            {/* Hero CTA — premium dark pill with an arrow chip carriage.
-                Micro-spacing tuned for visual weight at desktop without
-                going chunky on mobile. Hover/focus opens letter-tracking,
-                lifts the chip and the pill, and brightens the chip's
-                hairline divider so the whole component feels alive
-                rather than just shadowed. */}
-            <div data-hero-cta className="mt-10 inline-block sm:mt-12 md:mt-14">
+            {/* Hero CTA — warm ivory pill with a refined arrow chip. */}
+            <div data-hero-cta className="mt-9 inline-block sm:mt-11 md:mt-12">
               <Link
                 to="/kontakt"
                 // Baseline-aligned at every viewport: the arrow's text
                 // baseline locks onto the label's baseline so it never
                 // drifts low on mobile. min-h-11 + py-1 keep the touch
                 // target ≥ 44 px below lg without affecting alignment.
-                className="group relative inline-flex min-h-12 items-center gap-3 rounded-full border border-[rgb(var(--magicks-line-rgb)/0.22)] bg-[rgb(var(--magicks-ink-rgb)/0.94)] py-2.5 pl-6 pr-2 font-ui text-[15.5px] font-[580] tracking-[-0.004em] text-[var(--magicks-bg-lifted)] no-underline shadow-[0_28px_78px_-38px_rgba(20,28,44,0.54),inset_0_1px_0_rgba(255,255,255,0.18)] transition-[transform,box-shadow,background-color] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:bg-[rgb(var(--magicks-ink-rgb)/0.99)] hover:shadow-[0_38px_98px_-34px_rgba(20,28,44,0.62),inset_0_1px_0_rgba(255,255,255,0.2)] sm:min-h-[52px] sm:pl-7 sm:pr-2.5 sm:text-[16px] md:text-[16.5px]"
+                className="group relative inline-flex min-h-12 items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[linear-gradient(180deg,rgba(255,253,249,0.96)_0%,rgba(244,238,227,0.9)_100%)] py-2.5 pl-6 pr-2 font-ui text-[15.5px] font-[600] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline shadow-[0_22px_62px_-42px_rgba(20,28,44,0.46),inset_0_1px_0_rgba(255,255,255,0.88),inset_0_-1px_0_rgba(148,124,92,0.12)] transition-[transform,box-shadow,background-color,border-color] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:border-[rgb(var(--magicks-accent-line-rgb)/0.4)] hover:bg-[linear-gradient(180deg,rgba(255,254,251,0.98)_0%,rgba(247,241,230,0.94)_100%)] hover:shadow-[0_32px_82px_-40px_rgba(20,28,44,0.52),inset_0_1px_0_rgba(255,255,255,0.92),inset_0_-1px_0_rgba(148,124,92,0.16)] active:translate-y-0 active:scale-[0.99] sm:min-h-[52px] sm:pl-7 sm:pr-2.5 sm:text-[16px] md:text-[16.5px]"
                 aria-label="Projekt besprechen"
               >
                 <span className="relative">
@@ -421,7 +404,7 @@ export function Hero() {
                     chip reads as a separate "stop". */}
                 <span
                   aria-hidden
-                  className="ml-1 h-5 w-px bg-[rgb(var(--magicks-accent-rgb)/0.26)] transition-[background-color] duration-[720ms] group-hover:bg-[rgb(var(--magicks-accent-rgb)/0.5)] group-focus-visible:bg-[rgb(var(--magicks-accent-rgb)/0.5)] sm:h-6"
+                  className="ml-1 h-5 w-px bg-[rgb(var(--magicks-accent-rgb)/0.22)] transition-[background-color] duration-[720ms] group-hover:bg-[rgb(var(--magicks-accent-rgb)/0.42)] group-focus-visible:bg-[rgb(var(--magicks-accent-rgb)/0.42)] sm:h-6"
                 />
 
                 <span
@@ -431,7 +414,7 @@ export function Hero() {
                   // the arrow through the system emoji font and the
                   // glyph looks different from the desktop italic
                   // serif rendering. The selector is invisible.
-                  className="font-instrument flex h-8 w-8 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.28)] bg-[var(--magicks-bg-lifted)] text-[1.05em] italic text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-transform duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[3px] group-focus-visible:-translate-y-[2px] group-focus-visible:translate-x-[3px]"
+                  className="font-instrument flex h-8 w-8 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.34)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.9)] text-[1.05em] italic text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_12px_30px_-24px_rgba(20,28,44,0.46)] transition-[transform,background-color,border-color,box-shadow] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[3px] group-hover:border-[rgb(var(--magicks-accent-line-rgb)/0.5)] group-hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/1)] group-hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_16px_36px_-24px_rgba(20,28,44,0.52)] group-focus-visible:-translate-y-[2px] group-focus-visible:translate-x-[3px]"
                   style={{ fontVariantEmoji: "text" }}
                 >
                   {"\u2197\uFE0E"}
