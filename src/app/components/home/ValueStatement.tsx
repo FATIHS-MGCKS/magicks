@@ -172,12 +172,13 @@ export function ValueStatement() {
       rackFocusTrack(sentences, {
         trigger: heading ?? root,
         start: "top 82%",
-        end: "bottom 30%",
-        scrub: 0.95,
+        end: "bottom 24%",
+        scrub: 1.15,
         blur: 4.5,
-        softOpacity: 0.35,
+        mobileBlur: 1.1,
+        softOpacity: 0.48,
         reachOpacity: 1,
-        holdRatio: 0.56,
+        holdRatio: 0.68,
         onProgress: (_idx, progress) => {
           if (!focusBand || !sentences.length) return;
           if (!cachedSentenceCenters.length) updateFocusBandGeometry();
@@ -330,7 +331,7 @@ export function ValueStatement() {
                     key={block.primary}
                     id="value-heading"
                     data-value-sentence
-                    className="mx-auto max-w-[22ch] font-ui text-[clamp(2.45rem,6.4vw,4.35rem)] font-[640] leading-[1.02] tracking-[-0.046em] text-[rgb(var(--magicks-ink-rgb)/0.97)] will-change-[opacity,filter] md:max-w-[22ch]"
+                    className="mx-auto max-w-[22ch] font-ui text-[clamp(2.45rem,6.4vw,4.35rem)] font-[640] leading-[1.02] tracking-[-0.046em] text-[rgb(var(--magicks-ink-rgb)/0.97)] will-change-[opacity] md:max-w-[22ch] md:will-change-[opacity,filter]"
                   >
                     <span className="block">{block.primary}</span>
                     <em className="mx-auto mt-2 block max-w-[18ch] font-instrument italic text-[0.94em] font-normal tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:mt-3">
@@ -345,7 +346,7 @@ export function ValueStatement() {
                   <p
                     key={block.text}
                     data-value-sentence
-                    className="font-ui mx-auto mt-12 max-w-[42rem] text-[1.02rem] font-[500] leading-[1.66] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.74)] will-change-[opacity,filter] sm:mt-14 sm:text-[1.1rem] md:text-[1.18rem] lg:text-[1.24rem]"
+                    className="font-ui mx-auto mt-12 max-w-[42rem] text-[1.02rem] font-[500] leading-[1.66] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.74)] will-change-[opacity] sm:mt-14 sm:text-[1.1rem] md:text-[1.18rem] md:will-change-[opacity,filter] lg:text-[1.24rem]"
                   >
                     {block.text}
                   </p>
@@ -356,7 +357,7 @@ export function ValueStatement() {
                 <p
                   key={block.text}
                   data-value-sentence
-                  className="font-instrument mx-auto mt-14 max-w-[44rem] text-[1.4rem] italic leading-[1.32] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.7)] will-change-[opacity,filter] sm:mt-16 sm:text-[1.7rem] md:text-[2rem] lg:text-[2.25rem]"
+                  className="font-instrument mx-auto mt-14 max-w-[44rem] text-[1.4rem] italic leading-[1.32] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.7)] will-change-[opacity] sm:mt-16 sm:text-[1.7rem] md:text-[2rem] md:will-change-[opacity,filter] lg:text-[2.25rem]"
                 >
                   {block.text}
                 </p>

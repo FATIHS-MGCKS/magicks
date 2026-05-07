@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { HeroVideoBackground } from "../HeroVideoBackground";
 import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
-import { prefersCheapMotion } from "../../lib/scrollMotion";
 
 /**
  * Hero — one dominant statement, one text-link CTA, one cinema credit.
@@ -16,9 +15,9 @@ import { prefersCheapMotion } from "../../lib/scrollMotion";
  *   · text-link CTA with dual underline sweep
  *   · thin scroll cue (bottom-centre)
  *
- * Typography is deliberately Apple-system for the headline + subtext so
- * the brand statement reads with SF Pro precision. Instrument Serif is
- * reserved for accent moments later in the page.
+ * Typography keeps the headline's first line and subtext in Apple-system
+ * for SF Pro precision; the italic second line shifts to Instrument Serif
+ * as the hero's editorial accent.
  */
 
 const LINE_A = ["Digitaler", "Eindruck,"];
@@ -35,7 +34,6 @@ export function Hero() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
-      const cheapMotion = prefersCheapMotion();
       const credit = root.querySelector<HTMLElement>("[data-hero-credit]");
       const lineA = gsap.utils.toArray<HTMLElement>("[data-hero-a]");
       const lineB = gsap.utils.toArray<HTMLElement>("[data-hero-b]");
@@ -160,11 +158,13 @@ export function Hero() {
       // which means scrolling back up reverses the entire composition and
       // the frame reclaims its dominance.
 
-      // 01 — video plane gently pushes and drifts. `scrub: 1.1` adds a
-      // film-magazine inertia so the push never feels UI-like.
+      // 01 — video plane gently pushes and drifts. Keep this transform-only:
+      // animating filter/blur over video forces per-frame repainting and makes
+      // the scroll-coupled zoom stutter on mid-range GPUs.
       const scalerExit: gsap.TweenVars = {
         scale: 1.08,
         yPercent: -3,
+        force3D: true,
         ease: "none",
         scrollTrigger: {
           trigger: root,
@@ -174,7 +174,6 @@ export function Hero() {
           invalidateOnRefresh: true,
         },
       };
-      if (!cheapMotion) scalerExit.filter = "blur(1.2px)";
       gsap.to(scaler, scalerExit);
 
       // 02 — the depth layer darkens in two beats: a soft cool grade
@@ -211,11 +210,13 @@ export function Hero() {
         },
       );
 
-      // 04 — copy exhale: lifts, softens, and loses contrast before the
-      // frame goes. No opacity wall — blur+y carries most of the farewell.
+      // 04 — copy exhale: lifts and loses contrast before the frame goes.
+      // This stays transform/opacity-only so it does not compete with the
+      // video zoom for paint time during scroll.
       const copyExit: gsap.TweenVars = {
         yPercent: -10,
         opacity: 0.26,
+        force3D: true,
         ease: "none",
         scrollTrigger: {
           trigger: root,
@@ -224,7 +225,6 @@ export function Hero() {
           scrub: 0.9,
         },
       };
-      if (!cheapMotion) copyExit.filter = "blur(2.2px)";
       gsap.to(copy, copyExit);
 
       // 05 — marginalia (cue + credit) dissolve earlier than the copy so
@@ -253,7 +253,7 @@ export function Hero() {
       {/* Camera push layer */}
       <div
         data-hero-scaler
-        className="absolute inset-0 origin-center will-change-transform"
+        className="absolute inset-0 origin-center will-change-transform [backface-visibility:hidden] [transform:translateZ(0)]"
         aria-hidden
       >
         <HeroVideoBackground />
@@ -367,7 +367,7 @@ export function Hero() {
                   </span>
                 ))}
               </span>
-              <span className="mt-1 block font-[460] italic text-[rgb(var(--magicks-ink-rgb)/0.78)] sm:mt-2">
+              <span className="mt-1 block font-['Instrument_Serif'] font-[460] italic text-[rgb(var(--magicks-ink-rgb)/0.78)] sm:mt-2">
                 {LINE_B.map((w, i) => (
                   <span
                     key={`b-${i}`}

@@ -434,6 +434,7 @@ export function rackFocusTrack(
     end = "bottom 35%",
     scrub = 0.9,
     blur = 3.8,
+    mobileBlur,
     softOpacity = 0.5,
     reachOpacity = 1,
     /** How much of each item's slot is held at full sharpness. 0.45 ≈ long reading time. */
@@ -447,6 +448,8 @@ export function rackFocusTrack(
     end?: string;
     scrub?: boolean | number;
     blur?: number;
+    /** Final blur radius for narrow viewports. Keeps rack-focus legible on mobile. */
+    mobileBlur?: number;
     softOpacity?: number;
     reachOpacity?: number;
     holdRatio?: number;
@@ -459,8 +462,12 @@ export function rackFocusTrack(
 ) {
   if (!items.length) return;
 
-  const cheapMotion = prefersCheapMotion();
-  const blurPx = adaptBlur(blur, cheapMotion);
+  const reducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const useMobileBlur = isNarrowViewport() && typeof mobileBlur === "number";
+  const cheapMotion = prefersCheapMotion() && !useMobileBlur;
+  const blurPx = reducedMotion ? 0 : useMobileBlur ? mobileBlur : adaptBlur(blur, cheapMotion);
 
   const buildSoftState = () => {
     const state: gsap.TweenVars = { opacity: softOpacity };
