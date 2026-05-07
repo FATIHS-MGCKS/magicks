@@ -11,16 +11,18 @@ import { prefersCheapMotion } from "../../lib/scrollMotion";
  *
  * Composition:
  *   · vertical production credit (left edge)
- *   · two-line headline — "Wir bauen das Web, / das dein Business verdient."
+ *   · two-line headline — "Digitaler Eindruck, / der überzeugt"
+ *   · success-oriented subtext (Sie / Ihre)
  *   · text-link CTA with dual underline sweep
- *   · thin scroll cue (bottom-center)
+ *   · thin scroll cue (bottom-centre)
  *
- * No sub-paragraph. No glass pill. No secondary link. No session ledger.
- * The restraint is the point.
+ * Typography is deliberately Apple-system for the headline + subtext so
+ * the brand statement reads with SF Pro precision. Instrument Serif is
+ * reserved for accent moments later in the page.
  */
 
-const LINE_A = ["Wir", "bauen", "das", "Web,"];
-const LINE_B = ["das", "dein", "Business", "verdient."];
+const LINE_A = ["Digitaler", "Eindruck,"];
+const LINE_B = ["der", "überzeugt"];
 
 export function Hero() {
   const rootRef = useRef<HTMLElement>(null);
@@ -351,13 +353,13 @@ export function Hero() {
           <div className="max-w-[min(45rem,88vw)] text-left md:max-w-[min(48rem,58vw)] lg:max-w-[min(52rem,52vw)] xl:max-w-[min(56rem,50vw)]">
             <h1
               id="hero-heading"
-              className="font-instrument text-[3.42rem] leading-[0.96] tracking-[-0.036em] text-[rgb(var(--magicks-ink-rgb)/0.98)] [text-shadow:0_1px_0_rgba(255,255,255,0.58)] sm:text-[4.72rem] md:text-[5.6rem] lg:text-[6.35rem] xl:text-[7.1rem]"
+              className="font-ui text-[3.18rem] leading-[1] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.98)] [text-shadow:0_1px_0_rgba(255,255,255,0.58)] sm:text-[4.4rem] md:text-[5.3rem] lg:text-[6.05rem] xl:text-[6.7rem]"
             >
-              <span className="block font-[560]">
+              <span className="block font-[620]">
                 {LINE_A.map((w, i) => (
                   <span
                     key={`a-${i}`}
-                    className="mr-[0.16em] inline-block overflow-hidden align-bottom last:mr-0"
+                    className="mr-[0.18em] inline-block overflow-hidden align-bottom last:mr-0"
                   >
                     <span data-hero-a className="inline-block will-change-[transform,opacity]">
                       {w}
@@ -365,11 +367,11 @@ export function Hero() {
                   </span>
                 ))}
               </span>
-              <span className="mt-1 block italic text-[rgb(var(--magicks-ink-rgb)/0.72)] sm:mt-2">
+              <span className="mt-1 block font-[460] italic text-[rgb(var(--magicks-ink-rgb)/0.78)] sm:mt-2">
                 {LINE_B.map((w, i) => (
                   <span
                     key={`b-${i}`}
-                    className="mr-[0.16em] inline-block overflow-hidden align-bottom last:mr-0"
+                    className="mr-[0.18em] inline-block overflow-hidden align-bottom last:mr-0"
                   >
                     <span data-hero-b className="inline-block will-change-[transform,opacity]">
                       {w}
@@ -379,28 +381,25 @@ export function Hero() {
               </span>
             </h1>
 
-            {/* Editorial sub-line — quiet H2 carrying the primary local +
-                service vocabulary so the homepage anchors a crawlable
-                topic underneath the brand-poetic H1.
-                Type: Instrument Serif at reading size (matches the H1
-                family) with the locale ("Webagentur aus Kassel") set
-                in italic as a focal accent and the offer list rendered
-                Roman. The italic / Roman split echoes the H1's "block
-                + italic" couplet, so the trio reads as one breath
-                rather than three disconnected layers. */}
+            {/* Quiet H2 subtext — success-oriented, formal address.
+                Apple-system throughout for crisp business clarity; the
+                left rule preserves the original editorial composition. */}
             <h2
               data-hero-subline
-              className="font-ui mt-7 max-w-[34rem] border-l border-[rgb(var(--magicks-line-rgb)/0.2)] pl-5 text-[16px] leading-[1.62] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.72)] sm:mt-8 sm:max-w-[38rem] sm:pl-6 sm:text-[17.5px] md:mt-9 md:text-[19px] lg:max-w-[40rem] lg:text-[20px]"
+              className="font-ui mt-7 max-w-[34rem] border-l border-[rgb(var(--magicks-line-rgb)/0.22)] pl-5 text-[16px] font-[460] leading-[1.58] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.78)] sm:mt-8 sm:max-w-[38rem] sm:pl-6 sm:text-[17.5px] md:mt-9 md:text-[19px] lg:max-w-[40rem] lg:text-[20px]"
             >
-              <em className="font-instrument block text-[1.34em] italic leading-[1.12] tracking-[-0.026em] text-[rgb(var(--magicks-ink-rgb)/0.94)]">Technologie, die sich nach Premium anfühlt.</em>
-              <span className="mt-2.5 block text-[rgb(var(--magicks-ink-rgb)/0.68)]">Ein digitaler Eindruck, der im Gedächtnis bleibt.</span>
+              <span className="block">Seien Sie nicht einfach nur „online“.</span>
+              <span className="mt-1.5 block text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+                Überzeugen Sie Ihre Kunden von sich.
+              </span>
             </h2>
 
-            {/* Text-link CTA — magazine-style dual underline, no glass pill.
-                Hover is deliberately slow + deep: the sweep rule draws in
-                over ~900ms, the arrow lifts on a symmetric curve, the copy
-                picks up a hair of tracking — all on a single cubic-bezier
-                so the whole word feels like it "opens" rather than pops. */}
+            {/* Hero CTA — premium dark pill with an arrow chip carriage.
+                Micro-spacing tuned for visual weight at desktop without
+                going chunky on mobile. Hover/focus opens letter-tracking,
+                lifts the chip and the pill, and brightens the chip's
+                hairline divider so the whole component feels alive
+                rather than just shadowed. */}
             <div data-hero-cta className="mt-10 inline-block sm:mt-12 md:mt-14">
               <Link
                 to="/kontakt"
@@ -408,7 +407,7 @@ export function Hero() {
                 // baseline locks onto the label's baseline so it never
                 // drifts low on mobile. min-h-11 + py-1 keep the touch
                 // target ≥ 44 px below lg without affecting alignment.
-                className="group relative inline-flex min-h-12 items-center gap-3 rounded-full border border-[rgb(var(--magicks-line-rgb)/0.22)] bg-[rgb(var(--magicks-ink-rgb)/0.92)] py-2.5 pl-6 pr-2.5 font-ui text-[15.5px] font-semibold tracking-[-0.004em] text-[var(--magicks-bg-lifted)] no-underline shadow-[0_24px_70px_-36px_rgba(20,28,44,0.5),inset_0_1px_0_rgba(255,255,255,0.16)] transition-[transform,box-shadow,background-color] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:bg-[rgb(var(--magicks-ink-rgb)/0.98)] hover:shadow-[0_34px_90px_-34px_rgba(20,28,44,0.58),inset_0_1px_0_rgba(255,255,255,0.18)] sm:min-h-[52px] sm:pl-7 sm:text-[16px] md:text-[16.5px]"
+                className="group relative inline-flex min-h-12 items-center gap-3 rounded-full border border-[rgb(var(--magicks-line-rgb)/0.22)] bg-[rgb(var(--magicks-ink-rgb)/0.94)] py-2.5 pl-6 pr-2 font-ui text-[15.5px] font-[580] tracking-[-0.004em] text-[var(--magicks-bg-lifted)] no-underline shadow-[0_28px_78px_-38px_rgba(20,28,44,0.54),inset_0_1px_0_rgba(255,255,255,0.18)] transition-[transform,box-shadow,background-color] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:bg-[rgb(var(--magicks-ink-rgb)/0.99)] hover:shadow-[0_38px_98px_-34px_rgba(20,28,44,0.62),inset_0_1px_0_rgba(255,255,255,0.2)] sm:min-h-[52px] sm:pl-7 sm:pr-2.5 sm:text-[16px] md:text-[16.5px]"
                 aria-label="Projekt besprechen"
               >
                 <span className="relative">
@@ -416,6 +415,14 @@ export function Hero() {
                     Ein Projekt besprechen
                   </span>
                 </span>
+
+                {/* Hairline carriage divider — thin vertical rule between
+                    label and arrow chip. Brightens on hover so the
+                    chip reads as a separate "stop". */}
+                <span
+                  aria-hidden
+                  className="ml-1 h-5 w-px bg-[rgb(255,253,249)]/14 transition-[background-color] duration-[720ms] group-hover:bg-[rgb(255,253,249)]/26 group-focus-visible:bg-[rgb(255,253,249)]/26 sm:h-6"
+                />
 
                 <span
                   aria-hidden

@@ -9,7 +9,6 @@ import {
   presenceEnvelope,
   sectionFarewell,
 } from "../../lib/scrollMotion";
-import { ChapterMarker } from "./ChapterMarker";
 
 /**
  * Statements are set in giant Instrument Serif — each on its own line pair.
@@ -22,14 +21,12 @@ import { ChapterMarker } from "./ChapterMarker";
  * stops being the hero.
  */
 const PRINCIPLES: {
-  sup: string;
   line1: string;
   line2?: string;
   tone: "strong" | "hush";
   note: string;
 }[] = [
   {
-    sup: "01",
     line1: "Keine Umwege.",
     line2: "Wir bauen direkt.",
     tone: "strong",
@@ -37,7 +34,6 @@ const PRINCIPLES: {
       "Sie sprechen mit den Menschen, die bauen. Keine Projektleitung, die Mails weiterreicht.",
   },
   {
-    sup: "02",
     line1: "Design und Code",
     line2: "aus einer Hand.",
     tone: "hush",
@@ -45,7 +41,6 @@ const PRINCIPLES: {
       "Markengefühl und Umsetzung auf einer Linie — kein Verlust zwischen Kreativ und Entwicklung.",
   },
   {
-    sup: "03",
     line1: "Automation als",
     line2: "Verantwortung.",
     tone: "strong",
@@ -53,7 +48,6 @@ const PRINCIPLES: {
       "KI-Workflows und Automation dort, wo die Entlastung nachweisbar ist — mit Regeln, die Ihr Team versteht.",
   },
   {
-    sup: "04",
     line1: "Jede Entscheidung",
     line2: "nachvollziehbar.",
     tone: "hush",
@@ -72,7 +66,6 @@ export function WhyMagicks() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
-      const chapter = root.querySelector<HTMLElement>("[data-why-chapter]");
       const intro = root.querySelector<HTMLElement>("[data-why-intro]");
       const rows = gsap.utils.toArray<HTMLElement>("[data-why-row]");
       const atmos01 = root.querySelector<HTMLElement>("[data-why-atmos-01]");
@@ -80,11 +73,10 @@ export function WhyMagicks() {
       const atmos03 = root.querySelector<HTMLElement>("[data-why-atmos-03]");
       const atmosShaft = root.querySelector<HTMLElement>("[data-why-atmos-shaft]");
       const atmosBand = root.querySelector<HTMLElement>("[data-why-atmos-band]");
-      const gutter = root.querySelector<HTMLElement>("[data-why-gutter]");
       const farewell = root.querySelector<HTMLElement>("[data-why-farewell]");
 
       if (reduced) {
-        gsap.set([chapter, intro, ...rows, atmosShaft, gutter, farewell], {
+        gsap.set([intro, ...rows, atmosShaft, farewell], {
           opacity: 1,
           y: 0,
           filter: "blur(0px)",
@@ -93,7 +85,7 @@ export function WhyMagicks() {
         if (atmosShaft) gsap.set(atmosShaft, { opacity: 0.18 });
         if (farewell) gsap.set(farewell, { opacity: 0 });
         rows.forEach((r) => {
-          gsap.set(r.querySelectorAll("[data-why-sup], [data-why-line], [data-why-note]"), {
+          gsap.set(r.querySelectorAll("[data-why-line], [data-why-note]"), {
             opacity: 1,
             y: 0,
             yPercent: 0,
@@ -153,51 +145,6 @@ export function WhyMagicks() {
       // mid-section and then releases.
       parallaxDrift(atmosBand, { trigger: root, from: -3, to: 3, scrub: true });
 
-      // ─── Editorial gutter: scroll-coupled breathing ──────────────────
-      // The thin vertical hairline between numeral + statement columns
-      // scrubs its vertical extension with scroll. Never visible as
-      // motion — the eye registers the column breathing, and the list
-      // feels *drawn*, not placed.
-      if (gutter) {
-        gsap.fromTo(
-          gutter,
-          { scaleY: 0.55, transformOrigin: "top center", opacity: 0.4 },
-          {
-            scaleY: 1,
-            opacity: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: root,
-              start: "top 80%",
-              end: "bottom 40%",
-              scrub: 1.1,
-            },
-          },
-        );
-        gsap.to(gutter, {
-          scaleY: 0.7,
-          opacity: 0.5,
-          ease: "none",
-          scrollTrigger: {
-            trigger: root,
-            start: "bottom 40%",
-            end: "bottom 5%",
-            scrub: 1.1,
-          },
-        });
-      }
-
-      // ─── Header: presence envelope (earlier entry for handoff) ───────
-      presenceEnvelope(chapter, {
-        trigger: root,
-        start: "top 98%",
-        end: "top 32%",
-        yFrom: 14,
-        yTo: -8,
-        blur: 3,
-        holdRatio: 0.6,
-      });
-
       // Intro lingers on exit. Its job is to introduce the four
       // principles, so it should still be visible (a touch hazy, a
       // touch lifted) while the first row already claims focus —
@@ -223,20 +170,8 @@ export function WhyMagicks() {
       // over. The typography stays crisp within the hold zone — only the
       // presence curve moves.
       rows.forEach((row) => {
-        const sup = row.querySelector<HTMLElement>("[data-why-sup]");
         const lines = gsap.utils.toArray<HTMLElement>(row.querySelectorAll("[data-why-line]"));
         const note = row.querySelector<HTMLElement>("[data-why-note]");
-
-        // Superscript numeral — small, soft arrival, holds, softens.
-        focusEnvelope(sup, {
-          trigger: row,
-          start: "top 85%",
-          end: "bottom 15%",
-          blur: 2.5,
-          opacityFloor: 0.24,
-          focusOpacity: 1,
-          holdRatio: 0.52,
-        });
 
         // Statement lines — mask-wrapped, so we can use yPercent + opacity
         // without any blur (blur on giant serif can muddy the strokes).
@@ -386,15 +321,11 @@ export function WhyMagicks() {
       />
 
       <div className="relative layout-max">
-        <div className="mb-16 grid gap-6 md:mb-24 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20">
-          <div data-why-chapter className="md:pt-2">
-            <ChapterMarker num="03" label="Unterschied" />
-          </div>
-
+        <div className="mx-auto mb-16 max-w-[72rem] md:mb-24">
           <div data-why-intro>
             <h2
               id="why-heading"
-              className="font-instrument text-[1.95rem] leading-[1.12] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:text-[2.4rem] md:text-[2.92rem] lg:text-[3.28rem]"
+              className="font-instrument text-[2.26rem] leading-[1.08] tracking-[-0.024em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.9rem] md:text-[3.72rem] lg:text-[4.3rem]"
             >
               Haltung in der Arbeit. <em className="italic text-[rgb(var(--magicks-ink-rgb)/0.54)]">Nicht nur im Text.</em>
             </h2>
@@ -407,36 +338,14 @@ export function WhyMagicks() {
         </div>
 
         <ol className="relative">
-          {/* Editorial gutter — a soft vertical hairline in the gap
-              between numeral and statement columns. Scrubs its vertical
-              extension with scroll so the column feels *drawn* as the
-              user descends the list. Desktop only. */}
-          <div
-            data-why-gutter
-            aria-hidden
-            className="pointer-events-none absolute inset-y-16 left-[92px] hidden w-px origin-top bg-gradient-to-b from-transparent via-[rgb(var(--magicks-line-rgb)/0.12)] to-transparent will-change-[transform,opacity] md:block lg:left-[108px]"
-          />
           {PRINCIPLES.map((p, i) => (
             <li
-              key={p.sup}
+              key={p.line1}
               data-why-row
-              className={`relative grid items-start gap-x-5 gap-y-5 py-12 [grid-template-areas:'sup_sup'_'headline_note'] [grid-template-columns:minmax(0,1fr)_minmax(0,38%)] sm:gap-x-8 sm:py-16 sm:[grid-template-columns:minmax(0,1fr)_minmax(0,40%)] md:gap-x-16 md:py-24 md:[grid-template-areas:'sup_headline_note'] md:[grid-template-columns:minmax(56px,80px)_minmax(0,1fr)_minmax(220px,360px)] lg:gap-x-20 lg:py-28 ${
+              className={`relative grid items-start gap-x-5 gap-y-5 py-12 [grid-template-areas:'headline'_'note'] [grid-template-columns:minmax(0,1fr)] sm:gap-x-8 sm:py-16 md:gap-x-16 md:py-24 md:[grid-template-areas:'headline_note'] md:[grid-template-columns:minmax(0,1fr)_minmax(220px,360px)] lg:gap-x-20 lg:py-28 ${
                 i > 0 ? "border-t border-[rgb(var(--magicks-line-rgb)/0.12)]" : ""
               }`}
             >
-              {/* Hanging superscript numeral.
-                  On mobile this spans the full top row above the
-                  headline + note pair (grid-area "sup" defined as
-                  "sup sup"). On md+ it sits as a left-margin column. */}
-              <span className="flex items-start justify-start [grid-area:sup] md:justify-end md:pt-[0.85rem]">
-                <span
-                  data-why-sup
-                  className="why-superscript text-[1.4rem] will-change-[opacity,filter] sm:text-[1.65rem] md:text-[1.9rem]"
-                >
-                  {p.sup}
-                </span>
-              </span>
-
               {/* Statement — giant serif, two lines.
                   Mobile size lowered (1.65rem instead of 2rem) so the
                   display serif still breaks cleanly into its intended
@@ -445,7 +354,7 @@ export function WhyMagicks() {
               <h3
                 className={`font-instrument tracking-[-0.02em] [grid-area:headline] ${
                   p.tone === "hush" ? "text-white/78" : "text-white"
-                } text-[1.62rem] leading-[1.1] sm:text-[2.24rem] sm:leading-[1.08] md:text-[3.8rem] md:leading-[1.03] lg:text-[4.38rem] xl:text-[4.95rem]`}
+                } text-[1.9rem] leading-[1.08] sm:text-[2.52rem] sm:leading-[1.06] md:text-[4.24rem] md:leading-[1.01] lg:text-[4.95rem] xl:text-[5.6rem]`}
               >
                 <span className="block overflow-hidden">
                   <span data-why-line className="block will-change-transform">

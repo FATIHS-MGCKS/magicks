@@ -2,7 +2,6 @@ import { useLayoutEffect, useRef } from "react";
 import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import {
-  focusEnvelope,
   presenceEnvelope,
   rackFocusTrack,
   sectionFarewell,
@@ -31,8 +30,7 @@ type ValueStatementBlock =
     }
   | {
       tone: "closing";
-      primary: string;
-      secondary: string;
+      text: string;
     };
 
 const STATEMENT_BLOCKS: ValueStatementBlock[] = [
@@ -44,20 +42,12 @@ const STATEMENT_BLOCKS: ValueStatementBlock[] = [
   {
     tone: "body",
     text:
-      "Ihre Website muss sichtbar sein, Vertrauen schaffen und vor allem im Kopf bleiben — so werden aus Besuchern richtige Anfragen.",
+      "Ein starker Auftritt wird gefunden, verstanden und gewählt.",
   },
   {
     tone: "closing",
-    primary: "Genau das macht ein Digitales Erlebnis aus",
-    secondary: "und diese kreieren wir mit Leidenschaft.",
+    text: "So entsteht ein digitales Erlebnis.",
   },
-];
-
-const INDEX_ITEMS = [
-  { label: "Markenauftritte" },
-  { label: "Web-Software" },
-  { label: "Automation" },
-  { label: "KI mit Verantwortung" },
 ];
 
 export function ValueStatement() {
@@ -73,8 +63,6 @@ export function ValueStatement() {
 
     const ctx = gsap.context(() => {
       const sentences = gsap.utils.toArray<HTMLElement>("[data-value-sentence]");
-      const rule = root.querySelector<HTMLElement>("[data-value-rule]");
-      const indexItems = gsap.utils.toArray<HTMLElement>("[data-value-index]");
       const heading = root.querySelector<HTMLElement>("[data-value-heading]");
       const focusBand = root.querySelector<HTMLElement>("[data-value-focusband]");
       const ambient = root.querySelector<HTMLElement>("[data-value-ambient]");
@@ -98,7 +86,7 @@ export function ValueStatement() {
 
       if (reduced) {
         gsap.set(
-          [...sentences, rule, ...indexItems, focusBand, ambient, spotlight, godray, farewell, sign].filter(Boolean) as HTMLElement[],
+          [...sentences, focusBand, ambient, spotlight, godray, farewell, sign].filter(Boolean) as HTMLElement[],
           {
             opacity: 1,
             y: 0,
@@ -218,44 +206,6 @@ export function ValueStatement() {
           ScrollTrigger.removeEventListener("refresh", updateFocusBandGeometry);
         };
       }
-
-      // ─── Rule: scrubbed draw + gentle release ────────────────────────
-      gsap.fromTo(
-        rule,
-        { scaleX: 0, transformOrigin: "center" },
-        {
-          scaleX: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: rule,
-            start: "top 90%",
-            end: "top 58%",
-            scrub: 0.9,
-          },
-        },
-      );
-      gsap.to(rule, {
-        scaleX: 0.5,
-        ease: "none",
-        scrollTrigger: {
-          trigger: rule,
-          start: "top 35%",
-          end: "bottom -20%",
-          scrub: 1.0,
-        },
-      });
-
-      // ─── Index items: focus envelope with slight stagger ─────────────
-      focusEnvelope(indexItems, {
-        trigger: rule ?? root,
-        start: "top 85%",
-        end: "bottom -10%",
-        blur: 3,
-        opacityFloor: 0.2,
-        focusOpacity: 1,
-        holdRatio: 0.56,
-        stagger: 0.02,
-      });
 
       // ─── Editorial signature: scroll-coupled in/out envelope ─────────
       // The handwritten signature is the tail anchor of the value
@@ -380,10 +330,10 @@ export function ValueStatement() {
                     key={block.primary}
                     id="value-heading"
                     data-value-sentence
-                    className="mx-auto max-w-[20ch] font-ui text-[clamp(2.55rem,6.5vw,4.45rem)] font-[650] leading-[0.98] tracking-[-0.052em] text-[rgb(var(--magicks-ink-rgb)/0.97)] will-change-[opacity,filter] md:max-w-[20ch]"
+                    className="mx-auto max-w-[22ch] font-ui text-[clamp(2.45rem,6.4vw,4.35rem)] font-[640] leading-[1.02] tracking-[-0.046em] text-[rgb(var(--magicks-ink-rgb)/0.97)] will-change-[opacity,filter] md:max-w-[22ch]"
                   >
                     <span className="block">{block.primary}</span>
-                    <em className="mx-auto mt-2 block max-w-[18ch] text-[0.9em] font-[520] not-italic tracking-[-0.045em] text-[rgb(var(--magicks-ink-rgb)/0.56)] sm:mt-3">
+                    <em className="mx-auto mt-2 block max-w-[18ch] font-instrument italic text-[0.94em] font-normal tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:mt-3">
                       {block.secondary}
                     </em>
                   </h2>
@@ -395,7 +345,7 @@ export function ValueStatement() {
                   <p
                     key={block.text}
                     data-value-sentence
-                    className="font-ui mx-auto mt-12 max-w-[41rem] text-[0.98rem] font-medium leading-[1.68] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.7)] will-change-[opacity,filter] sm:mt-14 sm:text-[1.06rem] md:text-[1.1rem] lg:text-[1.16rem]"
+                    className="font-ui mx-auto mt-12 max-w-[42rem] text-[1.02rem] font-[500] leading-[1.66] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.74)] will-change-[opacity,filter] sm:mt-14 sm:text-[1.1rem] md:text-[1.18rem] lg:text-[1.24rem]"
                   >
                     {block.text}
                   </p>
@@ -403,64 +353,39 @@ export function ValueStatement() {
               }
 
               return (
-                <div
-                  key={block.primary}
+                <p
+                  key={block.text}
                   data-value-sentence
-                  className="mx-auto mt-12 max-w-[58rem] will-change-[opacity,filter] sm:mt-14"
+                  className="font-instrument mx-auto mt-14 max-w-[44rem] text-[1.4rem] italic leading-[1.32] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.7)] will-change-[opacity,filter] sm:mt-16 sm:text-[1.7rem] md:text-[2rem] lg:text-[2.25rem]"
                 >
-                  <p className="font-ui text-[clamp(1.85rem,3.7vw,3.2rem)] font-[650] leading-[1.04] tracking-[-0.046em] text-[rgb(var(--magicks-ink-rgb)/0.9)]">
-                    {block.primary}
-                  </p>
-                  <p className="font-ui mx-auto mt-4 max-w-[31rem] text-[1rem] font-[520] leading-[1.48] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.76)] sm:text-[1.08rem] md:text-[1.14rem]">
-                    {block.secondary}
-                  </p>
-                </div>
+                  {block.text}
+                </p>
               );
             })}
           </div>
 
           {/* Editorial signature — signing hand directly below the
-              statement. Aligned to the right column, surrounded by
-              quiet whitespace. Sits before the services index so the
-              signature closes the statement and the list reads as a
-              follow-on footnote. */}
+              statement. The handwritten mark IS the closing flourish;
+              the previous trailing gradient rule was redundant and has
+              been removed so the signature reads as the natural
+              terminus of the manifesto. The colophon under it (Studio
+              · Kassel, coordinates) sits as quiet authorship metadata
+              — fine print in the magazine sense, not a chrome bar. */}
           <figure
             data-value-sign
-            className="relative z-10 mx-auto mt-14 flex w-full max-w-[28rem] flex-col items-center will-change-[opacity,transform,filter] sm:mt-16 sm:max-w-[32rem] md:mt-20 md:max-w-[36rem]"
+            className="relative z-10 mx-auto mt-12 flex w-full max-w-[18rem] flex-col items-center will-change-[opacity,transform,filter] sm:mt-14 sm:max-w-[21rem] md:mt-16 md:max-w-[24rem]"
           >
-            <MagicksSignatureReveal className="w-full max-w-[24rem] sm:max-w-[28rem] md:max-w-[32rem]" />
+            <MagicksSignatureReveal className="mx-auto w-full max-w-[16rem] sm:max-w-[19rem] md:max-w-[22rem]" />
 
-            <figcaption className="font-mono mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 self-stretch text-[10.75px] font-medium uppercase leading-none tracking-[0.14em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:mt-7 sm:gap-x-6 sm:text-[11px] sm:tracking-[0.2em] sm:text-[rgb(var(--magicks-ink-rgb)/0.42)]">
+            <figcaption className="font-mono mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 self-stretch text-center text-[10px] font-medium uppercase leading-none tracking-[0.16em] text-[rgb(var(--magicks-ink-rgb)/0.44)] sm:mt-6 sm:gap-x-5 sm:text-[10.5px] sm:tracking-[0.2em]">
               <span className="flex items-center gap-2 sm:gap-3">
                 <span aria-hidden className="h-px w-5 bg-[rgb(var(--magicks-line-rgb)/0.28)] sm:w-8" />
                 <span>Studio · Kassel</span>
               </span>
-              <span className="text-[rgb(var(--magicks-ink-rgb)/0.34)]">N51°19′ · E9°29′</span>
+              <span aria-hidden className="hidden h-1 w-1 rounded-full bg-[rgb(var(--magicks-line-rgb)/0.32)] sm:inline-block" />
+              <span className="text-[rgb(var(--magicks-ink-rgb)/0.36)]">N51°19′ · E9°29′</span>
             </figcaption>
           </figure>
-
-          <div className="relative z-10 mt-16 sm:mt-20 md:mt-24">
-            <div aria-hidden className="relative h-px w-full">
-              <span
-                data-value-rule
-                className="absolute inset-0 block bg-gradient-to-r from-transparent via-[rgb(var(--magicks-line-rgb)/0.3)] to-transparent"
-              />
-            </div>
-
-            <ul className="mt-6 flex flex-wrap justify-center gap-x-7 gap-y-3 sm:mt-8 sm:gap-x-10">
-              {INDEX_ITEMS.map((it) => (
-                <li
-                  key={it.label}
-                  data-value-index
-                  className="flex items-baseline gap-2 will-change-[opacity,filter]"
-                >
-                  <span className="font-mono text-[11.5px] font-medium uppercase leading-none tracking-[0.13em] text-[rgb(var(--magicks-ink-rgb)/0.6)] sm:text-[11.25px] sm:tracking-[0.18em]">
-                    {it.label}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </div>
 

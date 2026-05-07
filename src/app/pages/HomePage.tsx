@@ -1,9 +1,9 @@
 import { Hero } from "../components/home/Hero";
 import { ValueStatement } from "../components/home/ValueStatement";
+import { ProblemSection } from "../components/home/ProblemSection";
+import { About } from "../components/home/About";
 import { Services } from "../components/home/Services";
 import { Bildwelt } from "../components/home/Bildwelt";
-import { WhyMagicks } from "../components/home/WhyMagicks";
-import { About } from "../components/home/About";
 import { FinalCTA } from "../components/home/FinalCTA";
 import { RouteSEO } from "../seo/RouteSEO";
 
@@ -14,10 +14,10 @@ export default function HomePage() {
       <main>
         <Hero />
         <ValueStatement />
+        <ProblemSection />
+        <About />
         <Services />
         <Bildwelt />
-        <WhyMagicks />
-        <About />
         <FinalCTA />
       </main>
     </>

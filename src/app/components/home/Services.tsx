@@ -9,15 +9,11 @@ import {
   sectionFarewell,
 } from "../../lib/scrollMotion";
 import { HOME_SERVICE_IMAGES } from "../../data/imageWorld";
-import { ChapterMarker } from "./ChapterMarker";
 
 type Service = {
   slug: string;
-  number: string;
-  kicker: string;
   title: string;
   teaser: string;
-  metric: string;
   href: string;
   /** Hero visual for the service — image-first, subtle motion applied in CSS. */
   image: string;
@@ -27,48 +23,32 @@ type Service = {
 const SERVICES: Service[] = [
   {
     slug: "websites",
-    number: "01",
-    kicker: "Marke",
-    title: "Websites & Landing Pages",
-    teaser:
-      "Markenwebsites, Landing Pages und Relaunches als zusammenhängendes System — geführt, schnell, conversion-orientiert.",
-    metric: "Von Auftritt bis Conversion",
+    title: "Websites & Landingpages",
+    teaser: "Für Auftritte, die überzeugen und Anfragen erzeugen.",
     href: "/websites-landingpages",
     image: HOME_SERVICE_IMAGES.websites.src,
     imageAlt: HOME_SERVICE_IMAGES.websites.alt,
   },
   {
     slug: "shops",
-    number: "02",
-    kicker: "Commerce",
     title: "Shops & Konfiguratoren",
-    teaser:
-      "Online-Shops und 2D/3D-Produktkonfiguratoren, die komplexe Produkte erklären und Anfragen sauber qualifizieren.",
-    metric: "Shopware · Shopify · Custom",
+    teaser: "Für Produkte, die klarer präsentiert und leichter verkauft werden.",
     href: "/shops-produktkonfiguratoren",
     image: HOME_SERVICE_IMAGES.shops.src,
     imageAlt: HOME_SERVICE_IMAGES.shops.alt,
   },
   {
     slug: "software",
-    number: "03",
-    kicker: "System",
-    title: "Web-Software & Dashboards",
-    teaser:
-      "Dashboards, Portale und individuelle Web-Software — Prozesse bündeln statt Tabs sammeln.",
-    metric: "Intern · Multi-Tenant · API",
+    title: "Web-Software",
+    teaser: "Für Prozesse, die nicht länger in Tabellen, Tools und Umwegen hängen.",
     href: "/web-software",
     image: HOME_SERVICE_IMAGES.software.src,
     imageAlt: HOME_SERVICE_IMAGES.software.alt,
   },
   {
     slug: "automation",
-    number: "04",
-    kicker: "Automation & KI",
-    title: "Automation & KI",
-    teaser:
-      "KI-Workflows, Automationen und Integrationen — wiederkehrende Arbeit aus dem Team holen, nachvollziehbar und wartbar.",
-    metric: "n8n · Agents · LLM-Integration",
+    title: "KI & Automationen",
+    teaser: "Für Abläufe, die schneller, smarter und weniger manuell funktionieren.",
     href: "/ki-automationen-integrationen",
     image: HOME_SERVICE_IMAGES.automation.src,
     imageAlt: HOME_SERVICE_IMAGES.automation.alt,
@@ -91,7 +71,6 @@ function ServiceImage({ s }: { s: Service }) {
         height={1800}
         loading="lazy"
         decoding="async"
-        fetchPriority="low"
         draggable={false}
         className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.03]"
       />
@@ -107,22 +86,9 @@ function ServiceImage({ s }: { s: Service }) {
         className="pointer-events-none absolute inset-0 z-30 bg-gradient-to-t from-[rgba(28,36,52,0.24)] via-[rgba(28,36,52,0.02)] to-[rgba(255,255,255,0.2)]"
       />
 
-      <div className="pointer-events-none absolute left-5 top-5 z-40 flex items-center gap-3 sm:left-6 sm:top-6">
-        <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgba(255,255,255,0.84)] sm:text-[10.75px] sm:tracking-[0.24em]">
-          § {s.number}
-        </span>
-        <span aria-hidden className="h-px w-7 bg-[rgba(255,255,255,0.42)]" />
-        <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgba(255,255,255,0.72)] sm:text-[10.75px] sm:tracking-[0.24em]">
-          {s.kicker}
-        </span>
-      </div>
-
       <div className="pointer-events-none absolute bottom-5 left-5 right-5 z-40 flex items-baseline justify-between gap-4 sm:bottom-6 sm:left-6 sm:right-6">
-        <span className="font-instrument text-[14px] italic text-[rgba(255,255,255,0.84)] sm:text-[15px]">
+        <span className="font-ui text-[13.5px] font-[520] tracking-[-0.004em] text-[rgba(255,255,255,0.92)] sm:text-[14.5px]">
           {s.title}
-        </span>
-        <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.14em] text-[rgba(255,255,255,0.64)] sm:text-[10.75px] sm:tracking-[0.18em]">
-          {s.metric}
         </span>
       </div>
     </>
@@ -140,7 +106,6 @@ export function Services() {
 
     const ctx = gsap.context(() => {
       const cheapMotion = prefersCheapMotion();
-      const chapter = root.querySelector<HTMLElement>("[data-services-chapter]");
       const headline = root.querySelector<HTMLElement>("[data-services-headline]");
       const caption = root.querySelector<HTMLElement>("[data-services-caption]");
       const cards = gsap.utils.toArray<HTMLElement>("[data-service-card]");
@@ -148,7 +113,7 @@ export function Services() {
       const ambient = root.querySelector<HTMLElement>("[data-services-ambient]");
 
       if (reduced) {
-        gsap.set([chapter, headline, caption, ...cards, farewell, ambient], {
+        gsap.set([headline, caption, ...cards, farewell, ambient], {
           opacity: 1,
           y: 0,
           filter: "blur(0px)",
@@ -178,20 +143,7 @@ export function Services() {
         parallaxDrift(ambient, { trigger: root, from: -3, to: 4, scrub: true });
       }
 
-      // ─── Section header ──────────────────────────────────────────────
-      presenceEnvelope(chapter, {
-        trigger: root,
-        start: "top 98%",
-        end: "top 4%",
-        yFrom: 16,
-        yTo: -8,
-        blur: 3,
-        holdRatio: 0.5,
-        exitWeight: 2.5,
-        scrub: 1.0,
-      });
-
-      // ─── Headline: "Was wir bauen." ──────────────────────────────────
+      // ─── Headline: "Mehr als Websites." ──────────────────────────────
       const buildParts = root.querySelectorAll<HTMLElement>("[data-build-part]");
       if (buildParts.length > 0) {
         const buildFrom: gsap.TweenVars = cheapMotion
@@ -231,27 +183,9 @@ export function Services() {
       });
 
       // ─── Service Stacking Cards ──────────────────────────────────────
-      // As the user scrolls, each service card sticks to the top.
-      // When the next card scrolls up, the current card scales down and darkens slightly.
-      cards.forEach((card, i) => {
-        if (i === cards.length - 1) return; // Last card doesn't scale down
-
-        const nextCard = cards[i + 1];
-
-        const recedeVars: gsap.TweenVars = {
-          scale: 0.972,
-          opacity: 0.74,
-          ease: "none",
-          scrollTrigger: {
-            trigger: nextCard,
-            start: "top 85%", // Start scaling when the next card comes into view
-            end: "top 35%",   // Finish scaling when the next card reaches its sticky position
-            scrub: 0.85,
-          },
-        };
-        if (!cheapMotion) recedeVars.filter = "blur(1px)";
-        gsap.to(card, recedeVars);
-      });
+      // Every card shares the exact same sticky anchor. The next card
+      // slides over the previous one 1:1, without scale or offset drift.
+      gsap.set(cards, { opacity: 1, scale: 1, filter: "none" });
 
       // ─── Section farewell ────────────────────────────────────────────
       if (farewell) {
@@ -285,43 +219,46 @@ export function Services() {
       />
 
       <div className="layout-max">
-        <div className="mb-16 grid gap-5 md:mb-24 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20">
-          <div data-services-chapter className="md:pt-2">
-            <ChapterMarker num="02" label="Leistungen" />
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-end md:gap-14">
-            <h2
-              id="services-heading"
-              data-services-headline
-              className="font-instrument text-[2rem] leading-[1.08] tracking-[-0.022em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:text-[2.5rem] md:text-[3.05rem] lg:text-[3.45rem]"
-              style={{ perspective: "1000px" }}
-            >
-              <span className="inline-block overflow-hidden pb-1 -mb-1">
-                <span data-build-part className="inline-block will-change-transform">Was</span>
-              </span>{" "}
-              <span className="inline-block overflow-hidden pb-1 -mb-1">
-                <span data-build-part className="inline-block will-change-transform">wir</span>
-              </span>{" "}
-              <em className="inline-block italic text-[rgb(var(--magicks-ink-rgb)/0.6)]">
-                {"bauen".split("").map((char, i) => (
-                  <span key={i} className="inline-block overflow-hidden pb-1 -mb-1">
-                    <span data-build-part className="inline-block will-change-transform">{char}</span>
-                  </span>
-                ))}
+        <div className="mb-6 sm:mb-8 md:mb-10">
+          <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[11px] sm:tracking-[0.24em]">
+            05 · Leistungen
+          </span>
+        </div>
+        <div className="mb-16 grid gap-8 md:mb-24 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-end md:gap-14">
+          <h2
+            id="services-heading"
+            data-services-headline
+            className="font-ui text-[2.32rem] font-[620] leading-[1.04] tracking-[-0.028em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[3.05rem] md:text-[4.05rem] lg:text-[4.7rem]"
+            style={{ perspective: "1000px" }}
+          >
+            <span className="inline-block overflow-hidden pb-1 -mb-1">
+              <span data-build-part className="inline-block will-change-transform">Mehr</span>
+            </span>{" "}
+            <span className="inline-block overflow-hidden pb-1 -mb-1">
+              <span data-build-part className="inline-block will-change-transform">als</span>
+            </span>{" "}
+            <em className="font-instrument inline-block italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.62)]">
+              {"Websites".split("").map((char, i) => (
+                <span key={i} className="inline-block overflow-hidden pb-1 -mb-1">
+                  <span data-build-part className="inline-block will-change-transform">{char}</span>
+                </span>
+              ))}
+            </em>
+            <span className="inline-block overflow-hidden pb-1 -mb-1">
+              <span data-build-part className="inline-block will-change-transform">.</span>
+            </span>
+          </h2>
+          <div
+            data-services-caption
+            className="relative pl-5 before:absolute before:left-0 before:top-2 before:h-[calc(100%-16px)] before:w-px before:bg-gradient-to-b before:from-[rgb(var(--magicks-line-rgb)/0.28)] before:via-[rgb(var(--magicks-line-rgb)/0.1)] before:to-transparent"
+          >
+            <p className="font-ui max-w-[30rem] text-[1.04rem] font-[450] leading-[1.7] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] md:text-[1.1rem]">
+              Wir gestalten digitale Auftritte, Verkaufsflächen, Software und Automationen, die zusammenarbeiten — für{" "}
+              <em className="font-instrument italic text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+                mehr Sichtbarkeit
               </em>
-              <span className="inline-block overflow-hidden pb-1 -mb-1">
-                <span data-build-part className="inline-block will-change-transform">.</span>
-              </span>
-            </h2>
-            <div
-              data-services-caption
-              className="relative pl-5 before:absolute before:left-0 before:top-2 before:h-[calc(100%-16px)] before:w-px before:bg-gradient-to-b before:from-[rgb(var(--magicks-line-rgb)/0.28)] before:via-[rgb(var(--magicks-line-rgb)/0.1)] before:to-transparent"
-            >
-              <p className="font-instrument max-w-[28rem] text-[1.2rem] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.66)] md:text-[1.26rem]">
-                Vier Bereiche für digitale Arbeit, die <em className="italic text-[rgb(var(--magicks-ink-rgb)/0.88)]">sichtbar besser</em> wirkt und im Alltag <em className="italic text-[rgb(var(--magicks-ink-rgb)/0.88)]">sauber funktioniert</em> — von Websites und Konfiguratoren bis zu Web-Software und Automationen.
-              </p>
-            </div>
+              , bessere Abläufe und einen Auftritt, der wirklich überzeugt.
+            </p>
           </div>
         </div>
 
@@ -332,7 +269,7 @@ export function Services() {
                 key={s.slug}
                 data-service-card
                 className="sticky z-10 w-full origin-top rounded-[1.75rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[linear-gradient(165deg,rgba(255,255,255,0.86)_0%,rgba(246,242,233,0.72)_100%)] p-8 shadow-[0_28px_72px_-46px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.8)] will-change-[transform,opacity] sm:p-10 md:p-12"
-                style={{ top: `calc(6rem + ${i * 2.4}rem)` }}
+                style={{ top: "6rem", zIndex: 10 + i }}
               >
                 <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-14 xl:gap-20">
                   {/* Left — Text Content */}
@@ -357,27 +294,29 @@ export function Services() {
                       className="absolute left-0 top-0 h-full w-[2px] origin-top bg-[rgb(var(--magicks-line-rgb)/0.32)] magicks-duration-hover magicks-ease-out transition-[transform,opacity,background-color] scale-y-0 opacity-0 group-hover:scale-y-100 group-hover:opacity-100 group-hover:bg-[rgb(var(--magicks-line-rgb)/0.52)] group-focus-visible:scale-y-100 group-focus-visible:opacity-100 group-focus-visible:bg-[rgb(var(--magicks-line-rgb)/0.52)]"
                     />
 
-                    <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-x-5 gap-y-1.5 sm:gap-x-7 md:grid-cols-[52px_minmax(0,1fr)_auto] md:gap-x-10">
-                      <span className="font-mono pt-[0.55rem] text-[12px] font-medium leading-none tracking-[0.12em] text-[rgb(var(--magicks-ink-rgb)/0.46)] magicks-duration-hover magicks-ease-out transition-colors sm:text-[12px] sm:tracking-[0.18em] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.82)] group-focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.82)]">
-                        {s.number}
-                      </span>
-
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-5 gap-y-1.5 sm:gap-x-7 md:gap-x-10">
                       <div>
-                        <div className="mb-2 flex items-center gap-3">
-                          <span className="font-mono text-[11.25px] font-medium uppercase leading-none tracking-[0.14em] text-[rgb(var(--magicks-ink-rgb)/0.42)] magicks-duration-hover magicks-ease-out transition-colors sm:text-[11px] sm:tracking-[0.2em] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.7)] group-focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.7)]">
-                            {s.kicker}
+                        {/* Chapter numeral — quiet mono kicker that
+                            chapters the four services as a sequence,
+                            not a flat grid. The trailing hairline
+                            grows on hover, mirroring the "Ansehen"
+                            ink underline below. */}
+                        <div className="mb-5 flex items-center gap-3 sm:mb-6 md:mb-7">
+                          <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-ink-rgb)/0.46)] magicks-duration-hover magicks-ease-out transition-colors sm:text-[11px] sm:tracking-[0.24em] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.78)] group-focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.78)]">
+                            {String(i + 1).padStart(2, "0")}{" "}
+                            <span className="text-[rgb(var(--magicks-ink-rgb)/0.34)]">/ 04</span>
                           </span>
                           <span
                             aria-hidden
-                            className="h-px w-5 bg-[rgb(var(--magicks-line-rgb)/0.2)] magicks-duration-hover magicks-ease-out transition-[width,background-color] group-hover:w-10 group-hover:bg-[rgb(var(--magicks-line-rgb)/0.42)] group-focus-visible:w-10 group-focus-visible:bg-[rgb(var(--magicks-line-rgb)/0.42)]"
+                            className="h-px w-10 bg-gradient-to-r from-[rgb(var(--magicks-line-rgb)/0.3)] to-transparent magicks-duration-hover magicks-ease-out transition-[width] group-hover:w-16 group-focus-visible:w-16 sm:w-12"
                           />
                         </div>
 
-                        <h3 className="font-instrument text-[1.62rem] leading-[1.2] tracking-[-0.014em] text-[rgb(var(--magicks-ink-rgb)/0.84)] magicks-duration-hover magicks-ease-out transition-colors sm:text-[1.95rem] md:text-[2.25rem] lg:text-[2.38rem] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.95)] group-focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.95)]">
+                        <h3 className="font-ui text-[1.78rem] font-[600] leading-[1.14] tracking-[-0.022em] text-[rgb(var(--magicks-ink-rgb)/0.92)] magicks-duration-hover magicks-ease-out transition-colors sm:text-[2.16rem] md:text-[2.5rem] lg:text-[2.78rem] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.98)] group-focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.98)]">
                           {s.title}
                         </h3>
 
-                        <p className="font-ui mt-3 max-w-md text-[14.5px] leading-[1.74] text-[rgb(var(--magicks-ink-rgb)/0.58)] md:mt-4 md:text-[15px]">
+                        <p className="font-ui mt-4 max-w-md text-[15px] font-[450] leading-[1.66] tracking-[-0.005em] text-[rgb(var(--magicks-ink-rgb)/0.66)] md:mt-5 md:text-[15.5px]">
                           {s.teaser}
                         </p>
 

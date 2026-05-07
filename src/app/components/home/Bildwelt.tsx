@@ -9,37 +9,31 @@ import {
   presenceEnvelope,
   sectionFarewell,
 } from "../../lib/scrollMotion";
-import { ChapterMarker } from "./ChapterMarker";
 
 /**
- * Bildwelt statt Platzhalter — homepage supporting capability section.
+ * Bausteine / Bildwelt — in-house content & visual capability section.
  *
- * Quiet editorial bridge between the four main service clusters
- * (§ 02 Leistungen) and the principles section (§ 03 Unterschied).
- * Reads as a deliberate addendum, not as a fifth main service: it
- * names the project capabilities — content, SEO, image world, media —
- * that surround the four clusters and makes the relationship visible
- * without overloading the homepage.
+ * This is the page's *creative* beat. Where Services reads as four
+ * structural capabilities, this section communicates the surrounding
+ * craft work — content, SEO, image, motion, 3D — that MAGICKS produces
+ * directly inside a project rather than briefing out.
  *
- * Visual language is intentionally subordinate to Services:
- *   · same chapter-marker idiom, but numbered "02b" so it reads as
- *     an extension of the services chapter rather than a new one
- *   · same two-column grid (chapter | content) at md+
- *   · chips render as a flex-wrap row with index numerals — mirrors
- *     the typographic rhythm of ValueStatement's INDEX_ITEMS list
- *   · two CTAs in a single row: a primary anchor link to the
- *     content/media page and a secondary monospace link to the SEO
- *     page, balanced by an inline "Sichtbarkeit · Hinweis" caption
- *     that delivers the brief's PART 4 SEO/Sichtbarkeit mention
+ * Visual language sits deliberately between Services and the rest of
+ * the page: editorial split layout (title + body left, capability
+ * grid right), light tiles with hanging mono indices that read as a
+ * "system" rather than a chip cloud, and two restrained CTAs at the
+ * tail. The light theme is enforced directly via ink tokens here —
+ * earlier the section used legacy `text-white/x` utilities that
+ * relied on a global remap and made the surface intent fragile.
  */
 
-const CHIPS: { n: string; label: string }[] = [
-  { n: "¹", label: "Texte & Content" },
-  { n: "²", label: "SEO-Struktur" },
-  { n: "³", label: "Foto & Bildbearbeitung" },
-  { n: "⁴", label: "Video & Motion Design" },
-  { n: "⁵", label: "3D-Visuals" },
-  { n: "⁶", label: "Social-Media-Visuals" },
+const CAPABILITIES: { label: string }[] = [
+  { label: "Texte & Content" },
+  { label: "SEO-Struktur" },
+  { label: "Foto & Bildbearbeitung" },
+  { label: "Video & Motion Design" },
+  { label: "3D-Visuals" },
+  { label: "Social-Media-Visuals" },
 ];
 
 export function Bildwelt() {
@@ -52,19 +46,17 @@ export function Bildwelt() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
-      const chapter = root.querySelector<HTMLElement>("[data-bw-chapter]");
       const headline = root.querySelector<HTMLElement>("[data-bw-headline]");
       const main = root.querySelector<HTMLElement>("[data-bw-main]");
       const support = root.querySelector<HTMLElement>("[data-bw-support]");
-      const chips = gsap.utils.toArray<HTMLElement>("[data-bw-chip]");
-      const seoLine = root.querySelector<HTMLElement>("[data-bw-seoline]");
+      const tiles = gsap.utils.toArray<HTMLElement>("[data-bw-tile]");
       const cta = root.querySelector<HTMLElement>("[data-bw-cta]");
       const ambient = root.querySelector<HTMLElement>("[data-bw-ambient]");
       const farewell = root.querySelector<HTMLElement>("[data-bw-farewell]");
 
       if (reduced) {
         gsap.set(
-          [chapter, headline, main, support, ...chips, seoLine, cta, ambient, farewell],
+          [headline, main, support, ...tiles, cta, ambient, farewell],
           { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" },
         );
         if (farewell) gsap.set(farewell, { opacity: 0 });
@@ -92,23 +84,9 @@ export function Bildwelt() {
       }
 
       // ─── Header & body envelopes ────────────────────────────────────
-      // Exit weighted ~2.5–3× the entry so the chapter marker and the
-      // "Bildwelt statt Platzhalter" headline anchor the spread
-      // through the supporting paragraphs and chip list instead of
-      // dissolving after a single wheel notch.
-      presenceEnvelope(chapter, {
-        trigger: root,
-        start: "top 96%",
-        end: "top 4%",
-        yFrom: 12,
-        yTo: -6,
-        blur: 2.4,
-        opacityFloor: 0.26,
-        holdRatio: 0.58,
-        exitWeight: 2.2,
-        scrub: 1.0,
-      });
-
+      // Exit weighted ~2.5–3× the entry so the headline anchors the
+      // spread through the supporting paragraphs and chip list instead
+      // of dissolving after a single wheel notch.
       presenceEnvelope(headline, {
         trigger: root,
         start: "top 92%",
@@ -142,28 +120,18 @@ export function Bildwelt() {
         holdRatio: 0.64,
       });
 
-      // ─── Chips: focus envelope with light stagger ───────────────────
-      focusEnvelope(chips as HTMLElement[], {
+      // ─── Capability tiles: focus envelope with light stagger ────────
+      focusEnvelope(tiles as HTMLElement[], {
         start: "top 88%",
         end: "bottom 14%",
         blur: 2.4,
         opacityFloor: 0.3,
         focusOpacity: 1,
         holdRatio: 0.58,
-        stagger: 0.025,
+        stagger: 0.04,
       });
 
-      // ─── SEO note + CTAs at the tail ────────────────────────────────
-      focusEnvelope(seoLine, {
-        trigger: seoLine ?? root,
-        start: "top 92%",
-        end: "bottom 8%",
-        blur: 2.2,
-        opacityFloor: 0.28,
-        focusOpacity: 1,
-        holdRatio: 0.6,
-      });
-
+      // ─── CTA at the tail ────────────────────────────────────────────
       presenceEnvelope(cta, {
         trigger: cta ?? root,
         start: "top 92%",
@@ -209,119 +177,121 @@ export function Bildwelt() {
       />
 
       <div className="relative layout-max">
-        <div className="grid gap-10 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20">
-          <div data-bw-chapter className="md:pt-2">
-            <ChapterMarker num="02b" label="Bausteine" />
-          </div>
+        <div className="mx-auto max-w-none">
+          {/* Editorial split — title + body sit in the left column,
+              the capability "system" tiles sit in the right column.
+              On mobile the columns stack so the title leads, then the
+              tiles, then the supporting copy and CTAs. */}
+          <div className="grid gap-y-12 md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] md:gap-x-14 md:gap-y-0 lg:gap-x-20 xl:gap-x-24">
+            {/* ── Left column ─────────────────────────────────────── */}
+            <div className="flex flex-col">
+              <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[11px] sm:tracking-[0.24em]">
+                06 · In-house
+              </span>
 
-          <div className="max-w-[58rem]">
-            <h2
-              id="bildwelt-heading"
-              data-bw-headline
-              className="font-instrument text-[2rem] leading-[1.07] tracking-[-0.024em] text-white sm:text-[2.5rem] md:text-[3.02rem] lg:text-[3.42rem]"
-            >
-              Bildwelt statt <em className="italic text-white/58">Platzhalter</em>.
-            </h2>
+              <h2
+                id="bildwelt-heading"
+                data-bw-headline
+                className="font-ui mt-5 max-w-[18ch] text-[2.32rem] font-[620] leading-[1.04] tracking-[-0.028em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:mt-6 sm:text-[3.05rem] md:text-[3.78rem] lg:text-[4.4rem]"
+              >
+                Alles, was ein Auftritt{" "}
+                <em className="font-instrument italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.6)]">
+                  braucht
+                </em>
+                .
+              </h2>
 
-            <div className="mt-10 grid gap-6 sm:mt-12 md:grid-cols-[minmax(0,1.18fr)_minmax(0,1fr)] md:gap-12 md:gap-y-10">
               <p
                 data-bw-main
-                className="font-instrument max-w-[36rem] text-[1.12rem] leading-[1.66] tracking-[-0.004em] text-white/78 sm:text-[1.22rem] md:text-[1.3rem]"
+                className="font-ui mt-10 max-w-[36rem] text-[1.04rem] font-[450] leading-[1.7] tracking-[-0.005em] text-[rgb(var(--magicks-ink-rgb)/0.78)] sm:mt-12 sm:text-[1.1rem] md:text-[1.16rem]"
               >
-                Ein starker Webauftritt lebt nicht nur von Layout und Code. Deshalb können bei
-                MAGICKS auch Texte, SEO-Struktur, Fotos, Bildbearbeitung, Videos, Motion Design
-                und 3D-Visuals direkt im Projekt entstehen.
+                Ein starker Webauftritt lebt nicht nur von Layout und Code. Deshalb entstehen bei
+                MAGICKS auf Wunsch auch Texte, SEO-Struktur, Fotos, Bildbearbeitung, Videos, Motion
+                Design und 3D-Visuals direkt im Projekt.
               </p>
 
               <p
                 data-bw-support
-                className="font-ui max-w-[32rem] text-[14.5px] leading-[1.72] text-white/52 md:text-[15px]"
+                className="font-ui mt-6 max-w-[32rem] text-[15px] font-[440] leading-[1.72] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:mt-7 md:text-[15.5px]"
               >
                 So bekommt jedes Projekt eine eigene visuelle Sprache — statt austauschbarer
                 Stockbilder und generischer Inhalte.
               </p>
-            </div>
 
-            {/* Capability chips — typographic, restrained. Each chip
-                carries a hanging numeral in instrument italic that
-                doubles as a quiet rhythm marker. The list reads as
-                a single typographic field, not a feature grid. */}
-            <div className="mt-12 sm:mt-14 md:mt-16">
-              <div aria-hidden className="relative h-px w-full max-w-[36rem]">
-                <span
-                  className="absolute inset-0 block bg-gradient-to-r from-white/28 via-white/10 to-transparent"
-                />
-              </div>
-              <ul className="mt-7 flex flex-wrap gap-x-7 gap-y-3.5 sm:mt-9 sm:gap-x-10">
-                {CHIPS.map((c) => (
-                  <li
-                    key={c.label}
-                    data-bw-chip
-                    className="flex items-baseline gap-2 will-change-[opacity,filter]"
-                  >
-                    <span className="font-instrument text-[15px] italic text-white/52">
-                      {c.n}
-                    </span>
-                    <span className="font-mono text-[11.5px] font-medium uppercase leading-none tracking-[0.15em] text-white/62 sm:text-[11px] sm:tracking-[0.22em]">
-                      {c.label}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Quiet visibility note — the homepage's PART 4 SEO mention.
-                Sits as an inline italic register, links naturally into
-                the SEO page without claiming a section of its own. */}
-            <div
-              data-bw-seoline
-              className="mt-12 max-w-[44rem] border-t border-white/[0.08] pt-9 will-change-[opacity,filter] sm:mt-14 sm:pt-10 md:mt-16 md:pt-12"
-            >
-              <p className="font-instrument text-[1.05rem] italic leading-[1.6] tracking-[-0.004em] text-white/68 sm:text-[1.12rem] md:text-[1.18rem]">
-                Gute digitale Auftritte müssen nicht nur gestaltet und gebaut werden. Sie
-                brauchen Struktur, Inhalte und technische Grundlagen, damit sie verstanden und
-                gefunden werden können.
-              </p>
-            </div>
-
-            {/* CTA row — primary anchor → /content-bildwelt-medien,
-                secondary mono link → /seo-sichtbarkeit. Both reuse the
-                existing About-style "label + circled arrow" idiom so
-                the section feels native, not bolted on. */}
-            <div
-              data-bw-cta
-              className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 will-change-[opacity,transform,filter] sm:mt-12 md:mt-14"
-            >
-              <Link
-                to="/content-bildwelt-medien"
-                className="font-ui group inline-flex min-h-11 items-center gap-3 py-1.5 text-[15.5px] font-medium tracking-[0.003em] text-white no-underline magicks-duration-hover magicks-ease-out transition-colors lg:min-h-0 lg:py-0"
+              {/* CTA row — primary anchor → /content-bildwelt-medien,
+                  secondary mono link → /seo-sichtbarkeit. Inherits the
+                  About section's "label + circled arrow" idiom so the
+                  section reads as a continuation, not a new island. */}
+              <div
+                data-bw-cta
+                className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 will-change-[opacity,transform,filter] sm:mt-14"
               >
-                <span className="underline decoration-white/22 decoration-[0.5px] underline-offset-[6px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color] group-hover:decoration-white/80">
-                  Mehr zu Content &amp; Medien
-                </span>
-                <span
-                  aria-hidden
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-white/65 magicks-duration-hover magicks-ease-out transition-[background,border,color,transform] group-hover:translate-x-[1px] group-hover:border-white/32 group-hover:bg-white/8 group-hover:text-white"
+                <Link
+                  to="/content-bildwelt-medien"
+                  className="font-ui group inline-flex min-h-11 items-center gap-3 py-1.5 text-[15.5px] font-[540] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline magicks-duration-hover magicks-ease-out transition-colors lg:min-h-0 lg:py-0"
                 >
-                  <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.4">
-                    <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-              </Link>
+                  <span className="underline decoration-[rgb(var(--magicks-line-rgb)/0.22)] decoration-[0.5px] underline-offset-[6px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color] group-hover:decoration-[rgb(var(--magicks-line-rgb)/0.68)]">
+                    Mehr zu Content &amp; Medien
+                  </span>
+                  <span
+                    aria-hidden
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-[rgb(var(--magicks-line-rgb)/0.18)] text-[rgb(var(--magicks-ink-rgb)/0.7)] magicks-duration-hover magicks-ease-out transition-[background,border,color,transform] group-hover:-translate-y-[1px] group-hover:translate-x-[2px] group-hover:border-[rgb(var(--magicks-line-rgb)/0.36)] group-hover:bg-[rgb(var(--magicks-ink-rgb)/0.06)] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.92)]"
+                  >
+                    <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.4">
+                      <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </Link>
 
-              <span aria-hidden className="hidden h-4 w-px bg-white/14 sm:inline-block" />
+                <span aria-hidden className="hidden h-4 w-px bg-[rgb(var(--magicks-line-rgb)/0.18)] sm:inline-block" />
 
-              <Link
-                to="/seo-sichtbarkeit"
-                className="font-mono group inline-flex min-h-11 items-center gap-2 text-[11.5px] font-medium uppercase leading-none tracking-[0.15em] text-white/55 no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white sm:min-h-0 sm:text-[11px] sm:tracking-[0.22em]"
-              >
-                SEO &amp; Sichtbarkeit
-                <span
-                  aria-hidden
-                  className="h-px w-5 bg-white/40 magicks-duration-hover magicks-ease-out transition-[width,background-color] group-hover:w-9 group-hover:bg-white"
-                />
-              </Link>
+                <Link
+                  to="/seo-sichtbarkeit"
+                  className="font-mono group inline-flex min-h-11 items-center gap-2 text-[11.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-ink-rgb)/0.5)] no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:min-h-0 sm:text-[11px] sm:tracking-[0.22em]"
+                >
+                  SEO &amp; Sichtbarkeit
+                  <span
+                    aria-hidden
+                    className="h-px w-5 bg-[rgb(var(--magicks-line-rgb)/0.34)] magicks-duration-hover magicks-ease-out transition-[width,background-color] group-hover:w-9 group-hover:bg-[rgb(var(--magicks-line-rgb)/0.7)]"
+                  />
+                </Link>
+              </div>
             </div>
+
+            {/* ── Right column — capability "system" tiles ─────────
+                A 2-column grid of soft tiles. Each tile has a hanging
+                mono index, the capability label in Apple sans, and a
+                subtle accent rule that grows on hover. Reads as a
+                periodic table of in-house craft, not a chip cloud. */}
+            <ul
+              role="list"
+              className="grid grid-cols-2 gap-3 self-start sm:gap-4 md:mt-2"
+            >
+              {CAPABILITIES.map((c, i) => (
+                <li
+                  key={c.label}
+                  data-bw-tile
+                  className="group relative flex flex-col gap-3 rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[linear-gradient(168deg,rgba(255,255,255,0.86)_0%,rgba(247,243,234,0.7)_100%)] px-5 py-5 shadow-[0_18px_48px_-44px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.78)] will-change-[opacity,filter] sm:px-6 sm:py-6"
+                >
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span
+                      aria-hidden
+                      className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-ink-rgb)/0.4)] sm:text-[11px] sm:tracking-[0.2em]"
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="h-px w-8 origin-right bg-gradient-to-l from-transparent to-[rgb(var(--magicks-line-rgb)/0.28)] magicks-duration-hover magicks-ease-out transition-[width] group-hover:w-12"
+                    />
+                  </div>
+
+                  <span className="font-ui text-[0.96rem] font-[540] leading-[1.28] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:text-[1.02rem] md:text-[1.06rem]">
+                    {c.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

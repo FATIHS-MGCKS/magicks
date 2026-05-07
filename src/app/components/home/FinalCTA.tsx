@@ -7,7 +7,6 @@ import {
   focusEnvelope,
   presenceEnvelope,
 } from "../../lib/scrollMotion";
-import { ChapterMarker } from "./ChapterMarker";
 
 /**
  * Final CTA — the closing cinematic frame.
@@ -28,7 +27,6 @@ export function FinalCTA() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
-      const chapter = root.querySelector<HTMLElement>("[data-fc-chapter]");
       const lineAWords = gsap.utils.toArray<HTMLElement>("[data-fc-a]");
       const lineBWords = gsap.utils.toArray<HTMLElement>("[data-fc-b]");
       const rule = root.querySelector<HTMLElement>("[data-fc-rule]");
@@ -42,7 +40,7 @@ export function FinalCTA() {
 
       if (reduced) {
         gsap.set(
-          [chapter, ...lineAWords, ...lineBWords, rule, ...ledger, cta, halo, ...runEnd, grid, ground],
+          [...lineAWords, ...lineBWords, rule, ...ledger, cta, halo, ...runEnd, grid, ground],
           { opacity: 1, y: 0, yPercent: 0, scale: 1, scaleX: 1, filter: "blur(0px)" },
         );
         if (ground) gsap.set(ground, { opacity: 0 });
@@ -98,17 +96,6 @@ export function FinalCTA() {
           },
         );
       }
-
-      // ─── Chapter marker ──────────────────────────────────────────────
-      presenceEnvelope(chapter, {
-        trigger: root,
-        start: "top 96%",
-        end: "top 30%",
-        yFrom: 14,
-        yTo: -8,
-        blur: 3,
-        holdRatio: 0.62,
-      });
 
       // ─── Headline: scrubbed mask-reveal, bidirectional ───────────────
       // "Projekt" and "besprechen." each ride a yPercent mask. The scrub
@@ -241,14 +228,27 @@ export function FinalCTA() {
 
       <div className="relative z-10 layout-max">
         <div className="mx-auto max-w-[68rem] rounded-[2rem] border border-[rgb(var(--magicks-line-rgb)/0.16)] bg-[linear-gradient(170deg,rgba(255,255,255,0.8)_0%,rgba(245,241,232,0.68)_100%)] px-6 py-12 text-center shadow-[0_32px_90px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.84)] sm:px-10 sm:py-14 md:px-14 md:py-20">
-          <div data-fc-chapter className="mb-14 inline-flex will-change-[opacity,transform] sm:mb-20">
-            <ChapterMarker num="Kontakt / 05" label="Abschluss" align="center" />
-          </div>
+          {/* Closing chapter marker — chapters this beat as 07, the
+              natural terminus of the editorial sequence (Hero is 01,
+              Problem 03, About 04, Bildwelt 06). Quiet mono kicker
+              centred above the headline. */}
+          <span
+            aria-hidden
+            className="font-mono mb-7 inline-flex items-center gap-3 text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-ink-rgb)/0.42)] sm:mb-8 sm:text-[11px] sm:tracking-[0.24em]"
+          >
+            <span className="h-px w-6 bg-[rgb(var(--magicks-line-rgb)/0.28)] sm:w-8" />
+            07 · Kontakt
+            <span className="h-px w-6 bg-[rgb(var(--magicks-line-rgb)/0.28)] sm:w-8" />
+          </span>
 
+          {/* Headline — Apple-system primary with an Instrument Serif
+              italic accent on the closing word. Same typography idiom
+              as the other section headlines so the page reads as one
+              spread. The mask-reveal motion stays untouched. */}
           <h2
             id="fc-heading"
             data-fc-heading
-            className="font-instrument text-[3.05rem] leading-[1.01] tracking-[-0.026em] text-[rgb(var(--magicks-ink-rgb)/0.94)] sm:text-[4.65rem] md:text-[5.95rem] lg:text-[7.2rem] xl:text-[7.95rem]"
+            className="font-ui text-[3.05rem] font-[620] leading-[1] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[4.4rem] md:text-[5.4rem] lg:text-[6.4rem] xl:text-[7.05rem]"
           >
             <span className="block">
               {LINE_A.map((w, i) => (
@@ -259,7 +259,7 @@ export function FinalCTA() {
                 </span>
               ))}
             </span>
-            <span className="mt-1 block italic text-[rgb(var(--magicks-ink-rgb)/0.72)] sm:mt-2">
+            <span className="mt-1 block font-instrument italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:mt-2">
               {LINE_B.map((w, i) => (
                 <span key={i} className="mr-[0.18em] inline-block overflow-hidden align-bottom">
                   <span data-fc-b className="inline-block will-change-transform">
@@ -343,10 +343,10 @@ export function FinalCTA() {
           }}
         />
 
-      {/* Bottom-edge run-end — cinema colophon */}
+      {/* Bottom-edge run-end — quiet studio colophon */}
         <div className="mt-20 flex flex-col items-center justify-between gap-3 border-t border-[rgb(var(--magicks-line-rgb)/0.12)] pt-7 text-center sm:mt-32 sm:flex-row sm:gap-4 sm:text-left">
           <span data-fc-runend className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.14em] text-[rgb(var(--magicks-ink-rgb)/0.5)] will-change-[opacity,filter] sm:text-[10.5px] sm:tracking-[0.2em] sm:text-[rgb(var(--magicks-ink-rgb)/0.45)]">
-            § End — Magicks · MMXXVI
+            Magicks Studio
           </span>
           <span data-fc-runend aria-hidden className="hidden h-px w-20 bg-[rgb(var(--magicks-line-rgb)/0.18)] will-change-[opacity,filter] sm:block" />
           <span data-fc-runend className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.14em] text-[rgb(var(--magicks-ink-rgb)/0.5)] will-change-[opacity,filter] sm:text-[10.5px] sm:tracking-[0.2em] sm:text-[rgb(var(--magicks-ink-rgb)/0.45)]">

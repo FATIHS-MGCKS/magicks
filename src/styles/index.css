@@ -492,6 +492,39 @@
       filter: blur(12px) !important;
     }
   }
+
+  /* ——————————————————————————————————————————————————
+     Tools marquee — endless horizontal slide for the in-house
+     toolbelt strip in the ProblemSolver section. Pure CSS;
+     pause-on-hover; the inner track must be duplicated 1:1 so
+     the loop reads as continuous (-50% maps to one full set).
+     —————————————————————————————————————————————————— */
+  .tools-marquee {
+    display: flex;
+    width: max-content;
+    animation: tools-marquee-scroll 48s linear infinite;
+    will-change: transform;
+  }
+
+  .tools-marquee:hover,
+  .tools-marquee:focus-within {
+    animation-play-state: paused;
+  }
+
+  @keyframes tools-marquee-scroll {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tools-marquee {
+      animation: none;
+    }
+  }
 }
 
 @import "./theme.css";
