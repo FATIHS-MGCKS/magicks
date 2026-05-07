@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { HomeIcon, type HomeIconName } from "./HomeIcon";
 import {
   focusEnvelope,
   horizontalDrift,
@@ -37,18 +38,22 @@ const REASON_CARDS = [
   {
     title: "Alles aus einer Hand",
     text: "Von Idee bis Betreuung: ein Team, ein System, keine Reibung.",
+    icon: "hand" as HomeIconName,
   },
   {
     title: "Wir denken mit",
     text: "Nicht einfach umgesetzt, sondern verstanden, strukturiert und weitergedacht.",
+    icon: "mind" as HomeIconName,
   },
   {
     title: "Kreativ und technisch stark",
     text: "Content, Design und Entwicklung greifen als ein System ineinander.",
+    icon: "craft" as HomeIconName,
   },
   {
     title: "Für Wirkung gebaut",
     text: "Sichtbarkeit, Performance und Nutzerführung werden von Anfang an mitgedacht.",
+    icon: "impact" as HomeIconName,
   },
 ];
 
@@ -482,12 +487,18 @@ export function About() {
               >
                 <span
                   aria-hidden
+                  className="absolute left-6 top-6 flex h-7 w-7 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[rgb(var(--magicks-accent-rgb)/0.08)] text-[rgb(var(--magicks-accent-ink-rgb)/0.88)] shadow-[inset_0_1px_0_rgba(255,255,255,0.56)] sm:left-7 sm:top-7 sm:h-8 sm:w-8"
+                >
+                  <HomeIcon name={card.icon} size={15} strokeWidth={1.3} />
+                </span>
+                <span
+                  aria-hidden
                   className="absolute right-6 top-6 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-ink-rgb)/0.34)] sm:right-7 sm:top-7 sm:text-[11px] sm:tracking-[0.2em]"
                 >
                   {String(i + 1).padStart(2, "0")} / 04
                 </span>
 
-                <h3 className="font-ui max-w-[20ch] text-[1.3rem] font-[620] leading-[1.16] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[1.42rem] md:text-[1.54rem]">
+                <h3 className="font-ui mt-8 max-w-[20ch] text-[1.3rem] font-[620] leading-[1.16] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:mt-9 sm:text-[1.42rem] md:text-[1.54rem]">
                   {card.title}
                 </h3>
 

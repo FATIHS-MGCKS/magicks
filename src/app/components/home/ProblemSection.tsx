@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { HomeIcon, type HomeIconName } from "./HomeIcon";
 import {
   focusEnvelope,
   parallaxDrift,
@@ -25,24 +26,29 @@ import {
 type ProblemCard = {
   title: string;
   text: string;
+  icon: HomeIconName;
 };
 
 const PROBLEM_CARDS: ProblemCard[] = [
   {
     title: "Potenzial bleibt liegen",
     text: "Der Mehrwert wird nicht schnell genug klar.",
+    icon: "clarity",
   },
   {
     title: "Vertrauen fehlt",
     text: "Ohne Beweise bleibt Qualität unsichtbar.",
+    icon: "proof",
   },
   {
     title: "Interesse verläuft",
     text: "Ohne Führung wird aus Besuch keine Anfrage.",
+    icon: "path",
   },
   {
     title: "Digital bleibt getrennt",
     text: "Website, Daten und Prozesse arbeiten nicht zusammen.",
+    icon: "system",
   },
 ];
 
@@ -250,13 +256,20 @@ export function ProblemSection() {
                   {card.text}
                 </p>
 
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute right-[19%] top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.2)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] p-1.5 text-[rgb(var(--magicks-accent-ink-rgb)/0.84)] opacity-75 transition-[opacity,transform] duration-[680ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100 group-hover:translate-x-[1px] md:inline-flex"
+                >
+                  <HomeIcon name={card.icon} size={14} strokeWidth={1.3} />
+                </span>
+
                 {/* Trailing hairline — fades into nothing on the right
                     edge. Subtle visual metaphor for "missed opportunity"
                     that grows a hair on hover/focus-within. No
                     warning-iconography, no error states. */}
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute bottom-3 right-0 hidden h-px w-[18%] origin-right bg-gradient-to-l from-transparent via-[rgb(var(--magicks-line-rgb)/0.12)] to-[rgb(var(--magicks-line-rgb)/0.32)] transition-[width,opacity] duration-[680ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:w-[22%] sm:block"
+                  className="pointer-events-none absolute bottom-3 right-0 hidden h-px w-[18%] origin-right bg-gradient-to-l from-transparent via-[rgb(var(--magicks-accent-rgb)/0.12)] to-[rgb(var(--magicks-line-rgb)/0.3)] transition-[width,opacity] duration-[680ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:w-[22%] group-hover:to-[rgb(var(--magicks-accent-line-rgb)/0.56)] sm:block"
                 />
               </li>
             ))}

@@ -13,6 +13,12 @@
     --magicks-ink-rgb: 24 28 37;
     --magicks-line-rgb: 59 67 84;
     --magicks-ink-strong: #141a23;
+    /* Stage 4 accent foundation: restrained champagne / brass family.
+       Used only as micro-emphasis (rules, icon chips, tiny highlights). */
+    --magicks-accent-rgb: 166 138 98;
+    --magicks-accent-soft-rgb: 216 196 168;
+    --magicks-accent-line-rgb: 148 124 92;
+    --magicks-accent-ink-rgb: 122 96 66;
 
     /* Stage 2 typography foundation: calmer rhythm, clearer hierarchy. */
     --magicks-type-body-leading: 1.76;

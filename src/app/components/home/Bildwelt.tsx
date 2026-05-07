@@ -276,13 +276,13 @@ export function Bildwelt() {
                   <div className="flex items-baseline justify-between gap-3">
                     <span
                       aria-hidden
-                      className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-ink-rgb)/0.4)] sm:text-[11px] sm:tracking-[0.2em]"
+                      className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.68)] sm:text-[11px] sm:tracking-[0.2em]"
                     >
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <span
                       aria-hidden
-                      className="h-px w-8 origin-right bg-gradient-to-l from-transparent to-[rgb(var(--magicks-line-rgb)/0.28)] magicks-duration-hover magicks-ease-out transition-[width] group-hover:w-12"
+                      className="h-px w-8 origin-right bg-gradient-to-l from-transparent to-[rgb(var(--magicks-accent-line-rgb)/0.34)] magicks-duration-hover magicks-ease-out transition-[width,opacity] group-hover:w-12 group-hover:opacity-100"
                     />
                   </div>
 

@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 import { PrefetchLink } from "../PrefetchLink";
 import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { HomeIcon, type HomeIconName } from "./HomeIcon";
 import {
   parallaxDrift,
   prefersCheapMotion,
@@ -15,6 +16,7 @@ type Service = {
   title: string;
   teaser: string;
   href: string;
+  icon: HomeIconName;
   /** Hero visual for the service — image-first, subtle motion applied in CSS. */
   image: string;
   imageAlt: string;
@@ -26,6 +28,7 @@ const SERVICES: Service[] = [
     title: "Websites & Landingpages",
     teaser: "Für Auftritte, die überzeugen und Anfragen erzeugen.",
     href: "/websites-landingpages",
+    icon: "web",
     image: HOME_SERVICE_IMAGES.websites.src,
     imageAlt: HOME_SERVICE_IMAGES.websites.alt,
   },
@@ -34,6 +37,7 @@ const SERVICES: Service[] = [
     title: "Shops & Konfiguratoren",
     teaser: "Für Produkte, die klarer präsentiert und leichter verkauft werden.",
     href: "/shops-produktkonfiguratoren",
+    icon: "commerce",
     image: HOME_SERVICE_IMAGES.shops.src,
     imageAlt: HOME_SERVICE_IMAGES.shops.alt,
   },
@@ -42,6 +46,7 @@ const SERVICES: Service[] = [
     title: "Web-Software",
     teaser: "Für Prozesse, die nicht länger in Tabellen, Tools und Umwegen hängen.",
     href: "/web-software",
+    icon: "software",
     image: HOME_SERVICE_IMAGES.software.src,
     imageAlt: HOME_SERVICE_IMAGES.software.alt,
   },
@@ -50,6 +55,7 @@ const SERVICES: Service[] = [
     title: "KI & Automationen",
     teaser: "Für Abläufe, die schneller, smarter und weniger manuell funktionieren.",
     href: "/ki-automationen-integrationen",
+    icon: "automation",
     image: HOME_SERVICE_IMAGES.automation.src,
     imageAlt: HOME_SERVICE_IMAGES.automation.alt,
   },
@@ -302,6 +308,12 @@ export function Services() {
                             grows on hover, mirroring the "Ansehen"
                             ink underline below. */}
                         <div className="mb-5 flex items-center gap-3 sm:mb-6 md:mb-7">
+                          <span
+                            aria-hidden
+                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[rgb(var(--magicks-accent-rgb)/0.08)] text-[rgb(var(--magicks-accent-ink-rgb)/0.86)] shadow-[inset_0_1px_0_rgba(255,255,255,0.58)] sm:h-7 sm:w-7"
+                          >
+                            <HomeIcon name={s.icon} size={13} strokeWidth={1.3} />
+                          </span>
                           <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-ink-rgb)/0.46)] magicks-duration-hover magicks-ease-out transition-colors sm:text-[11px] sm:tracking-[0.24em] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.78)] group-focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.78)]">
                             {String(i + 1).padStart(2, "0")}{" "}
                             <span className="text-[rgb(var(--magicks-ink-rgb)/0.34)]">/ 04</span>

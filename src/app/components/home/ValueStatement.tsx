@@ -379,10 +379,10 @@ export function ValueStatement() {
 
             <figcaption className="font-mono mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 self-stretch text-center text-[10px] font-medium uppercase leading-none tracking-[0.16em] text-[rgb(var(--magicks-ink-rgb)/0.44)] sm:mt-6 sm:gap-x-5 sm:text-[10.5px] sm:tracking-[0.2em]">
               <span className="flex items-center gap-2 sm:gap-3">
-                <span aria-hidden className="h-px w-5 bg-[rgb(var(--magicks-line-rgb)/0.28)] sm:w-8" />
+                <span aria-hidden className="h-px w-5 bg-[rgb(var(--magicks-accent-line-rgb)/0.42)] sm:w-8" />
                 <span>Studio · Kassel</span>
               </span>
-              <span aria-hidden className="hidden h-1 w-1 rounded-full bg-[rgb(var(--magicks-line-rgb)/0.32)] sm:inline-block" />
+              <span aria-hidden className="hidden h-1 w-1 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.52)] sm:inline-block" />
               <span className="text-[rgb(var(--magicks-ink-rgb)/0.36)]">N51°19′ · E9°29′</span>
             </figcaption>
           </figure>

@@ -236,9 +236,9 @@ export function FinalCTA() {
             aria-hidden
             className="font-mono mb-7 inline-flex items-center gap-3 text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-ink-rgb)/0.42)] sm:mb-8 sm:text-[11px] sm:tracking-[0.24em]"
           >
-            <span className="h-px w-6 bg-[rgb(var(--magicks-line-rgb)/0.28)] sm:w-8" />
+            <span className="h-px w-6 bg-[rgb(var(--magicks-accent-line-rgb)/0.44)] sm:w-8" />
             07 · Kontakt
-            <span className="h-px w-6 bg-[rgb(var(--magicks-line-rgb)/0.28)] sm:w-8" />
+            <span className="h-px w-6 bg-[rgb(var(--magicks-accent-line-rgb)/0.44)] sm:w-8" />
           </span>
 
           {/* Headline — Apple-system primary with an Instrument Serif
@@ -278,7 +278,7 @@ export function FinalCTA() {
             <div aria-hidden className="relative h-px flex-1">
               <span
                 data-fc-rule
-                className="absolute inset-0 block bg-gradient-to-r from-transparent via-[rgb(var(--magicks-line-rgb)/0.42)] to-transparent"
+                className="absolute inset-0 block bg-gradient-to-r from-transparent via-[rgb(var(--magicks-accent-line-rgb)/0.46)] to-transparent"
               />
             </div>
             <span aria-hidden className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.16em] text-[rgb(var(--magicks-ink-rgb)/0.34)]">
@@ -296,7 +296,7 @@ export function FinalCTA() {
                 <span>Unverbindlich anfragen</span>
                 <span
                   aria-hidden
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--magicks-bg-lifted)] text-[var(--magicks-ink-strong)] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] [transition:transform_720ms_cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-[2px] group-hover:-translate-y-[1px] sm:h-9 sm:w-9"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.3)] bg-[var(--magicks-bg-lifted)] text-[var(--magicks-ink-strong)] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] [transition:transform_720ms_cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-[2px] group-hover:-translate-y-[1px] sm:h-9 sm:w-9"
                 >
                   <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.4">
                     <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />

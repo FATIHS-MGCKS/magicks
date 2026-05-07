@@ -74,7 +74,7 @@ export function HeroVideoBackground() {
       <img
         src={HERO_VIDEO_POSTER}
         alt=""
-        className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-500 ${
+        className={`absolute inset-0 h-full w-full object-cover object-[62%_46%] md:object-[66%_48%] lg:object-[62%_50%] xl:object-[60%_50%] transition-opacity duration-500 ${
           videoHasFrame ? "opacity-0" : "opacity-100"
         }`}
         width={1920}
@@ -83,10 +83,9 @@ export function HeroVideoBackground() {
       />
       <video
         ref={videoRef}
-        className="absolute inset-0 h-full w-full object-cover object-center"
+        className="absolute inset-0 h-full w-full object-cover object-[62%_46%] md:object-[66%_48%] lg:object-[62%_50%] xl:object-[60%_50%]"
         autoPlay
         muted
-        defaultMuted
         loop
         playsInline
         preload="auto"
@@ -106,7 +105,7 @@ export function HeroVideoBackground() {
         <img
           src={HERO_IMAGE_SRC_DESKTOP_FALLBACK}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover object-center"
+          className="absolute inset-0 h-full w-full object-cover object-[62%_46%] md:object-[66%_48%] lg:object-[62%_50%] xl:object-[60%_50%]"
           width={1920}
           height={1080}
         />

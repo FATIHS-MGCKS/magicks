@@ -267,7 +267,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(248,245,238,0.11) 0%, rgba(245,241,232,0.08) 52%, rgba(241,236,227,0.12) 100%)",
+            "linear-gradient(180deg, rgba(248,245,238,0.14) 0%, rgba(245,241,232,0.1) 52%, rgba(241,236,227,0.15) 100%)",
         }}
       />
 
@@ -288,17 +288,17 @@ export function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(100deg, rgba(255,253,247,0.78) 0%, rgba(248,244,235,0.58) 31%, rgba(245,240,230,0.22) 52%, transparent 74%)",
+            "linear-gradient(100deg, rgba(255,253,247,0.88) 0%, rgba(248,244,235,0.72) 32%, rgba(245,240,230,0.34) 56%, transparent 78%)",
         }}
       />
 
       {/* 3b — left-side cinematic key light behind the headline */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-[6vw] top-[18%] h-[58%] w-[min(56vw,780px)] rounded-[2.5rem]"
+        className="pointer-events-none absolute left-[2vw] top-[14%] h-[64%] w-[min(54vw,760px)] rounded-[2.5rem]"
         style={{
           background:
-            "radial-gradient(ellipse 72% 64% at 26% 48%, rgba(255,255,255,0.42) 0%, rgba(248,244,235,0.2) 52%, transparent 100%)",
+            "radial-gradient(ellipse 74% 66% at 24% 48%, rgba(255,255,255,0.48) 0%, rgba(248,244,235,0.26) 52%, transparent 100%)",
         }}
       />
 
@@ -309,7 +309,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%]"
         style={{
           background:
-            "linear-gradient(180deg, transparent 0%, rgba(239,234,224,0.18) 36%, rgba(236,231,221,0.44) 72%, var(--magicks-bg-lifted) 100%)",
+            "linear-gradient(180deg, transparent 0%, rgba(239,234,224,0.22) 36%, rgba(236,231,221,0.5) 72%, var(--magicks-bg-lifted) 100%)",
         }}
       />
 
@@ -350,7 +350,7 @@ export function Hero() {
         className="relative z-10 flex flex-1 items-center px-6 pb-[7.5rem] pt-24 sm:px-10 sm:pb-[8.5rem] md:px-14 md:pb-[9.5rem] md:pt-32 lg:px-18 lg:pb-[10.5rem] xl:px-24"
       >
         <div className="layout-max w-full">
-          <div className="max-w-[min(45rem,88vw)] text-left md:max-w-[min(48rem,58vw)] lg:max-w-[min(52rem,52vw)] xl:max-w-[min(56rem,50vw)]">
+          <div className="max-w-[min(45rem,88vw)] text-left md:max-w-[min(46rem,56vw)] lg:max-w-[min(50rem,50vw)] xl:max-w-[min(54rem,48vw)]">
             <h1
               id="hero-heading"
               className="font-ui text-[3.18rem] leading-[1] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.98)] [text-shadow:0_1px_0_rgba(255,255,255,0.58)] sm:text-[4.4rem] md:text-[5.3rem] lg:text-[6.05rem] xl:text-[6.7rem]"
@@ -386,7 +386,7 @@ export function Hero() {
                 left rule preserves the original editorial composition. */}
             <h2
               data-hero-subline
-              className="font-ui mt-7 max-w-[34rem] border-l border-[rgb(var(--magicks-line-rgb)/0.22)] pl-5 text-[16px] font-[460] leading-[1.58] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.78)] sm:mt-8 sm:max-w-[38rem] sm:pl-6 sm:text-[17.5px] md:mt-9 md:text-[19px] lg:max-w-[40rem] lg:text-[20px]"
+              className="font-ui mt-7 max-w-[33rem] border-l border-[rgb(var(--magicks-line-rgb)/0.24)] pl-5 text-[16px] font-[460] leading-[1.58] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.8)] sm:mt-8 sm:max-w-[36rem] sm:pl-6 sm:text-[17.5px] md:mt-9 md:text-[19px] lg:max-w-[39rem] lg:text-[20px]"
             >
               <span className="block">Seien Sie nicht einfach nur „online“.</span>
               <span className="mt-1.5 block text-[rgb(var(--magicks-ink-rgb)/0.92)]">
@@ -421,7 +421,7 @@ export function Hero() {
                     chip reads as a separate "stop". */}
                 <span
                   aria-hidden
-                  className="ml-1 h-5 w-px bg-[rgb(255,253,249)]/14 transition-[background-color] duration-[720ms] group-hover:bg-[rgb(255,253,249)]/26 group-focus-visible:bg-[rgb(255,253,249)]/26 sm:h-6"
+                  className="ml-1 h-5 w-px bg-[rgb(var(--magicks-accent-rgb)/0.26)] transition-[background-color] duration-[720ms] group-hover:bg-[rgb(var(--magicks-accent-rgb)/0.5)] group-focus-visible:bg-[rgb(var(--magicks-accent-rgb)/0.5)] sm:h-6"
                 />
 
                 <span
@@ -431,7 +431,7 @@ export function Hero() {
                   // the arrow through the system emoji font and the
                   // glyph looks different from the desktop italic
                   // serif rendering. The selector is invisible.
-                  className="font-instrument flex h-8 w-8 items-center justify-center rounded-full bg-[var(--magicks-bg-lifted)] text-[1.05em] italic text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-transform duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[3px] group-focus-visible:-translate-y-[2px] group-focus-visible:translate-x-[3px]"
+                  className="font-instrument flex h-8 w-8 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.28)] bg-[var(--magicks-bg-lifted)] text-[1.05em] italic text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] transition-transform duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[3px] group-focus-visible:-translate-y-[2px] group-focus-visible:translate-x-[3px]"
                   style={{ fontVariantEmoji: "text" }}
                 >
                   {"\u2197\uFE0E"}

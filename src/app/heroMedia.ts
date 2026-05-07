@@ -9,7 +9,7 @@ export const HERO_BACKGROUND: HeroBackgroundMode = "video";
  * Hero-Videoquelle.
  */
 export const HERO_VIDEO_SRC =
-  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260422_191657_800d4e1f-7ab3-41af-90b6-9bd3039eb294.mp4";
+  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260419_065931_e3ca7b53-d32e-4ad5-81de-dc9d6fcfda6d.mp4";
 
 /**
  * Hero-Bildquellen (nur wenn `HERO_BACKGROUND === "image"`).
