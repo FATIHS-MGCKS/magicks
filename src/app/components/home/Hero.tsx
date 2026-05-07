@@ -246,7 +246,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(248,245,238,0.08) 0%, rgba(245,241,232,0.06) 52%, rgba(241,236,227,0.1) 100%)",
+            "linear-gradient(180deg, rgba(248,245,238,0.05) 0%, rgba(245,241,232,0.04) 52%, rgba(241,236,227,0.07) 100%)",
         }}
       />
 
@@ -257,7 +257,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 84% 64% at 50% 52%, transparent 0%, transparent 43%, rgba(236,230,220,0.22) 90%, rgba(232,225,214,0.32) 100%)",
+            "radial-gradient(ellipse 84% 64% at 50% 52%, transparent 0%, transparent 43%, rgba(236,230,220,0.14) 90%, rgba(232,225,214,0.2) 100%)",
         }}
       />
 
@@ -267,7 +267,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 86% 70% at 50% 45%, rgba(255,253,247,0.82) 0%, rgba(251,247,239,0.66) 28%, rgba(248,244,235,0.44) 52%, rgba(245,240,230,0.18) 76%, transparent 100%)",
+            "radial-gradient(ellipse 78% 64% at 50% 45%, rgba(255,253,247,0.82) 0%, rgba(251,247,239,0.64) 28%, rgba(248,244,235,0.38) 50%, rgba(245,240,230,0.1) 70%, transparent 100%)",
         }}
       />
 
