@@ -10,7 +10,7 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
  *
  * Composition:
  *   · vertical production credit (left edge)
- *   · centred two-line headline — "Digitaler Eindruck, / der überzeugt"
+ *   · centred two-line headline — "Digitale Erlebnisse / die begeistern"
  *   · success-oriented subtext in a high-contrast reading field
  *   · centred CTA with dual underline sweep
  *   · thin scroll cue (bottom-centre)
@@ -20,8 +20,8 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
  * as the hero's editorial accent.
  */
 
-const LINE_A = ["Digitaler", "Eindruck,"];
-const LINE_B = ["der", "überzeugt"];
+const LINE_A = ["Digitale", "Erlebnisse"];
+const LINE_B = ["die", "begeistern"];
 
 export function Hero() {
   const rootRef = useRef<HTMLElement>(null);
@@ -373,12 +373,12 @@ export function Hero() {
                     aria-hidden
                     className="relative -top-[0.06em] mr-1.5 inline-block h-[0.46em] w-[0.46em] rounded-full bg-emerald-500 align-middle shadow-[0_0_0_0.22em_rgba(16,185,129,0.14),0_0_1em_rgba(16,185,129,0.42)]"
                   />
-                  „Online“
+                  Online
                 </span>
                 .
               </span>
               <span className="mt-1.5 block text-[rgb(var(--magicks-ink-rgb)/0.98)]">
-                Überzeugen Sie Ihre Kunden von sich.
+                Überzeugen Sie von sich.
               </span>
             </h2>
 

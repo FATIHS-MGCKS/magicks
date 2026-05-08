@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef } from "react";
+import { Award, Layers3, ShieldCheck, Sparkles } from "lucide-react";
 import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import {
@@ -27,10 +28,6 @@ type ValueStatementBlock =
   | {
       tone: "body";
       text: string;
-    }
-  | {
-      tone: "closing";
-      text: string;
     };
 
 const STATEMENT_BLOCKS: ValueStatementBlock[] = [
@@ -42,13 +39,47 @@ const STATEMENT_BLOCKS: ValueStatementBlock[] = [
   {
     tone: "body",
     text:
-      "Ein starker Auftritt wird gefunden, verstanden und gewählt.",
-  },
-  {
-    tone: "closing",
-    text: "So entsteht ein digitales Erlebnis.",
+      "Wir kreieren starke digitale Auftritte, die Ihre Besucher überzeugen und Ihrem Unternehmen zu mehr Umsatz und Wachstum verhelfen.",
   },
 ];
+
+const TRUST_BADGES = [
+  {
+    title: "Alles aus einer Hand",
+    text: "Strategie, Design, Entwicklung, SEO, Hosting und Optimierung aus einem klaren Prozess.",
+    Icon: Layers3,
+  },
+  {
+    title: "Kreativer Content inklusive",
+    text: "Texte, Bilder, Videos und visuelle Konzepte entstehen direkt bei uns im Studio.",
+    Icon: Sparkles,
+  },
+  {
+    title: "100% DSGVO-konform",
+    text: "Saubere technische Umsetzung mit Blick auf Datenschutz, Performance und Sicherheit.",
+    Icon: ShieldCheck,
+  },
+  {
+    title: "+10 Jahre Erfahrung",
+    text: "Erfahrung aus Design, Webentwicklung, Automationen und digitalen Geschäftsprozessen.",
+    Icon: Award,
+  },
+] as const;
+
+const SOFTWARE_LOGOS = [
+  { name: "HTML", src: "/media/home/software-logos/html.svg" },
+  { name: "CSS", src: "/media/home/software-logos/css.svg" },
+  { name: "Shopify", src: "/media/home/software-logos/shopify.svg" },
+  { name: "WordPress", src: "/media/home/software-logos/wordpress.svg" },
+  { name: "GSAP", src: "/media/home/software-logos/gsap.svg" },
+  { name: "Three.js", src: "/media/home/software-logos/threejs.svg" },
+  { name: "JavaScript", src: "/media/home/software-logos/javascript.svg" },
+  { name: "Python", src: "/media/home/software-logos/python.svg" },
+  { name: "Figma", src: "/media/home/software-logos/figma.svg" },
+  { name: "Photoshop", src: "/media/home/software-logos/photoshop.svg" },
+  { name: "Cinema 4D", src: "/media/home/software-logos/cinema4d.svg" },
+  { name: "After Effects", src: "/media/home/software-logos/after-effects.svg" },
+] as const;
 
 export function ValueStatement() {
   const rootRef = useRef<HTMLElement>(null);
@@ -70,6 +101,7 @@ export function ValueStatement() {
       const godray = root.querySelector<HTMLElement>("[data-value-godray] > div");
       const farewell = root.querySelector<HTMLElement>("[data-value-farewell]");
       const sign = root.querySelector<HTMLElement>("[data-value-sign]");
+      const proofItems = gsap.utils.toArray<HTMLElement>("[data-value-proof]");
       const setFocusBandY = focusBand ? gsap.quickSetter(focusBand, "y", "px") : null;
       const setFocusBandOpacity = focusBand ? gsap.quickSetter(focusBand, "opacity") : null;
       let cachedSentenceCenters: number[] = [];
@@ -86,7 +118,16 @@ export function ValueStatement() {
 
       if (reduced) {
         gsap.set(
-          [...sentences, focusBand, ambient, spotlight, godray, farewell, sign].filter(Boolean) as HTMLElement[],
+          [
+            ...sentences,
+            ...proofItems,
+            focusBand,
+            ambient,
+            spotlight,
+            godray,
+            farewell,
+            sign,
+          ].filter(Boolean) as HTMLElement[],
           {
             opacity: 1,
             y: 0,
@@ -228,6 +269,27 @@ export function ValueStatement() {
         });
       }
 
+      if (proofItems.length) {
+        gsap.fromTo(
+          proofItems,
+          { opacity: 0, y: 20, filter: "blur(4px)" },
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            stagger: 0.055,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: proofItems[0],
+              start: "top 86%",
+              end: "top 58%",
+              scrub: 0.8,
+              invalidateOnRefresh: true,
+            },
+          },
+        );
+      }
+
       // ─── Section farewell: ink-shadow bottom fade ────────────────────
       sectionFarewell(farewell, {
         trigger: root,
@@ -352,16 +414,6 @@ export function ValueStatement() {
                   </p>
                 );
               }
-
-              return (
-                <p
-                  key={block.text}
-                  data-value-sentence
-                  className="font-instrument mx-auto mt-14 max-w-[44rem] text-[1.4rem] italic leading-[1.32] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.7)] will-change-[opacity] sm:mt-16 sm:text-[1.7rem] md:text-[2rem] md:will-change-[opacity,filter] lg:text-[2.25rem]"
-                >
-                  {block.text}
-                </p>
-              );
             })}
           </div>
 
@@ -387,6 +439,11 @@ export function ValueStatement() {
               <span className="text-[rgb(var(--magicks-ink-rgb)/0.36)]">N51°19′ · E9°29′</span>
             </figcaption>
           </figure>
+
+          <div className="relative z-10 mx-auto mt-12 max-w-[70rem] sm:mt-14 md:mt-16">
+            <TrustBadgeGrid />
+            <SoftwareLogoMarquee reduced={reduced} />
+          </div>
         </div>
       </div>
 
@@ -403,5 +460,77 @@ export function ValueStatement() {
         }}
       />
     </section>
+  );
+}
+
+function TrustBadgeGrid() {
+  return (
+    <div
+      data-value-proof
+      className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+      aria-label="MAGICKS Vertrauensmerkmale"
+    >
+      {TRUST_BADGES.map(({ title, text, Icon }) => (
+        <article
+          key={title}
+          className="group rounded-[1.15rem] border border-[rgb(var(--magicks-line-rgb)/0.105)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.62)] p-4 text-left shadow-[0_24px_68px_-58px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.74)] transition-[transform,border-color,background-color,box-shadow] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-[rgb(var(--magicks-accent-line-rgb)/0.24)] hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/0.78)] hover:shadow-[0_32px_80px_-58px_rgba(20,28,44,0.42),inset_0_1px_0_rgba(255,255,255,0.82)] sm:p-5"
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.2)] bg-[rgb(var(--magicks-accent-rgb)/0.075)] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.68)]">
+            <Icon aria-hidden size={18} strokeWidth={1.35} />
+          </div>
+          <h3 className="font-ui mt-4 text-[1.02rem] font-[650] leading-[1.16] tracking-[-0.014em] text-[rgb(var(--magicks-ink-rgb)/0.94)]">
+            {title}
+          </h3>
+          <p className="font-ui mt-2 text-[0.9rem] font-[450] leading-[1.58] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.62)]">
+            {text}
+          </p>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function SoftwareLogoMarquee({ reduced }: { reduced: boolean }) {
+  const logos = reduced ? SOFTWARE_LOGOS : [...SOFTWARE_LOGOS, ...SOFTWARE_LOGOS];
+
+  return (
+    <div data-value-proof className="mt-9 sm:mt-11">
+      <p className="font-mono text-center text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-ink-rgb)/0.42)] sm:text-[10.5px]">
+        Tools, mit denen wir arbeiten
+      </p>
+
+      <div
+        className={`mt-5 overflow-hidden rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.48)] px-3 py-3 shadow-[0_22px_70px_-60px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-4 ${
+          reduced
+            ? ""
+            : "group [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)]"
+        }`}
+      >
+        <div
+          className={
+            reduced
+              ? "flex flex-wrap items-center justify-center gap-3"
+              : "tools-marquee items-center gap-3"
+          }
+        >
+          {logos.map((logo, index) => (
+            <a
+              key={`${logo.name}-${index}`}
+              href="#denken"
+              className="flex h-16 min-w-[8.4rem] items-center justify-center rounded-[0.95rem] border border-[rgb(var(--magicks-line-rgb)/0.075)] bg-white/55 px-5 outline-none transition-[background-color,border-color,filter,transform,opacity] duration-500 hover:-translate-y-0.5 hover:border-[rgb(var(--magicks-accent-line-rgb)/0.22)] hover:bg-white/78 focus-visible:-translate-y-0.5 focus-visible:border-[rgb(var(--magicks-accent-line-rgb)/0.34)] focus-visible:bg-white/8"
+              aria-label={`${logo.name} Logo`}
+            >
+              <img
+                src={logo.src}
+                alt={`${logo.name} Logo`}
+                loading="lazy"
+                decoding="async"
+                className="max-h-7 max-w-[6.4rem] object-contain opacity-70 grayscale transition duration-500 hover:opacity-100 hover:grayscale-0"
+              />
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
