@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import {
   BarChart3,
   Check,
@@ -20,9 +20,8 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
 /**
  * Sektion 03 — Problem.
  *
- * A scroll-driven iPhone story: desktop keeps the phone sticky while the
- * display changes through the three problem states; mobile switches to a
- * pure CSS scroll-snap carousel so the story stays swipe-friendly.
+ * Manual iPhone slider with dot navigation for all breakpoints.
+ * Mobile keeps the intro centered; desktop uses a more compact composition.
  */
 
 type ProblemSlide = {
@@ -62,6 +61,7 @@ const PROBLEM_SLIDES: ProblemSlide[] = [
 export function ProblemSection() {
   const rootRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
+  const [activeSlide, setActiveSlide] = useState(0);
 
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -70,19 +70,13 @@ export function ProblemSection() {
     const { gsap, ScrollTrigger } = registerGsap();
 
     const ctx = gsap.context(() => {
-      const desktopShell = root.querySelector<HTMLElement>("[data-problem-desktop]");
-      const screens = gsap.utils.toArray<HTMLElement>("[data-problem-screen]");
-      const meters = gsap.utils.toArray<HTMLElement>("[data-problem-meter]");
       const copyItems = gsap.utils.toArray<HTMLElement>("[data-problem-copy]");
-      const phone = root.querySelector<HTMLElement>("[data-problem-phone]");
+      const phones = gsap.utils.toArray<HTMLElement>("[data-problem-phone]");
       const closing = root.querySelector<HTMLElement>("[data-problem-closing]");
       const ambient = root.querySelector<HTMLElement>("[data-problem-ambient]");
 
       if (reduced) {
-        screens.forEach((screen, index) => {
-          gsap.set(screen, { opacity: index === 0 ? 1 : 0, y: 0, scale: 1 });
-        });
-        gsap.set([phone, closing, ambient].filter(Boolean) as HTMLElement[], {
+        gsap.set([...phones, closing, ambient].filter(Boolean) as HTMLElement[], {
           opacity: 1,
           y: 0,
           scale: 1,
@@ -129,7 +123,7 @@ export function ProblemSection() {
       );
 
       gsap.fromTo(
-        phone,
+        phones,
         { opacity: 0, y: 34, scale: 0.975, filter: "blur(6px)" },
         {
           opacity: 1,
@@ -145,72 +139,6 @@ export function ProblemSection() {
           },
         },
       );
-
-      const mm = gsap.matchMedia();
-      mm.add("(min-width: 1024px)", () => {
-        if (!desktopShell || screens.length === 0) return undefined;
-
-        gsap.set(screens, {
-          opacity: 0,
-          y: 24,
-          scale: 0.985,
-          pointerEvents: "none",
-        });
-        gsap.set(screens[0], {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          pointerEvents: "auto",
-        });
-        meters.forEach((meter, index) => {
-          meter.classList.toggle("is-active", index === 0);
-        });
-
-        let activeIndex = 0;
-        const setActive = (nextIndex: number) => {
-          if (nextIndex === activeIndex) return;
-          const previous = screens[activeIndex];
-          const next = screens[nextIndex];
-          meters.forEach((meter, index) => {
-            meter.classList.toggle("is-active", index === nextIndex);
-          });
-          gsap
-            .timeline({
-              defaults: {
-                ease: "power3.out",
-                duration: 0.55,
-                overwrite: true,
-              },
-            })
-            .to(previous, { opacity: 0, y: -20, scale: 0.985 }, 0)
-            .fromTo(
-              next,
-              { opacity: 0, y: 24, scale: 0.985 },
-              { opacity: 1, y: 0, scale: 1 },
-              0.08,
-            );
-          activeIndex = nextIndex;
-        };
-
-        const trigger = ScrollTrigger.create({
-          trigger: desktopShell,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.8,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            const nextIndex = Math.min(
-              PROBLEM_SLIDES.length - 1,
-              Math.floor(self.progress * PROBLEM_SLIDES.length),
-            );
-            setActive(nextIndex);
-          },
-        });
-
-        return () => {
-          trigger.kill();
-        };
-      });
 
       gsap.fromTo(
         closing,
@@ -234,11 +162,13 @@ export function ProblemSection() {
     return () => ctx.revert();
   }, [reduced]);
 
+  const clampedSlide = Math.max(0, Math.min(activeSlide, PROBLEM_SLIDES.length - 1));
+
   return (
     <section
       ref={rootRef}
       id="problem"
-      className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 lg:px-16 lg:py-0"
+      className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-20 sm:px-8 sm:py-28 md:px-12 lg:px-16 lg:py-20"
       aria-labelledby="problem-heading"
     >
       <div aria-hidden className="section-top-rule" />
@@ -256,55 +186,35 @@ export function ProblemSection() {
       <div className="relative layout-max">
         <div
           data-problem-desktop
-          className="mx-auto hidden min-h-[270vh] max-w-[88rem] lg:block"
+          className="mx-auto hidden max-w-[84rem] lg:block"
         >
-          <div className="sticky top-0 flex min-h-screen items-center py-24">
-            <div className="grid w-full grid-cols-[0.44fr_0.56fr] items-center gap-12 xl:gap-20">
-              <ProblemIntro />
+          <div className="grid w-full grid-cols-[0.46fr_0.54fr] items-center gap-10 xl:gap-14">
+            <ProblemIntro />
 
-              <div
-                data-problem-phone
-                className="relative mx-auto w-[clamp(360px,34vw,500px)] will-change-[opacity,transform,filter]"
-              >
-                <ProblemIphoneMockup mode="desktop" />
-
-                <div className="absolute -right-5 top-[12%] hidden w-1.5 flex-col gap-2 xl:flex">
-                  {PROBLEM_SLIDES.map((slide, index) => (
-                    <span
-                      key={slide.kicker}
-                      data-problem-meter
-                      aria-hidden
-                      className="h-10 w-1.5 rounded-full bg-[rgb(var(--magicks-ink-rgb)/0.12)] transition-colors duration-500 [&.is-active]:bg-[rgb(var(--magicks-accent-rgb)/0.72)]"
-                    >
-                      <span className="sr-only">{index + 1}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
+            <div
+              data-problem-phone
+              className="relative mx-auto w-[clamp(320px,30vw,440px)] will-change-[opacity,transform,filter]"
+            >
+              <ProblemIphoneMockup
+                activeIndex={clampedSlide}
+                onSlideChange={(index) => setActiveSlide(index)}
+              />
+              <ProblemSliderDots activeIndex={clampedSlide} onSelect={setActiveSlide} className="mt-7" />
             </div>
           </div>
         </div>
 
-        <div className="mx-auto max-w-[46rem] lg:hidden">
+        <div className="mx-auto max-w-[32rem] lg:hidden">
           <ProblemIntro />
 
-          <div
-            className="-mx-5 mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-7 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-8 sm:px-8"
-            aria-label="Drei zentrale Problem-Screens"
-          >
-            {PROBLEM_SLIDES.map((slide, index) => (
-              <div
-                key={slide.kicker}
-                className="flex min-w-full snap-center justify-center"
-              >
-                <ProblemIphoneMockup activeIndex={index} mode="mobile" />
-              </div>
-            ))}
+          <div data-problem-phone className="mx-auto mt-12 will-change-[opacity,transform,filter]">
+            <ProblemIphoneMockup
+              activeIndex={clampedSlide}
+              onSlideChange={(index) => setActiveSlide(index)}
+            />
           </div>
 
-          <p className="mx-auto -mt-2 max-w-[26rem] text-center font-ui text-[0.84rem] leading-relaxed text-[rgb(var(--magicks-ink-rgb)/0.45)]">
-            Wischen Sie seitlich, um die drei Problem-Screens zu sehen.
-          </p>
+          <ProblemSliderDots activeIndex={clampedSlide} onSelect={setActiveSlide} className="mt-6" />
         </div>
 
         <ProblemClosing />
@@ -315,10 +225,10 @@ export function ProblemSection() {
 
 function ProblemIntro() {
   return (
-    <div className="relative z-10">
+    <div className="relative z-10 text-center lg:text-left">
       <span
         data-problem-copy
-        className="inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[11px] sm:tracking-[0.22em]"
+        className="mx-auto inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[11px] sm:tracking-[0.22em] lg:mx-0"
       >
         <span
           aria-hidden
@@ -330,14 +240,14 @@ function ProblemIntro() {
       <h2
         id="problem-heading"
         data-problem-copy
-        className="font-ui mt-6 max-w-[11ch] text-[2.7rem] font-[680] leading-[0.98] tracking-[-0.044em] text-[rgb(var(--magicks-ink-rgb)/0.98)] will-change-[opacity,transform,filter] sm:text-[3.55rem] md:text-[4.35rem] lg:text-[5rem]"
+        className="font-ui mx-auto mt-6 max-w-[11ch] text-[2.5rem] font-[680] leading-[0.98] tracking-[-0.044em] text-[rgb(var(--magicks-ink-rgb)/0.98)] will-change-[opacity,transform,filter] sm:text-[3.25rem] md:text-[3.95rem] lg:mx-0 lg:text-[4.45rem]"
       >
         Verlieren Sie keine wertvollen Chancen
       </h2>
 
       <p
         data-problem-copy
-        className="font-ui mt-7 max-w-[36rem] text-[1.14rem] font-[540] leading-[1.52] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.82)] will-change-[opacity,transform,filter] sm:text-[1.28rem] md:text-[1.42rem]"
+        className="font-ui mx-auto mt-7 max-w-[36rem] text-center text-[1.08rem] font-[540] leading-[1.52] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.82)] will-change-[opacity,transform,filter] sm:text-[1.2rem] md:text-[1.32rem] lg:mx-0 lg:text-left lg:text-[1.24rem]"
       >
         Ihre Kunden suchen, vergleichen und entscheiden online — oft lange bevor
         sie anrufen, buchen oder anfragen.
@@ -345,7 +255,7 @@ function ProblemIntro() {
 
       <p
         data-problem-copy
-        className="font-ui mt-5 max-w-[38rem] rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-5 text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] shadow-[0_28px_78px_-58px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.72)] will-change-[opacity,transform,filter] sm:px-6 sm:py-6 sm:text-[1.08rem]"
+        className="font-ui mx-auto mt-5 max-w-[38rem] rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-5 text-center text-[0.98rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] shadow-[0_28px_78px_-58px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.72)] will-change-[opacity,transform,filter] sm:px-6 sm:py-6 sm:text-[1.02rem] lg:mx-0 lg:text-left lg:text-[1.06rem]"
       >
         Die entscheidende Frage ist nicht nur, ob Sie gefunden werden. Sondern
         was Menschen sehen, wenn sie Sie finden: eine überzeugende Webpräsenz,
@@ -357,11 +267,144 @@ function ProblemIntro() {
 
 function ProblemIphoneMockup({
   activeIndex,
-  mode,
+  onSlideChange,
 }: {
-  activeIndex?: number;
-  mode: "desktop" | "mobile";
+  activeIndex: number;
+  onSlideChange: (index: number) => void;
 }) {
+  const clampedIndex = Math.max(0, Math.min(activeIndex, PROBLEM_SLIDES.length - 1));
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{
+    pointerId: number | null;
+    dragging: boolean;
+    startX: number;
+    latestX: number;
+    startedAt: number;
+    updatedAt: number;
+  }>({
+    pointerId: null,
+    dragging: false,
+    startX: 0,
+    latestX: 0,
+    startedAt: 0,
+    updatedAt: 0,
+  });
+  const [dragOffsetPx, setDragOffsetPx] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [snapDurationMs, setSnapDurationMs] = useState(320);
+
+  const clampSlideIndex = (index: number) =>
+    Math.max(0, Math.min(index, PROBLEM_SLIDES.length - 1));
+
+  const applyEdgeResistance = (deltaX: number) => {
+    const isAtFirstSlide = clampedIndex === 0;
+    const isAtLastSlide = clampedIndex === PROBLEM_SLIDES.length - 1;
+
+    if ((isAtFirstSlide && deltaX > 0) || (isAtLastSlide && deltaX < 0)) {
+      return deltaX * 0.34;
+    }
+    return deltaX;
+  };
+
+  const completeDrag = (deltaX: number, velocityX: number) => {
+    const viewportWidth = viewportRef.current?.clientWidth ?? 0;
+    const distanceThreshold = Math.max(36, Math.min(84, viewportWidth * 0.14));
+    const flickVelocityThreshold = 0.42;
+    const flickDistanceThreshold = 18;
+
+    let nextIndex = clampedIndex;
+
+    if (
+      deltaX <= -distanceThreshold ||
+      (velocityX <= -flickVelocityThreshold && deltaX <= -flickDistanceThreshold)
+    ) {
+      nextIndex = clampSlideIndex(clampedIndex + 1);
+    } else if (
+      deltaX >= distanceThreshold ||
+      (velocityX >= flickVelocityThreshold && deltaX >= flickDistanceThreshold)
+    ) {
+      nextIndex = clampSlideIndex(clampedIndex - 1);
+    }
+
+    const hasSlideChanged = nextIndex !== clampedIndex;
+    if (hasSlideChanged) {
+      setSnapDurationMs(Math.abs(velocityX) > 0.75 ? 250 : 320);
+      onSlideChange(nextIndex);
+    } else {
+      setSnapDurationMs(220);
+    }
+
+    setDragOffsetPx(0);
+    setIsDragging(false);
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+
+    dragRef.current = {
+      pointerId: event.pointerId,
+      dragging: true,
+      startX: event.clientX,
+      latestX: event.clientX,
+      startedAt: event.timeStamp,
+      updatedAt: event.timeStamp,
+    };
+    setDragOffsetPx(0);
+    setIsDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const state = dragRef.current;
+    if (!state.dragging || state.pointerId !== event.pointerId) return;
+
+    state.latestX = event.clientX;
+    state.updatedAt = event.timeStamp;
+    const rawDelta = state.latestX - state.startX;
+    const resistantDelta = applyEdgeResistance(rawDelta);
+    const viewportWidth = viewportRef.current?.clientWidth ?? 0;
+    const limit = viewportWidth > 0 ? viewportWidth * 0.32 : 110;
+    const boundedDelta = Math.max(-limit, Math.min(limit, resistantDelta));
+    setDragOffsetPx(boundedDelta);
+  };
+
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    const state = dragRef.current;
+    if (!state.dragging || state.pointerId !== event.pointerId) return;
+
+    const deltaX = state.latestX - state.startX;
+    const elapsedMs = Math.max(16, state.updatedAt - state.startedAt);
+    const velocityX = deltaX / elapsedMs;
+    state.dragging = false;
+    state.pointerId = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    completeDrag(deltaX, velocityX);
+  };
+
+  const handlePointerCancel = (event: React.PointerEvent<HTMLDivElement>) => {
+    const state = dragRef.current;
+    if (state.pointerId === event.pointerId) {
+      state.dragging = false;
+      state.pointerId = null;
+    }
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    setSnapDurationMs(220);
+    setDragOffsetPx(0);
+    setIsDragging(false);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "ArrowRight") {
+      onSlideChange(clampSlideIndex(clampedIndex + 1));
+    } else if (event.key === "ArrowLeft") {
+      onSlideChange(clampSlideIndex(clampedIndex - 1));
+    }
+  };
+
   return (
     <div
       className="relative mx-auto aspect-[0.72] w-[min(92vw,390px)] overflow-visible lg:w-full"
@@ -372,24 +415,39 @@ function ProblemIphoneMockup({
         className="absolute -inset-[8%] rounded-[42%] bg-[radial-gradient(circle_at_50%_44%,rgba(138,160,185,0.2),transparent_58%)] blur-2xl"
       />
 
-      <div className="absolute inset-[3.2%_5.6%] z-20 overflow-hidden rounded-[2.55rem] sm:rounded-[3rem]">
-        {mode === "desktop" ? (
-          PROBLEM_SLIDES.map((slide, index) => (
+      <div
+        ref={viewportRef}
+        className={`absolute inset-[3.2%_5.6%] z-20 overflow-hidden rounded-[2.55rem] [touch-action:pan-y] sm:rounded-[3rem] ${
+          isDragging ? "cursor-grabbing" : "cursor-grab"
+        }`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+      >
+        <div
+          className={`flex h-full w-full select-none will-change-transform ${
+            isDragging
+              ? "transition-none"
+              : "transition-transform ease-[cubic-bezier(0.22,1,0.36,1)]"
+          }`}
+          style={{
+            transform: `translate3d(calc(-${clampedIndex * 100}% + ${dragOffsetPx}px), 0, 0)`,
+            transitionDuration: `${snapDurationMs}ms`,
+          }}
+        >
+          {PROBLEM_SLIDES.map((slide, index) => (
             <div
               key={slide.kicker}
-              data-problem-screen
-              className="absolute inset-0"
-              style={{ opacity: index === 0 ? 1 : 0 }}
+              aria-hidden={index !== clampedIndex}
+              className="h-full min-w-full"
             >
-              <ProblemPhoneScreen slide={slide} index={index} />
+              <ProblemPhoneScreen slide={slide} />
             </div>
-          ))
-        ) : (
-          <ProblemPhoneScreen
-            slide={PROBLEM_SLIDES[activeIndex ?? 0]}
-            index={activeIndex ?? 0}
-          />
-        )}
+          ))}
+        </div>
       </div>
 
       <img
@@ -406,10 +464,8 @@ function ProblemIphoneMockup({
 
 function ProblemPhoneScreen({
   slide,
-  index,
 }: {
   slide: ProblemSlide;
-  index: number;
 }) {
   return (
     <article className="flex h-full flex-col px-[7.2%] pb-[7%] pt-[14%] text-center">
@@ -443,21 +499,46 @@ function ProblemPhoneScreen({
         </div>
       </div>
 
-      <div
-        className="mt-6 flex justify-center gap-2"
-        aria-label={`Aktiver Screen ${index + 1} von ${PROBLEM_SLIDES.length}`}
-      >
-        {PROBLEM_SLIDES.map((item, dotIndex) => (
-          <span
-            key={item.kicker}
-            aria-hidden
-            className={`h-2 w-2 rounded-full transition-colors duration-300 ${
-              dotIndex === index ? "bg-[rgba(18,24,34,0.82)]" : "bg-[rgba(18,24,34,0.12)]"
-            }`}
-          />
-        ))}
-      </div>
     </article>
+  );
+}
+
+function ProblemSliderDots({
+  activeIndex,
+  onSelect,
+  className = "",
+}: {
+  activeIndex: number;
+  onSelect: (index: number) => void;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`flex items-center justify-center gap-1.5 ${className}`.trim()}
+      aria-label="Navigation der Problem-Screens"
+    >
+      {PROBLEM_SLIDES.map((slide, index) => {
+        const isActive = index === activeIndex;
+        return (
+          <button
+            key={slide.kicker}
+            type="button"
+            aria-pressed={isActive}
+            aria-label={`Problem-Screen ${index + 1} anzeigen`}
+            onClick={() => onSelect(index)}
+            className="group flex h-11 w-11 items-center justify-center"
+          >
+            <span
+              className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
+                isActive
+                  ? "scale-100 bg-[rgba(18,24,34,0.84)]"
+                  : "scale-90 bg-[rgba(18,24,34,0.18)] group-hover:scale-100 group-hover:bg-[rgba(18,24,34,0.34)]"
+              }`}
+            />
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -648,7 +729,7 @@ function ProblemClosing() {
   return (
     <div
       data-problem-closing
-      className="relative z-10 mx-auto mt-20 max-w-[58rem] text-center will-change-[opacity,transform,filter] sm:mt-24 lg:mt-0 lg:pb-36"
+      className="relative z-10 mx-auto mt-20 max-w-[58rem] text-center will-change-[opacity,transform,filter] sm:mt-24 lg:mt-24 lg:pb-20"
     >
       <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-accent-ink-rgb)/0.66)]">
         Um es kurz zu fassen

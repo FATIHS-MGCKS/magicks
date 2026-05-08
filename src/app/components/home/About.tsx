@@ -7,10 +7,9 @@ import { sectionFarewell } from "../../lib/scrollMotion";
  * Section 04 — Ihr Partner.
  *
  * Direct answer to the preceding ProblemSection: three final image cards
- * present MAGICKS as strategic, creative and technical partner. The card
- * artwork is intentionally used as the visual layer; semantic text stays
- * available to screen readers without duplicating visible copy below the
- * images.
+ * present MAGICKS as strategic, creative and technical partner. Each card
+ * keeps the visual artwork and renders title + supporting copy directly
+ * inside the image area as an overlay.
  */
 
 const PARTNER_CARDS = [
@@ -210,18 +209,30 @@ export function About() {
                 data-about-card
                 className="group relative overflow-hidden rounded-[1.6rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-white/58 p-2 shadow-[0_28px_80px_-58px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.78)] transition-[transform,box-shadow,border-color] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-[rgb(var(--magicks-accent-line-rgb)/0.24)] hover:shadow-[0_42px_110px_-62px_rgba(20,28,44,0.44),inset_0_1px_0_rgba(255,255,255,0.86)] md:last:col-span-2 md:last:mx-auto md:last:max-w-[31rem] lg:last:col-span-1 lg:last:mx-0 lg:last:max-w-none"
               >
-                <img
-                  src={card.src}
-                  alt={card.alt}
-                  loading="lazy"
-                  decoding="async"
-                  width={1024}
-                  height={1280}
-                  className="block h-auto w-full rounded-[1.25rem]"
-                />
-                <div className="sr-only">
-                  <h3>{card.title}</h3>
-                  <p>{card.description}</p>
+                <div className="relative overflow-hidden rounded-[1.25rem]">
+                  <img
+                    src={card.src}
+                    alt={card.alt}
+                    loading="lazy"
+                    decoding="async"
+                    width={1024}
+                    height={1280}
+                    className="block h-auto w-full rounded-[1.25rem] transition-transform duration-[900ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
+                  />
+
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(8,12,20,0.04)_30%,rgba(8,12,20,0.35)_62%,rgba(8,12,20,0.84)_100%)]"
+                  />
+
+                  <div className="absolute inset-x-2 bottom-2 rounded-[1.05rem] border border-white/15 bg-[linear-gradient(180deg,rgba(12,18,28,0.28),rgba(10,16,24,0.72))] px-3.5 pb-3.5 pt-3 backdrop-blur-[1px] sm:inset-x-3 sm:bottom-3 sm:px-4 sm:pb-4 sm:pt-3.5">
+                    <h3 className="font-ui text-[1.15rem] font-[640] leading-[1.14] tracking-[-0.018em] text-white sm:text-[1.28rem]">
+                      {card.title}
+                    </h3>
+                    <p className="font-ui mt-2.5 text-[0.9rem] font-[450] leading-[1.56] tracking-[-0.004em] text-white/88 sm:text-[0.96rem]">
+                      {card.description}
+                    </p>
+                  </div>
                 </div>
               </article>
             ))}
