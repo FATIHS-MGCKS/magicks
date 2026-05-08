@@ -8,8 +8,7 @@ import { sectionFarewell } from "../../lib/scrollMotion";
  *
  * Direct answer to the preceding ProblemSection: three final image cards
  * present MAGICKS as strategic, creative and technical partner. Each card
- * keeps the visual artwork and renders title + supporting copy directly
- * inside the image area as an overlay.
+ * keeps artwork as base and renders headline/copy inside the image area.
  */
 
 const PARTNER_CARDS = [
@@ -174,13 +173,13 @@ export function About() {
             <h2
               id="about-heading"
               data-about-intro
-              className="font-ui mx-auto mt-6 max-w-[12ch] text-[2.55rem] font-[660] leading-[1.02] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3.5rem] md:text-[4.55rem] lg:text-[5.45rem]"
+              className="font-ui mx-auto mt-6 max-w-[13.5ch] text-[2.55rem] font-[660] leading-[1.02] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3.5rem] md:text-[4.55rem] lg:max-w-[12ch] lg:text-[5.45rem]"
             >
               <span className="block">Ein Partner.</span>
               <span className="block font-instrument italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.64)]">
                 Der mitdenkt.
               </span>
-              <span className="block">Nicht nur umsetzt.</span>
+              <span className="block whitespace-nowrap">Nicht nur umsetzt.</span>
             </h2>
 
             <div
@@ -220,16 +219,11 @@ export function About() {
                     className="block h-auto w-full rounded-[1.25rem] transition-transform duration-[900ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
                   />
 
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(8,12,20,0.04)_30%,rgba(8,12,20,0.35)_62%,rgba(8,12,20,0.84)_100%)]"
-                  />
-
-                  <div className="absolute inset-x-2 bottom-2 rounded-[1.05rem] border border-white/15 bg-[linear-gradient(180deg,rgba(12,18,28,0.28),rgba(10,16,24,0.72))] px-3.5 pb-3.5 pt-3 backdrop-blur-[1px] sm:inset-x-3 sm:bottom-3 sm:px-4 sm:pb-4 sm:pt-3.5">
-                    <h3 className="font-ui text-[1.15rem] font-[640] leading-[1.14] tracking-[-0.018em] text-white sm:text-[1.28rem]">
+                  <div className="pointer-events-none absolute inset-x-[7.5%] top-[7.2%] max-w-[79%] text-left">
+                    <h3 className="font-ui text-[clamp(1.7rem,5.1vw,3.7rem)] font-[650] leading-[1.01] tracking-[-0.036em] text-[rgba(8,26,58,0.97)]">
                       {card.title}
                     </h3>
-                    <p className="font-ui mt-2.5 text-[0.9rem] font-[450] leading-[1.56] tracking-[-0.004em] text-white/88 sm:text-[0.96rem]">
+                    <p className="font-ui mt-[clamp(0.55rem,1.2vw,0.95rem)] text-[clamp(0.94rem,2.15vw,1.66rem)] font-[470] leading-[1.46] tracking-[-0.01em] text-[rgba(42,56,82,0.82)]">
                       {card.description}
                     </p>
                   </div>

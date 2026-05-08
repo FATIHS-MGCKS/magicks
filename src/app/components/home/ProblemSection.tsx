@@ -240,9 +240,11 @@ function ProblemIntro() {
       <h2
         id="problem-heading"
         data-problem-copy
-        className="font-ui mx-auto mt-6 max-w-[11ch] text-[2.5rem] font-[680] leading-[0.98] tracking-[-0.044em] text-[rgb(var(--magicks-ink-rgb)/0.98)] will-change-[opacity,transform,filter] sm:text-[3.25rem] md:text-[3.95rem] lg:mx-0 lg:text-[4.45rem]"
+        className="font-ui mx-auto mt-6 max-w-[18ch] text-[2.05rem] font-[680] leading-[0.98] tracking-[-0.044em] text-[rgb(var(--magicks-ink-rgb)/0.98)] will-change-[opacity,transform,filter] sm:text-[2.6rem] md:text-[3.35rem] lg:mx-0 lg:max-w-[11ch] lg:text-[4.45rem]"
       >
-        Verlieren Sie keine wertvollen Chancen
+        <span className="block lg:hidden">Verlieren Sie keine</span>
+        <span className="block lg:hidden">wertvollen Chancen</span>
+        <span className="hidden lg:inline">Verlieren Sie keine wertvollen Chancen</span>
       </h2>
 
       <p
