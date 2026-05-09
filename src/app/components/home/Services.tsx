@@ -26,7 +26,7 @@ const SERVICES: Service[] = [
   {
     slug: "websites",
     title: "Websites & Landingpages",
-    teaser: "Für Auftritte, die überzeugen und Anfragen erzeugen.",
+    teaser: "Digitale Auftritte, die überzeugen, Vertrauen schaffen und Anfragen erzeugen.",
     href: "/websites-landingpages",
     icon: "web",
     image: HOME_SERVICE_IMAGES.websites.src,
@@ -35,7 +35,7 @@ const SERVICES: Service[] = [
   {
     slug: "shops",
     title: "Shops & Konfiguratoren",
-    teaser: "Für Produkte, die klarer präsentiert und leichter verkauft werden.",
+    teaser: "Verkaufsflächen, die Produkte klarer erklären und Kaufentscheidungen leichter machen.",
     href: "/shops-produktkonfiguratoren",
     icon: "commerce",
     image: HOME_SERVICE_IMAGES.shops.src,
@@ -44,7 +44,7 @@ const SERVICES: Service[] = [
   {
     slug: "software",
     title: "Web-Software",
-    teaser: "Für Prozesse, die nicht länger in Tabellen, Tools und Umwegen hängen.",
+    teaser: "Individuelle Lösungen für Prozesse, die aus Tabellen, Umwegen und Insellösungen herauswachsen.",
     href: "/web-software",
     icon: "software",
     image: HOME_SERVICE_IMAGES.software.src,
@@ -53,7 +53,7 @@ const SERVICES: Service[] = [
   {
     slug: "automation",
     title: "KI & Automationen",
-    teaser: "Für Abläufe, die schneller, smarter und weniger manuell funktionieren.",
+    teaser: "Smarte Systeme, die wiederkehrende Aufgaben reduzieren und Abläufe spürbar beschleunigen.",
     href: "/ki-automationen-integrationen",
     icon: "automation",
     image: HOME_SERVICE_IMAGES.automation.src,
@@ -149,7 +149,7 @@ export function Services() {
         parallaxDrift(ambient, { trigger: root, from: -3, to: 4, scrub: true });
       }
 
-      // ─── Headline: "Mehr als Websites." ──────────────────────────────
+      // ─── Headline: "Unser Leistungsumfang" ──────────────────────────
       const buildParts = root.querySelectorAll<HTMLElement>("[data-build-part]");
       if (buildParts.length > 0) {
         const buildFrom: gsap.TweenVars = cheapMotion
@@ -227,7 +227,7 @@ export function Services() {
       <div className="layout-max">
         <div className="mb-6 sm:mb-8 md:mb-10">
           <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[11px] sm:tracking-[0.24em]">
-            05 · Leistungen
+            Unser Leistungsumfang
           </span>
         </div>
         <div className="mb-16 grid gap-8 md:mb-24 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-end md:gap-14">
@@ -238,13 +238,13 @@ export function Services() {
             style={{ perspective: "1000px" }}
           >
             <span className="inline-block overflow-hidden pb-1 -mb-1">
-              <span data-build-part className="inline-block will-change-transform">Mehr</span>
+              <span data-build-part className="inline-block will-change-transform">Unser</span>
             </span>{" "}
             <span className="inline-block overflow-hidden pb-1 -mb-1">
-              <span data-build-part className="inline-block will-change-transform">als</span>
+              <span data-build-part className="inline-block will-change-transform">Leistungs</span>
             </span>{" "}
             <em className="font-instrument inline-block italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.62)]">
-              {"Websites".split("").map((char, i) => (
+              {"umfang".split("").map((char, i) => (
                 <span key={i} className="inline-block overflow-hidden pb-1 -mb-1">
                   <span data-build-part className="inline-block will-change-transform">{char}</span>
                 </span>
@@ -259,11 +259,9 @@ export function Services() {
             className="relative pl-5 before:absolute before:left-0 before:top-2 before:h-[calc(100%-16px)] before:w-px before:bg-gradient-to-b before:from-[rgb(var(--magicks-line-rgb)/0.28)] before:via-[rgb(var(--magicks-line-rgb)/0.1)] before:to-transparent"
           >
             <p className="font-ui max-w-[30rem] text-[1.04rem] font-[450] leading-[1.7] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] md:text-[1.1rem]">
-              Wir gestalten digitale Auftritte, Verkaufsflächen, Software und Automationen, die zusammenarbeiten — für{" "}
-              <em className="font-instrument italic text-[rgb(var(--magicks-ink-rgb)/0.92)]">
-                mehr Sichtbarkeit
-              </em>
-              , bessere Abläufe und einen Auftritt, der wirklich überzeugt.
+              Schönes Design ist nur der Anfang. Wir entwickeln Websites, Shops,
+              3D-Konfiguratoren, Software und KI-Automationen. Alles, was Ihr
+              Business digital stärker oder effizienter macht.
             </p>
           </div>
         </div>

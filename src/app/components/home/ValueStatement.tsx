@@ -67,18 +67,18 @@ const TRUST_BADGES = [
 ] as const;
 
 const SOFTWARE_LOGOS = [
-  { name: "HTML", src: "/media/home/software-logos/html.svg" },
-  { name: "CSS", src: "/media/home/software-logos/css.svg" },
-  { name: "Shopify", src: "/media/home/software-logos/shopify.svg" },
-  { name: "WordPress", src: "/media/home/software-logos/wordpress.svg" },
-  { name: "GSAP", src: "/media/home/software-logos/gsap.svg" },
-  { name: "Three.js", src: "/media/home/software-logos/threejs.svg" },
-  { name: "JavaScript", src: "/media/home/software-logos/javascript.svg" },
-  { name: "Python", src: "/media/home/software-logos/python.svg" },
-  { name: "Figma", src: "/media/home/software-logos/figma.svg" },
-  { name: "Photoshop", src: "/media/home/software-logos/photoshop.svg" },
-  { name: "Cinema 4D", src: "/media/home/software-logos/cinema4d.svg" },
-  { name: "After Effects", src: "/media/home/software-logos/after-effects.svg" },
+  { name: "After Effects", src: "/media/home/icons/after-effects.webp" },
+  { name: "Cinema 4D", src: "/media/home/icons/cinema4d.webp" },
+  { name: "Figma", src: "/media/home/icons/figma.webp" },
+  { name: "GSAP", src: "/media/home/icons/gsap.webp" },
+  { name: "HTML & CSS", src: "/media/home/icons/html-css.webp" },
+  { name: "Java", src: "/media/home/icons/java.webp" },
+  { name: "Photoshop", src: "/media/home/icons/photoshop.webp" },
+  { name: "Python", src: "/media/home/icons/python.webp" },
+  { name: "React", src: "/media/home/icons/react.webp" },
+  { name: "Shopify", src: "/media/home/icons/shopify.webp" },
+  { name: "Three.js", src: "/media/home/icons/three.webp" },
+  { name: "WordPress", src: "/media/home/icons/wordpress.webp" },
 ] as const;
 
 export function ValueStatement() {
@@ -517,16 +517,21 @@ function SoftwareLogoMarquee({ reduced }: { reduced: boolean }) {
             <a
               key={`${logo.name}-${index}`}
               href="#denken"
-              className="flex h-16 min-w-[8.4rem] items-center justify-center rounded-[0.95rem] border border-[rgb(var(--magicks-line-rgb)/0.075)] bg-white/55 px-5 outline-none transition-[background-color,border-color,filter,transform,opacity] duration-500 hover:-translate-y-0.5 hover:border-[rgb(var(--magicks-accent-line-rgb)/0.22)] hover:bg-white/78 focus-visible:-translate-y-0.5 focus-visible:border-[rgb(var(--magicks-accent-line-rgb)/0.34)] focus-visible:bg-white/8"
+              className="flex h-16 min-w-[9.6rem] items-center justify-center rounded-[0.95rem] border border-[rgb(var(--magicks-line-rgb)/0.075)] bg-white/55 px-4 outline-none transition-[background-color,border-color,filter,transform,opacity] duration-500 hover:-translate-y-0.5 hover:border-[rgb(var(--magicks-accent-line-rgb)/0.22)] hover:bg-white/78 focus-visible:-translate-y-0.5 focus-visible:border-[rgb(var(--magicks-accent-line-rgb)/0.34)] focus-visible:bg-white/8"
               aria-label={`${logo.name} Logo`}
             >
-              <img
-                src={logo.src}
-                alt={`${logo.name} Logo`}
-                loading="lazy"
-                decoding="async"
-                className="max-h-7 max-w-[6.4rem] object-contain opacity-70 grayscale transition duration-500 hover:opacity-100 hover:grayscale-0"
-              />
+              <div className="flex items-center gap-2.5">
+                <img
+                  src={logo.src}
+                  alt={`${logo.name} Logo`}
+                  loading="lazy"
+                  decoding="async"
+                  className="max-h-7 max-w-[2.9rem] object-contain opacity-74 grayscale transition duration-500 hover:opacity-100 hover:grayscale-0"
+                />
+                <span className="font-ui text-[0.82rem] font-[560] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.72)]">
+                  {logo.name}
+                </span>
+              </div>
             </a>
           ))}
         </div>

@@ -167,39 +167,43 @@ export function About() {
               data-about-intro
               className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[11px] sm:tracking-[0.24em]"
             >
-              04 · Ihr Partner
+              Ein Partner, der mitdenkt.
             </span>
 
             <h2
               id="about-heading"
               data-about-intro
-              className="font-ui mx-auto mt-6 max-w-[13.5ch] text-[2.55rem] font-[660] leading-[1.02] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3.5rem] md:text-[4.55rem] lg:max-w-[12ch] lg:text-[5.45rem]"
+              className="font-ui mx-auto mt-6 max-w-[13ch] text-[2.55rem] font-[660] leading-[1.02] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3.5rem] md:text-[4.55rem] lg:max-w-[13ch] lg:text-[5.45rem]"
             >
-              <span className="block">Ein Partner.</span>
+              <span className="block">Wir bauen keine</span>
               <span className="block font-instrument italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.64)]">
-                Der mitdenkt.
+                irgendwie oder reicht schon
               </span>
-              <span className="block whitespace-nowrap">Nicht nur umsetzt.</span>
+              <span className="block">Webseiten</span>
             </h2>
 
             <div
               data-about-intro
-              className="mx-auto mt-9 grid max-w-[64rem] gap-4 text-balance sm:mt-11 md:grid-cols-2 md:gap-7"
+              className="mx-auto mt-9 max-w-[52rem] text-balance sm:mt-11"
             >
               <p className="font-ui rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-5 text-[1.02rem] font-[470] leading-[1.68] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.74)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-6 sm:py-6 sm:text-[1.1rem]">
-                Mit MAGICKS haben Sie einen Partner, der Ihr Business versteht —
-                und nicht einfach einen weiteren Dienstleister.
-              </p>
-              <p className="font-ui rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.48)] px-5 py-5 text-[1.02rem] font-[470] leading-[1.68] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] shadow-[0_24px_70px_-60px_rgba(20,28,44,0.26),inset_0_1px_0_rgba(255,255,255,0.7)] sm:px-6 sm:py-6 sm:text-[1.1rem]">
-                Kreativ, technisch und strategisch aus einer Hand machen wir
-                aus Webpräsenzen digitale Erlebnisse — sichtbar,
-                vertrauensstark und auf Anfragen ausgerichtet.
+                Sie haben nur wenige Sekunden, bis ein potenzieller Kunde
+                entscheidet, ob er bleibt oder weiterklickt und wer
+                austauschbar wirkt, verliert. MAGICKS macht aus Ihrem ersten
+                Eindruck ein Verkaufsargument.
               </p>
             </div>
           </div>
 
+          <p
+            data-about-intro
+            className="font-ui mx-auto mt-14 max-w-[44rem] text-center text-[1.05rem] font-[620] leading-[1.38] tracking-[-0.014em] text-[rgb(var(--magicks-ink-rgb)/0.82)] sm:mt-16 sm:text-[1.18rem] lg:mt-20"
+          >
+            mit Design, Strategie, Technik und kreativer Umsetzung aus einer Hand.
+          </p>
+
           <div
-            className="mt-14 grid gap-5 sm:mt-16 md:grid-cols-2 md:gap-6 lg:mt-20 lg:grid-cols-3 lg:gap-7"
+            className="mt-6 grid gap-5 sm:mt-8 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-7"
             aria-label="Drei Gründe für MAGICKS als Partner"
           >
             {PARTNER_CARDS.map((card) => (

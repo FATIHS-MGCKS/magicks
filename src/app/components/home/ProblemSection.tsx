@@ -195,6 +195,7 @@ export function ProblemSection() {
               data-problem-phone
               className="relative mx-auto w-[clamp(320px,30vw,440px)] will-change-[opacity,transform,filter]"
             >
+              <ProblemPhoneIntro />
               <ProblemIphoneMockup
                 activeIndex={clampedSlide}
                 onSlideChange={(index) => setActiveSlide(index)}
@@ -208,6 +209,7 @@ export function ProblemSection() {
           <ProblemIntro />
 
           <div data-problem-phone className="mx-auto mt-12 will-change-[opacity,transform,filter]">
+            <ProblemPhoneIntro />
             <ProblemIphoneMockup
               activeIndex={clampedSlide}
               onSlideChange={(index) => setActiveSlide(index)}
@@ -234,36 +236,48 @@ function ProblemIntro() {
           aria-hidden
           className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.72)]"
         />
-        03 · Das Problem
+        UNGENUTZTE CHANCEN
       </span>
 
       <h2
         id="problem-heading"
         data-problem-copy
-        className="font-ui mx-auto mt-6 max-w-[18ch] text-[2.05rem] font-[680] leading-[0.98] tracking-[-0.044em] text-[rgb(var(--magicks-ink-rgb)/0.98)] will-change-[opacity,transform,filter] sm:text-[2.6rem] md:text-[3.35rem] lg:mx-0 lg:max-w-[11ch] lg:text-[4.45rem]"
+        className="font-ui mx-auto mt-6 max-w-[14ch] text-[2.25rem] font-[680] leading-[0.98] tracking-[-0.044em] text-[rgb(var(--magicks-ink-rgb)/0.98)] will-change-[opacity,transform,filter] sm:text-[2.85rem] md:text-[3.55rem] lg:mx-0 lg:max-w-[12ch] lg:text-[4.45rem]"
       >
-        <span className="block lg:hidden">Verlieren Sie keine</span>
-        <span className="block lg:hidden">wertvollen Chancen</span>
-        <span className="hidden lg:inline">Verlieren Sie keine wertvollen Chancen</span>
+        Ihre Website bringt keinen Umsatz?
       </h2>
 
       <p
         data-problem-copy
-        className="font-ui mx-auto mt-7 max-w-[36rem] text-center text-[1.08rem] font-[540] leading-[1.52] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.82)] will-change-[opacity,transform,filter] sm:text-[1.2rem] md:text-[1.32rem] lg:mx-0 lg:text-left lg:text-[1.24rem]"
+        className="font-ui mx-auto mt-7 max-w-[36rem] text-center text-[1.08rem] font-[540] leading-[1.52] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.82)] will-change-[opacity,transform,filter] sm:text-[1.2rem] md:text-[1.32rem] lg:text-[1.24rem]"
       >
-        Ihre Kunden suchen, vergleichen und entscheiden online — oft lange bevor
-        sie anrufen, buchen oder anfragen.
+        Sie arbeitet Tag und Nacht für Ihr Unternehmen. Sie präsentiert, erklärt
+        und soll potenzielle Kunden überzeugen. Trotzdem bleibt der Erfolg aus?
       </p>
 
       <p
         data-problem-copy
-        className="font-ui mx-auto mt-5 max-w-[38rem] rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-5 text-center text-[0.98rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] shadow-[0_28px_78px_-58px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.72)] will-change-[opacity,transform,filter] sm:px-6 sm:py-6 sm:text-[1.02rem] lg:mx-0 lg:text-left lg:text-[1.06rem]"
+        className="font-ui mx-auto mt-5 max-w-[38rem] rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-5 text-center text-[0.98rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] shadow-[0_28px_78px_-58px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.72)] will-change-[opacity,transform,filter] sm:px-6 sm:py-6 sm:text-[1.02rem] lg:text-[1.06rem]"
       >
-        Die entscheidende Frage ist nicht nur, ob Sie gefunden werden. Sondern
-        was Menschen sehen, wenn sie Sie finden: eine überzeugende Webpräsenz,
-        die Vertrauen aufbaut — oder einen Auftritt, der Zweifel hinterlässt.
+        Dann ist die entscheidende Frage, was Menschen sehen, wenn sie Sie
+        finden. Denn wenn dieser Eindruck nicht überzeugt, entscheiden sie sich
+        nicht später gegen Sie.
+        <strong className="mt-3 block font-[720] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+          Sondern sofort
+        </strong>
       </p>
     </div>
+  );
+}
+
+function ProblemPhoneIntro() {
+  return (
+    <p
+      data-problem-copy
+      className="font-ui mx-auto mb-5 max-w-[21rem] text-center text-[0.98rem] font-[650] leading-[1.24] tracking-[-0.014em] text-[rgb(var(--magicks-ink-rgb)/0.82)] will-change-[opacity,transform,filter] sm:text-[1.08rem] lg:mb-6"
+    >
+      Drei typische Probleme, die Kunden kosten
+    </p>
   );
 }
 
@@ -737,11 +751,9 @@ function ProblemClosing() {
         Um es kurz zu fassen
       </p>
       <p className="font-ui mx-auto mt-5 max-w-[12ch] text-[2.5rem] font-[720] leading-[0.98] tracking-[-0.052em] text-[rgb(var(--magicks-ink-rgb)/0.98)] sm:text-[4.2rem] lg:text-[5.6rem]">
-        Keine Überzeugung = Kein Umsatz
-      </p>
-      <p className="font-ui mx-auto mt-6 max-w-[42rem] text-[1.04rem] font-[470] leading-[1.7] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.68)] sm:text-[1.18rem]">
-        Eine starke Website erklärt nicht nur, was Sie anbieten. Sie macht
-        klar, warum genau Sie die richtige Wahl sind.
+        <span className="block">Keine Überzeugung</span>
+        <span className="block">=</span>
+        <span className="block">Kein Umsatz</span>
       </p>
     </div>
   );

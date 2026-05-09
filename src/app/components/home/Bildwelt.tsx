@@ -186,7 +186,7 @@ export function Bildwelt() {
             {/* ── Left column ─────────────────────────────────────── */}
             <div className="flex flex-col">
               <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[11px] sm:tracking-[0.24em]">
-                06 · In-house
+                IN HOUSE CREATIVE CONTENT
               </span>
 
               <h2
@@ -194,9 +194,9 @@ export function Bildwelt() {
                 data-bw-headline
                 className="font-ui mt-5 max-w-[18ch] text-[2.32rem] font-[620] leading-[1.04] tracking-[-0.028em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:mt-6 sm:text-[3.05rem] md:text-[3.78rem] lg:text-[4.4rem]"
               >
-                Alles, was ein Auftritt{" "}
+                Alles, was ihren Auftritt{" "}
                 <em className="font-instrument italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.6)]">
-                  braucht
+                  stark macht
                 </em>
                 .
               </h2>
@@ -205,17 +205,11 @@ export function Bildwelt() {
                 data-bw-main
                 className="font-ui mt-10 max-w-[36rem] text-[1.04rem] font-[450] leading-[1.7] tracking-[-0.005em] text-[rgb(var(--magicks-ink-rgb)/0.78)] sm:mt-12 sm:text-[1.1rem] md:text-[1.16rem]"
               >
-                Ein starker Webauftritt lebt nicht nur von Layout und Code. Deshalb entstehen bei
-                MAGICKS auf Wunsch auch Texte, SEO-Struktur, Fotos, Bildbearbeitung, Videos, Motion
-                Design und 3D-Visuals direkt im Projekt.
-              </p>
-
-              <p
-                data-bw-support
-                className="font-ui mt-6 max-w-[32rem] text-[15px] font-[440] leading-[1.72] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:mt-7 md:text-[15.5px]"
-              >
-                So bekommt jedes Projekt eine eigene visuelle Sprache — statt austauschbarer
-                Stockbilder und generischer Inhalte.
+                Schönes Design wirkt erst dann richtig, wenn auch Inhalte,
+                Bilder, Texte und Struktur stimmen. Deshalb entwickelt MAGICKS
+                nicht nur die Website — sondern auf Wunsch auch die visuelle
+                Sprache, den Content und die Medien, die Ihr Unternehmen
+                unverwechselbar machen.
               </p>
 
               {/* CTA row — primary anchor → /content-bildwelt-medien,
