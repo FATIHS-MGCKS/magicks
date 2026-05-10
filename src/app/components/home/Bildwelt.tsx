@@ -185,7 +185,11 @@ export function Bildwelt() {
           <div className="grid gap-y-12 md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] md:gap-x-14 md:gap-y-0 lg:gap-x-20 xl:gap-x-24">
             {/* ── Left column ─────────────────────────────────────── */}
             <div className="flex flex-col">
-              <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[11px] sm:tracking-[0.24em]">
+              <span className="inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[11px] sm:tracking-[0.22em]">
+                <span
+                  aria-hidden
+                  className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.72)]"
+                />
                 IN HOUSE CREATIVE CONTENT
               </span>
 

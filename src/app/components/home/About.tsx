@@ -165,18 +165,22 @@ export function About() {
           <div className="mx-auto max-w-[68rem] text-center">
             <span
               data-about-intro
-              className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[11px] sm:tracking-[0.24em]"
+              className="mx-auto inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[11px] sm:tracking-[0.22em]"
             >
+              <span
+                aria-hidden
+                className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.72)]"
+              />
               Ein Partner, der mitdenkt.
             </span>
 
             <h2
               id="about-heading"
               data-about-intro
-              className="font-ui mx-auto mt-6 max-w-[13ch] text-[2.55rem] font-[660] leading-[1.02] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3.5rem] md:text-[4.55rem] lg:max-w-[13ch] lg:text-[5.45rem]"
+              className="font-ui mx-auto mt-6 max-w-[26ch] text-[2.55rem] font-[660] leading-[1.02] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3.5rem] md:text-[4.55rem] lg:max-w-[26ch] lg:text-[5.45rem]"
             >
               <span className="block">Wir bauen keine</span>
-              <span className="block font-instrument italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.64)]">
+              <span className="block whitespace-nowrap font-instrument italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.64)]">
                 irgendwie oder reicht schon
               </span>
               <span className="block">Webseiten</span>
@@ -186,7 +190,7 @@ export function About() {
               data-about-intro
               className="mx-auto mt-9 max-w-[52rem] text-balance sm:mt-11"
             >
-              <p className="font-ui rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-5 text-[1.02rem] font-[470] leading-[1.68] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.74)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-6 sm:py-6 sm:text-[1.1rem]">
+              <p className="font-ui rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-5 text-[1.02rem] font-[470] leading-[1.68] tracking-[-0.006em] text-justify text-[rgb(var(--magicks-ink-rgb)/0.74)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-6 sm:py-6 sm:text-[1.1rem]">
                 Sie haben nur wenige Sekunden, bis ein potenzieller Kunde
                 entscheidet, ob er bleibt oder weiterklickt und wer
                 austauschbar wirkt, verliert. MAGICKS macht aus Ihrem ersten

@@ -234,11 +234,13 @@ export function FinalCTA() {
               centred above the headline. */}
           <span
             aria-hidden
-            className="font-mono mb-7 inline-flex items-center gap-3 text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-ink-rgb)/0.42)] sm:mb-8 sm:text-[11px] sm:tracking-[0.24em]"
+            className="mx-auto mb-7 inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:mb-8 sm:text-[11px] sm:tracking-[0.22em]"
           >
-            <span className="h-px w-6 bg-[rgb(var(--magicks-accent-line-rgb)/0.44)] sm:w-8" />
+            <span
+              aria-hidden
+              className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.72)]"
+            />
             07 · Kontakt
-            <span className="h-px w-6 bg-[rgb(var(--magicks-accent-line-rgb)/0.44)] sm:w-8" />
           </span>
 
           {/* Headline — Apple-system primary with an Instrument Serif
