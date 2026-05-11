@@ -193,18 +193,23 @@ export function About() {
               <p className="font-ui rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-5 text-[1.02rem] font-[470] leading-[1.68] tracking-[-0.006em] text-justify text-[rgb(var(--magicks-ink-rgb)/0.74)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-6 sm:py-6 sm:text-[1.1rem]">
                 Sie haben nur wenige Sekunden, bis ein potenzieller Kunde
                 entscheidet, ob er bleibt oder weiterklickt und wer
-                austauschbar wirkt, verliert. MAGICKS macht aus Ihrem ersten
+                austauschbar wirkt, verliert.{" "}
+                <span className="mx-[0.08em] inline-flex items-center align-middle leading-none">
+                  <img
+                    src="/magicks-logo.webp"
+                    alt="MAGICKS"
+                    width={977}
+                    height={354}
+                    decoding="async"
+                    className="h-[2.22em] w-auto"
+                    style={{ filter: "brightness(0) saturate(100%)" }}
+                  />
+                </span>{" "}
+                macht aus Ihrem ersten
                 Eindruck ein Verkaufsargument.
               </p>
             </div>
           </div>
-
-          <p
-            data-about-intro
-            className="font-ui mx-auto mt-14 max-w-[44rem] text-center text-[1.05rem] font-[620] leading-[1.38] tracking-[-0.014em] text-[rgb(var(--magicks-ink-rgb)/0.82)] sm:mt-16 sm:text-[1.18rem] lg:mt-20"
-          >
-            mit Design, Strategie, Technik und kreativer Umsetzung aus einer Hand.
-          </p>
 
           <div
             className="mt-6 grid gap-5 sm:mt-8 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-7"
@@ -228,10 +233,10 @@ export function About() {
                   />
 
                   <div className="pointer-events-none absolute inset-x-[7.5%] top-[7.2%] max-w-[79%] text-left">
-                    <h3 className="font-ui text-[clamp(1.7rem,5.1vw,3.7rem)] font-[650] leading-[1.01] tracking-[-0.036em] text-[rgba(8,26,58,0.97)]">
+                    <h3 className="font-ui text-[clamp(1.6rem,4.7vw,2.55rem)] font-[650] leading-[1.04] tracking-[-0.032em] text-[rgba(8,26,58,0.97)]">
                       {card.title}
                     </h3>
-                    <p className="font-ui mt-[clamp(0.55rem,1.2vw,0.95rem)] text-[clamp(0.94rem,2.15vw,1.66rem)] font-[470] leading-[1.46] tracking-[-0.01em] text-[rgba(42,56,82,0.82)]">
+                    <p className="font-ui mt-[clamp(0.5rem,1vw,0.78rem)] text-[clamp(0.88rem,1.75vw,1.12rem)] font-[470] leading-[1.48] tracking-[-0.008em] text-[rgba(42,56,82,0.82)]">
                       {card.description}
                     </p>
                   </div>

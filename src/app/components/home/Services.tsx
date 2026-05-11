@@ -108,7 +108,7 @@ export function Services() {
   useLayoutEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    const { gsap } = registerGsap();
+    const { gsap, ScrollTrigger } = registerGsap();
 
     const ctx = gsap.context(() => {
       const cheapMotion = prefersCheapMotion();
@@ -189,9 +189,25 @@ export function Services() {
       });
 
       // ─── Service Stacking Cards ──────────────────────────────────────
-      // Every card shares the exact same sticky anchor. The next card
-      // slides over the previous one 1:1, without scale or offset drift.
-      gsap.set(cards, { opacity: 1, scale: 1, filter: "none" });
+      // Explicit GSAP pin-stack (instead of relying on CSS sticky only).
+      // This keeps the "cards stack and stay" behavior stable across
+      // browsers that can be flaky with sticky inside transformed trees.
+      gsap.set(cards, { opacity: 1, filter: "none", clearProps: "transform" });
+      if (cards.length > 1) {
+        for (let i = 0; i < cards.length - 1; i++) {
+          ScrollTrigger.create({
+            trigger: cards[i],
+            start: "top top+=96",
+            endTrigger: cards[cards.length - 1],
+            end: "top top+=96",
+            pin: true,
+            pinSpacing: false,
+            pinReparent: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          });
+        }
+      }
 
       // ─── Section farewell ────────────────────────────────────────────
       if (farewell) {
@@ -270,14 +286,14 @@ export function Services() {
           </div>
         </div>
 
-        <div className="relative flex flex-col pt-10">
+        <div className="relative pt-10">
           {SERVICES.map((s, i) => {
             return (
               <article
                 key={s.slug}
                 data-service-card
-                className="sticky z-10 w-full origin-top rounded-[1.75rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[linear-gradient(165deg,rgba(255,255,255,0.86)_0%,rgba(246,242,233,0.72)_100%)] p-8 shadow-[0_28px_72px_-46px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.8)] will-change-[transform,opacity] sm:p-10 md:p-12"
-                style={{ top: "6rem", zIndex: 10 + i }}
+                className="relative z-10 w-full origin-top rounded-[1.75rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[linear-gradient(165deg,rgba(255,255,255,0.86)_0%,rgba(246,242,233,0.72)_100%)] p-8 shadow-[0_28px_72px_-46px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.8)] will-change-[opacity] sm:p-10 md:p-12"
+                style={{ zIndex: 10 + i }}
               >
                 <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-14 xl:gap-20">
                   {/* Left — Text Content */}

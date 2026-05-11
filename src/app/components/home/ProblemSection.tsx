@@ -195,7 +195,6 @@ export function ProblemSection() {
               data-problem-phone
               className="relative mx-auto w-[clamp(320px,30vw,440px)] will-change-[opacity,transform,filter]"
             >
-              <ProblemPhoneIntro />
               <ProblemIphoneMockup
                 activeIndex={clampedSlide}
                 onSlideChange={(index) => setActiveSlide(index)}
@@ -209,7 +208,6 @@ export function ProblemSection() {
           <ProblemIntro />
 
           <div data-problem-phone className="mx-auto mt-12 will-change-[opacity,transform,filter]">
-            <ProblemPhoneIntro />
             <ProblemIphoneMockup
               activeIndex={clampedSlide}
               onSlideChange={(index) => setActiveSlide(index)}
@@ -249,10 +247,11 @@ function ProblemIntro() {
 
       <p
         data-problem-copy
-        className="font-ui mx-auto mt-7 max-w-[36rem] text-center text-[1.08rem] font-[540] leading-[1.52] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.82)] will-change-[opacity,transform,filter] sm:text-[1.2rem] md:text-[1.32rem] lg:text-[1.24rem]"
+        className="font-ui mx-auto mt-7 max-w-[36rem] text-center text-[1.08rem] font-[540] leading-[1.52] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.82)] will-change-[opacity,transform,filter] sm:text-[1.2rem] md:text-[1.32rem] lg:text-[1.24rem] lg:text-left"
       >
-        Sie arbeitet Tag und Nacht für Ihr Unternehmen. Sie präsentiert, erklärt
-        und soll potenzielle Kunden überzeugen. Trotzdem bleibt der Erfolg aus?
+        <span className="block">Sie arbeitet Tag und Nacht für Ihr Unternehmen.</span>
+        <span className="block">Sie präsentiert, erklärt und soll potenzielle Kunden überzeugen.</span>
+        <span className="block">Trotzdem bleibt der Erfolg aus?</span>
       </p>
 
       <p
@@ -262,22 +261,11 @@ function ProblemIntro() {
         Dann ist die entscheidende Frage, was Menschen sehen, wenn sie Sie
         finden. Denn wenn dieser Eindruck nicht überzeugt, entscheiden sie sich
         nicht später gegen Sie.
-        <strong className="mt-3 block font-[720] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+        <strong className="font-instrument mt-3 block text-[1.22em] font-normal italic tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.9)]">
           Sondern sofort
         </strong>
       </p>
     </div>
-  );
-}
-
-function ProblemPhoneIntro() {
-  return (
-    <p
-      data-problem-copy
-      className="font-ui mx-auto mb-5 max-w-[21rem] text-center text-[0.98rem] font-[650] leading-[1.24] tracking-[-0.014em] text-[rgb(var(--magicks-ink-rgb)/0.82)] will-change-[opacity,transform,filter] sm:text-[1.08rem] lg:mb-6"
-    >
-      Drei typische Probleme, die Kunden kosten
-    </p>
   );
 }
 
@@ -747,13 +735,68 @@ function ProblemClosing() {
       data-problem-closing
       className="relative z-10 mx-auto mt-20 max-w-[58rem] text-center will-change-[opacity,transform,filter] sm:mt-24 lg:mt-24 lg:pb-20"
     >
-      <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-accent-ink-rgb)/0.66)]">
+      <p className="mx-auto inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[11px] sm:tracking-[0.22em]">
         Um es kurz zu fassen
       </p>
-      <p className="font-ui mx-auto mt-5 max-w-[12ch] text-[2.5rem] font-[720] leading-[0.98] tracking-[-0.052em] text-[rgb(var(--magicks-ink-rgb)/0.98)] sm:text-[4.2rem] lg:text-[5.6rem]">
-        <span className="block">Keine Überzeugung</span>
+      <p className="font-ui mx-auto mt-5 max-w-[16ch] text-[2.5rem] font-[720] leading-[0.98] tracking-[-0.052em] text-[rgb(var(--magicks-ink-rgb)/0.98)] sm:text-[4.2rem] lg:text-[5.6rem]">
+        <span className="block whitespace-nowrap">Keine Überzeugung</span>
         <span className="block">=</span>
-        <span className="block">Kein Umsatz</span>
+        <span className="block">
+          <span className="relative inline-block pb-4">
+            Kein Umsatz
+            <svg
+              aria-hidden
+              viewBox="0 0 620 72"
+              preserveAspectRatio="none"
+              className="pointer-events-none absolute -bottom-2 left-[-5%] h-[0.38em] w-[110%] rotate-[-1.4deg] overflow-visible"
+            >
+              <defs>
+                <linearGradient id="problem-brush-red" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stopColor="rgba(132,18,20,0)" />
+                  <stop offset="10%" stopColor="rgba(164,19,25,0.72)" />
+                  <stop offset="38%" stopColor="rgba(221,32,40,0.95)" />
+                  <stop offset="66%" stopColor="rgba(191,20,28,0.88)" />
+                  <stop offset="90%" stopColor="rgba(148,18,22,0.5)" />
+                  <stop offset="100%" stopColor="rgba(132,18,20,0)" />
+                </linearGradient>
+                <filter id="problem-brush-rough">
+                  <feTurbulence
+                    type="fractalNoise"
+                    baseFrequency="0.045 0.34"
+                    numOctaves="3"
+                    seed="11"
+                  />
+                  <feDisplacementMap in="SourceGraphic" scale="5" />
+                </filter>
+              </defs>
+              <path
+                d="M18 42 C88 34 135 48 205 39 C285 28 348 47 420 37 C492 27 548 35 604 29"
+                fill="none"
+                stroke="url(#problem-brush-red)"
+                strokeWidth="20"
+                strokeLinecap="round"
+                filter="url(#problem-brush-rough)"
+                opacity="0.96"
+              />
+              <path
+                d="M38 48 C128 42 204 52 283 43 C372 34 462 46 575 35"
+                fill="none"
+                stroke="rgba(255,109,116,0.32)"
+                strokeWidth="6"
+                strokeLinecap="round"
+                filter="url(#problem-brush-rough)"
+              />
+              <path
+                d="M70 33 C178 44 286 28 396 36 C470 42 536 25 590 31"
+                fill="none"
+                stroke="rgba(102,14,17,0.22)"
+                strokeWidth="7"
+                strokeLinecap="round"
+                filter="url(#problem-brush-rough)"
+              />
+            </svg>
+          </span>
+        </span>
       </p>
     </div>
   );
