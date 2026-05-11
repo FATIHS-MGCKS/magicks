@@ -58,7 +58,7 @@ export function Hero() {
       }
 
       // Pre-roll: a light editorial veil that quickly clears into focus.
-      gsap.set(wipe, { opacity: 0.82 });
+      gsap.set(wipe, { opacity: 0.3 });
       gsap.set(vignette, { opacity: 0.16 });
       gsap.set(bottomFade, { opacity: 0.14 });
       gsap.set(credit, { opacity: 0, x: -4 });
@@ -88,8 +88,8 @@ export function Hero() {
 
       // Pre-roll wipe dissolves — overlays fade in with it.
       tl.to(wipe, { opacity: 0, duration: 1.12, ease: "power2.inOut" }, 0)
-        .to(vignette, { opacity: 0.72, duration: 1.7, ease: "power2.out" }, 0.1)
-        .to(bottomFade, { opacity: 0.64, duration: 1.8, ease: "power2.out" }, 0.1);
+        .to(vignette, { opacity: 0.58, duration: 1.7, ease: "power2.out" }, 0.1)
+        .to(bottomFade, { opacity: 0.52, duration: 1.8, ease: "power2.out" }, 0.1);
 
       // Headline — mask-reveal with a slow letter-spacing settlement.
       // Line B holds slightly longer than line A for cadence.
@@ -246,7 +246,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(248,245,238,0.05) 0%, rgba(245,241,232,0.04) 52%, rgba(241,236,227,0.07) 100%)",
+            "linear-gradient(180deg, rgba(248,245,238,0.028) 0%, rgba(245,241,232,0.024) 52%, rgba(241,236,227,0.04) 100%)",
         }}
       />
 
@@ -267,7 +267,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 78% 64% at 50% 45%, rgba(255,253,247,0.82) 0%, rgba(251,247,239,0.64) 28%, rgba(248,244,235,0.38) 50%, rgba(245,240,230,0.1) 70%, transparent 100%)",
+            "radial-gradient(ellipse 78% 64% at 50% 45%, rgba(255,253,247,0.56) 0%, rgba(251,247,239,0.42) 28%, rgba(248,244,235,0.22) 50%, rgba(245,240,230,0.06) 70%, transparent 100%)",
         }}
       />
 
@@ -277,7 +277,7 @@ export function Hero() {
         className="pointer-events-none absolute left-1/2 top-[13%] h-[66%] w-[min(82vw,920px)] -translate-x-1/2 rounded-[2.5rem]"
         style={{
           background:
-            "radial-gradient(ellipse 78% 70% at 50% 48%, rgba(255,255,255,0.46) 0%, rgba(250,246,238,0.28) 46%, rgba(248,244,235,0.1) 72%, transparent 100%)",
+            "radial-gradient(ellipse 78% 70% at 50% 48%, rgba(255,255,255,0.28) 0%, rgba(250,246,238,0.17) 46%, rgba(248,244,235,0.06) 72%, transparent 100%)",
         }}
       />
 
@@ -288,7 +288,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%]"
         style={{
           background:
-            "linear-gradient(180deg, transparent 0%, rgba(239,234,224,0.22) 36%, rgba(236,231,221,0.5) 72%, var(--magicks-bg-lifted) 100%)",
+            "linear-gradient(180deg, transparent 0%, rgba(239,234,224,0.14) 36%, rgba(236,231,221,0.33) 72%, var(--magicks-bg-lifted) 100%)",
         }}
       />
 
