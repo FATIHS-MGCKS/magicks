@@ -240,7 +240,7 @@ function ProblemIntro() {
       <h2
         id="problem-heading"
         data-problem-copy
-        className="font-ui mx-auto mt-6 max-w-[14ch] text-[2.25rem] font-[680] leading-[0.98] tracking-[-0.044em] text-[rgb(var(--magicks-ink-rgb)/0.98)] will-change-[opacity,transform,filter] sm:text-[2.85rem] md:text-[3.55rem] lg:mx-0 lg:max-w-[12ch] lg:text-[4.45rem]"
+        className="font-ui mx-auto mt-6 max-w-[14ch] text-[2.25rem] font-[700] leading-[0.98] tracking-[-0.044em] text-[rgb(var(--magicks-ink-rgb)/0.98)] will-change-[opacity,transform,filter] sm:text-[2.85rem] md:text-[62px] lg:mx-0 lg:max-w-[12ch] lg:text-[4.45rem]"
       >
         Ihre Website bringt keinen Umsatz?
       </h2>
@@ -261,7 +261,7 @@ function ProblemIntro() {
         Dann ist die entscheidende Frage, was Menschen sehen, wenn sie Sie
         finden. Denn wenn dieser Eindruck nicht überzeugt, entscheiden sie sich
         nicht später gegen Sie.
-        <strong className="font-instrument mt-3 block text-[1.22em] font-normal italic tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.9)]">
+        <strong className="font-instrument mt-3 block text-[24px] font-[600] italic tracking-[1px] text-[rgb(var(--magicks-ink-rgb)/0.9)]">
           Sondern sofort
         </strong>
       </p>
@@ -472,7 +472,7 @@ function ProblemPhoneScreen({
   slide: ProblemSlide;
 }) {
   return (
-    <article className="flex h-full flex-col px-[7.2%] pb-[7%] pt-[14%] text-center">
+    <article className="flex h-full flex-col px-[7.2%] pb-[7%] pt-[13%] text-center">
       <div className="mx-auto inline-flex rounded-full border border-[rgba(20,28,44,0.08)] bg-white/72 px-3 py-1.5 font-ui text-[0.72rem] font-[520] tracking-[-0.01em] text-[rgba(20,28,44,0.48)] shadow-[0_10px_26px_-22px_rgba(20,28,44,0.35),inset_0_1px_0_rgba(255,255,255,0.9)] sm:text-[0.8rem]">
         {slide.kicker}
       </div>
@@ -485,7 +485,7 @@ function ProblemPhoneScreen({
         {slide.body}
       </p>
 
-      <div className="relative mt-auto flex min-h-[42%] items-center justify-center py-3">
+      <div className="relative mt-auto flex min-h-[34%] items-center justify-center py-2">
         <ProblemScreenIllustration variant={slide.variant} />
       </div>
 
@@ -558,7 +558,7 @@ function ProblemScreenIllustration({
 
 function SearchIllustration() {
   return (
-    <div aria-hidden className="relative h-[13rem] w-full max-w-[19rem] sm:h-[15rem]">
+    <div aria-hidden className="relative h-[10.5rem] w-full max-w-[16.5rem] sm:h-[12rem] sm:max-w-[17.5rem]">
       <div className="absolute inset-x-[8%] top-[6%] rounded-[2rem] bg-[radial-gradient(circle_at_50%_55%,rgba(219,230,242,0.82),transparent_64%)] blur-sm" />
       <div className="absolute left-[7%] right-[7%] top-[8%] rounded-[1.25rem] border border-[rgba(31,41,55,0.08)] bg-white/88 p-3 shadow-[0_18px_42px_-30px_rgba(31,41,55,0.36)]">
         <div className="flex items-center gap-2 rounded-full bg-[rgba(239,243,248,0.95)] px-3 py-2 text-left">
@@ -590,7 +590,7 @@ function SearchIllustration() {
 
 function TrustIllustration() {
   return (
-    <div aria-hidden className="relative h-[13rem] w-full max-w-[19rem] sm:h-[15rem]">
+    <div aria-hidden className="relative h-[10.5rem] w-full max-w-[16.5rem] sm:h-[12rem] sm:max-w-[17.5rem]">
       <div className="absolute inset-x-[2%] top-[12%] h-[72%] rounded-full bg-[rgba(228,237,247,0.62)] blur-sm" />
       <div className="absolute left-[12%] right-[12%] top-[2%] rounded-[1.15rem] border border-[rgba(31,41,55,0.08)] bg-white/78 p-3 text-left shadow-[0_18px_46px_-34px_rgba(31,41,55,0.3)]">
         <div className="flex gap-1.5">
@@ -631,7 +631,7 @@ function TrustIllustration() {
 
 function ConversionIllustration() {
   return (
-    <div aria-hidden className="relative h-[13rem] w-full max-w-[19rem] sm:h-[15rem]">
+    <div aria-hidden className="relative h-[10.5rem] w-full max-w-[16.5rem] sm:h-[12rem] sm:max-w-[17.5rem]">
       <div className="absolute inset-x-[3%] top-[12%] h-[70%] rounded-full bg-[rgba(226,236,248,0.62)] blur-sm" />
       <div className="absolute left-[10%] right-[20%] top-[5%] rounded-[1.05rem] border border-[rgba(31,41,55,0.08)] bg-white/84 p-3 text-left shadow-[0_20px_48px_-34px_rgba(31,41,55,0.34)]">
         <div className="h-12 rounded-[0.72rem] bg-[linear-gradient(135deg,rgba(218,226,238,0.95),rgba(244,246,249,0.84))]" />

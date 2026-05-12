@@ -412,10 +412,10 @@ export function ValueStatement() {
                     key={block.primary}
                     id="value-heading"
                     data-value-sentence
-                    className="mx-auto max-w-[22ch] font-ui text-[clamp(2.45rem,6.4vw,4.35rem)] font-[640] leading-[1.02] tracking-[-0.046em] text-[rgb(var(--magicks-ink-rgb)/0.97)] will-change-[opacity] md:max-w-[22ch] md:will-change-[opacity,filter]"
+                    className="mx-auto max-w-[22ch] font-ui text-[clamp(2.45rem,6.4vw,4.35rem)] font-[700] leading-[1.02] tracking-[-0.046em] text-[rgb(var(--magicks-ink-rgb)/0.97)] will-change-[opacity] md:max-w-[22ch] md:will-change-[opacity,filter]"
                   >
                     <span className="block">{block.primary}</span>
-                    <em className="mx-auto mt-2 block max-w-[18ch] font-instrument italic text-[0.94em] font-normal tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:mt-3">
+                    <em className="mx-auto mt-2 block max-w-[18ch] font-instrument italic text-[0.94em] font-normal tracking-[-1.2046px] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:mt-3">
                       {block.secondary}
                     </em>
                   </h2>

@@ -254,7 +254,7 @@ export function Services() {
           <h2
             id="services-heading"
             data-services-headline
-            className="font-ui text-[2.32rem] font-[620] leading-[1.04] tracking-[-0.028em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[3.05rem] md:text-[4.05rem] lg:text-[4.7rem]"
+            className="font-ui text-[2.32rem] font-[700] leading-[1.04] tracking-[-0.028em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[3.05rem] md:text-[4.05rem] lg:text-[4.7rem]"
             style={{ perspective: "1000px" }}
           >
             <span className="inline-block overflow-hidden pb-1 -mb-1">

@@ -177,7 +177,7 @@ export function About() {
             <h2
               id="about-heading"
               data-about-intro
-              className="font-ui mx-auto mt-6 max-w-[26ch] text-[2.55rem] font-[660] leading-[1.02] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3.5rem] md:text-[4.55rem] lg:max-w-[26ch] lg:text-[5.45rem]"
+              className="font-ui mx-auto mt-6 max-w-[26ch] text-[2.55rem] font-[660] leading-[1.02] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3.5rem] md:text-[76px] lg:max-w-[26ch] lg:text-[5.45rem]"
             >
               <span className="block">Wir bauen keine</span>
               <span className="block whitespace-nowrap font-instrument italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.64)]">
@@ -219,9 +219,9 @@ export function About() {
               <article
                 key={card.title}
                 data-about-card
-                className="group relative overflow-hidden rounded-[1.6rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-white/58 p-2 shadow-[0_28px_80px_-58px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.78)] transition-[transform,box-shadow,border-color] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-[rgb(var(--magicks-accent-line-rgb)/0.24)] hover:shadow-[0_42px_110px_-62px_rgba(20,28,44,0.44),inset_0_1px_0_rgba(255,255,255,0.86)] md:last:col-span-2 md:last:mx-auto md:last:max-w-[31rem] lg:last:col-span-1 lg:last:mx-0 lg:last:max-w-none"
+                className="group relative overflow-hidden rounded-[1.6rem] bg-transparent shadow-[0_28px_80px_-58px_rgba(20,28,44,0.34)] transition-[transform,box-shadow] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_42px_110px_-62px_rgba(20,28,44,0.44)] md:last:col-span-2 md:last:mx-auto md:last:max-w-[31rem] lg:last:col-span-1 lg:last:mx-0 lg:last:max-w-none"
               >
-                <div className="relative overflow-hidden rounded-[1.25rem]">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[1.6rem]">
                   <img
                     src={card.src}
                     alt={card.alt}
@@ -229,14 +229,14 @@ export function About() {
                     decoding="async"
                     width={1024}
                     height={1280}
-                    className="block h-auto w-full rounded-[1.25rem] transition-transform duration-[900ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
                   />
 
-                  <div className="pointer-events-none absolute inset-x-[7.5%] top-[7.2%] max-w-[79%] text-left">
-                    <h3 className="font-ui text-[clamp(1.6rem,4.7vw,2.55rem)] font-[650] leading-[1.04] tracking-[-0.032em] text-[rgba(8,26,58,0.97)]">
+                  <div className="pointer-events-none absolute inset-x-[calc(7.5%+20px)] top-[7.2%] max-w-[calc(79%-40px)] text-left">
+                    <h3 className="font-ui text-[clamp(1.18rem,3vw,1.76rem)] font-[720] leading-[1.04] tracking-[-0.028em] text-[rgba(8,26,58,0.97)]">
                       {card.title}
                     </h3>
-                    <p className="font-ui mt-[clamp(0.5rem,1vw,0.78rem)] text-[clamp(0.88rem,1.75vw,1.12rem)] font-[470] leading-[1.48] tracking-[-0.008em] text-[rgba(42,56,82,0.82)]">
+                    <p className="font-ui mt-[clamp(0.42rem,0.85vw,0.64rem)] text-[clamp(0.74rem,1.18vw,0.88rem)] font-[560] leading-[1.46] tracking-[-0.004em] text-[rgba(42,56,82,0.84)]">
                       {card.description}
                     </p>
                   </div>
