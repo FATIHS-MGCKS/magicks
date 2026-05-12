@@ -18,8 +18,6 @@ import type { BreadcrumbItem, ServiceMeta } from "./schema";
 export const SITE_URL = "https://magicks.de";
 export const SITE_NAME = "MAGICKS Studio";
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`;
-/** Historical fallback — kept so older references still resolve. */
-export const FALLBACK_OG_IMAGE = `${SITE_URL}/favicon.svg`;
 
 export type OpenGraphType = "website" | "article" | "profile";
 
@@ -127,16 +125,16 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/websites-landingpages": {
     path: "/websites-landingpages",
-    title: "Websites & Landing Pages individuell entwickeln | MAGICKS Studio",
+    title: "Websites & Landingpages erstellen lassen | MAGICKS Studio",
     description:
-      "Websites und Landing Pages, die nicht nur gut aussehen, sondern klar führen, schnell laden und Anfragen erzeugen — individuell entwickelt von MAGICKS Studio.",
+      "MAGICKS entwickelt hochwertige Websites und Landingpages, die Vertrauen schaffen, Leistungen klar erklären und mehr Anfragen ermöglichen.",
     ogType: "article",
     ogImageAlt: "Websites & Landing Pages — MAGICKS Studio",
     service: {
       name: "Websites & Landing Pages",
       serviceType: "Web Design and Development",
       description:
-        "Individuell entwickelte Websites und Landing Pages für Unternehmen — designgetrieben, performant, conversion-orientiert.",
+        "Hochwertige Websites und Landingpages für Unternehmen — mit klarer Struktur, starker Nutzerführung, Performance, SEO-Basis und Anfrageflow.",
       local: false,
     },
     breadcrumbs: [
@@ -147,16 +145,16 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/shops-produktkonfiguratoren": {
     path: "/shops-produktkonfiguratoren",
-    title: "Onlineshop & 3D-Konfiguratoren entwickeln lassen | MAGICKS Studio",
+    title: "Shops & Produktkonfiguratoren erstellen lassen | MAGICKS Studio",
     description:
-      "MAGICKS Studio entwickelt moderne Onlineshops und 2D/3D-Produktkonfiguratoren — starkes Design, saubere UX, technisch präzise. Shopify, Shopware oder individuell.",
+      "MAGICKS entwickelt Shopify-Shops, WordPress/WooCommerce-Shops und individuelle Produktkonfiguratoren, die Produkte klar präsentieren, Nutzer führen und Verkäufe oder Anfragen erleichtern.",
     ogType: "article",
-    ogImageAlt: "Onlineshop & 3D-Produktkonfiguratoren — MAGICKS Studio",
+    ogImageAlt: "Shops & Produktkonfiguratoren — MAGICKS Studio",
     service: {
-      name: "Onlineshops & Produktkonfiguratoren",
+      name: "Shops & Produktkonfiguratoren",
       serviceType: "E-commerce Development",
       description:
-        "Onlineshops, B2B-Shops und 2D/3D-Produktkonfiguratoren — entwickelt mit Shopify, Shopware oder individuell.",
+        "Shopify-Shops, WordPress/WooCommerce-Shops und individuelle Produktkonfiguratoren — mit klarer Produktlogik, Nutzerführung, Performance und Anfrage- oder Abschlussflow.",
       local: false,
     },
     breadcrumbs: [
@@ -167,16 +165,16 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/web-software": {
     path: "/web-software",
-    title: "Web-Software & Dashboards individuell entwickeln | MAGICKS Studio",
+    title: "Web-Software entwickeln lassen | MAGICKS Studio",
     description:
-      "Individuelle Web-Software, Dashboards und digitale Plattformen für Unternehmen — gebaut für Prozesse, Teams und Wachstum. MAGICKS Studio entwickelt belastbare Lösungen.",
+      "MAGICKS entwickelt individuelle Web-Software, Portale, Dashboards und interne Tools, die Prozesse strukturieren, Teams entlasten und Systeme sinnvoll verbinden.",
     ogType: "article",
-    ogImageAlt: "Web-Software & Dashboards — MAGICKS Studio",
+    ogImageAlt: "Web-Software, Portale und Dashboards — MAGICKS Studio",
     service: {
-      name: "Web-Software & Dashboards",
+      name: "Web-Software, Portale und Dashboards",
       serviceType: "Custom Software Development",
       description:
-        "Individuelle Web-Software, Dashboards, Portale und interne Tools — API-first, übergabefähig, planbar.",
+        "Individuelle Web-Software, Portale, Dashboards und interne Tools — für Prozesse, Rollen, Daten, Workflows, Integrationen und wartbare digitale Abläufe.",
       local: false,
     },
     breadcrumbs: [
@@ -187,16 +185,16 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/ki-automationen-integrationen": {
     path: "/ki-automationen-integrationen",
-    title: "KI-Automationen & Integrationen für Unternehmen | MAGICKS Studio",
+    title: "KI-Automationen & Integrationen | MAGICKS Studio",
     description:
-      "KI-Automationen, Workflows und Integrationen, die manuelle Arbeit reduzieren und Prozesse sauber verbinden — entwickelt von MAGICKS Studio aus Kassel.",
+      "MAGICKS entwickelt KI-gestützte Workflows, Automationen und Integrationen, die manuelle Arbeit reduzieren, Systeme verbinden und Prozesse im Alltag entlasten.",
     ogType: "article",
     ogImageAlt: "KI-Automationen & Integrationen — MAGICKS Studio",
     service: {
       name: "KI-Automationen & Integrationen",
       serviceType: "Workflow Automation",
       description:
-        "KI-Automationen, Workflow-Integrationen und LLM-Anbindungen für Unternehmen — n8n, Zapier, Make oder eigener Stack.",
+        "KI-gestützte Workflows, Automationen und Integrationen für Unternehmen — mit CRM-Prozessen, Formularflows, APIs, Webhooks, Datenübergaben und nachvollziehbarer Prüfung.",
       local: false,
     },
     breadcrumbs: [
@@ -207,16 +205,16 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/website-im-abo": {
     path: "/website-im-abo",
-    title: "Website im Abo — monatlich statt Einmalzahlung | MAGICKS Studio",
+    title: "Website im Abo | Professionelle Website monatlich | MAGICKS Studio",
     description:
-      "Professionelle Website statt hoher Einmalzahlung: planbar monatlich, sauber umgesetzt und technisch betreut von MAGICKS Studio aus Kassel.",
+      "MAGICKS bietet professionelle Websites im monatlichen Modell: individuell gestaltet, technisch sauber umgesetzt und auf Wunsch mit Hosting, Wartung und Betreuung.",
     ogType: "article",
-    ogImageAlt: "Website im Abo — MAGICKS Studio",
+    ogImageAlt: "Website im Abo — professionelle Website monatlich von MAGICKS Studio",
     service: {
       name: "Website im Abo",
       serviceType: "Subscription Web Design",
       description:
-        "Hochwertige Website im monatlichen Abo — Design, Entwicklung, Hosting und Pflege aus einer Hand.",
+        "Professionelle Website im monatlichen Modell — mit individuellem Design, technischer Umsetzung und optionaler Betreuung.",
       local: false,
     },
     breadcrumbs: [
@@ -227,16 +225,16 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/website-starter": {
     path: "/website-starter",
-    title: "Website Starter für lokale Betriebe – MAGICKS Studio",
+    title: "Website Starter für kleine Betriebe | Professionelle Website bezahlbar",
     description:
-      "Ihre erste professionelle Website – schnell, modern und bezahlbar. Für lokale Betriebe ohne eigene Website.",
+      "MAGICKS erstellt professionelle Starter-Websites für lokale Betriebe: mobil optimiert, klar kalkulierbar, mit Domain, Hosting, Betreuung und lokaler SEO-Grundstruktur.",
     ogType: "article",
-    ogImageAlt: "Website Starter für lokale Betriebe — MAGICKS Studio",
+    ogImageAlt: "Website Starter für kleine Betriebe — MAGICKS Studio",
     service: {
       name: "Website Starter für lokale Betriebe",
       serviceType: "Starter Website Package",
       description:
-        "Professionelle Starter-Website für lokale Betriebe ohne eigene Website — klarer Einstieg mit technischer Betreuung.",
+        "Professionelle Starter-Website für kleine lokale Betriebe, Handwerker, Dienstleister, Praxen und Shops — mobil optimiert, betreut und mit lokaler SEO-Grundstruktur.",
       local: true,
     },
     breadcrumbs: [
@@ -327,17 +325,17 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/seo-sichtbarkeit": {
     path: "/seo-sichtbarkeit",
-    title: "SEO & Sichtbarkeit — MAGICKS Studio",
+    title: "SEO & Sichtbarkeit für Unternehmen | MAGICKS Studio Kassel",
     description:
-      "Suchmaschinenoptimierung, lokale Sichtbarkeit und saubere Seitenstruktur für Websites, die nicht nur gut aussehen, sondern gefunden und verstanden werden sollen.",
+      "MAGICKS optimiert Seitenstruktur, Inhalte, Technik, Ladezeit und lokale Sichtbarkeit, damit Unternehmen besser gefunden, verstanden und angefragt werden.",
     ogType: "article",
-    ogImageAlt: "SEO & Sichtbarkeit — MAGICKS Studio",
+    ogImageAlt: "SEO & Sichtbarkeit für Unternehmen — MAGICKS Studio Kassel",
     service: {
       name: "SEO & Sichtbarkeit",
       serviceType: "Search Engine Optimization",
       description:
-        "SEO-Grundlagen, Seitenstruktur, lokale Suchbegriffe und technische Sichtbarkeit als unterstützender Baustein in Web-Projekten von MAGICKS Studio.",
-      local: false,
+        "SEO für Seitenstruktur, Inhalte, Technik, Ladezeit, interne Verlinkung und lokale Sichtbarkeit, damit Unternehmen gefunden, verstanden und angefragt werden.",
+      local: true,
     },
     breadcrumbs: [
       { name: "Leistungen", path: "/leistungen" },
@@ -347,16 +345,16 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/content-bildwelt-medien": {
     path: "/content-bildwelt-medien",
-    title: "Content, Bildwelt & Medien — MAGICKS Studio",
+    title: "Content, Bildwelt & Medien für Websites | MAGICKS Studio",
     description:
-      "Texte, Bildwelt, Foto, Bildbearbeitung, Video, Motion Design und 3D-Visuals für digitale Auftritte, die nicht wie Templates wirken.",
+      "MAGICKS entwickelt Website-Texte, Bildkonzepte, Foto-, Video-, Motion- und 3D-Visuals, die digitale Auftritte verständlicher, hochwertiger und eigenständiger machen.",
     ogType: "article",
-    ogImageAlt: "Content, Bildwelt & Medien — MAGICKS Studio",
+    ogImageAlt: "Content, Bildwelt & Medien für Websites — MAGICKS Studio",
     service: {
       name: "Content, Bildwelt & Medien",
       serviceType: "Content & Visual Production",
       description:
-        "Content, Bildwelt, Foto, Video, Motion Design und 3D-Visuals als unterstützender Baustein in Web-Projekten von MAGICKS Studio.",
+        "Website-Texte, Bildkonzepte, Foto, Video, Motion Design und 3D-Visuals als unterstützende Bausteine für hochwertige digitale Auftritte.",
       local: false,
     },
     breadcrumbs: [

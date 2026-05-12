@@ -1,4 +1,4 @@
-import { gsap, ScrollTrigger } from "./gsap";
+import { gsap } from "./gsap";
 
 /**
  * Unified bidirectional motion language for the MAGICKS homepage.
@@ -684,13 +684,3 @@ export function horizontalDrift(
   );
 }
 
-/**
- * Refreshes ScrollTrigger after fonts/images load — helpful on dense pages
- * where late layout shifts would otherwise skew scrub positions.
- */
-export function refreshScrollTriggerOnLoad() {
-  if (typeof window === "undefined") return;
-  const run = () => ScrollTrigger.refresh();
-  if (document.readyState === "complete") run();
-  else window.addEventListener("load", run, { once: true });
-}

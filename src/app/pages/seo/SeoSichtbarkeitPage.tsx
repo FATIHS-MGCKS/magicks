@@ -1,136 +1,230 @@
 import { useLayoutEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-
-import { ChapterMarker } from "../../components/home/ChapterMarker";
-import { ContextualCrossLink } from "../../components/service/ContextualCrossLink";
-import { SectionTransition } from "../../components/service/SectionTransition";
-import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { registerGsap } from "../../lib/gsap";
-import { presenceEnvelope, rackFocusTrack } from "../../lib/scrollMotion";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { runRouteReveal } from "../../lib/routeReveal";
 import { RouteSEO } from "../../seo/RouteSEO";
+import { ContextualCrossLink } from "../../components/service/ContextualCrossLink";
 
-/* ------------------------------------------------------------------
- * /seo-sichtbarkeit — supporting service landing page.
- *
- * Strategic role:
- *   SEO at MAGICKS is positioned as a supporting project capability,
- *   not as a fifth main service area. The page uses the same editorial
- *   vocabulary as the four core service pages (chapter folios, mono
- *   eyebrows, italic serif headlines, hairline rails, ContextualCrossLink
- *   gates) but in a calmer, six-section register. No FAQ accordion,
- *   no signature gimmicks — restraint is the point.
- *
- * Sections (mirrors the brief verbatim):
- *   · Hero               — ChapterMarker, eyebrow, H1, lead, CTA
- *   · § 01  Grundsatz    — why SEO starts before keywords
- *   · § 02  Was wir       — 12-item editorial register grid
- *           optimieren
- *   · § 03  Local SEO    — regional clarity, no keyword stuffing
- *   · § 04  Moderne Suche — answer-oriented content, restrained
- *   · § 05  Was wir nicht — three negation declarations
- *           machen
- *   · § 06  Ergebnis     — closing centered statement
- *   · § Orientierung     — internal cross-link gate
- *   · § END  Projekt     — final CTA cartouche
- *
- * Copy discipline:
- *   Every headline, paragraph, list item and CTA string is preserved
- *   verbatim from the brief. Only scaffolding (folios, register
- *   counters, ledger labels) is editorial.
- * ------------------------------------------------------------------ */
+type SeoBlock = {
+  title: string;
+  text: string;
+};
 
-const CHAPTER = { num: "Support", label: "SEO & Sichtbarkeit" } as const;
-const HERO_EYEBROW = "Unterstützende Leistung · Sichtbarkeit";
+type WorkflowStep = {
+  title: string;
+  text: string;
+};
 
-/* H1 split for the same word-by-word reveal used across the bespoke
- * pages. Line A reads as set-up, Line B is the rhetorical pivot. */
-const H1_LINE_A = ["Sichtbarkeit", "beginnt"];
-const H1_LINE_B = ["mit", "Struktur."];
-
-const HERO_LEAD =
-  "Suchmaschinenoptimierung ist bei MAGICKS kein nachträglicher Aufsatz. Wir denken Sichtbarkeit dort mit, wo sie entsteht: in Seitenstruktur, Inhalt, Technik, Ladezeit, lokaler Relevanz und klarer Nutzerführung.";
-
-const HERO_LEAD_SUPPORT =
-  "Für Unternehmen, die nicht nur gut aussehen wollen, sondern online gefunden, verstanden und angefragt werden möchten.";
-
-/* § 01 Grundsatz — two paragraph block, brief verbatim */
-const GRUNDSATZ_P1 =
-  "SEO ist keine Schicht, die man am Ende über eine Website legt. Wenn Struktur, Inhalte, Technik und Nutzerführung nicht stimmen, wird Sichtbarkeit unnötig schwer.";
-const GRUNDSATZ_P2 =
-  "Deshalb beginnt Suchmaschinenoptimierung bei MAGICKS nicht mit Keyword-Listen, sondern mit der Frage, wie ein Angebot verstanden, gefunden und sauber weitergeführt werden kann.";
-
-/* § 02 Register — twelve items rendered as a numbered grid that matches
- * the inclusions register used on /webdesign-kassel and /website-im-abo. */
-const OPTIMIZATIONS: string[] = [
-  "Seitenstruktur",
-  "Meta-Titles & Descriptions",
-  "Überschriftenlogik",
-  "lokale Suchbegriffe",
-  "Leistungsseiten",
-  "interne Verlinkung",
-  "technische SEO-Grundlagen",
-  "Ladezeit & Performance",
-  "strukturierte Inhalte",
-  "FAQ-Logik",
-  "Redirects bei Relaunches",
-  "saubere Indexierbarkeit",
+const SEO_BUILDING_BLOCKS: SeoBlock[] = [
+  {
+    title: "Seitenstruktur",
+    text: "Damit Suchsysteme und Besucher schneller verstehen, welche Leistung auf welcher Seite erklärt wird.",
+  },
+  {
+    title: "Meta-Titles & Descriptions",
+    text: "Damit Suchergebnisse klar einordnen, worum es geht und warum der Klick relevant ist.",
+  },
+  {
+    title: "Überschriftenlogik",
+    text: "Damit Inhalte hierarchisch lesbar bleiben und zentrale Themen nachvollziehbar gegliedert sind.",
+  },
+  {
+    title: "Lokale Suchbegriffe",
+    text: "Damit regionale Nachfrage aus Kassel, Nordhessen und dem passenden Einzugsgebiet sauber berücksichtigt wird.",
+  },
+  {
+    title: "Leistungsseiten",
+    text: "Damit einzelne Angebote nicht in allgemeinen Texten verschwinden, sondern verständlich auffindbar sind.",
+  },
+  {
+    title: "Interne Verlinkung",
+    text: "Damit Nutzer und Suchsysteme relevante Zusammenhänge zwischen Leistungen, Regionen und Inhalten erkennen.",
+  },
+  {
+    title: "Technische SEO-Grundlagen",
+    text: "Damit Indexierbarkeit, Canonicals, Weiterleitungen und Seitensignale sauber angelegt sind.",
+  },
+  {
+    title: "Ladezeit & Performance",
+    text: "Damit Sichtbarkeit nicht an langsamen Seiten, schlechter Erfahrung oder technischen Reibungen verliert.",
+  },
+  {
+    title: "Strukturierte Inhalte",
+    text: "Damit Abschnitte, Fragen, Leistungen und Argumente leichter verstanden und weiterverarbeitet werden können.",
+  },
+  {
+    title: "FAQ-Logik",
+    text: "Nur dort, wo echte Fragen beantwortet werden und die Entscheidung für Besucher leichter wird.",
+  },
+  {
+    title: "Redirects bei Relaunches",
+    text: "Damit bestehende Sichtbarkeit nicht unnötig verloren geht, wenn Seiten neu aufgebaut werden.",
+  },
+  {
+    title: "Saubere Indexierbarkeit",
+    text: "Damit wichtige Seiten erreichbar, crawlbar und eindeutig zuordenbar bleiben.",
+  },
+  {
+    title: "Bild- und Medienoptimierung",
+    text: "Damit Bilder schnell laden, sinnvoll beschrieben sind und die Seite nicht ausbremsen.",
+  },
+  {
+    title: "Content-Struktur",
+    text: "Damit Inhalte nicht nur vorhanden sind, sondern Orientierung, Vertrauen und Anfragen unterstützen.",
+  },
+  {
+    title: "Conversion-relevante Seitenführung",
+    text: "Damit Sichtbarkeit nicht beim Besuch endet, sondern zu Kontakt, Anfrage oder nächstem Schritt führen kann.",
+  },
 ];
 
-/* § 03 Local SEO — body + supporting bullets */
-const LOCAL_BODY =
-  "Gerade für lokale Unternehmen entscheidet Sichtbarkeit oft über den ersten Kontakt. Deshalb bauen wir Seiten so, dass Leistungen, Standort, Region und Suchintention sauber zusammenfinden — ohne künstliche SEO-Textwüsten.";
-const LOCAL_BULLETS: string[] = [
-  "lokale Leistungsseiten",
-  "regionale Keyword-Struktur",
-  "Standort- und Einzugsgebietslogik",
-  "verständliche Inhalte statt Keyword-Spam",
-  "saubere technische Grundlage",
+const LOCAL_POINTS: SeoBlock[] = [
+  {
+    title: "Lokale Leistungsseiten",
+    text: "Für Angebote, die in Kassel, Nordhessen oder einem klaren Einzugsgebiet gesucht werden.",
+  },
+  {
+    title: "Regionale Keyword-Struktur",
+    text: "Suchbegriffe werden natürlich eingeordnet, statt künstlich in Texte gedrückt zu werden.",
+  },
+  {
+    title: "Standort- und Einzugsgebietslogik",
+    text: "Kassel, Nordhessen und relevante Orte werden so eingebunden, dass der regionale Bezug verständlich bleibt.",
+  },
+  {
+    title: "Google-Unternehmensprofil",
+    text: "Als ergänzende Sichtbarkeitsfläche, die zum Webauftritt und zur lokalen Suche passen sollte.",
+  },
+  {
+    title: "Regionale interne Verlinkung",
+    text: "Verbindungen zwischen lokalen Seiten helfen Nutzern und Suchsystemen, den Kontext zu erkennen.",
+  },
+  {
+    title: "Verständliche Inhalte statt Keyword-Spam",
+    text: "Lokale Sichtbarkeit darf nicht auf Kosten von Lesbarkeit und Vertrauen entstehen.",
+  },
 ];
 
-/* § 04 Moderne Suche */
-const MODERN_BODY =
-  "Gute Inhalte müssen heute nicht nur Keywords enthalten, sondern Fragen beantworten, Zusammenhänge erklären und klar strukturiert sein. Genau deshalb denken wir Inhalte so, dass sie für Menschen lesbar und für Suchsysteme verständlich sind.";
+const MODERN_SEARCH_POINTS = [
+  "Suchintention verstehen",
+  "Klare Antworten geben",
+  "Abschnitte nachvollziehbar strukturieren",
+  "FAQs nur dort nutzen, wo sie wirklich helfen",
+  "Verständliche Sprache statt Fachtext",
+  "Interne Orientierung stärken",
+  "Inhalte zur Entscheidung führen",
+] as const;
 
-/* § 05 Negation — three declarations */
-const NEGATIONS: string[] = [
+const AVOID_POINTS = [
   "Keine Ranking-Garantien.",
   "Kein Keyword-Spam.",
   "Keine künstlichen Texte, die niemand lesen will.",
-];
-const NEGATION_TAIL =
-  "Keine Maßnahmen, die kurzfristig gut klingen und langfristig schaden.";
+  "Keine SEO-Maßnahmen, die kurzfristig gut klingen und langfristig schaden.",
+  "Keine Sichtbarkeit ohne klare Nutzerführung.",
+  "Keine Inhalte ohne echten Nutzen für Besucher.",
+] as const;
 
-/* § 06 Ergebnis */
-const ERGEBNIS =
-  "Eine Website, die technisch sauber, inhaltlich klar und strukturell so aufgebaut ist, dass Sichtbarkeit überhaupt entstehen kann.";
-
-/* § Orientierung — three contextual cross-links */
-const RELATED: { to: string; eyebrow: string; folio: string; lead: string; linkLabel: string }[] = [
+const WORKFLOW_STEPS: WorkflowStep[] = [
   {
-    to: "/websites-landingpages",
-    eyebrow: "Verwandt · Kern",
-    folio: "Plate · Websites & Landing Pages",
-    lead:
-      "Wenn aus der Sichtbarkeit eine ganze Website werden soll: Struktur, Design, Technik und Inhalte als ein Stück Arbeit.",
-    linkLabel: "Mehr zu Websites & Landing Pages",
+    title: "Verstehen",
+    text: "Wir analysieren Angebot, Zielgruppen, Region, Suchintention und bestehende Seitenstruktur.",
   },
   {
-    to: "/content-bildwelt-medien",
-    eyebrow: "Verwandt · Inhalt",
-    folio: "Plate · Content & Medien",
-    lead:
-      "Inhalte, Texte, Bildwelt und Medien — die andere Hälfte einer Seite, die nicht nur gefunden, sondern auch verstanden werden soll.",
-    linkLabel: "Mehr zu Content, Bildwelt & Medien",
+    title: "Strukturieren",
+    text: "Wir ordnen Leistungen, Seitenlogik, interne Verlinkung und lokale Relevanz.",
   },
   {
-    to: "/webdesign-kassel",
-    eyebrow: "Verwandt · Region",
-    folio: "Plate · Webdesign Kassel",
-    lead:
-      "Lokale Sichtbarkeit, regionale Suchbegriffe und ein Auftritt, der für Kassel und Nordhessen klar erkennbar bleibt.",
-    linkLabel: "Mehr zu Webdesign Kassel",
+    title: "Schärfen",
+    text: "Wir entwickeln Inhalte, Überschriften und Argumente so, dass sie gefunden und verstanden werden.",
+  },
+  {
+    title: "Optimieren",
+    text: "Wir verbessern technische Grundlagen, Ladezeit, Indexierbarkeit und SEO-relevante Seitenelemente.",
+  },
+  {
+    title: "Verbinden",
+    text: "SEO wird mit Design, Nutzerführung, Kontaktwegen und Conversion-Logik verbunden.",
+  },
+  {
+    title: "Weiterentwickeln",
+    text: "Nach dem Launch können Rankings, Inhalte, Suchanfragen und Nutzerverhalten ausgewertet und verbessert werden.",
   },
 ];
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[11px] sm:tracking-[0.22em]">
+      <span
+        aria-hidden
+        className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.72)]"
+      />
+      {children}
+    </span>
+  );
+}
+
+function PrimaryCta({ to, label }: { to: string; label: string }) {
+  return (
+    <Link
+      to={to}
+      className="group relative inline-flex min-h-12 items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[linear-gradient(180deg,rgba(255,253,249,0.96)_0%,rgba(244,238,227,0.9)_100%)] py-2.5 pl-6 pr-2 font-ui text-[15.5px] font-[600] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline shadow-[0_22px_62px_-42px_rgba(20,28,44,0.46),inset_0_1px_0_rgba(255,255,255,0.88),inset_0_-1px_0_rgba(148,124,92,0.12)] transition-[transform,box-shadow,border-color] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:border-[rgb(var(--magicks-accent-line-rgb)/0.4)] hover:shadow-[0_32px_82px_-40px_rgba(20,28,44,0.52),inset_0_1px_0_rgba(255,255,255,0.92),inset_0_-1px_0_rgba(148,124,92,0.16)] active:translate-y-0 active:scale-[0.99] sm:pl-7 sm:pr-2.5 sm:text-[16px] md:text-[16.5px]"
+    >
+      <span>{label}</span>
+      <span
+        aria-hidden
+        className="ml-1 h-5 w-px bg-[rgb(var(--magicks-accent-rgb)/0.22)] transition-colors duration-[720ms] group-hover:bg-[rgb(var(--magicks-accent-rgb)/0.42)] sm:h-6"
+      />
+      <span
+        aria-hidden
+        className="font-instrument flex h-8 w-8 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.34)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.9)] text-[1.05em] italic text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] transition-transform duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[3px]"
+      >
+        {"\u2197\uFE0E"}
+      </span>
+    </Link>
+  );
+}
+
+function VisibilityMap() {
+  const items = [
+    "Struktur",
+    "Inhalt",
+    "Technik",
+    "Lokalität",
+    "Vertrauen",
+    "Anfrage",
+  ] as const;
+
+  return (
+    <div className="rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.62)] p-5 shadow-[0_24px_68px_-52px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.74)] sm:p-6">
+      <div className="mb-5 flex items-center justify-between gap-4">
+        <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.72)]">
+          Sichtbarkeit
+        </span>
+        <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-ink-rgb)/0.38)]">
+          Finden → Verstehen
+        </span>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        {items.map((item, index) => (
+          <div
+            key={item}
+            data-seo-map
+            className="relative rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-base-rgb)/0.58)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.66)]"
+          >
+            <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.64)]">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <p className="font-ui mt-4 text-[1rem] font-[620] leading-[1.2] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.9)]">
+              {item}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function SeoSichtbarkeitPage() {
   const rootRef = useRef<HTMLElement>(null);
@@ -142,200 +236,37 @@ export default function SeoSichtbarkeitPage() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
-      const heroSection = root.querySelector<HTMLElement>("[data-seo-hero]");
-      const heroCopy = root.querySelector<HTMLElement>("[data-seo-herocopy]");
-      const heroChapter = root.querySelector<HTMLElement>("[data-seo-chapter]");
-      const heroEyebrow = root.querySelector<HTMLElement>("[data-seo-eyebrow]");
-      const heroLineA = gsap.utils.toArray<HTMLElement>("[data-seo-h1a]");
-      const heroLineB = gsap.utils.toArray<HTMLElement>("[data-seo-h1b]");
-      const heroH1 = root.querySelector<HTMLElement>("[data-seo-h1]");
-      const heroLead = root.querySelector<HTMLElement>("[data-seo-lead]");
-      const heroSupport = root.querySelector<HTMLElement>("[data-seo-support]");
-      const heroCta = root.querySelector<HTMLElement>("[data-seo-cta]");
-      const heroCtaRule = root.querySelector<HTMLElement>("[data-seo-cta-rule]");
-      const heroCredit = root.querySelector<HTMLElement>("[data-seo-credit]");
-
+      const heroItems = gsap.utils.toArray<HTMLElement>("[data-seo-hero-item]");
+      const mapItems = gsap.utils.toArray<HTMLElement>("[data-seo-map]");
       const reveals = gsap.utils.toArray<HTMLElement>("[data-seo-reveal]");
-      const ergebnisLines = gsap.utils.toArray<HTMLElement>("[data-seo-ergebnis]");
-      const finalLineA = gsap.utils.toArray<HTMLElement>("[data-seo-finala]");
-      const finalLineB = gsap.utils.toArray<HTMLElement>("[data-seo-finalb]");
-      const finalRule = root.querySelector<HTMLElement>("[data-seo-finalrule]");
-      const finalLedger = gsap.utils.toArray<HTMLElement>("[data-seo-finalledger]");
-      const finalCta = root.querySelector<HTMLElement>("[data-seo-finalcta]");
 
       if (reduced) {
-        gsap.set(
-          [
-            heroChapter,
-            heroEyebrow,
-            ...heroLineA,
-            ...heroLineB,
-            heroLead,
-            heroSupport,
-            heroCta,
-            heroCtaRule,
-            heroCredit,
-            ...reveals,
-            ...ergebnisLines,
-            ...finalLineA,
-            ...finalLineB,
-            finalRule,
-            ...finalLedger,
-            finalCta,
-          ],
-          {
-            opacity: 1,
-            y: 0,
-            yPercent: 0,
-            scaleX: 1,
-            letterSpacing: "normal",
-          },
-        );
+        gsap.set([...heroItems, ...mapItems, ...reveals], {
+          opacity: 1,
+          y: 0,
+        });
         return;
       }
 
-      gsap.set(heroChapter, { opacity: 0, y: 12 });
-      gsap.set(heroEyebrow, { opacity: 0, y: 10 });
-      gsap.set([...heroLineA, ...heroLineB], { yPercent: 118, opacity: 0 });
-      if (heroH1) gsap.set(heroH1, { letterSpacing: "0.008em" });
-      gsap.set(heroLead, { opacity: 0, y: 16 });
-      gsap.set(heroSupport, { opacity: 0, y: 12 });
-      gsap.set(heroCta, { opacity: 0, y: 14 });
-      gsap.set(heroCtaRule, { scaleX: 0, transformOrigin: "left center" });
-      gsap.set(heroCredit, { opacity: 0, y: 8 });
-
-      gsap
-        .timeline({ delay: 0.12, defaults: { ease: "power3.out" } })
-        .to(heroChapter, { opacity: 1, y: 0, duration: 0.9 }, 0)
-        .to(heroEyebrow, { opacity: 1, y: 0, duration: 0.85 }, 0.3)
-        .to(
-          heroLineA,
-          { yPercent: 0, opacity: 1, duration: 1.2, stagger: 0.08, ease: "power4.out" },
-          0.42,
-        )
-        .to(
-          heroLineB,
-          { yPercent: 0, opacity: 1, duration: 1.3, stagger: 0.08, ease: "power4.out" },
-          0.7,
-        )
-        .to(
-          heroH1,
-          { letterSpacing: "-0.034em", duration: 1.6, ease: "power2.out" },
-          0.55,
-        )
-        .to(heroLead, { opacity: 1, y: 0, duration: 1.0 }, 1.18)
-        .to(heroSupport, { opacity: 1, y: 0, duration: 0.95 }, 1.42)
-        .to(heroCta, { opacity: 1, y: 0, duration: 0.95 }, 1.65)
-        .to(heroCtaRule, { scaleX: 1, duration: 1.15, ease: "power2.inOut" }, 1.75)
-        .to(heroCredit, { opacity: 1, y: 0, duration: 1.0 }, 2.05);
-
-      if (heroCopy && heroSection) {
-        gsap.to(heroCopy, {
-          yPercent: -4,
-          opacity: 0.6,
-          ease: "none",
-          scrollTrigger: {
-            trigger: heroSection,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      }
-      if (heroCredit && heroSection) {
-        gsap.to(heroCredit, {
-          opacity: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: heroSection,
-            start: "center top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      }
-
-      presenceEnvelope(reveals, {
-        start: "top 90%",
-        end: "bottom 10%",
-        yFrom: 18,
-        yTo: -10,
-        blur: 3.2,
-        opacityFloor: 0.2,
-        holdRatio: 0.56,
-        scrub: 0.95,
+      runRouteReveal({
+        gsap,
+        root,
+        heroItems,
+        revealItems: reveals,
       });
 
-      // Final CTA — scrub-driven sign-off, mirrors the bespoke pages.
-      if (finalLineA.length || finalLineB.length) {
-        const finalSection =
-          (finalLineA[0] as HTMLElement | undefined)?.closest("section") ??
-          (finalLineB[0] as HTMLElement | undefined)?.closest("section") ??
-          finalLineA[0] ??
-          finalLineB[0];
-
-        gsap.set([...finalLineA, ...finalLineB], {
-          yPercent: 24,
-          opacity: 0.16,
-          filter: "blur(4px)",
-        });
-        gsap.to([...finalLineA, ...finalLineB], {
-          yPercent: 0,
+      gsap.fromTo(
+        mapItems,
+        { opacity: 0, y: 12 },
+        {
           opacity: 1,
-          filter: "blur(0px)",
-          ease: "none",
-          stagger: 0.09,
-          scrollTrigger: {
-            trigger: finalSection,
-            start: "top 84%",
-            end: "top 38%",
-            scrub: 1.0,
-            invalidateOnRefresh: true,
-          },
-        });
+          y: 0,
+          duration: 0.62,
+          stagger: 0.06,
+          ease: "power2.out",
+        },
+      );
 
-        if (finalRule) {
-          gsap.set(finalRule, { scaleX: 0, transformOrigin: "center" });
-          gsap.to(finalRule, {
-            scaleX: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: finalSection,
-              start: "top 66%",
-              end: "top 34%",
-              scrub: 0.9,
-              invalidateOnRefresh: true,
-            },
-          });
-        }
-
-        if (finalCta) {
-          gsap.set(finalCta, { opacity: 0.18, y: 12 });
-          gsap.to(finalCta, {
-            opacity: 1,
-            y: 0,
-            ease: "none",
-            scrollTrigger: {
-              trigger: finalSection,
-              start: "top 60%",
-              end: "top 30%",
-              scrub: 0.9,
-              invalidateOnRefresh: true,
-            },
-          });
-        }
-
-        if (finalLedger.length) {
-          rackFocusTrack(finalLedger, {
-            trigger: finalSection,
-            start: "top 58%",
-            end: "top 22%",
-            blur: 2.4,
-            opacityFloor: 0.32,
-            scrub: 1.0,
-          });
-        }
-      }
     }, root);
 
     return () => ctx.revert();
@@ -347,629 +278,459 @@ export default function SeoSichtbarkeitPage() {
 
       <main
         ref={rootRef}
-        className="relative bg-[#0A0A0A] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative overflow-hidden bg-[var(--magicks-bg-base)] pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.25rem]"
       >
-        {/* =========================================================
-           § 00 — HERO
-        ========================================================= */}
-        <section
-          data-seo-hero
-          className="relative overflow-hidden px-5 pb-28 sm:px-8 sm:pb-32 md:px-12 md:pb-40 lg:px-16 lg:pb-48"
-        >
-          {/* Soft register texture — vertical pitch, narrower than the bespoke
-              pages so this page reads as a calmer, supporting register. */}
+        <section className="relative overflow-hidden px-5 pb-24 pt-8 sm:px-8 sm:pb-32 sm:pt-10 md:px-12 md:pb-40 lg:px-16 lg:pb-48">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.22]"
+            className="pointer-events-none absolute inset-0"
             style={{
               backgroundImage:
-                "repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 104px)",
+                "radial-gradient(ellipse 58% 46% at 18% 18%, rgba(166,138,98,0.14), transparent 72%), radial-gradient(ellipse 52% 40% at 82% 36%, rgba(104,132,164,0.13), transparent 74%), radial-gradient(ellipse 74% 44% at 50% 94%, rgba(255,255,255,0.58), transparent 76%)",
+            }}
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-[0.28]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(46,56,76,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(46,56,76,0.035) 1px, transparent 1px)",
+              backgroundSize: "72px 72px",
               maskImage:
-                "radial-gradient(ellipse 60% 68% at 30% 56%, black, transparent)",
+                "radial-gradient(ellipse 70% 60% at 50% 42%, black, transparent)",
               WebkitMaskImage:
-                "radial-gradient(ellipse 60% 68% at 30% 56%, black, transparent)",
+                "radial-gradient(ellipse 70% 60% at 50% 42%, black, transparent)",
             }}
           />
 
-          <div
-            data-seo-credit
-            aria-hidden
-            className="pointer-events-none absolute bottom-14 left-5 z-10 hidden md:block lg:bottom-16 lg:left-8"
-          >
-            <span className="hero-vertical-credit">
-              MAGICKS &nbsp;·&nbsp; SUPPORT &nbsp;·&nbsp; SEO &nbsp;·&nbsp; EDITION MMXXVI
-            </span>
-          </div>
-
           <div className="relative layout-max">
-            <div data-seo-herocopy>
-              <div data-seo-chapter className="mb-10 sm:mb-14">
-                <ChapterMarker num={CHAPTER.num} label={CHAPTER.label} />
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.66fr)] lg:items-end lg:gap-16">
+                <div>
+                  <div data-seo-hero-item>
+                    <Eyebrow>SEO & Sichtbarkeit</Eyebrow>
+                  </div>
+
+                  <h1
+                    data-seo-hero-item
+                    className="font-ui mt-7 max-w-[18ch] text-[2.42rem] font-[630] leading-[0.98] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.97)] sm:text-[3.35rem] md:text-[4.42rem] lg:text-[5.1rem]"
+                  >
+                    SEO, das Struktur, Inhalte und Anfragen zusammenbringt.
+                  </h1>
+
+                  <p
+                    data-seo-hero-item
+                    className="font-ui mt-8 max-w-[50rem] text-[1.03rem] font-[480] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.72)] sm:text-[1.1rem] md:text-[1.18rem]"
+                  >
+                    MAGICKS denkt Sichtbarkeit dort mit, wo sie entsteht: in
+                    Seitenstruktur, Inhalt, Technik, Ladezeit, lokaler Relevanz
+                    und klarer Nutzerführung. Damit Ihr Unternehmen nicht nur
+                    gefunden wird, sondern auch verstanden und angefragt wird.
+                  </p>
+
+                  <div
+                    data-seo-hero-item
+                    className="mt-10 flex flex-wrap items-center gap-4 sm:mt-12"
+                  >
+                    <PrimaryCta to="/kontakt" label="SEO-Projekt besprechen" />
+                    <Link
+                      to="/websites-landingpages"
+                      className="group inline-flex min-h-11 items-center gap-2 px-2 font-ui text-[15px] font-[560] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.74)] no-underline transition-colors duration-500 hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[15.5px]"
+                    >
+                      <span className="relative pb-1">
+                        Mehr zu Websites & Landingpages
+                        <span
+                          aria-hidden
+                          className="absolute inset-x-0 bottom-0 h-px bg-[rgb(var(--magicks-line-rgb)/0.28)] transition-colors duration-500 group-hover:bg-[rgb(var(--magicks-line-rgb)/0.62)]"
+                        />
+                      </span>
+                      <span aria-hidden className="font-instrument text-[1.04em] italic">
+                        ↗
+                      </span>
+                    </Link>
+                  </div>
+                </div>
+
+                <aside data-seo-hero-item className="lg:mb-2">
+                  <VisibilityMap />
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div aria-hidden className="section-top-rule" />
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+                <div data-seo-reveal>
+                  <Eyebrow>SEO ist kein nachträglicher Aufsatz</Eyebrow>
+                  <h2 className="font-ui mt-7 max-w-[18ch] text-[2.1rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.85rem] md:text-[3.55rem]">
+                    SEO beginnt nicht am Ende. SEO beginnt in der Struktur.
+                  </h2>
+                </div>
+
+                <div data-seo-reveal className="lg:pt-14">
+                  <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                    Wenn Seitenstruktur, Inhalte, Technik und Nutzerführung
+                    nicht stimmen, wird Sichtbarkeit unnötig schwer. Deshalb
+                    beginnt Suchmaschinenoptimierung bei MAGICKS nicht mit
+                    Keyword-Listen, sondern mit der Frage, wie ein Angebot
+                    gefunden, verstanden und sauber zur Anfrage weitergeführt
+                    werden kann.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div data-seo-reveal className="max-w-[60rem]">
+                <Eyebrow>Was MAGICKS optimiert</Eyebrow>
+                <h2 className="font-ui mt-7 max-w-[20ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                  Bausteine, die Sichtbarkeit möglich machen.
+                </h2>
+                <p className="font-ui mt-7 max-w-[50rem] text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                  Sichtbarkeit entsteht nicht aus einer einzelnen Maßnahme.
+                  Sie entsteht aus sauberer Struktur, verständlichen Inhalten,
+                  technischer Grundlage und Seitenführung, die zur Anfrage
+                  passt.
+                </p>
               </div>
 
-              <p
-                data-seo-eyebrow
-                className="font-mono mb-8 text-[10px] font-medium uppercase leading-none tracking-[0.36em] text-white/52 sm:mb-10 sm:text-[10.5px]"
-              >
-                {HERO_EYEBROW}
-              </p>
+              <ol className="mt-12 grid gap-x-8 gap-y-5 md:grid-cols-2 lg:grid-cols-3">
+                {SEO_BUILDING_BLOCKS.map((item, index) => (
+                  <li
+                    key={item.title}
+                    data-seo-reveal
+                    className="rounded-[1.05rem] border border-[rgb(var(--magicks-line-rgb)/0.095)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.52)] p-5 shadow-[0_18px_48px_-42px_rgba(20,28,44,0.24),inset_0_1px_0_rgba(255,255,255,0.72)]"
+                  >
+                    <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.19em] text-[rgb(var(--magicks-accent-ink-rgb)/0.68)]">
+                      {String(index + 1).padStart(2, "0")}
+                    </p>
+                    <h3 className="font-ui mt-3 text-[1rem] font-[620] leading-[1.26] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+                      {item.title}
+                    </h3>
+                    <p className="font-ui mt-2.5 text-[14.2px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.66)]">
+                      {item.text}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </section>
 
-              <h1
-                data-seo-h1
-                className="font-instrument max-w-[60rem] text-[2.3rem] leading-[0.98] tracking-[-0.034em] text-white sm:text-[3rem] md:text-[3.85rem] lg:text-[4.5rem] xl:text-[5rem]"
-              >
-                <span className="block">
-                  {H1_LINE_A.map((w, i) => (
-                    <span
-                      key={`a-${i}`}
-                      className="mr-[0.22em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span
-                        data-seo-h1a
-                        className="inline-block will-change-[transform,opacity]"
-                      >
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-                <span className="mt-1 block italic text-white/64 sm:mt-2">
-                  {H1_LINE_B.map((w, i) => (
-                    <span
-                      key={`b-${i}`}
-                      className="mr-[0.22em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span
-                        data-seo-h1b
-                        className="inline-block will-change-[transform,opacity]"
-                      >
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-              </h1>
+        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div aria-hidden className="section-top-rule" />
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-12 lg:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] lg:gap-16">
+                <div data-seo-reveal>
+                  <Eyebrow>Local SEO für Kassel und Nordhessen</Eyebrow>
+                  <h2 className="font-ui mt-7 max-w-[20ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                    Lokale Sichtbarkeit entscheidet oft über den ersten Kontakt.
+                  </h2>
+                </div>
 
-              <div className="mt-10 max-w-[46rem] sm:mt-12 md:mt-14">
-                <p
-                  data-seo-lead
-                  className="font-ui text-[15px] leading-[1.72] text-white/64 md:text-[16px]"
-                >
-                  {HERO_LEAD}
-                </p>
-                <p
-                  data-seo-support
-                  className="font-ui mt-6 max-w-[42rem] border-t border-white/[0.08] pt-5 text-[13.5px] leading-[1.7] text-white/48 md:text-[14px]"
-                >
-                  {HERO_LEAD_SUPPORT}
-                </p>
+                <div data-seo-reveal className="lg:pt-14">
+                  <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                    Gerade für regionale Unternehmen reicht es nicht, allgemein
+                    sichtbar zu sein. Leistungen, Standort, Einzugsgebiet und
+                    Suchintention müssen sauber zusammenfinden. MAGICKS
+                    entwickelt lokale Seitenstrukturen und Inhalte, die für
+                    Menschen verständlich bleiben und Suchsystemen klare Signale
+                    geben — ohne künstliche SEO-Textwüsten.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {LOCAL_POINTS.map((item) => (
+                  <article
+                    key={item.title}
+                    data-seo-reveal
+                    className="rounded-[1.05rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.54)] p-5 shadow-[0_18px_52px_-44px_rgba(20,28,44,0.28),inset_0_1px_0_rgba(255,255,255,0.72)] sm:p-6"
+                  >
+                    <h3 className="font-ui text-[1.05rem] font-[620] leading-[1.26] tracking-[-0.013em] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+                      {item.title}
+                    </h3>
+                    <p className="font-ui mt-3 text-[14.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.66)]">
+                      {item.text}
+                    </p>
+                  </article>
+                ))}
               </div>
 
               <div
-                data-seo-cta
-                className="mt-12 inline-flex items-baseline gap-3 sm:mt-14 md:mt-16"
+                data-seo-reveal
+                className="mt-10 rounded-[1.15rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-base-rgb)/0.54)] p-5 shadow-[0_18px_48px_-42px_rgba(20,28,44,0.24),inset_0_1px_0_rgba(255,255,255,0.72)] sm:p-6"
               >
-                <Link
-                  to="/kontakt"
-                  className="group relative inline-flex items-baseline gap-3 text-[15px] font-medium tracking-[-0.005em] text-white no-underline sm:text-[16px] md:text-[17px]"
-                  aria-label="Projekt besprechen"
-                >
-                  <span className="relative pb-3">
-                    <span className="font-ui">Projekt besprechen</span>
-                    <span
-                      data-seo-cta-rule
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left bg-white/32"
-                    />
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white transition-transform duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
-                    />
-                  </span>
-                  <span
-                    aria-hidden
-                    className="font-instrument text-[1.05em] italic text-white/85 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
-                  >
-                    ↗︎
-                  </span>
-                </Link>
-
-                <Link
-                  to="/websites-landingpages"
-                  className="group ml-6 hidden items-baseline gap-3 text-[14.5px] font-medium tracking-[-0.005em] text-white/68 no-underline sm:inline-flex sm:text-[15px] md:text-[15.5px]"
-                  aria-label="Mehr zu Websites & Landing Pages"
-                >
-                  <span className="relative pb-3">
-                    <span className="font-ui">Mehr zu Websites & Landing Pages</span>
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 block h-px bg-white/16"
-                    />
-                  </span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <SectionTransition from="§ 00  Hero — Support" to="§ 01  Grundsatz" />
-
-        {/* =========================================================
-           § 01 — GRUNDSATZ
-        ========================================================= */}
-        <section className="relative bg-[#080809] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-seo-reveal className="md:pt-2">
-                <div className="flex flex-col gap-4">
-                  <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
-                    § 01 — Grundsatz
-                  </p>
-                  <ChapterMarker num="01" label="Haltung" />
-                </div>
-              </div>
-
-              <div>
-                <h2
-                  data-seo-reveal
-                  className="font-instrument max-w-[48rem] text-[2rem] leading-[1.05] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
-                >
-                  Sichtbarkeit ist <em className="italic text-white/60">kein Aufsatz</em>.
-                </h2>
-
-                <div className="mt-10 max-w-[46rem] space-y-6 md:mt-12">
-                  <p
-                    data-seo-reveal
-                    className="font-ui text-[15px] leading-[1.72] text-white/66 md:text-[16px]"
-                  >
-                    {GRUNDSATZ_P1}
-                  </p>
-                  <p
-                    data-seo-reveal
-                    className="font-ui text-[15px] leading-[1.72] text-white/66 md:text-[16px]"
-                  >
-                    {GRUNDSATZ_P2}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <SectionTransition from="§ 01  Grundsatz" to="§ 02  Register" />
-
-        {/* =========================================================
-           § 02 — WAS WIR OPTIMIEREN
-        ========================================================= */}
-        <section className="relative px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-seo-reveal className="md:pt-2">
-                <div className="flex flex-col gap-4">
-                  <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
-                    § 02 — Register
-                  </p>
-                  <ChapterMarker num="02" label="Was wir optimieren" />
-                  <span
-                    aria-hidden
-                    className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/34 sm:text-[10.5px]"
-                  >
-                    {String(OPTIMIZATIONS.length).padStart(2, "0")} Bausteine · MMXXVI
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <h2
-                  data-seo-reveal
-                  className="font-instrument max-w-[48rem] text-[2rem] leading-[1.05] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
-                >
-                  Was wir <em className="italic text-white/60">optimieren</em>.
-                </h2>
-
-                <p
-                  data-seo-reveal
-                  className="font-ui mt-7 max-w-[42rem] text-[15px] leading-[1.7] text-white/58 md:mt-9 md:text-[15.5px]"
-                >
-                  Sichtbarkeit entsteht nicht aus einem Trick, sondern aus vielen sauberen
-                  Bausteinen, die zusammen funktionieren müssen.
-                </p>
-
-                <ol className="mt-12 grid gap-x-12 gap-y-0 border-t border-white/[0.07] md:mt-16 md:grid-cols-2">
-                  {OPTIMIZATIONS.map((item, i) => (
-                    <li
-                      key={item}
-                      data-seo-reveal
-                      className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-6 border-b border-white/[0.07] py-6 md:gap-x-8 md:py-7"
-                    >
-                      <span className="font-mono pt-[0.32rem] text-[10.5px] font-medium leading-none tracking-[0.28em] text-white/50 md:text-[11.5px]">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span className="font-instrument text-[1.18rem] leading-[1.22] tracking-[-0.014em] text-white md:text-[1.32rem] lg:text-[1.42rem]">
-                        {item}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-
-                <div
-                  data-seo-reveal
-                  className="font-mono mt-6 flex items-center justify-between gap-4 text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/32 md:mt-8"
-                >
-                  <span>Register · Was wir optimieren</span>
-                  <span aria-hidden className="h-px flex-1 bg-white/[0.07]" />
-                  <span className="tabular-nums">12 Bausteine · MMXXVI</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <SectionTransition from="§ 02  Register" to="§ 03  Local SEO" />
-
-        {/* =========================================================
-           § 03 — LOCAL SEO
-        ========================================================= */}
-        <section className="relative bg-[#09090A] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:gap-20 lg:gap-28">
-              <div data-seo-reveal>
-                <p className="font-mono mb-8 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
-                  § 03 — Local SEO
-                </p>
-                <h2 className="font-instrument text-[2rem] leading-[1.05] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]">
-                  Wenn Sichtbarkeit{" "}
-                  <em className="italic text-white/60">vor Ort</em> entscheidet.
-                </h2>
-              </div>
-
-              <div data-seo-reveal className="md:pt-3">
-                <p className="font-ui text-[15px] leading-[1.72] text-white/64 md:text-[16px]">
-                  {LOCAL_BODY}
-                </p>
-
-                <ul className="mt-10 grid gap-x-10 border-t border-white/[0.07] sm:grid-cols-2 md:mt-12">
-                  {LOCAL_BULLETS.map((bullet, i) => (
-                    <li
-                      key={bullet}
-                      data-seo-reveal
-                      className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-5 border-b border-white/[0.07] py-5 md:py-6"
-                    >
-                      <span className="font-mono pt-[0.3rem] text-[10px] font-medium leading-none tracking-[0.28em] text-white/44 md:text-[10.5px]">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span className="font-ui text-[14.5px] leading-[1.55] text-white/82 md:text-[15px]">
-                        {bullet}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <SectionTransition from="§ 03  Local SEO" to="§ 04  Moderne Suche" />
-
-        {/* =========================================================
-           § 04 — MODERNE SUCHE
-        ========================================================= */}
-        <section className="relative px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-seo-reveal className="md:pt-2">
-                <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
-                  § 04 — Moderne Suche
-                </p>
-              </div>
-
-              <div>
-                <h2
-                  data-seo-reveal
-                  className="font-instrument max-w-[48rem] text-[2rem] leading-[1.05] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
-                >
-                  Inhalte, die <em className="italic text-white/60">verstanden werden</em>.
-                </h2>
-
-                <p
-                  data-seo-reveal
-                  className="font-ui mt-10 max-w-[44rem] text-[15px] leading-[1.72] text-white/64 md:mt-12 md:text-[16px]"
-                >
-                  {MODERN_BODY}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <SectionTransition from="§ 04  Moderne Suche" to="§ 05  Absage" tone="darker" />
-
-        {/* =========================================================
-           § 05 — WAS WIR NICHT MACHEN
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[#080809] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-48 lg:px-16 lg:py-52">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.55]"
-            style={{
-              background:
-                "radial-gradient(ellipse 55% 42% at 50% 50%, rgba(255,255,255,0.028), transparent 64%)",
-            }}
-          />
-          <div className="relative layout-max">
-            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-seo-reveal className="md:pt-2">
-                <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
-                  § 05 — Absage
-                </p>
-              </div>
-
-              <div>
-                <h2
-                  data-seo-reveal
-                  className="font-instrument max-w-[48rem] text-[2rem] leading-[1.05] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
-                >
-                  Was wir <em className="italic text-white/60">nicht machen</em>.
-                </h2>
-
-                <ul className="mt-14 space-y-7 md:mt-20 md:space-y-9">
-                  {NEGATIONS.map((line) => (
-                    <li
-                      key={line}
-                      data-seo-reveal
-                      className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-6 md:gap-x-9"
-                    >
-                      <span
-                        aria-hidden
-                        className="font-instrument text-[1.5rem] italic leading-none text-white/38 md:text-[1.9rem] lg:text-[2.05rem]"
-                      >
-                        —
-                      </span>
-                      <p className="font-instrument text-[1.4rem] leading-[1.3] tracking-[-0.014em] text-white/82 md:text-[1.85rem] lg:text-[2.15rem] xl:text-[2.3rem]">
-                        {line}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-
-                <p
-                  data-seo-reveal
-                  className="font-ui mt-16 max-w-[44rem] text-[15.5px] leading-[1.72] text-white/62 md:mt-20 md:text-[16.5px]"
-                >
-                  {NEGATION_TAIL}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <SectionTransition from="§ 05  Absage" to="§ 06  Ergebnis" tone="darker" />
-
-        {/* =========================================================
-           § 06 — ERGEBNIS (centered closing)
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-52 lg:px-16 lg:py-56">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.7]"
-            style={{
-              background:
-                "radial-gradient(ellipse 60% 46% at 50% 50%, rgba(255,255,255,0.03), transparent 64%)",
-            }}
-          />
-
-          <div className="relative layout-max">
-            <div className="mx-auto max-w-[60rem] text-center">
-              <div className="mb-14 flex items-center justify-center gap-5 sm:mb-20">
-                <span aria-hidden className="h-px w-14 bg-white/24 sm:w-20" />
-                <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/46 sm:text-[10.5px]">
-                  § 06 — Ergebnis
-                </span>
-                <span aria-hidden className="h-px w-14 bg-white/24 sm:w-20" />
-              </div>
-
-              <p
-                data-seo-ergebnis
-                className="font-instrument text-[1.65rem] leading-[1.32] tracking-[-0.018em] text-white sm:text-[2.05rem] md:text-[2.5rem] lg:text-[2.85rem]"
-              >
-                {ERGEBNIS}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* =========================================================
-           § Orientierung — internal cross-links
-        ========================================================= */}
-        <section className="relative bg-[#080809] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="layout-max">
-            <div className="mb-20 flex items-center gap-5 sm:mb-24">
-              <span aria-hidden className="h-px w-14 bg-white/24 sm:w-20" />
-              <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/46 sm:text-[10.5px]">
-                § Orientierung
-              </span>
-              <span aria-hidden className="h-px flex-1 bg-white/12" />
-            </div>
-
-            <div className="space-y-14 sm:space-y-16 md:space-y-20">
-              {RELATED.map((r) => (
-                <div key={r.to} data-seo-reveal>
-                  <ContextualCrossLink
-                    eyebrow={r.eyebrow}
-                    folio={r.folio}
-                    lead={r.lead}
-                    linkLabel={r.linkLabel}
-                    to={r.to}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <SectionTransition from="§ Orientierung" to="§ END  Projekt" tone="darker" />
-
-        {/* =========================================================
-           § END — FINAL CTA
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[#070708] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
-          <div aria-hidden className="section-top-rule" />
-
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-[46%] aspect-square w-[118vw] max-w-[1180px] -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle at center, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.014) 32%, transparent 62%)",
-            }}
-          />
-
-          <div className="relative layout-max">
-            <div className="mx-auto max-w-[68rem] text-center">
-              <div className="mb-14 inline-flex sm:mb-20">
-                <ChapterMarker num="END" label="Projekt" align="center" variant="end" />
-              </div>
-
-              <h2 className="font-instrument text-[2.4rem] leading-[0.98] tracking-[-0.036em] text-white sm:text-[3.4rem] md:text-[4.5rem] lg:text-[5.3rem] xl:text-[5.9rem]">
-                <span className="block">
-                  {["Projekt"].map((w, i) => (
-                    <span
-                      key={`fa-${i}`}
-                      className="mr-[0.18em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span data-seo-finala className="inline-block">
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                  {["besprechen."].map((w, i) => (
-                    <span
-                      key={`fb-${i}`}
-                      className="mr-[0.18em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span data-seo-finalb className="inline-block italic text-white/72">
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-              </h2>
-
-              <div className="mx-auto mt-12 flex w-full max-w-[42rem] items-center gap-4 sm:mt-16">
-                <span
-                  aria-hidden
-                  className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/40"
-                >
-                  ·
-                </span>
-                <div aria-hidden className="relative h-px flex-1">
-                  <span
-                    data-seo-finalrule
-                    className="absolute inset-0 block bg-gradient-to-r from-transparent via-white/60 to-transparent"
-                  />
-                </div>
-                <span
-                  aria-hidden
-                  className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/40"
-                >
-                  ·
-                </span>
-              </div>
-
-              <p className="font-ui mx-auto mt-10 max-w-[44rem] text-[15px] leading-[1.72] text-white/62 md:mt-12 md:text-[16.5px]">
-                Kurz beschreiben, was Ihre Seite bisher zurückhält — wir melden uns mit einer
-                klaren Einschätzung. Kein Druck, kein Standard-Pitch.
-              </p>
-
-              <div className="mt-14 grid items-center gap-10 text-left sm:mt-18 sm:grid-cols-[auto_1fr] sm:gap-14 md:gap-20">
-                <div
-                  data-seo-finalcta
-                  className="flex justify-center sm:justify-start"
-                >
+                <p className="font-ui text-[14.5px] leading-[1.64] text-[rgb(var(--magicks-ink-rgb)/0.68)] sm:text-[15px]">
+                  Für regionale Suchintentionen können Seiten wie{" "}
                   <Link
-                    to="/kontakt"
-                    className="group relative inline-flex items-center gap-3 rounded-full border border-white/22 bg-white py-4 pl-8 pr-3 text-[15px] font-medium tracking-wide text-[#0A0A0A] no-underline shadow-[0_34px_80px_-32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.45)] magicks-duration-hover magicks-ease-out transition-[transform,box-shadow] hover:-translate-y-[2px] hover:shadow-[0_44px_90px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.55)] active:translate-y-0 active:scale-[0.985] md:text-[16px]"
+                    to="/webdesign-kassel"
+                    className="text-[rgb(var(--magicks-ink-rgb)/0.92)] underline decoration-[rgb(var(--magicks-line-rgb)/0.32)] underline-offset-[4px]"
                   >
-                    <span>Unverbindlich anfragen</span>
-                    <span
-                      aria-hidden
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[#0A0A0A] text-white magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
-                    >
-                      <svg
-                        viewBox="0 0 14 14"
-                        width="12"
-                        height="12"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.4"
+                    Webdesign Kassel
+                  </Link>{" "}
+                  oder{" "}
+                  <Link
+                    to="/landingpages-kassel"
+                    className="text-[rgb(var(--magicks-ink-rgb)/0.92)] underline decoration-[rgb(var(--magicks-line-rgb)/0.32)] underline-offset-[4px]"
+                  >
+                    Landingpages Kassel
+                  </Link>{" "}
+                  sinnvoll sein, wenn sie echte Suchintention abdecken und nicht
+                  als Keyword-Füllseiten gebaut werden.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-12 lg:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)] lg:items-start lg:gap-16">
+                <div data-seo-reveal>
+                  <Eyebrow>Moderne Suche</Eyebrow>
+                  <h2 className="font-ui mt-7 max-w-[20ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                    Inhalte müssen Fragen beantworten, nicht nur Keywords
+                    enthalten.
+                  </h2>
+                </div>
+
+                <div data-seo-reveal className="lg:pt-14">
+                  <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                    Gute Inhalte erklären Zusammenhänge, beantworten konkrete
+                    Fragen und machen Leistungen nachvollziehbar. So entstehen
+                    Seiten, die für Menschen lesbar und für Suchsysteme
+                    verständlich sind — auch in einer Suche, die immer stärker
+                    mit Antworten, Kontext und Intent arbeitet.
+                  </p>
+
+                  <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+                    {MODERN_SEARCH_POINTS.map((item) => (
+                      <li
+                        key={item}
+                        className="font-ui rounded-[0.9rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-base-rgb)/0.5)] px-4 py-3 text-[14.5px] font-[560] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.74)]"
                       >
-                        <path
-                          d="M3 11 L11 3 M5 3 H11 V9"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-12 lg:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] lg:gap-16">
+                <div data-seo-reveal>
+                  <Eyebrow>Sichtbarkeit & Conversion</Eyebrow>
+                  <h2 className="font-ui mt-7 max-w-[20ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                    Gefunden werden ist der erste Schritt. Überzeugen der
+                    zweite.
+                  </h2>
+                </div>
+
+                <div data-seo-reveal className="lg:pt-14">
+                  <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                    Mehr Sichtbarkeit bringt wenig, wenn Besucher danach nicht
+                    verstehen, warum sie anfragen sollten. Deshalb denken wir
+                    SEO, Design, Text, Nutzerführung und Conversion zusammen.
+                    Die Seite soll gefunden werden, aber danach auch Vertrauen
+                    aufbauen und zur richtigen Handlung führen.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-12 grid gap-4 md:grid-cols-3">
+                {[
+                  {
+                    to: "/websites-landingpages",
+                    title: "Websites & Landingpages",
+                    text: "Für Auftritte, die Sichtbarkeit, Vertrauen und Anfragewege verbinden.",
+                  },
+                  {
+                    to: "/content-bildwelt-medien",
+                    title: "Content, Bildwelt & Medien",
+                    text: "Für Inhalte und visuelle Substanz, die Suchende wirklich verstehen können.",
+                  },
+                  {
+                    to: "/leistungen",
+                    title: "Leistungsübersicht",
+                    text: "Für den gesamten MAGICKS-Rahmen aus Auftritt, Verkauf, Software und Automationen.",
+                  },
+                ].map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    data-seo-reveal
+                    className="group rounded-[1.05rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] p-5 text-left no-underline shadow-[0_18px_52px_-44px_rgba(20,28,44,0.28),inset_0_1px_0_rgba(255,255,255,0.72)] transition-[transform,border-color] duration-500 hover:-translate-y-[1px] hover:border-[rgb(var(--magicks-line-rgb)/0.22)] sm:p-6"
+                  >
+                    <h3 className="font-ui text-[1.05rem] font-[620] leading-[1.26] tracking-[-0.013em] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+                      {item.title}
+                    </h3>
+                    <p className="font-ui mt-3 text-[14.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.66)]">
+                      {item.text}
+                    </p>
+                    <span className="font-ui mt-5 inline-flex text-[14px] font-[560] text-[rgb(var(--magicks-ink-rgb)/0.78)] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.96)]">
+                      Ansehen ↗
                     </span>
                   </Link>
-                </div>
-
-                <div className="flex flex-col gap-5 border-l border-white/[0.08] pl-6 sm:pl-10 md:pl-12">
-                  <div data-seo-finalledger className="flex flex-col gap-1.5">
-                    <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/40 sm:text-[10.5px]">
-                      Studio
-                    </span>
-                    <span className="font-instrument text-[1.2rem] italic leading-[1.3] text-white/90 sm:text-[1.4rem] md:text-[1.5rem]">
-                      Kassel · Nordhessen
-                    </span>
-                  </div>
-
-                  <div data-seo-finalledger className="flex flex-col gap-1.5">
-                    <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/40 sm:text-[10.5px]">
-                      Antwort
-                    </span>
-                    <span className="font-ui text-[14px] leading-[1.5] text-white/72 sm:text-[14.5px] md:text-[15px]">
-                      In der Regel binnen 24 Stunden — werktags.
-                    </span>
-                  </div>
-
-                  <div data-seo-finalledger className="flex flex-col gap-1.5">
-                    <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/40 sm:text-[10.5px]">
-                      Direkt
-                    </span>
-                    <a
-                      href="mailto:hello@magicks.de"
-                      className="font-instrument text-[1.1rem] italic text-white no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white/82 sm:text-[1.25rem] md:text-[1.35rem]"
-                    >
-                      hello@magicks.de
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-24 border-t border-white/[0.06] pt-7 sm:mt-28">
-              <div className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4 sm:gap-x-0">
-                {[
-                  { k: "§ End", v: "Support · SEO" },
-                  { k: "Studio", v: "Kassel · Nordhessen" },
-                  { k: "Rolle", v: "Unterstützend · Projektbasiert" },
-                  { k: "Edition", v: "Magicks · MMXXVI" },
-                ].map((item, i) => (
-                  <div
-                    key={item.k}
-                    className={`flex flex-col gap-2 ${
-                      i > 0 ? "sm:border-l sm:border-white/[0.08] sm:pl-5 md:pl-7" : ""
-                    }`}
-                  >
-                    <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/36 sm:text-[9.5px]">
-                      {item.k}
-                    </span>
-                    <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.28em] text-white/68 sm:text-[10.5px]">
-                      {item.v}
-                    </span>
-                  </div>
                 ))}
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div aria-hidden className="section-top-rule" />
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div data-seo-reveal className="max-w-[58rem]">
+                <Eyebrow>Was wir bewusst vermeiden</Eyebrow>
+                <h2 className="font-ui mt-7 max-w-[18ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                  Sichtbarkeit darf nicht auf Kosten von Vertrauen entstehen.
+                </h2>
+              </div>
+
+              <ul className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {AVOID_POINTS.map((line) => (
+                  <li
+                    key={line}
+                    data-seo-reveal
+                    className="rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-base-rgb)/0.5)] p-5 shadow-[0_18px_48px_-42px_rgba(20,28,44,0.24),inset_0_1px_0_rgba(255,255,255,0.72)]"
+                  >
+                    <p className="font-ui text-[1rem] font-[610] leading-[1.34] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.88)]">
+                      {line}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div data-seo-reveal className="max-w-[58rem]">
+                <Eyebrow>Unser Ablauf</Eyebrow>
+                <h2 className="font-ui mt-7 max-w-[22ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                  Von der Suchintention zur überzeugenden Seite.
+                </h2>
+              </div>
+
+              <ol className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {WORKFLOW_STEPS.map((step, index) => (
+                  <li
+                    key={step.title}
+                    data-seo-reveal
+                    className="rounded-[1.15rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[linear-gradient(160deg,rgba(255,255,255,0.82)_0%,rgba(246,242,233,0.68)_100%)] p-5 shadow-[0_20px_58px_-48px_rgba(20,28,44,0.28),inset_0_1px_0_rgba(255,255,255,0.72)] sm:p-6"
+                  >
+                    <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.74)] sm:text-[11px]">
+                      Schritt {index + 1}
+                    </p>
+                    <h3 className="font-ui mt-3 text-[1.08rem] font-[620] leading-[1.28] tracking-[-0.013em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:text-[1.16rem]">
+                      {step.title}
+                    </h3>
+                    <p className="font-ui mt-2.5 text-[14.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.67)]">
+                      {step.text}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative px-5 py-20 sm:px-8 sm:py-24 md:px-12 md:py-28 lg:px-16 lg:py-32">
+          <div className="layout-max">
+            <div data-seo-reveal>
+              <ContextualCrossLink
+                eyebrow="Website-Basis"
+                folio="Websites & Landingpages"
+                lead="Wenn Sichtbarkeit direkt in einen hochwertigen Auftritt mit klarer Nutzerführung und Anfragewegen eingebettet werden soll."
+                linkLabel="Websites & Landingpages ansehen"
+                to="/websites-landingpages"
+              />
+            </div>
+
+            <div data-seo-reveal className="mt-12 sm:mt-14 md:mt-16">
+              <ContextualCrossLink
+                eyebrow="Region"
+                folio="Webdesign Kassel"
+                lead="Für Unternehmen, die regionale Sichtbarkeit in Kassel und Nordhessen mit einem klaren digitalen Auftritt verbinden möchten."
+                linkLabel="Webdesign Kassel ansehen"
+                to="/webdesign-kassel"
+              />
+            </div>
+
+            <div data-seo-reveal className="mt-12 sm:mt-14 md:mt-16">
+              <ContextualCrossLink
+                eyebrow="Kampagnen"
+                folio="Landingpages Kassel"
+                lead="Für lokale Landingpages, die Angebote, Kampagnen oder konkrete Leistungen sichtbar und anfrageorientiert platzieren."
+                linkLabel="Landingpages Kassel ansehen"
+                to="/landingpages-kassel"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-soft)] px-5 pb-24 pt-24 sm:px-8 sm:pb-32 sm:pt-32 md:px-12 md:pb-40 md:pt-40 lg:px-16">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(ellipse 62% 46% at 24% 20%, rgba(166,138,98,0.12), transparent 74%), radial-gradient(ellipse 52% 40% at 80% 76%, rgba(96,118,146,0.1), transparent 76%)",
+            }}
+          />
+          <div className="relative layout-max">
+            <div
+              data-seo-reveal
+              className="mx-auto max-w-[70rem] rounded-[2rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[linear-gradient(170deg,rgba(255,255,255,0.82)_0%,rgba(245,241,233,0.7)_100%)] px-6 py-12 text-center shadow-[0_30px_86px_-56px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.84)] sm:px-10 sm:py-14 md:px-14 md:py-18"
+            >
+              <Eyebrow>Nächster Schritt</Eyebrow>
+              <h2 className="font-ui mx-auto mt-7 max-w-[20ch] text-[2.2rem] font-[620] leading-[1.01] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3rem] md:text-[3.9rem]">
+                Wird Ihr Unternehmen dort gefunden, wo Kunden suchen?
+              </h2>
+              <p className="font-ui mx-auto mt-7 max-w-[46rem] text-[1rem] leading-[1.72] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                Lassen Sie uns prüfen, wie Ihre Seitenstruktur, Inhalte und
+                lokale Sichtbarkeit klarer auf Anfragen ausgerichtet werden
+                können.
+              </p>
+
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-4 sm:mt-12">
+                <PrimaryCta to="/kontakt" label="SEO-Projekt besprechen" />
+                <Link
+                  to="/kontakt"
+                  className="inline-flex min-h-11 items-center rounded-full border border-[rgb(var(--magicks-line-rgb)/0.2)] bg-transparent px-6 py-2.5 font-ui text-[15px] font-[560] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.82)] no-underline transition-[border-color,transform,color,background-color] duration-500 hover:-translate-y-[1px] hover:border-[rgb(var(--magicks-line-rgb)/0.42)] hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/0.66)] hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[15.5px]"
+                >
+                  Kontakt aufnehmen
+                </Link>
+              </div>
+
+              <p className="font-ui mt-8 text-[14px] leading-[1.6] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:text-[14.5px]">
+                Oder direkt:
+                <a
+                  href="mailto:hello@magicks.de"
+                  className="ml-2 text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline underline decoration-[rgb(var(--magicks-line-rgb)/0.36)] underline-offset-[4px] hover:text-[rgb(var(--magicks-ink-rgb)/1)]"
+                >
+                  hello@magicks.de
+                </a>
+              </p>
             </div>
           </div>
         </section>

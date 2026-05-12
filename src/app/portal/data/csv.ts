@@ -163,7 +163,7 @@ export function parseCsv(input: string): ParsedCsv {
       const map = fieldMap[c];
       if (map.mapped) {
         // rawMetadata stays — but we don't double-write here.
-        (row as Record<string, unknown>)[map.mapped as string] = value;
+        (row as unknown as Record<string, unknown>)[map.mapped as string] = value;
       } else {
         row.rawMetadata[map.header] = value;
       }

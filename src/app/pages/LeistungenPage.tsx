@@ -1,321 +1,214 @@
 import { useLayoutEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { registerGsap } from "../lib/gsap";
-import { presenceEnvelope, prefersCheapMotion, rackFocusTrack } from "../lib/scrollMotion";
 import { useReducedMotion } from "../hooks/useReducedMotion";
-import { ChapterMarker } from "../components/home/ChapterMarker";
-import { ContextualCrossLink } from "../components/service/ContextualCrossLink";
-import { SectionTransition } from "../components/service/SectionTransition";
-import { ServicePlate } from "../components/service/ServicePlate";
-import type { ServicePlateMotif, ServicePlateAnchor } from "../components/service/ServicePlate";
-import { FaqJsonLd, type FaqItem } from "../seo/FaqJsonLd";
+import { runRouteReveal } from "../lib/routeReveal";
 import { RouteSEO } from "../seo/RouteSEO";
 
-/* ------------------------------------------------------------------
- * /leistungen — central service hub ("Register / Werk")
- *
- * This is the meta-page of the service universe. Its signature is
- * that there is no single signature — instead it presents the four
- * disciplines as a coherent editorial register, like a monograph's
- * table of contents. Each discipline carries a distinct mini-motif
- * that echoes its detail page (masthead · catalog · blueprint ·
- * flow) so the four plates feel art-directed, not templated.
- *
- * Sections:
- *   · Hero                — H1, intro, CTA, meta triad, ServiceRegister
- *   · § 01  Index         — "Was wir für dich bauen"
- *   · § 02  Werk          — 4 art-directed service plates (I–IV)
- *   · § 03  Übergänge     — "Integrationen sind oft der Teil…"
- *   · § 04  Haltung       — approach + ceremonial statement
- *   · § 05  Orientierung  — "Nicht sicher, was davon zu deinem…" → /kontakt
- *   · § Ergänzung         — cross-link gate → /website-im-abo
- *   · Final CTA           — register plate signature
- * ------------------------------------------------------------------ */
-
-type PlateCopy = {
-  folio: string;
-  code: string;
-  caption: string;
+type ServicePillar = {
   title: string;
-  body: string;
-  points: string[];
-  ctaLabel: string;
+  intro: string;
+  deliverables: string[];
+  result: string;
   to: string;
-  motif: ServicePlateMotif;
-  anchor: ServicePlateAnchor;
-  hook: string;
+  cta: string;
 };
 
-/*
- * Plate register. Each plate's `code` reads as a paginated folio
- * ("Folio · I / IV") to stay clearly distinct from the page's own
- * narrative chapter markers ("§ 01 — Index", "§ 02 — Werk", …) —
- * no glyph collision, no doubled meaning. The Roman folio is the
- * display glyph; the code spells out position in the register.
- */
-const PLATES: PlateCopy[] = [
+type FocusPoint = {
+  title: string;
+  text: string;
+};
+
+type AudienceCard = {
+  title: string;
+  text: string;
+};
+
+type WorkflowStep = {
+  title: string;
+  text: string;
+};
+
+const SERVICE_PILLARS: ServicePillar[] = [
   {
-    folio: "I",
-    code: "Folio · I / IV",
-    caption: "Werk · Website & Landing",
-    title: "Websites & Landing Pages",
-    body:
-      "Markenwebsites, Relaunches und Landing Pages, die nicht nur gut aussehen, sondern klar führen, schnell laden und Anfragen erzeugen.",
-    points: [
-      "Markenwebsites und digitale Auftritte",
-      "Landing Pages mit klarem Conversion-Ziel",
-      "Relaunch bestehender Seiten — mit sauberem Redirect-Konzept",
-      "hochwertige Gestaltung, saubere Entwicklung",
-      "Performance, Struktur und SEO-Grundlagen",
+    title: "Websites & Landingpages",
+    intro:
+      "Für Auftritte, die Vertrauen schaffen, Leistungen verständlich machen und aus Besuchern echte Anfragen machen.",
+    deliverables: [
+      "Unternehmenswebsites",
+      "Landingpages",
+      "Lokale SEO-Seiten",
+      "Conversion-Struktur",
+      "Texte, Bildwelt und UX",
+      "Hosting, Analyse und Optimierung",
     ],
-    ctaLabel: "Mehr zu Websites & Landing Pages",
+    result:
+      "Sie erhalten einen digitalen Auftritt, der hochwertig wirkt, klar führt und im Alltag zuverlässig performt.",
     to: "/websites-landingpages",
-    motif: "masthead",
-    anchor: "left",
-    hook: "plate-01",
+    cta: "Mehr zu Websites & Landingpages",
   },
   {
-    folio: "II",
-    code: "Folio · II / IV",
-    caption: "Werk · Shop & Konfigurator",
-    title: "Shops & Produktkonfiguratoren",
-    body:
-      "Online-Shops und 2D/3D-Produktkonfiguratoren, die komplexe oder erklärungsbedürftige Produkte verständlich machen und Anfragen sauber ins CRM qualifizieren.",
-    points: [
-      "moderne Online-Shops mit Anspruch",
-      "interaktive 2D/3D-Produktkonfiguratoren",
-      "Visualisierung für erklärungsbedürftige Produkte",
-      "klare Nutzerführung von Auswahl bis Anfrage",
-      "Integration in CRM, ERP und Vertriebsprozess",
+    title: "Shops & Konfiguratoren",
+    intro:
+      "Für Produkte, die klarer präsentiert, besser erklärt und leichter verkauft werden.",
+    deliverables: [
+      "Shopify-Shops",
+      "Produktseiten",
+      "Konfiguratoren",
+      "Angebots- und Anfrageflows",
+      "Checkout- und Conversion-Optimierung",
+      "Visuelle Produktkommunikation",
     ],
-    ctaLabel: "Mehr zu Shops & Produktkonfiguratoren",
+    result:
+      "Sie verkaufen verständlicher, reduzieren Rückfragen und steigern die Abschlusswahrscheinlichkeit über den gesamten Flow.",
     to: "/shops-produktkonfiguratoren",
-    motif: "catalog",
-    anchor: "right",
-    hook: "plate-02",
+    cta: "Mehr zu Shops & Konfiguratoren",
   },
   {
-    folio: "III",
-    code: "Folio · III / IV",
-    caption: "Werk · Plattform & Tool",
     title: "Web-Software",
-    body:
-      "Individuelle Web-Anwendungen, Portale, Dashboards und interne Tools, die Prozesse sinnvoll digitalisieren und mit dem Unternehmen mitwachsen.",
-    points: [
-      "Portale und Plattformen",
-      "Dashboards und interne Tools",
-      "Prozesslogik und Rollenmodelle",
-      "strukturierte Daten- und Systemwelten",
-      "skalierbare technische Umsetzung",
+    intro:
+      "Für Prozesse, die nicht länger in Tabellen, Tools und manuellen Umwegen hängen.",
+    deliverables: [
+      "Kundenportale",
+      "Interne Dashboards",
+      "Buchungs- und Anfrageprozesse",
+      "Datenverwaltung",
+      "Schnittstellen",
+      "Individuelle Web-Apps",
     ],
-    ctaLabel: "Mehr zu Web-Software",
+    result:
+      "Sie schaffen transparente Abläufe, reduzieren Fehlerquellen und gewinnen eine technische Basis, die mit Ihrem Unternehmen mitwächst.",
     to: "/web-software",
-    motif: "blueprint",
-    anchor: "left",
-    hook: "plate-03",
+    cta: "Mehr zu Web-Software",
   },
   {
-    folio: "IV",
-    code: "Folio · IV / IV",
-    caption: "Werk · Protokoll & Fluss",
-    title: "KI-Automationen & Integrationen",
-    body:
-      "KI-Workflows, Prozessautomationen und Integrationen, die manuelle Arbeit aus dem Team holen — nachvollziehbar, wartbar und ohne neue Insellösungen.",
-    points: [
-      "Prozessautomationen für wiederkehrende Arbeit",
-      "KI-Workflows mit klarer Verantwortung",
-      "Integrationen zwischen Tools und Systemen",
-      "saubere Datenflüsse und Übergaben",
-      "messbare Entlastung im Alltag",
+    title: "KI & Automationen",
+    intro:
+      "Für Abläufe, die schneller, smarter und weniger manuell funktionieren.",
+    deliverables: [
+      "KI-gestützte Workflows",
+      "Automationen",
+      "Dokumentenverarbeitung",
+      "CRM- und Lead-Prozesse",
+      "Benachrichtigungen und Reports",
+      "Integrationen zwischen bestehenden Tools",
     ],
-    ctaLabel: "Mehr zu KI-Automationen & Integrationen",
+    result:
+      "Sie entlasten Ihr Team bei wiederkehrenden Aufgaben und machen Prozesse planbarer, nachvollziehbarer und skalierbarer.",
     to: "/ki-automationen-integrationen",
-    motif: "flow",
-    anchor: "right",
-    hook: "plate-04",
+    cta: "Mehr zu KI & Automationen",
   },
 ];
 
-/* ------------------------------------------------------------------
- * FAQ — answer-first block for AI search engines and human readers.
- *
- * Rendered as a visible § 06 chapter on /leistungen and mirrored to
- * a JSON-LD FAQPage block via <FaqJsonLd />. Answers are short,
- * self-contained and citation-ready (Google AI Overviews, ChatGPT
- * search, Perplexity, Gemini, Claude, Copilot all pull from FAQPage
- * and visible Q/A patterns).
- *
- * Discipline:
- *   · No invented facts (no client names, ratings, awards, prices).
- *   · Every answer reads on its own without page context.
- *   · Hello@magicks.de + Kassel are surfaced where natural.
- * ------------------------------------------------------------------ */
-const FAQ_ITEMS: ReadonlyArray<FaqItem> = [
+const FOCUS_POINTS: FocusPoint[] = [
   {
-    question: "Was macht MAGICKS Studio?",
-    answer:
-      "MAGICKS Studio ist ein kreatives Tech-Studio aus Kassel. Wir entwickeln Websites, Online-Shops, 2D/3D-Produktkonfiguratoren, individuelle Web-Software und KI-Automationen für Unternehmen — designgetrieben, KI-gestützt und schneller umgesetzt als bei einer klassischen Agentur.",
+    title: "Ein Auftritt, der erklärt",
+    text: "Ihre Leistungen werden klar kommuniziert und schneller verstanden.",
   },
   {
-    question: "Welche Leistungen bietet MAGICKS Studio konkret an?",
-    answer:
-      "Vier Disziplinen aus einer Hand: (I) Websites & Landing Pages, (II) Online-Shops & 2D/3D-Produktkonfiguratoren, (III) individuelle Web-Software & Dashboards, (IV) KI-Automationen & Integrationen. Design, Code und Automation kommen vom selben Team.",
+    title: "Eine Struktur, die verkauft",
+    text: "Nutzerführung und Angebotslogik unterstützen konkrete Entscheidungen.",
   },
   {
-    question: "Für welche Unternehmen arbeitet MAGICKS Studio?",
-    answer:
-      "Für Inhaber·innen, Geschäftsführungen und Marketing-Leads aus dem Mittelstand — Hersteller mit erklärungsbedürftigen Produkten, Dienstleister mit Qualitätsanspruch und Founder, die Studio-Qualität in Founder-Tempo brauchen. Wir nehmen pro Jahr bewusst nur wenige Mandate an.",
+    title: "Systeme, die Prozesse vereinfachen",
+    text: "Daten und Abläufe laufen konsistent statt verteilt über Einzellösungen.",
   },
   {
-    question: "Baut MAGICKS auch Shops, Konfiguratoren und Web-Software?",
-    answer:
-      "Ja. Wir setzen Online-Shops auf Shopify, Shopware oder individueller Basis um, entwickeln 2D/3D-Produktkonfiguratoren für erklärungsbedürftige Produkte und bauen individuelle Web-Software, Portale und Dashboards. Schnittstellen zu CRM, ERP oder Vertriebsprozess gehören dazu.",
+    title: "Automationen, die Arbeit reduzieren",
+    text: "Wiederkehrende Schritte werden zuverlässig automatisiert.",
   },
   {
-    question: "Was genau sind KI-Automationen bei MAGICKS?",
-    answer:
-      "Praktische, wartbare KI-Workflows und Prozessautomationen: zum Beispiel automatisierte Angebots- oder Rechnungsläufe, KI-gestützte Anfragequalifizierung, Daten-Synchronisation zwischen Tools oder eigene KI-Agenten. Umgesetzt mit n8n, Zapier, Make oder eigenem Stack — DSGVO-konform und an dein Team übergebbar.",
-  },
-  {
-    question: "Wo sitzt das Studio — und arbeitet ihr auch remote?",
-    answer:
-      "Das Studio sitzt in Kassel (Schwabstr. 7a, 34125 Kassel). Vor-Ort-Termine in Kassel, Baunatal, Vellmar, Fuldabrück und Umgebung sind kurzfristig möglich. Mandate bundesweit laufen remote — das ist seit Tag eins der Normalfall.",
-  },
-  {
-    question: "Was unterscheidet MAGICKS von einer klassischen Webagentur?",
-    answer:
-      "Drei Punkte: (1) direkter Kontakt zu den Menschen, die bauen — keine Key-Account-Ebene dazwischen. (2) KI-gestützte Entwicklung verkürzt Time-to-Launch ohne Qualitätsverlust. (3) wenige Mandate pro Jahr, dafür mit voller Aufmerksamkeit. Studio-Qualität in Wochen statt Monaten.",
-  },
-  {
-    question: "Wie schnell ist eine Erstauskunft realistisch?",
-    answer:
-      "In der Regel binnen 24 Stunden, werktags. Schreib uns an hello@magicks.de oder über das Kontaktformular — die Erstauskunft ist unverbindlich und kostet nichts.",
+    title: "Daten, die Entscheidungen leichter machen",
+    text: "Kennzahlen werden sichtbar, auswertbar und direkt nutzbar.",
   },
 ];
 
-/* ------------------------------------------------------------------
- * ServiceRegister — the hero motif.
- *
- * A 4-column masthead showing all four disciplines side-by-side:
- * each column carries its folio (I–IV), register code, a tiny
- * signature glyph and the discipline title. Reads as the full
- * studio index in one glance, which is exactly what the hub page
- * should telegraph before the plates unfold below.
- * ------------------------------------------------------------------ */
-function ServiceRegister() {
-  const entries: {
-    folio: string;
-    code: string;
-    label: string;
-    glyph: "rulers" | "tiles" | "corner" | "flow";
-  }[] = [
-    { folio: "I", code: "§ 01", label: "Websites & LP", glyph: "rulers" },
-    { folio: "II", code: "§ 02", label: "Shops & Konfiguratoren", glyph: "tiles" },
-    { folio: "III", code: "§ 03", label: "Web-Software", glyph: "corner" },
-    { folio: "IV", code: "§ 04", label: "KI & Automationen", glyph: "flow" },
-  ];
+const AUDIENCE_CARDS: AudienceCard[] = [
+  {
+    title: "Hochwertiger digitaler Auftritt",
+    text: "Für Unternehmen, deren Website professioneller wirken und gleichzeitig besser überzeugen soll.",
+  },
+  {
+    title: "Mehr qualifizierte Anfragen",
+    text: "Für Dienstleister, die planbar neue Anfragen aus dem digitalen Auftritt gewinnen möchten.",
+  },
+  {
+    title: "Erklärungsbedürftige Leistungen",
+    text: "Für Betriebe, die komplexe Angebote klar, verständlich und vertrauensstark darstellen müssen.",
+  },
+  {
+    title: "Produkte digital besser verkaufen",
+    text: "Für Anbieter, die Produkte online überzeugender präsentieren oder direkt verkaufen möchten.",
+  },
+  {
+    title: "Weniger Tabellen und Tool-Chaos",
+    text: "Für Teams mit manuellen Prozessen, die strukturierter und effizienter arbeiten wollen.",
+  },
+  {
+    title: "Ein Partner statt viele Stellen",
+    text: "Für Unternehmen, die Design, Entwicklung, SEO, Hosting und Automationen zusammen denken möchten.",
+  },
+];
 
+const WORKFLOW_STEPS: WorkflowStep[] = [
+  {
+    title: "Verstehen",
+    text: "Wir klären Ziele, Zielgruppen, Angebot und die wichtigsten geschäftlichen Hebel.",
+  },
+  {
+    title: "Strukturieren",
+    text: "Wir definieren Seiten, Inhalte, Prozesse und Datenflüsse mit klarer Priorität.",
+  },
+  {
+    title: "Gestalten",
+    text: "Wir entwickeln eine visuelle und inhaltliche Linie, die hochwertig wirkt und klar führt.",
+  },
+  {
+    title: "Entwickeln",
+    text: "Wir setzen technisch sauber, performant und wartbar um.",
+  },
+  {
+    title: "Verbinden",
+    text: "Wir integrieren relevante Tools, Systeme und Automationen in einen funktionierenden Ablauf.",
+  },
+  {
+    title: "Optimieren",
+    text: "Wir analysieren Ergebnisse und verbessern den Auftritt Schritt für Schritt weiter.",
+  },
+];
+
+function Eyebrow({ text }: { text: string }) {
   return (
-    <div aria-hidden className="w-full max-w-[56rem]">
-      <div
-        data-leis-register
-        className="grid grid-cols-2 gap-x-4 gap-y-8 border-t border-white/[0.12] sm:grid-cols-4 sm:gap-x-0"
-      >
-        {entries.map((entry, i) => (
-          <div
-            key={entry.folio}
-            data-leis-regcell
-            className={`relative flex flex-col gap-3 border-b border-white/[0.12] pb-5 pt-4 sm:pt-5 ${
-              i > 0 ? "sm:border-l sm:border-white/[0.09] sm:pl-5 md:pl-6" : ""
-            }`}
-          >
-            {/* Top row: folio Roman + code */}
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="font-instrument text-[1.5rem] leading-none tracking-[-0.01em] text-white/92 sm:text-[1.75rem]">
-                {entry.folio}
-              </span>
-              <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[9.5px]">
-                {entry.code}
-              </span>
-            </div>
-
-            {/* Glyph row — mini SVG signature */}
-            <div className="flex min-h-[24px] items-center">
-              <RegisterGlyph variant={entry.glyph} />
-            </div>
-
-            {/* Label */}
-            <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.32em] text-white/68 sm:text-[9.5px]">
-              {entry.label}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* Register footer — hub signature */}
-      <div className="font-mono mt-4 grid grid-cols-[minmax(0,auto)_1fr_minmax(0,auto)] items-center gap-5 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/38 sm:text-[10.5px]">
-        <span>Fig. 00 · Register</span>
-        <span aria-hidden className="h-px w-full bg-white/14" />
-        <span className="tabular-nums text-white/32">04 Disziplinen · 01 Studio</span>
-      </div>
-    </div>
+    <span className="inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[11px] sm:tracking-[0.22em]">
+      <span
+        aria-hidden
+        className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.72)]"
+      />
+      {text}
+    </span>
   );
 }
 
-function RegisterGlyph({
-  variant,
-}: {
-  variant: "rulers" | "tiles" | "corner" | "flow";
-}) {
-  const box = "block h-5 w-[78px] sm:h-6 sm:w-[88px]";
-  switch (variant) {
-    case "rulers":
-      return (
-        <svg viewBox="0 0 88 24" className={box} aria-hidden role="presentation">
-          <g stroke="rgba(255,255,255,0.7)" fill="none" strokeLinecap="round">
-            <path d="M 2 6 L 86 6" strokeWidth="1.3" />
-            <path d="M 2 12 L 66 12" strokeWidth="0.9" strokeOpacity="0.6" />
-            <path d="M 2 18 L 40 18" strokeWidth="0.7" strokeOpacity="0.4" />
-          </g>
-        </svg>
-      );
-    case "tiles":
-      return (
-        <svg viewBox="0 0 88 24" className={box} aria-hidden role="presentation">
-          <g stroke="rgba(255,255,255,0.62)" fill="none" strokeWidth="0.8">
-            <rect x="2" y="4" width="26" height="16" />
-            <rect x="32" y="4" width="26" height="16" />
-            <rect x="62" y="4" width="24" height="16" />
-          </g>
-          <rect x="32" y="4" width="26" height="16" fill="rgba(255,255,255,0.08)" />
-        </svg>
-      );
-    case "corner":
-      return (
-        <svg viewBox="0 0 88 24" className={box} aria-hidden role="presentation">
-          <g stroke="rgba(255,255,255,0.72)" fill="none" strokeWidth="0.9">
-            <path d="M 2 4 L 2 22" />
-            <path d="M 2 4 L 86 4" />
-          </g>
-          <g stroke="rgba(255,255,255,0.4)" strokeWidth="0.7">
-            <path d="M 22 4 L 22 8" />
-            <path d="M 44 4 L 44 8" />
-            <path d="M 66 4 L 66 8" />
-          </g>
-          <circle cx="44" cy="14" r="1.4" fill="rgba(255,255,255,0.88)" />
-        </svg>
-      );
-    case "flow":
-      return (
-        <svg viewBox="0 0 88 24" className={box} aria-hidden role="presentation">
-          <path d="M 6 12 L 82 12" stroke="rgba(255,255,255,0.42)" strokeWidth="0.9" fill="none" />
-          <circle cx="10" cy="12" r="2.4" fill="none" stroke="rgba(255,255,255,0.62)" strokeWidth="0.9" />
-          <circle cx="44" cy="12" r="3.2" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.82)" strokeWidth="1" />
-          <circle cx="78" cy="12" r="2.4" fill="none" stroke="rgba(255,255,255,0.62)" strokeWidth="0.9" />
-          <circle cx="44" cy="12" r="1.2" fill="rgba(255,255,255,0.95)" />
-        </svg>
-      );
-  }
+function PrimaryCta({ to, label }: { to: string; label: string }) {
+  return (
+    <Link
+      to={to}
+      className="group relative inline-flex min-h-12 items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[linear-gradient(180deg,rgba(255,253,249,0.96)_0%,rgba(244,238,227,0.9)_100%)] py-2.5 pl-6 pr-2 font-ui text-[15.5px] font-[600] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline shadow-[0_22px_62px_-42px_rgba(20,28,44,0.46),inset_0_1px_0_rgba(255,255,255,0.88),inset_0_-1px_0_rgba(148,124,92,0.12)] transition-[transform,box-shadow,border-color] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:border-[rgb(var(--magicks-accent-line-rgb)/0.4)] hover:shadow-[0_32px_82px_-40px_rgba(20,28,44,0.52),inset_0_1px_0_rgba(255,255,255,0.92),inset_0_-1px_0_rgba(148,124,92,0.16)] active:translate-y-0 active:scale-[0.99] sm:pl-7 sm:pr-2.5 sm:text-[16px] md:text-[16.5px]"
+    >
+      <span>{label}</span>
+      <span
+        aria-hidden
+        className="ml-1 h-5 w-px bg-[rgb(var(--magicks-accent-rgb)/0.22)] transition-colors duration-[720ms] group-hover:bg-[rgb(var(--magicks-accent-rgb)/0.42)] sm:h-6"
+      />
+      <span
+        aria-hidden
+        className="font-instrument flex h-8 w-8 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.34)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.9)] text-[1.05em] italic text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] transition-transform duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[3px]"
+        style={{ fontVariantEmoji: "text" }}
+      >
+        {"\u2197\uFE0E"}
+      </span>
+    </Link>
+  );
 }
 
 export default function LeistungenPage() {
@@ -328,418 +221,24 @@ export default function LeistungenPage() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
-      /* ——— Hero elements ——— */
-      const heroChapter = root.querySelector<HTMLElement>("[data-leis-chapter]");
-      const heroLineA = gsap.utils.toArray<HTMLElement>("[data-leis-h1a]");
-      const heroLineB = gsap.utils.toArray<HTMLElement>("[data-leis-h1b]");
-      const heroH1 = root.querySelector<HTMLElement>("[data-leis-h1]");
-      const heroLead = root.querySelector<HTMLElement>("[data-leis-lead]");
-      const heroCta = root.querySelector<HTMLElement>("[data-leis-cta]");
-      const heroCtaRule = root.querySelector<HTMLElement>("[data-leis-cta-rule]");
-      const heroMeta = root.querySelector<HTMLElement>("[data-leis-meta]");
-      const heroRegister = root.querySelector<HTMLElement>("[data-leis-register]");
-      const heroRegCells = gsap.utils.toArray<HTMLElement>("[data-leis-regcell]");
-      const heroCredit = root.querySelector<HTMLElement>("[data-leis-credit]");
-      const heroSection = root.querySelector<HTMLElement>("[data-leis-hero]");
-      const heroCopy = root.querySelector<HTMLElement>("[data-leis-herocopy]");
-
-      /* ——— Scroll reveals ——— */
-      const reveals = gsap.utils.toArray<HTMLElement>("[data-leis-reveal]");
-      const plates = gsap.utils.toArray<HTMLElement>("[data-plate]");
-      const pullLines = gsap.utils.toArray<HTMLElement>("[data-leis-pull]");
-      const pullHeading = root.querySelector<HTMLElement>("[data-leis-pullheading]");
-      const finalLineA = gsap.utils.toArray<HTMLElement>("[data-leis-finala]");
-      const finalLineB = gsap.utils.toArray<HTMLElement>("[data-leis-finalb]");
-      const finalRule = root.querySelector<HTMLElement>("[data-leis-finalrule]");
-      const finalLedger = gsap.utils.toArray<HTMLElement>("[data-leis-finalledger]");
-      const finalCta = root.querySelector<HTMLElement>("[data-leis-finalcta]");
-      const cheapMotion = prefersCheapMotion();
-      const withBlur = (amount: number): gsap.TweenVars =>
-        cheapMotion ? {} : { filter: `blur(${amount}px)` };
+      const heroItems = gsap.utils.toArray<HTMLElement>("[data-leis-hero-item]");
+      const sections = gsap.utils.toArray<HTMLElement>("[data-leis-reveal]");
 
       if (reduced) {
-        gsap.set(
-          [
-            heroChapter,
-            ...heroLineA,
-            ...heroLineB,
-            heroLead,
-            heroCta,
-            heroCtaRule,
-            heroMeta,
-            heroRegister,
-            ...heroRegCells,
-            heroCredit,
-            ...reveals,
-            ...plates,
-            ...pullLines,
-            pullHeading,
-            ...finalLineA,
-            ...finalLineB,
-            finalRule,
-            ...finalLedger,
-            finalCta,
-          ],
-          { opacity: 1, y: 0, yPercent: 0, scaleX: 1, letterSpacing: "normal" },
-        );
+        gsap.set([...heroItems, ...sections], {
+          opacity: 1,
+          y: 0,
+        });
         return;
       }
 
-      /* ——— Hero choreography ——— */
-      gsap.set(heroChapter, { opacity: 0, y: 12 });
-      gsap.set([...heroLineA, ...heroLineB], { yPercent: 118, opacity: 0 });
-      if (!cheapMotion && heroH1) gsap.set(heroH1, { letterSpacing: "0.008em" });
-      gsap.set(heroLead, { opacity: 0, y: 16 });
-      gsap.set(heroCta, { opacity: 0, y: 14 });
-      gsap.set(heroCtaRule, { scaleX: 0, transformOrigin: "left center" });
-      gsap.set(heroMeta, { opacity: 0, y: 8 });
-      gsap.set(heroRegister, { opacity: 0, y: 18 });
-      gsap.set(heroRegCells, { opacity: 0, y: 10 });
-      gsap.set(heroCredit, { opacity: 0, y: 8 });
-
-      gsap
-        .timeline({ delay: 0.15, defaults: { ease: "power3.out" } })
-        .to(heroChapter, { opacity: 1, y: 0, duration: 0.9 }, 0)
-        .to(
-          heroLineA,
-          { yPercent: 0, opacity: 1, duration: 1.25, stagger: 0.08, ease: "power4.out" },
-          0.3,
-        )
-        .to(
-          heroLineB,
-          { yPercent: 0, opacity: 1, duration: 1.35, stagger: 0.08, ease: "power4.out" },
-          0.62,
-        )
-        .to(
-          heroH1,
-          {
-            ...(cheapMotion ? {} : { letterSpacing: "-0.036em" }),
-            duration: 1.6,
-            ease: "power2.out",
-          },
-          0.45,
-        )
-        .to(heroLead, { opacity: 1, y: 0, duration: 1.0 }, 1.05)
-        .to(heroCta, { opacity: 1, y: 0, duration: 0.95 }, 1.4)
-        .to(heroCtaRule, { scaleX: 1, duration: 1.15, ease: "power2.inOut" }, 1.5)
-        .to(heroMeta, { opacity: 1, y: 0, duration: 0.95 }, 1.65)
-        .to(heroRegister, { opacity: 1, y: 0, duration: 1.1 }, 1.85)
-        .to(
-          heroRegCells,
-          { opacity: 1, y: 0, duration: 0.85, stagger: 0.12, ease: "power3.out" },
-          1.95,
-        )
-        .to(heroCredit, { opacity: 1, y: 0, duration: 1.0 }, 2.4);
-
-      /* ——— Hero camera push ——— */
-      if (heroCopy && heroSection) {
-        gsap.to(heroCopy, {
-          yPercent: -4,
-          opacity: 0.58,
-          ease: "none",
-          scrollTrigger: {
-            trigger: heroSection,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      }
-      if (heroCredit && heroSection) {
-        gsap.to(heroCredit, {
-          opacity: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: heroSection,
-            start: "center top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      }
-
-      /* ——— Generic scroll reveals ———
-       * Bidirectional: each [data-leis-reveal] block gains presence
-       * on entry, holds through its focus zone, then gently releases
-       * as the reader moves on. Replaces the old once:true fade-up. */
-      presenceEnvelope(reveals, {
-        start: "top 92%",
-        end: "bottom 10%",
-        yFrom: 18,
-        yTo: -10,
-        blur: 3.2,
-        opacityFloor: 0.2,
-        holdRatio: 0.56,
-        scrub: 0.9,
+      runRouteReveal({
+        gsap,
+        root,
+        heroItems,
+        revealItems: sections,
+        revealYOffset: 24,
       });
-
-      /*
-       * Service plate motion — bidirectional editorial envelope.
-       *
-       * Each plate passes through three zones as the reader scrolls
-       * past it:
-       *   · entry  — plate gathers presence from soft/blurred state
-       *   · focus  — plate sits at full clarity across its reading zone
-       *   · exit   — plate gently steps back, letting the next plate
-       *              take over
-       *
-       * Distinct per-motif micro-accents remain, but they are now all
-       * scroll-coupled rather than once:true reveals:
-       *   · masthead  — heading letter-spacing settles into focus
-       *   · catalog   — points cascade top-down across the entry zone
-       *   · blueprint — points drift in from the coordinate gutter
-       *   · flow      — points propagate left-to-right along the rail
-       *
-       * Because each inner timeline is scrub-driven, it re-plays in
-       * reverse when the reader scrolls back up — nothing "latches".
-       */
-      plates.forEach((plate) => {
-        const motifId =
-          (plate.getAttribute("data-plate-motif-id") ?? "masthead") as
-            | "masthead"
-            | "catalog"
-            | "blueprint"
-            | "flow";
-        const heading = plate.querySelector<HTMLElement>("[data-plate-heading]");
-        const points = Array.from(
-          plate.querySelectorAll<HTMLElement>("[data-plate-point]"),
-        );
-        const ctaRule = plate.querySelector<HTMLElement>("[data-plate-ctarule]");
-
-        // Plate envelope — gain presence on entry, hold, release on exit.
-        presenceEnvelope(plate as Element, {
-          start: "top 86%",
-          end: "bottom 14%",
-          yFrom: 16,
-          yTo: -10,
-          blur: 3.2,
-          opacityFloor: 0.2,
-          holdRatio: 0.58,
-          scrub: 0.95,
-        });
-
-        // Heading letter-spacing settle — scrubbed across the entry zone
-        // so the display weight tightens as the plate moves into focus.
-        if (heading && !cheapMotion) {
-          gsap.set(heading, { letterSpacing: "0.006em" });
-          gsap.to(heading, {
-            letterSpacing: "-0.03em",
-            ease: "none",
-            scrollTrigger: {
-              trigger: plate,
-              start: "top 82%",
-              end: "top 34%",
-              scrub: 1.1,
-              invalidateOnRefresh: true,
-            },
-          });
-        }
-
-        // Per-motif point accents — scrub-driven, fully bidirectional.
-        if (points.length) {
-          const pointsFrom: gsap.TweenVars = { opacity: 0.34 };
-          const pointsTo: gsap.TweenVars = {
-            opacity: 1,
-            ease: "power2.out",
-          };
-          switch (motifId) {
-            case "masthead":
-              pointsFrom.y = 8;
-              pointsTo.y = 0;
-              break;
-            case "catalog":
-              pointsFrom.y = 10;
-              pointsTo.y = 0;
-              break;
-            case "blueprint":
-              pointsFrom.x = -8;
-              pointsTo.x = 0;
-              break;
-            case "flow":
-              pointsFrom.x = -10;
-              pointsTo.x = 0;
-              break;
-          }
-          gsap.set(points, pointsFrom);
-          gsap.to(points, {
-            ...pointsTo,
-            stagger: {
-              each: motifId === "flow" ? 0.14 : 0.08,
-              from: "start",
-            },
-            scrollTrigger: {
-              trigger: plate,
-              start: "top 76%",
-              end: "top 30%",
-              scrub: 1.0,
-              invalidateOnRefresh: true,
-            },
-          });
-        }
-
-        // CTA rule — hairline draws in during entry, retracts on exit.
-        if (ctaRule) {
-          gsap.set(ctaRule, { scaleX: 0, transformOrigin: "left center" });
-          gsap.fromTo(
-            ctaRule,
-            { scaleX: 0 },
-            {
-              scaleX: 1,
-              ease: "none",
-              scrollTrigger: {
-                trigger: plate,
-                start: "top 60%",
-                end: "top 26%",
-                scrub: 0.9,
-                invalidateOnRefresh: true,
-              },
-            },
-          );
-        }
-      });
-
-      /* ——— Ceremonial statement ———
-       * The pull quote now rides the scroll: the three lines build
-       * presence during the entry zone, reach their sharpest clarity
-       * in focus, and ease back out as the next section approaches.
-       * Letter-spacing on the heading tightens into focus, loosens
-       * on release — no once:true, no latched state. */
-      if (pullLines.length) {
-        const pullSection =
-          (pullLines[0] as HTMLElement).closest("section") ?? pullLines[0];
-
-        // Line-by-line presence, driven by the section as a whole so
-        // each line reads in sequence rather than snapping together.
-        gsap.set(pullLines, {
-          yPercent: 20,
-          opacity: 0.16,
-          ...withBlur(4),
-        });
-        gsap.to(pullLines, {
-          yPercent: 0,
-          opacity: 1,
-          ...withBlur(0),
-          ease: "none",
-          stagger: 0.18,
-          scrollTrigger: {
-            trigger: pullSection,
-            start: "top 82%",
-            end: "top 32%",
-            scrub: 1.0,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        // Release on exit — gentle, symmetric.
-        gsap.to(pullLines, {
-          opacity: 0.42,
-          ...withBlur(2.8),
-          yPercent: -10,
-          ease: "none",
-          stagger: 0.08,
-          scrollTrigger: {
-            trigger: pullSection,
-            start: "bottom 60%",
-            end: "bottom 10%",
-            scrub: 1.0,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        if (pullHeading && !cheapMotion) {
-          gsap.set(pullHeading, { letterSpacing: "0.008em" });
-          gsap.to(pullHeading, {
-            letterSpacing: "-0.036em",
-            ease: "none",
-            scrollTrigger: {
-              trigger: pullSection,
-              start: "top 76%",
-              end: "top 30%",
-              scrub: 1.1,
-              invalidateOnRefresh: true,
-            },
-          });
-        }
-      }
-
-      /* ——— Final CTA ———
-       * The sign-off gathers presence as it enters, holds full
-       * clarity across the reading focus, and softens (never fully
-       * disappears) as the footer approaches. All scrub-driven —
-       * no spring easing, no once:true. */
-      if (finalLineA.length || finalLineB.length) {
-        const finalSection =
-          (finalLineA[0] as HTMLElement | undefined)?.closest("section") ??
-          (finalLineB[0] as HTMLElement | undefined)?.closest("section") ??
-          finalLineA[0] ??
-          finalLineB[0];
-
-        // Lines lift into focus with the section's entry zone.
-        gsap.set([...finalLineA, ...finalLineB], {
-          yPercent: 24,
-          opacity: 0.16,
-          ...withBlur(4),
-        });
-        gsap.to([...finalLineA, ...finalLineB], {
-          yPercent: 0,
-          opacity: 1,
-          ...withBlur(0),
-          ease: "none",
-          stagger: 0.09,
-          scrollTrigger: {
-            trigger: finalSection,
-            start: "top 84%",
-            end: "top 38%",
-            scrub: 1.0,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        // Centre-rule draws across the focus zone.
-        if (finalRule) {
-          gsap.set(finalRule, { scaleX: 0, transformOrigin: "center" });
-          gsap.to(finalRule, {
-            scaleX: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: finalSection,
-              start: "top 66%",
-              end: "top 34%",
-              scrub: 0.9,
-              invalidateOnRefresh: true,
-            },
-          });
-        }
-
-        // CTA gathers presence — restrained, no springy scale-up.
-        if (finalCta) {
-          gsap.set(finalCta, { opacity: 0.18, y: 12 });
-          gsap.to(finalCta, {
-            opacity: 1,
-            y: 0,
-            ease: "none",
-            scrollTrigger: {
-              trigger: finalSection,
-              start: "top 60%",
-              end: "top 30%",
-              scrub: 0.9,
-              invalidateOnRefresh: true,
-            },
-          });
-        }
-
-        // Ledger details — quiet focus track beneath the CTA.
-        if (finalLedger.length) {
-          rackFocusTrack(finalLedger, {
-            trigger: finalSection,
-            start: "top 58%",
-            end: "top 22%",
-            blur: 2.4,
-            opacityFloor: 0.32,
-            scrub: 1.0,
-          });
-        }
-      }
     }, root);
 
     return () => ctx.revert();
@@ -751,1120 +250,382 @@ export default function LeistungenPage() {
 
       <main
         ref={rootRef}
-        className="relative bg-[var(--magicks-bg-base)] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative overflow-hidden bg-[var(--magicks-bg-base)] pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.25rem]"
       >
-        {/* =========================================================
-           HERO — register index composition
-        ========================================================= */}
-        <section
-          data-leis-hero
-          className="relative overflow-hidden px-5 pb-28 sm:px-8 sm:pb-32 md:px-12 md:pb-44 lg:px-16 lg:pb-52"
-        >
-          {/* Editorial register texture — thin horizontal bands +
-              faint vertical ticks.  Reads as "masthead ledger" and
-              stays distinct from the detail pages' motif textures. */}
+        <section className="relative overflow-hidden px-5 pb-24 pt-8 sm:px-8 sm:pb-32 sm:pt-10 md:px-12 md:pb-40 lg:px-16 lg:pb-48">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.3]"
+            className="pointer-events-none absolute inset-0"
             style={{
               backgroundImage:
-                "linear-gradient(0deg, rgba(255,255,255,0.014) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.014) 1px, transparent 1px)",
-              backgroundSize: "96px 96px, 48px 96px",
-              maskImage:
-                "radial-gradient(ellipse 66% 62% at 28% 54%, black, transparent)",
-              WebkitMaskImage:
-                "radial-gradient(ellipse 66% 62% at 28% 54%, black, transparent)",
+                "radial-gradient(ellipse 56% 44% at 22% 16%, rgba(166,138,98,0.13), transparent 72%), radial-gradient(ellipse 48% 38% at 82% 34%, rgba(94,118,148,0.12), transparent 74%), radial-gradient(ellipse 74% 44% at 50% 92%, rgba(255,255,255,0.56), transparent 76%)",
             }}
           />
-
-          {/* Vertical editorial credit */}
-          <div
-            data-leis-credit
-            aria-hidden
-            className="pointer-events-none absolute bottom-14 left-5 z-10 hidden md:block lg:bottom-16 lg:left-8"
-          >
-            <span className="hero-vertical-credit">
-              MAGICKS &nbsp;·&nbsp; WERK &nbsp;·&nbsp; LEISTUNGEN &nbsp;·&nbsp; REGISTER MMXXVI
-            </span>
-          </div>
-
-          <div className="relative layout-max">
-            <div data-leis-herocopy>
-              <div data-leis-chapter className="mb-10 sm:mb-14">
-                <ChapterMarker num="Register" label="Werk · Leistungen" />
-              </div>
-
-              {/*
-               * H1 — two-line serif display.
-               * The italic line carries the rhetorical turn of the
-               * sentence ("nicht nach Standard aussehen."), so the
-               * emphasis lands on the entire clause, not just its
-               * last few words. Line A reads as set-up, Line B as
-               * verdict — exactly the pacing the brief calls for.
-               */}
-              <h1
-                data-leis-h1
-                className="font-instrument max-w-[62rem] text-[2.3rem] leading-[0.98] tracking-[-0.036em] text-white sm:text-[2.95rem] md:text-[3.85rem] lg:text-[4.55rem] xl:text-[5.1rem]"
-              >
-                <span className="block">
-                  {["Digitale", "Leistungen,", "die"].map((w, i) => (
-                    <span
-                      key={`a-${i}`}
-                      className="mr-[0.2em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span data-leis-h1a className="inline-block will-change-[transform,opacity]">
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-                <span className="mt-1 block italic text-white/64 sm:mt-2">
-                  {["nicht", "nach", "Standard", "aussehen."].map((w, i) => (
-                    <span
-                      key={`b-${i}`}
-                      className="mr-[0.2em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span data-leis-h1b className="inline-block will-change-[transform,opacity]">
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-              </h1>
-
-              {/* Intro */}
-              <div data-leis-lead className="mt-10 max-w-[48rem] sm:mt-12 md:mt-14">
-                <p className="font-instrument text-[1.3rem] italic leading-[1.35] tracking-[-0.01em] text-white/82 sm:text-[1.5rem] md:text-[1.65rem]">
-                  Wir bauen, was Unternehmen digital wirklich weiterbringt.
-                </p>
-                <p className="font-ui mt-6 text-[15px] leading-[1.72] text-white/58 md:text-[16px] md:leading-[1.72]">
-                  Von Websites und Landing Pages über Shops und Produktkonfiguratoren bis zu
-                  Web-Software, KI-Automationen und Integrationen.
-                </p>
-                <p className="font-ui mt-5 text-[15px] leading-[1.72] text-white/58 md:text-[16px] md:leading-[1.72]">
-                  <em className="italic text-white/88">Keine Templates. Kein Mittelmaß.</em> Sondern
-                  digitale Lösungen, die hochwertig aussehen, sauber funktionieren und im Alltag
-                  genau das tun, was sie sollen.
-                </p>
-              </div>
-
-              {/* CTA */}
-              <div
-                data-leis-cta
-                className="mt-12 inline-flex items-baseline gap-3 sm:mt-14 md:mt-16"
-              >
-                <Link
-                  to="/kontakt"
-                  className="group relative inline-flex items-baseline gap-3 text-[15px] font-medium tracking-[-0.005em] text-white no-underline sm:text-[16px] md:text-[17px]"
-                  aria-label="Projekt anfragen"
-                >
-                  <span className="relative pb-3">
-                    <span className="font-ui">Projekt anfragen</span>
-                    <span
-                      data-leis-cta-rule
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left bg-white/32"
-                    />
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white transition-transform duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
-                    />
-                  </span>
-                  <span
-                    aria-hidden
-                    className="font-instrument text-[1.05em] italic text-white/85 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
-                  >
-                    ↗︎
-                  </span>
-                </Link>
-              </div>
-
-              {/*
-               * Hero monogram folio — a single-line mono signature
-               * replaces the three-tag meta cluster. Reads as a true
-               * hub monogram ("the whole body of work, Edition
-               * MMXXVI") rather than a tag-cloud that echoes the
-               * enumerated register below.
-               */}
-              <div
-                data-leis-meta
-                className="mt-14 flex items-center gap-4 sm:mt-18 md:mt-20"
-              >
-                <span aria-hidden className="h-px w-10 bg-white/24 sm:w-14" />
-                <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.38em] text-white/58 sm:text-[10.5px]">
-                  Werk · 04 Folios · Edition MMXXVI
-                </span>
-                <span aria-hidden className="h-px flex-1 bg-white/12" />
-              </div>
-
-              {/* ServiceRegister — the signature motif of the hub.
-                  A full 4-column ledger that shows all disciplines
-                  at once, foreshadowing the plates that follow. */}
-              <div className="mt-16 flex flex-col gap-3 sm:mt-20 md:mt-24">
-                <div className="font-mono grid grid-cols-[minmax(0,auto)_1fr_minmax(0,auto)] items-center gap-5 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/38 sm:text-[10.5px]">
-                  <span>Werk · Register</span>
-                  <span aria-hidden className="h-px w-full bg-white/14" />
-                  <span className="tabular-nums text-white/32">I · II · III · IV</span>
-                </div>
-                <ServiceRegister />
-              </div>
-            </div>
-          </div>
-
-          {/* Register plate readout */}
           <div
             aria-hidden
-            className="pointer-events-none absolute bottom-6 right-5 hidden items-center gap-4 md:right-12 md:flex lg:right-16 lg:bottom-10"
-          >
-            <span className="font-mono flex items-center gap-2 text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/36">
-              <span className="tick-breathing block h-1.5 w-1.5 rounded-full bg-white/75" />
-              Register · Live
-            </span>
-            <span aria-hidden className="h-px w-8 bg-white/18" />
-            <span className="font-mono tabular-nums text-[9.5px] font-medium uppercase leading-none tracking-[0.26em] text-white/34">
-              WEB — SHOP — SOFT — KI
-            </span>
-          </div>
-        </section>
-
-        {/*
-         * Transitions — we keep three, not five. Prior draft had
-         * one at every § boundary which read as a metronome.
-         * Pacing needs silence between beats, so only the real
-         * pivots announce themselves:
-         *   · Hero → § 02 Werk (skipping § 01, which is a quiet text beat)
-         *   · § 02 Werk → § 03 Übergänge
-         *   · § Statement → § 05 Orientierung
-         */}
-
-        {/* =========================================================
-           § 01 — "Was wir für dich bauen"
-           Narrative opener. The register echo was pulled: it used to
-           preview the plates here, but that duplicated the Werk
-           colophon that fires only seconds later. The page enumerated
-           the four disciplines four times before anything happened.
-           Now § 01 is a pure narrative beat — heading + lead prose +
-           a single cross-ref line — and the register metaphor does
-           its real work down in § 02.
-        ========================================================= */}
-        <section className="relative px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
-          <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:gap-20 lg:gap-28">
-              <div data-leis-reveal>
-                <p className="font-mono mb-8 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                  § 01 — Index
-                </p>
-                <h2 className="font-instrument text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]">
-                  Was wir für dich{" "}
-                  <em className="italic text-white/58">bauen.</em>
-                </h2>
-
-                <div className="mt-10 flex items-center gap-4 md:mt-14">
-                  <span aria-hidden className="h-px w-10 bg-white/22 md:w-14" />
-                  <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
-                    ↘︎ Weiter in § 02  Werk
-                  </span>
-                </div>
-              </div>
-
-              <div data-leis-reveal className="md:pt-3">
-                <p className="font-ui text-[15px] leading-[1.72] text-white/64 md:text-[16.5px] md:leading-[1.72]">
-                  Nicht jedes Projekt braucht dasselbe. Manche brauchen einen starken digitalen
-                  Auftritt. Manche einen Shop, einen Konfigurator oder eine individuelle
-                  Web-Anwendung. Und manche brauchen vor allem saubere Prozesse, Integrationen und
-                  Automationen im Hintergrund.
-                </p>
-                <p className="font-ui mt-6 text-[15px] leading-[1.72] text-white/64 md:text-[16.5px] md:leading-[1.72]">
-                  Genau deshalb denken wir Leistungen nicht als starre Pakete, sondern als{" "}
-                  <em className="italic text-white/88">
-                    Lösungen, die zu deinem Unternehmen, deinem Ziel und deinem digitalen Reifegrad
-                    passen.
-                  </em>
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <SectionTransition from="§ 01  Index" to="§ 02  Werk — I bis IV" />
-
-        {/* =========================================================
-           § 02 — THE FOUR SERVICE PLATES
-           Rendered as an editorial sequence. Each plate alternates
-           anchor (left / right) to build a zigzag reading rhythm.
-        ========================================================= */}
-        <section className="relative bg-[var(--magicks-bg-elevated)]">
-          {/*
-           * A shared top/bottom frame — hairline rails with centered
-           * register folio. Frames the 4 plates as one editorial
-           * chapter instead of four disconnected blocks.
-           */}
-          <div
-            aria-hidden
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              backgroundImage:
-                "linear-gradient(0deg, rgba(255,255,255,0.01) 1px, transparent 1px)",
-              backgroundSize: "100% 240px",
-              maskImage:
-                "linear-gradient(180deg, transparent 0%, black 6%, black 94%, transparent 100%)",
-              WebkitMaskImage:
-                "linear-gradient(180deg, transparent 0%, black 6%, black 94%, transparent 100%)",
-            }}
-          />
-
-          {/*
-           * Chapter frontispiece for § 02 Werk.
-           * Not a caption line — a proper editorial opening. A folio
-           * header row rides the top hairline with the pagination
-           * "I · II · III · IV" readout; a huge italic serif "Werk."
-           * display sets the chapter weight; a short italic caption
-           * sits at the bottom-right of the display to hand off to
-           * the first plate. No extra preview strip — the plates
-           * themselves are the enumeration.
-           */}
-          <div
-            data-leis-reveal
-            className="relative px-5 pt-20 sm:px-8 sm:pt-24 md:px-12 md:pt-28 lg:px-16 lg:pt-32"
-          >
-            <div className="layout-max">
-              {/* Folio header — left label, hairline, right specimen */}
-              <div className="font-mono grid grid-cols-[minmax(0,auto)_1fr_minmax(0,auto)] items-center gap-5 text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/42 sm:text-[10.5px]">
-                <span>§ 02 — Werk · Vier Disziplinen</span>
-                <span aria-hidden className="h-px w-full bg-white/14" />
-                <span className="tabular-nums text-white/32">I · II · III · IV</span>
-              </div>
-
-              {/* Frontispiece display */}
-              <div className="mt-10 grid gap-10 md:mt-14 md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] md:items-end md:gap-16 lg:gap-24">
-                <h2 className="font-instrument relative text-[4.25rem] leading-[0.92] tracking-[-0.04em] text-white sm:text-[6rem] md:text-[7.75rem] lg:text-[9.25rem] xl:text-[10.25rem]">
-                  <em className="italic text-white">Werk</em>
-                  <span aria-hidden className="text-white/40">.</span>
-                </h2>
-
-                <div className="flex flex-col gap-4 md:pb-4">
-                  <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
-                    Index · Vier Folios
-                  </span>
-                  <p className="font-instrument text-[1.15rem] italic leading-[1.4] tracking-[-0.008em] text-white/78 sm:text-[1.3rem] md:text-[1.4rem]">
-                    Vier Disziplinen, die sich in echten Projekten ständig berühren — als eigenständige
-                    Arbeitsfelder und als Teile derselben digitalen Lösung.
-                  </p>
-                </div>
-              </div>
-
-              {/*
-               * The 4-column title colophon and the later slim
-               * pagination bar were both pulled — the top-of-block
-               * folio header ("§ 02 — Werk · Vier Disziplinen"
-               * with "I · II · III · IV") already carries the
-               * pagination, and the plates themselves are the
-               * real enumeration. Nothing else needs to announce
-               * the four disciplines again before Folio I opens.
-               */}
-            </div>
-          </div>
-
-          {/* Plates sequence */}
-          <div className="relative">
-            {PLATES.map((plate, i) => (
-              <div key={plate.hook} className="relative">
-                <ServicePlate
-                  folio={plate.folio}
-                  code={plate.code}
-                  caption={plate.caption}
-                  title={plate.title}
-                  body={plate.body}
-                  points={plate.points}
-                  ctaLabel={plate.ctaLabel}
-                  to={plate.to}
-                  motif={plate.motif}
-                  anchor={plate.anchor}
-                  hook={plate.hook}
-                />
-                {i === 0 && (
-                  <div className="px-5 sm:px-8 md:px-12 lg:px-16">
-                    <div className="layout-max">
-                      <div
-                        data-leis-reveal
-                        className="mx-auto max-w-[52rem] border-t border-white/[0.14] pb-5 pt-5 sm:pb-7 sm:pt-6"
-                      >
-                        <Link
-                          to="/website-starter"
-                          className="group inline-flex items-baseline gap-2 text-[14px] text-white/78 no-underline sm:text-[14.5px]"
-                        >
-                          <span className="font-ui underline decoration-white/24 decoration-[0.5px] underline-offset-[5px] transition-[text-decoration-color] duration-[620ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:decoration-white/78">
-                            Noch keine Website? Zum Website Starter
-                          </span>
-                          <span
-                            aria-hidden
-                            className="font-instrument text-[1.05em] italic text-white/70 transition-transform duration-[560ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[2px]"
-                          >
-                            ↗︎
-                          </span>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {i < PLATES.length - 1 && (
-                  <div aria-hidden className="px-5 sm:px-8 md:px-12 lg:px-16">
-                    <div className="layout-max">
-                      {/*
-                       * Between-plate page-turn: two short hairline
-                       * dashes and a small serif Roman. Reads as
-                       * "next folio" the way a printed monograph
-                       * marks a page turn, not as agency-style
-                       * section-nav.
-                       */}
-                      <div className="flex items-center justify-center gap-5">
-                        <span aria-hidden className="h-px w-12 bg-white/12 sm:w-24" />
-                        <span className="font-instrument text-[1rem] italic leading-none tracking-[-0.005em] text-white/36 sm:text-[1.1rem]">
-                          {PLATES[i + 1].folio}
-                        </span>
-                        <span aria-hidden className="h-px w-12 bg-white/12 sm:w-24" />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-          ))}
-        </div>
-
-          {/* Chapter colophon */}
-          <div
-            data-leis-reveal
-            className="relative px-5 pb-16 sm:px-8 sm:pb-20 md:px-12 md:pb-24 lg:px-16"
-          >
-            <div className="layout-max">
-              <div className="font-mono flex items-center gap-5 text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/38 sm:text-[10.5px]">
-                <span aria-hidden className="h-px w-10 bg-white/22 sm:w-16" />
-                <span>End · Werk — I bis IV</span>
-                <span aria-hidden className="h-px flex-1 bg-white/12" />
-                <span className="tabular-nums text-white/32">04 Disziplinen · MMXXVI</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <SectionTransition from="§ 02  Werk" to="§ 02b  Bausteine" />
-
-        {/* =========================================================
-           § 02b — SUPPORTING CAPABILITIES
-           Strategic note: the four core disciplines above remain
-           primary. This block adds supporting capabilities that
-           strengthen those projects, deliberately rendered as a
-           lighter four-up grid (smaller folios, thinner rules) so
-           it never reads like a fifth main service block.
-        ========================================================= */}
-        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-leis-reveal className="md:pt-2">
-                <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
-                  § 02b — Bausteine
-                </p>
-              </div>
-
-              <div>
-                <h2
-                  data-leis-reveal
-                  className="font-instrument max-w-[48rem] text-[2.05rem] leading-[1.04] tracking-[-0.028em] text-white sm:text-[2.6rem] md:text-[3.15rem] lg:text-[3.55rem]"
-                >
-                  Was Projekte bei MAGICKS{" "}
-                  <em className="italic text-white/60">zusätzlich stark macht</em>.
-                </h2>
-
-                <p
-                  data-leis-reveal
-                  className="font-ui mt-8 max-w-[44rem] text-[15px] leading-[1.7] text-white/64 md:mt-10 md:text-[16px]"
-                >
-                  Nicht jedes Projekt braucht nur Design oder nur Code. Oft entsteht die Qualität in
-                  den Bausteinen dazwischen: Sichtbarkeit, Texte, Bildwelt, Medien, Performance und
-                  laufende Weiterentwicklung.
-                </p>
-
-                <ul className="mt-14 grid gap-x-10 gap-y-0 border-t border-white/[0.07] sm:grid-cols-2 md:mt-18">
-                  {[
-                    {
-                      key: "01",
-                      title: "SEO & Sichtbarkeit",
-                      body:
-                        "Struktur, Inhalte und technische Grundlagen, damit digitale Auftritte gefunden und verstanden werden können.",
-                      cta: "Mehr zu SEO & Sichtbarkeit",
-                      to: "/seo-sichtbarkeit",
-                    },
-                    {
-                      key: "02",
-                      title: "Content, Bildwelt & Medien",
-                      body:
-                        "Texte, Bilder, Videos, Motion Design und 3D-Visuals für Auftritte, die nicht wie Templates wirken.",
-                      cta: "Mehr zu Content & Medien",
-                      to: "/content-bildwelt-medien",
-                    },
-                    {
-                      key: "03",
-                      title: "Performance & Qualität",
-                      body:
-                        "Saubere Umsetzung, schnelle Ladezeiten, responsive Details und technische Stabilität.",
-                      cta: undefined,
-                      to: undefined,
-                    },
-                    {
-                      key: "04",
-                      title: "Betreuung & Weiterentwicklung",
-                      body:
-                        "Pflege, Erweiterungen, neue Seiten und Optimierungen nach dem Launch.",
-                      cta: undefined,
-                      to: undefined,
-                    },
-                  ].map((item) => (
-                    <li
-                      key={item.key}
-                      data-leis-reveal
-                      className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-5 border-b border-white/[0.07] py-7 sm:gap-x-7 md:py-9"
-                    >
-                      <span className="font-mono pt-[0.45rem] text-[10.5px] font-medium leading-none tracking-[0.28em] text-white/40 md:text-[11px]">
-                        {item.key}
-                      </span>
-                      <div>
-                        <h3 className="font-instrument text-[1.25rem] leading-[1.22] tracking-[-0.014em] text-white md:text-[1.4rem] lg:text-[1.5rem]">
-                          {item.title}
-                        </h3>
-                        <p className="font-ui mt-3 max-w-[26rem] text-[14px] leading-[1.62] text-white/56 md:text-[14.5px]">
-                          {item.body}
-                        </p>
-                        {item.cta && item.to ? (
-            <Link
-                            to={item.to}
-                            className="group mt-5 inline-flex items-baseline gap-2 text-[13px] font-medium tracking-[-0.005em] text-white no-underline md:text-[13.5px]"
-                          >
-                            <span className="relative pb-1">
-                              <span className="font-ui">{item.cta}</span>
-                              <span
-                                aria-hidden
-                                className="pointer-events-none absolute inset-x-0 bottom-0 block h-px bg-white/30"
-                              />
-                              <span
-                                aria-hidden
-                                className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white transition-transform duration-[680ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
-                              />
-                            </span>
-                            <span
-                              aria-hidden
-                              className="font-instrument text-[1em] italic text-white/82 transition-transform duration-[520ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[2px]"
-                            >
-                              ↗︎
-                            </span>
-            </Link>
-                        ) : null}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-
-                <div
-                  data-leis-reveal
-                  className="font-mono mt-6 flex items-center gap-4 text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/32 md:mt-8"
-                >
-                  <span>Bausteine · ergänzend zu I–IV</span>
-                  <span aria-hidden className="h-px flex-1 bg-white/[0.07]" />
-                  <span className="tabular-nums">04 Bausteine · MMXXVI</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <SectionTransition from="§ 02b  Bausteine" to="§ 03  Übergänge" />
-
-        {/* =========================================================
-           § 03 — "Integrationen sind oft der Teil…"
-           Layout-as-argument: the section literalises its thesis by
-           placing a thin vertical connector rail between the two
-           columns — the "Übergang" is the gap. A small hop-arrow
-           sits on the rail as a nod to the flow motif without
-           re-using a plate glyph.
-        ========================================================= */}
-        <section className="relative px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="layout-max">
-            <div className="relative grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-24 lg:gap-32">
-              {/* Connector rail — vertical hairline with a mid-node */}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute left-1/2 top-0 hidden h-full -translate-x-1/2 md:block"
-              >
-                <span className="absolute left-1/2 top-0 block h-full w-px -translate-x-1/2 bg-white/[0.09]" />
-                <span className="absolute left-1/2 top-[calc(50%-28px)] block h-14 w-px -translate-x-1/2 bg-white/28" />
-                <span className="absolute left-1/2 top-1/2 block h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/62" />
-                <span className="absolute left-1/2 top-[calc(50%+18px)] block h-px w-4 -translate-x-1/2 bg-white/36" />
-                <span className="font-mono absolute left-1/2 top-[calc(50%+30px)] -translate-x-1/2 whitespace-nowrap text-[9px] font-medium uppercase leading-none tracking-[0.38em] text-white/40">
-                  Übergang
-                </span>
-              </div>
-
-              <div data-leis-reveal className="md:pr-6 lg:pr-10">
-                <p className="font-mono mb-8 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                  § 03 — Übergänge
-                </p>
-                <h2 className="font-instrument text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]">
-                  Integrationen sind oft der Teil, der am Ende den{" "}
-                  <em className="italic text-white/58">Unterschied macht.</em>
-                </h2>
-              </div>
-
-              <div data-leis-reveal className="md:pl-6 md:pt-3 lg:pl-10">
-                <p className="font-ui text-[15px] leading-[1.72] text-white/64 md:text-[16.5px] md:leading-[1.72]">
-                  Eine gute digitale Lösung endet nicht an der Oberfläche. Oft entsteht der
-                  eigentliche Mehrwert erst dann, wenn{" "}
-                  <em className="italic text-white/88">
-                    Systeme sauber zusammenspielen, Daten sinnvoll weiterlaufen
-                  </em>{" "}
-                  und Prozesse nicht mehr an manuellen Zwischenschritten hängen.
-                </p>
-                <p className="font-ui mt-6 text-[15px] leading-[1.72] text-white/64 md:text-[16.5px] md:leading-[1.72]">
-                  Deshalb denken wir nicht nur in Seiten oder Screens, sondern auch in Übergängen,
-                  Logik und technischer Verbindung. Genau dort entstehen häufig die Lösungen, die
-                  im Alltag wirklich spürbar etwas verbessern.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* § 03 → § 04 runs without a marker; two prose beats in
-             close succession, no pivot. */}
-
-        {/* =========================================================
-           § 04 — "Wie wir Leistungen bei MAGICKS denken"
-           Centered editorial composition — deliberately not another
-           bipartite grid. Eyebrow sits alone on the top hairline,
-           the headline spans the full measure, and the prose
-           follows as a single centered column. Reads as the
-           studio's statement of position rather than a caption /
-           body split.
-        ========================================================= */}
-        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-48 lg:px-16 lg:py-56">
-          <div className="layout-max">
-            <div className="mx-auto max-w-[58rem]">
-              <div data-leis-reveal className="mb-14 flex items-center gap-5 sm:mb-20">
-                <span aria-hidden className="h-px w-10 bg-white/24 sm:w-14" />
-                <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/48 sm:text-[10.5px]">
-                  § 04 — Haltung
-                </span>
-                <span aria-hidden className="h-px flex-1 bg-white/14" />
-              </div>
-
-              <h2
-                data-leis-reveal
-                className="font-instrument text-[2.25rem] leading-[1.02] tracking-[-0.03em] text-white sm:text-[2.95rem] md:text-[3.6rem] lg:text-[4.1rem]"
-              >
-                Wie wir Leistungen bei{" "}
-                <em className="italic text-white/58">MAGICKS</em> denken.
-              </h2>
-
-              <div data-leis-reveal className="mt-12 md:mt-16">
-                <p className="font-instrument text-[1.2rem] italic leading-[1.38] tracking-[-0.008em] text-white/86 sm:text-[1.38rem] md:text-[1.52rem]">
-                  Wir verkaufen keine aufgeblähten Leistungspakete, nur damit es nach mehr aussieht.
-                </p>
-
-                <p className="font-ui mt-8 max-w-[44rem] text-[15.5px] leading-[1.74] text-white/64 md:mt-10 md:text-[16.5px] md:leading-[1.74]">
-                  Wir schauen zuerst darauf, was ein Projekt{" "}
-                  <em className="italic text-white/88">wirklich braucht</em>: Sichtbarkeit,
-                  Nutzerführung, Verkauf, digitale Prozesse, Automationen oder eine individuelle
-                  Anwendung.
-                </p>
-
-                <p className="font-ui mt-5 max-w-[44rem] text-[15.5px] leading-[1.74] text-white/64 md:text-[16.5px] md:leading-[1.74]">
-                  Darauf bauen wir die passende Lösung.{" "}
-                  <em className="italic text-white/88">
-                    Direkt, technisch sauber und mit dem Anspruch, dass das Ergebnis nicht nur im
-                    Pitch gut aussieht, sondern im Alltag funktioniert.
-                  </em>
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* § 04 Haltung rises naturally into the ceremonial
-             statement — no transition marker, the tonal shift does
-             the pivot work. */}
-
-        {/* =========================================================
-           CEREMONIAL STATEMENT — three-line declaration
-           "Websites, die wirken. Systeme, die funktionieren.
-           Automationen, die entlasten."
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 py-36 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.85]"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-44"
             style={{
               background:
-                "radial-gradient(ellipse 62% 48% at 50% 50%, rgba(255,255,255,0.042), transparent 62%)",
-            }}
-          />
-          {/* Register texture behind ceremonial statement */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.22]"
-            style={{
-              backgroundImage:
-                "linear-gradient(0deg, rgba(255,255,255,0.11) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px)",
-              backgroundSize: "64px 64px, 64px 64px",
-              maskImage:
-                "radial-gradient(ellipse 66% 56% at 50% 50%, black, transparent)",
-              WebkitMaskImage:
-                "radial-gradient(ellipse 66% 56% at 50% 50%, black, transparent)",
+                "linear-gradient(180deg, transparent 0%, rgba(46,56,76,0.05) 60%, rgba(46,56,76,0.1) 100%)",
             }}
           />
 
           <div className="relative layout-max">
-            <div className="mx-auto max-w-[74rem]">
-              <div className="mb-16 flex items-center gap-5 sm:mb-20">
-                <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
-                <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/46 sm:text-[10.5px]">
-                  § Statement
-                </span>
-                <span aria-hidden className="h-px flex-1 bg-white/12" />
-              </div>
-
-              <div className="relative">
-                {/*
-                 * Gutter column — "WEB / SYS / AUT" tagging for each
-                 * ceremonial line, threaded by a vertical hairline.
-                 */}
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute -left-10 top-0 hidden h-full flex-col justify-between py-[0.4em] md:-left-12 md:flex lg:-left-16"
-                >
-                  <span aria-hidden className="absolute left-[3px] top-[0.5em] bottom-[0.5em] w-px bg-white/14" />
-                  {["WEB", "SYS", "AUT"].map((letter) => (
-                    <span
-                      key={letter}
-                      className="font-mono relative flex items-center gap-2 text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/36 sm:text-[10px]"
-                    >
-                      <span aria-hidden className="block h-px w-2 bg-white/34" />
-                      {letter}
-                    </span>
-                  ))}
+            <div className="mx-auto max-w-[76rem]">
+              <div className="mx-auto max-w-[60rem] text-center">
+                <div data-leis-hero-item>
+                  <Eyebrow text="Leistungen" />
                 </div>
 
-                <h3
-                  data-leis-pullheading
-                  className="font-instrument text-[2.4rem] leading-[1.02] tracking-[-0.036em] text-white sm:text-[3.2rem] md:text-[4.1rem] lg:text-[4.7rem] xl:text-[5.3rem]"
+                <h1
+                  data-leis-hero-item
+                  className="font-ui mx-auto mt-7 max-w-[17ch] text-[2.35rem] font-[630] leading-[0.98] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.97)] sm:text-[3.3rem] md:text-[4.35rem] lg:text-[5.1rem]"
                 >
-                  <span className="block overflow-hidden">
-                    <span data-leis-pull className="inline-block">
-                      Websites, die wirken.
-                    </span>
+                  <span className="block">
+                    Leistungen, die nicht nur gut aussehen.
                   </span>
-                  <span className="block overflow-hidden">
-                    <span data-leis-pull className="inline-block italic text-white/64">
-                      Systeme, die funktionieren.
-                    </span>
+                  <span className="font-instrument mt-2 block italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.64)]">
+                    Sondern Ihr Unternehmen weiterbringen.
                   </span>
-                  <span className="block overflow-hidden">
-                    <span data-leis-pull className="inline-block">
-                      Automationen, die entlasten.
+                </h1>
+
+                <p
+                  data-leis-hero-item
+                  className="font-ui mx-auto mt-8 max-w-[52rem] text-[1.03rem] font-[480] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.72)] sm:text-[1.1rem] md:text-[1.18rem]"
+                >
+                  Von Websites und Landingpages über Shops und Konfiguratoren
+                  bis zu Web-Software, KI-Automationen und Integrationen.
+                  MAGICKS verbindet Design, Entwicklung und Strategie zu
+                  digitalen Lösungen, die hochwertig wirken, verständlich
+                  bleiben und im Alltag funktionieren.
+                </p>
+
+                <div
+                  data-leis-hero-item
+                  className="mt-10 flex flex-wrap items-center justify-center gap-4 sm:mt-12"
+                >
+                  <PrimaryCta to="/kontakt" label="Projekt besprechen" />
+                  <a
+                    href="#leistungspakete"
+                    className="group inline-flex min-h-11 items-center gap-2 px-2 font-ui text-[15px] font-[560] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.74)] no-underline transition-colors duration-500 hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[15.5px]"
+                  >
+                    <span className="relative pb-1">
+                      Leistungen ansehen
+                      <span
+                        aria-hidden
+                        className="absolute inset-x-0 bottom-0 h-px bg-[rgb(var(--magicks-line-rgb)/0.28)] transition-colors duration-500 group-hover:bg-[rgb(var(--magicks-line-rgb)/0.62)]"
+                      />
                     </span>
-                  </span>
-                </h3>
+                    <span
+                      aria-hidden
+                      className="font-instrument text-[1.04em] italic"
+                    >
+                      ↓
+                    </span>
+                  </a>
+                </div>
               </div>
 
-              <div className="mt-16 flex items-center gap-5 sm:mt-20">
-                <span aria-hidden className="h-px flex-1 bg-white/12" />
-                <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/38 sm:text-[10.5px]">
-                  Edition · Haltung · Register
-                </span>
-                <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
+              <div
+                data-leis-hero-item
+                className="mx-auto mt-14 grid max-w-[68rem] gap-4 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4"
+              >
+                {[
+                  {
+                    label: "Auftritt",
+                    text: "Websites und Landingpages, die Vertrauen aufbauen.",
+                  },
+                  {
+                    label: "Verkauf",
+                    text: "Shops und Konfiguratoren, die Entscheidungen erleichtern.",
+                  },
+                  {
+                    label: "Prozesse",
+                    text: "Web-Software, die Abläufe klar und effizient strukturiert.",
+                  },
+                  {
+                    label: "Automationen",
+                    text: "KI-gestützte Workflows, die Ihr Team spürbar entlasten.",
+                  },
+                ].map((item) => (
+                  <article
+                    key={item.label}
+                    className="rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.58)] p-4 shadow-[0_20px_56px_-48px_rgba(20,28,44,0.35),inset_0_1px_0_rgba(255,255,255,0.74)] sm:p-5"
+                  >
+                    <p className="font-mono text-[10.5px] font-medium uppercase tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.74)] sm:text-[11px]">
+                      {item.label}
+                    </p>
+                    <p className="font-ui mt-2 text-[14.5px] leading-[1.6] text-[rgb(var(--magicks-ink-rgb)/0.66)]">
+                      {item.text}
+                    </p>
+                  </article>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
-        <SectionTransition from="§ Statement" to="§ 05  Orientierung" tone="darker" />
-
-        {/* =========================================================
-           § 05 — "Nicht sicher, was davon zu deinem Projekt passt?"
-           Consultative cross-link to /kontakt.
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section
+          id="leistungspakete"
+          className="relative bg-[var(--magicks-bg-lifted)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16"
+        >
+          <div aria-hidden className="section-top-rule" />
           <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-20 lg:gap-24">
-              <div data-leis-reveal>
-                <p className="font-mono mb-8 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                  § 05 — Orientierung
-                </p>
-                <h2 className="font-instrument text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]">
-                  Nicht sicher, was davon zu deinem Projekt{" "}
-                  <em className="italic text-white/58">passt?</em>
+            <div className="mx-auto max-w-[76rem]">
+              <div data-leis-reveal className="max-w-[56rem]">
+                <Eyebrow text="Leistungsbereiche" />
+                <h2 className="font-ui mt-7 max-w-[20ch] text-[2.1rem] font-[620] leading-[1.01] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.85rem] md:text-[3.65rem]">
+                  Vier Bereiche, die zusammen ein starkes digitales System
+                  ergeben.
                 </h2>
+                <p className="font-ui mt-7 max-w-[50rem] text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                  Jede Leistung ist einzeln wertvoll. Der größte Effekt entsteht,
+                  wenn Auftritt, Verkauf, Prozesse und Automationen konsequent
+                  aufeinander abgestimmt sind.
+                </p>
               </div>
 
-              <div data-leis-reveal className="md:pt-3">
-                <p className="font-ui text-[15px] leading-[1.72] text-white/64 md:text-[16.5px] md:leading-[1.72]">
-                  Nicht jedes Vorhaben lässt sich sofort sauber einer Kategorie zuordnen. Manchmal
-                  beginnt es mit einer Website und endet bei einer größeren Web-Anwendung. Manchmal
-                  ist ein Konfigurator Teil eines Vertriebsprozesses. Und manchmal liegt der größte
-                  Hebel in der Automation dahinter.
-                </p>
-                <p className="font-ui mt-6 text-[15px] leading-[1.72] text-white/64 md:text-[16.5px] md:leading-[1.72]">
-                  <em className="italic text-white/88">Genau deshalb denken wir mit.</em> Wenn du
-                  schon weißt, was du brauchst, gehen wir direkt rein. Und wenn noch nicht alles
-                  klar ist, strukturieren wir es gemeinsam.
-                </p>
+              <div className="mt-12 grid gap-6 md:mt-14 lg:grid-cols-2">
+                {SERVICE_PILLARS.map((pillar, index) => (
+                  <article
+                    key={pillar.title}
+                    data-leis-reveal
+                    className="rounded-[1.5rem] border border-[rgb(var(--magicks-line-rgb)/0.11)] bg-[linear-gradient(168deg,rgba(255,255,255,0.84)_0%,rgba(246,242,234,0.72)_100%)] p-6 shadow-[0_28px_76px_-58px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.82)] sm:p-8"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-accent-ink-rgb)/0.74)] sm:text-[11px]">
+                        {String(index + 1).padStart(2, "0")} / 04
+                      </span>
+                      <span
+                        aria-hidden
+                        className="h-px flex-1 bg-[rgb(var(--magicks-line-rgb)/0.14)]"
+                      />
+                    </div>
 
-                {/*
-                 * CTA — promoted full-width baseline rail. Same shape
-                 * as the plate CTAs so by § 05 readers already know
-                 * this is how MAGICKS closes a chapter: hairline rule,
-                 * folio label left, cross-link right.
-                 */}
-                <div
-                  data-leis-reveal
-                  className="mt-12 border-t border-white/[0.14] pt-6 md:mt-16 md:pt-7"
-                >
-                  <div className="flex items-baseline justify-between gap-6">
-                    <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.38em] text-white/54 sm:text-[10.5px]">
-                      Nächster Schritt · Anfrage
-                    </span>
-            <Link
-              to="/kontakt"
-                      className="group relative inline-flex items-baseline gap-3 text-[16px] font-medium tracking-[-0.005em] text-white no-underline sm:text-[17px] md:text-[18.5px]"
-                      aria-label="Projekt besprechen"
+                    <h3 className="font-ui mt-5 text-[1.7rem] font-[620] leading-[1.12] tracking-[-0.022em] text-[rgb(var(--magicks-ink-rgb)/0.94)] sm:text-[2.05rem]">
+                      {pillar.title}
+                    </h3>
+                    <p className="font-ui mt-4 text-[15px] leading-[1.66] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[15.5px]">
+                      {pillar.intro}
+                    </p>
+
+                    <ul className="mt-6 grid gap-2.5">
+                      {pillar.deliverables.map((item) => (
+                        <li
+                          key={item}
+                          className="font-ui flex items-start gap-2.5 text-[14.5px] leading-[1.56] text-[rgb(var(--magicks-ink-rgb)/0.74)]"
+                        >
+                          <span
+                            aria-hidden
+                            className="mt-[0.55em] h-1.5 w-1.5 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.72)]"
+                          />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <p className="font-ui mt-7 rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.52)] px-4 py-3 text-[14.5px] leading-[1.58] text-[rgb(var(--magicks-ink-rgb)/0.74)] sm:text-[15px]">
+                      <span className="font-[620] text-[rgb(var(--magicks-ink-rgb)/0.9)]">
+                        Ergebnis:
+                      </span>{" "}
+                      {pillar.result}
+                    </p>
+
+                    <Link
+                      to={pillar.to}
+                      className="group mt-6 inline-flex min-h-11 items-center gap-2 font-ui text-[15px] font-[560] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.78)] no-underline transition-colors duration-500 hover:text-[rgb(var(--magicks-ink-rgb)/0.98)]"
                     >
-                      <span className="relative pb-2.5">
-                        <span className="font-ui">Projekt besprechen</span>
+                      <span className="relative pb-1">
+                        {pillar.cta}
                         <span
                           aria-hidden
-                          className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left bg-white/50"
-                        />
-                        <span
-                          aria-hidden
-                          className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white transition-transform duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
+                          className="absolute inset-x-0 bottom-0 h-px bg-[rgb(var(--magicks-line-rgb)/0.28)] transition-colors duration-500 group-hover:bg-[rgb(var(--magicks-line-rgb)/0.62)]"
                         />
                       </span>
                       <span
                         aria-hidden
-                        className="font-instrument text-[1.08em] italic text-white/88 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
+                        className="font-instrument text-[1.02em] italic"
                       >
-                        ↗︎
+                        ↗
                       </span>
-            </Link>
-          </div>
-      </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* =========================================================
-           § 06 — HÄUFIGE FRAGEN
-           Visible answer-first block. The same Q/A pairs are mirrored
-           into FAQPage JSON-LD via <FaqJsonLd /> below — both visible
-           AND structured, never hidden. Built as a chapter beat (not
-           a footer accordion) so it carries editorial weight: chapter
-           rail, italic display heading, native <details>/<summary>
-           per item, hairline rules between answers.
-        ========================================================= */}
-        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-leis-reveal className="md:pt-2">
-                <div className="flex flex-col gap-4">
-                  <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
-                    § 06 — Häufige Fragen
-                  </p>
-                  <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/34 sm:text-[10.5px]">
-                    08 Antworten · in 30 Sekunden
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <h2
-                  data-leis-reveal
-                  className="font-instrument max-w-[44rem] text-[2.05rem] leading-[1.04] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]"
-                >
-                  Was Unternehmen vor einer Anfrage{" "}
-                  <em className="italic text-white/58">wissen wollen.</em>
-                </h2>
-
-                <p
-                  data-leis-reveal
-                  className="font-ui mt-7 max-w-[42rem] text-[15px] leading-[1.7] text-white/58 md:mt-9 md:text-[16px]"
-                >
-                  Direkte Antworten auf das, was am häufigsten in Erstgesprächen
-                  und in Suchmaschinen gefragt wird. Wenn deine Frage hier nicht
-                  steht — schreib uns an{" "}
-                  <a
-                    href="mailto:hello@magicks.de"
-                    className="text-white/92 no-underline underline-offset-[5px] magicks-duration-hover magicks-ease-out transition-[text-decoration-color,color] hover:text-white hover:underline hover:decoration-white/60"
-                  >
-                    hello@magicks.de
-                  </a>
-                  .
-                </p>
-
-                <ol className="mt-12 border-t border-white/[0.08] md:mt-16">
-                  {FAQ_ITEMS.map((item, i) => (
-                    <li
-                      key={item.question}
-                      data-leis-reveal
-                      className="border-b border-white/[0.08]"
-                    >
-                      <details className="group/faq">
-                        <summary className="grid cursor-pointer list-none grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-6 py-7 outline-none [&::-webkit-details-marker]:hidden md:gap-x-9 md:py-9">
-                          <span className="font-mono pt-[0.32rem] text-[10.5px] font-medium leading-none tracking-[0.28em] text-white/48 md:text-[11.5px]">
-                            {String(i + 1).padStart(2, "0")}
-                          </span>
-                          <h3 className="font-instrument text-[1.22rem] leading-[1.22] tracking-[-0.014em] text-white md:text-[1.45rem] lg:text-[1.55rem]">
-                            {item.question}
-                          </h3>
-                          <span
-                            aria-hidden
-                            className="font-instrument self-center text-[1.4rem] italic leading-none text-white/56 magicks-duration-hover magicks-ease-out transition-transform group-open/faq:rotate-45 md:text-[1.55rem]"
-                          >
-                            +
-                          </span>
-                        </summary>
-                        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-6 pb-8 md:gap-x-9 md:pb-10">
-                          <span aria-hidden className="block" />
-                          <p className="font-ui max-w-[44rem] text-[14.5px] leading-[1.72] text-white/64 md:text-[15.5px] md:leading-[1.74]">
-                            {item.answer}
-                          </p>
-                          <span aria-hidden className="block" />
-                        </div>
-                      </details>
-          </li>
-        ))}
-                </ol>
-
-                <div
-                  data-leis-reveal
-                  className="font-mono mt-6 flex items-center justify-between gap-4 text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/32 md:mt-8"
-                >
-                  <span>Register · Antworten</span>
-                  <span aria-hidden className="h-px flex-1 bg-white/[0.07]" />
-                  <span className="tabular-nums">08 · MMXXVI</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <FaqJsonLd id="leistungen" items={FAQ_ITEMS} />
-        </section>
-
-        {/* =========================================================
-           CROSS-LINK GATE — "Planbarer starten?" → /website-im-abo
-           Foreshadowed as "Plate · Beyond" so it reads as a fifth,
-           ancillary plate that sits outside the main I–IV register
-           rather than a bolted-on link.
-        ========================================================= */}
-        <section className="relative px-5 py-20 sm:px-8 sm:py-24 md:px-12 md:py-28 lg:px-16">
-          <div className="layout-max">
-            <div data-leis-reveal className="mb-6 sm:mb-8">
-              {/* Pre-heading — sub-folio for the beyond register */}
-              <div className="font-mono grid grid-cols-[minmax(0,auto)_1fr_minmax(0,auto)] items-center gap-5 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/44 sm:text-[10.5px]">
-                <span>Plate · Ergänzung</span>
-                <span aria-hidden className="h-px w-full bg-white/14" />
-                <span className="tabular-nums text-white/32">V · außerhalb Werk</span>
-              </div>
-              <p className="font-instrument mt-6 max-w-[52rem] text-[1.55rem] leading-[1.18] tracking-[-0.02em] text-white sm:text-[1.85rem] md:text-[2.1rem]">
-                <em className="italic text-white">Planbarer starten?</em>
-              </p>
-            </div>
-
-            <div data-leis-reveal>
-              <ContextualCrossLink
-                eyebrow="Ergänzung"
-                folio="Plate V · Website im Abo"
-                lead="Wenn du eine professionelle Website brauchst, aber die Investition lieber planbar monatlich strukturieren möchtest, gibt es bei MAGICKS Studio auch dafür ein passendes Modell."
-                linkLabel="Mehr zu Website im Abo"
-                to="/website-im-abo"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* =========================================================
-           FINAL CTA — register plate composition.
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
-          <div aria-hidden className="section-top-rule" />
-
-          {/*
-           * Register plate corner crop marks — WEB / SHOP / SOFT / KI,
-           * the four disciplines claimed at the plate's four corners.
-           * Reads as the hub's own editorial signature and distinguishes
-           * it from detail pages' IN/OUT or H/B/T cartouches.
-           */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-5 hidden md:inset-8 md:block lg:inset-10"
-          >
-            <span className="absolute left-0 top-0 block h-3 w-3 border-l border-t border-white/28" />
-            <span className="font-mono absolute left-5 top-1 text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[9.5px]">
-              WEB · NW
-            </span>
-            <span className="absolute right-0 top-0 block h-3 w-3 border-r border-t border-white/28" />
-            <span className="font-mono absolute right-5 top-1 text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[9.5px]">
-              SHOP · NE
-            </span>
-            <span className="absolute bottom-0 left-0 block h-3 w-3 border-b border-l border-white/28" />
-            <span className="font-mono absolute bottom-1 left-5 text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[9.5px]">
-              SOFT · SW
-            </span>
-            <span className="absolute bottom-0 right-0 block h-3 w-3 border-b border-r border-white/28" />
-            <span className="font-mono absolute bottom-1 right-5 text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[9.5px]">
-              KI · SE
-            </span>
-          </div>
-
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-[46%] aspect-square w-[118vw] max-w-[1180px] -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle at center, rgba(255,255,255,0.048) 0%, rgba(255,255,255,0.016) 32%, transparent 62%)",
-            }}
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.18]"
-            style={{
-              backgroundImage:
-                "linear-gradient(0deg, rgba(255,255,255,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.10) 1px, transparent 1px)",
-              backgroundSize: "80px 80px, 80px 80px",
-              maskImage: "radial-gradient(ellipse 72% 62% at 50% 46%, black, transparent)",
-            }}
-          />
-
-          <div className="relative layout-max">
-            <div className="mx-auto max-w-[68rem] text-center">
-              <div className="mb-14 inline-flex sm:mb-20">
-                <ChapterMarker num="END" label="Register" align="center" variant="end" />
-              </div>
-
-              <h2 className="font-instrument text-[2.35rem] leading-[0.98] tracking-[-0.036em] text-white sm:text-[3.25rem] md:text-[4.3rem] lg:text-[5.2rem] xl:text-[5.9rem]">
-                <span className="block">
-                  {["Bereit", "für", "eine", "digitale", "Lösung,"].map((w, i) => (
-                    <span
-                      key={`fa-${i}`}
-                      className="mr-[0.18em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span data-leis-finala className="inline-block">
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-                <span className="mt-1 block italic text-white/76 sm:mt-2">
-                  {["die", "mehr", "kann", "als", "nur", "gut", "aussehen?"].map((w, i) => (
-                    <span
-                      key={`fb-${i}`}
-                      className="mr-[0.18em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span data-leis-finalb className="inline-block">
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-              </h2>
-
-              <div className="mx-auto mt-12 flex w-full max-w-[42rem] items-center gap-4 sm:mt-16">
-                <span aria-hidden className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/40">
-                  ·
-                </span>
-                <div aria-hidden className="relative h-px flex-1">
-                  <span
-                    data-leis-finalrule
-                    className="absolute inset-0 block bg-gradient-to-r from-transparent via-white/60 to-transparent"
-                  />
-                </div>
-                <span aria-hidden className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/40">
-                  ·
-                </span>
-              </div>
-
-              <p className="font-ui mx-auto mt-10 max-w-[46rem] text-[15px] leading-[1.72] text-white/60 md:mt-12 md:text-[16.5px]">
-                Wir entwickeln Websites, Shops, Produktkonfiguratoren, Web-Software und
-                KI-Automationen, die hochwertig wirken, sauber funktionieren und digital wirklich
-                weiterbringen.
-              </p>
-
-              {/*
-               * The mid-ledger (Projekt / Register / Direkt) was
-               * pulled. Corner crop marks already claim WEB / SHOP /
-               * SOFT / KI, the final register plate carries the
-               * studio signature, and the hero monogram stated the
-               * edition up top. Another ledger here made the finale
-               * feel like a contents page rather than a close.
-               * A single centered CTA button + a quiet direct line
-               * underneath is the real weight.
-               */}
-              <div className="mt-14 flex flex-col items-center gap-6 sm:mt-18 sm:gap-8">
-                <div data-leis-finalcta>
-                  <Link
-                    to="/kontakt"
-                    className="group relative inline-flex items-center gap-3 rounded-full border border-white/22 bg-white py-4 pl-8 pr-3 text-[15px] font-medium tracking-wide text-[#0A0A0A] no-underline shadow-[0_34px_80px_-32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.45)] magicks-duration-hover magicks-ease-out transition-[transform,box-shadow] hover:-translate-y-[2px] hover:shadow-[0_44px_90px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.55)] active:translate-y-0 active:scale-[0.985] md:text-[16px]"
-                  >
-                    <span>Lass uns über dein Projekt sprechen</span>
-                    <span
-                      aria-hidden
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
-                    >
-                      <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.4">
-                        <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
-                  </Link>
-                </div>
-
-                <div
-                  data-leis-finalledger
-                  className="flex flex-col items-center gap-1 sm:flex-row sm:gap-4"
-                >
-                  <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/42 sm:text-[10px]">
-                    oder direkt
-                  </span>
-                  <a
-                    href="mailto:hello@magicks.de"
-                    className="font-instrument text-[1.1rem] italic text-white/88 no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white sm:text-[1.2rem]"
-                  >
-                    hello@magicks.de
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Register plate — 4-field signature */}
-            <div className="mt-24 border-t border-white/[0.08] pt-7 sm:mt-32">
-              <div className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4 sm:gap-x-0">
-                {[
-                  { k: "§ End", v: "Werk · Register" },
-                  { k: "Folio", v: "I · II · III · IV" },
-                  { k: "Handschrift", v: "Magicks · Studio" },
-                  { k: "Edition", v: "MMXXVI" },
-                ].map((item, i) => (
-                  <div
-                    key={item.k}
-                    className={`flex flex-col gap-2 ${
-                      i > 0 ? "sm:border-l sm:border-white/[0.08] sm:pl-5 md:pl-7" : ""
-                    }`}
-                  >
-                    <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/36 sm:text-[9.5px]">
-                      {item.k}
-                    </span>
-                    <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.28em] text-white/68 sm:text-[10.5px]">
-                      {item.v}
-                    </span>
-                  </div>
+                    </Link>
+                  </article>
                 ))}
               </div>
+
+              <div
+                data-leis-reveal
+                className="mt-8 rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-base-rgb)/0.55)] p-5 sm:mt-10 sm:p-6"
+              >
+                <p className="font-ui text-[14.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.68)] sm:text-[15px]">
+                  Für planbare monatliche Budgets bieten wir zusätzlich ein
+                  strukturiertes Einstiegsmodell:
+                  <Link
+                    to="/website-im-abo"
+                    className="ml-2 inline-flex items-center gap-1.5 text-[rgb(var(--magicks-ink-rgb)/0.9)] no-underline hover:text-[rgb(var(--magicks-ink-rgb)/1)]"
+                  >
+                    <span className="underline decoration-[rgb(var(--magicks-line-rgb)/0.36)] underline-offset-[4px]">
+                      Website im Abo
+                    </span>
+                    <span aria-hidden className="font-instrument italic">
+                      ↗
+                    </span>
+                  </Link>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-18">
+                <div data-leis-reveal>
+                  <Eyebrow text="Warum alles zusammengehört" />
+                  <h2 className="font-ui mt-7 max-w-[16ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.4rem]">
+                    Ein guter digitaler Auftritt endet nicht bei der Website.
+                  </h2>
+                </div>
+                <div data-leis-reveal className="lg:pt-14">
+                  <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                    Viele Unternehmen trennen Website, Shop, Daten, Prozesse
+                    und Automationen voneinander. Dadurch entstehen doppelte
+                    Arbeit, unklare Abläufe und digitale Lösungen, die nicht
+                    zusammenarbeiten. MAGICKS denkt diese Bereiche gemeinsam —
+                    damit Ihr Auftritt nicht nur sichtbar ist, sondern auch im
+                    Hintergrund funktioniert.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+                {FOCUS_POINTS.map((item) => (
+                  <article
+                    key={item.title}
+                    data-leis-reveal
+                    className="rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] p-4 shadow-[0_18px_52px_-44px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:p-5"
+                  >
+                    <h3 className="font-ui text-[1rem] font-[610] leading-[1.28] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+                      {item.title}
+                    </h3>
+                    <p className="font-ui mt-2 text-[14px] leading-[1.56] text-[rgb(var(--magicks-ink-rgb)/0.66)] sm:text-[14.5px]">
+                      {item.text}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div data-leis-reveal className="max-w-[58rem]">
+                <Eyebrow text="Für wen das passt" />
+                <h2 className="font-ui mt-7 max-w-[23ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                  Für Unternehmen, die digital klarer auftreten und effizienter
+                  arbeiten wollen.
+                </h2>
+              </div>
+
+              <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {AUDIENCE_CARDS.map((card) => (
+                  <article
+                    key={card.title}
+                    data-leis-reveal
+                    className="rounded-[1.15rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.5)] p-5 shadow-[0_20px_54px_-46px_rgba(20,28,44,0.28),inset_0_1px_0_rgba(255,255,255,0.72)] sm:p-6"
+                  >
+                    <h3 className="font-ui text-[1.08rem] font-[610] leading-[1.3] tracking-[-0.013em] text-[rgb(var(--magicks-ink-rgb)/0.93)] sm:text-[1.15rem]">
+                      {card.title}
+                    </h3>
+                    <p className="font-ui mt-3 text-[14.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.67)]">
+                      {card.text}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div aria-hidden className="section-top-rule" />
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div data-leis-reveal className="max-w-[58rem]">
+                <Eyebrow text="Arbeitsweise" />
+                <h2 className="font-ui mt-7 max-w-[18ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                  Strategisch gedacht. Sauber umgesetzt. Langfristig betreut.
+                </h2>
+              </div>
+
+              <ol className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {WORKFLOW_STEPS.map((step, index) => (
+                  <li
+                    key={step.title}
+                    data-leis-reveal
+                    className="rounded-[1.15rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[linear-gradient(160deg,rgba(255,255,255,0.82)_0%,rgba(246,242,233,0.68)_100%)] p-5 shadow-[0_20px_58px_-48px_rgba(20,28,44,0.28),inset_0_1px_0_rgba(255,255,255,0.72)] sm:p-6"
+                  >
+                    <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.74)] sm:text-[11px]">
+                      Schritt {index + 1}
+                    </p>
+                    <h3 className="font-ui mt-3 text-[1.08rem] font-[620] leading-[1.28] tracking-[-0.013em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:text-[1.16rem]">
+                      {step.title}
+                    </h3>
+                    <p className="font-ui mt-2.5 text-[14.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.67)]">
+                      {step.text}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-soft)] px-5 pb-24 pt-24 sm:px-8 sm:pb-32 sm:pt-32 md:px-12 md:pb-40 md:pt-40 lg:px-16">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(ellipse 62% 46% at 24% 20%, rgba(166,138,98,0.12), transparent 74%), radial-gradient(ellipse 52% 40% at 80% 76%, rgba(96,118,146,0.1), transparent 76%)",
+            }}
+          />
+          <div className="relative layout-max">
+            <div
+              data-leis-reveal
+              className="mx-auto max-w-[70rem] rounded-[2rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[linear-gradient(170deg,rgba(255,255,255,0.82)_0%,rgba(245,241,233,0.7)_100%)] px-6 py-12 text-center shadow-[0_30px_86px_-56px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.84)] sm:px-10 sm:py-14 md:px-14 md:py-18"
+            >
+              <Eyebrow text="Nächster Schritt" />
+              <h2 className="font-ui mx-auto mt-7 max-w-[18ch] text-[2.2rem] font-[620] leading-[1.01] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3rem] md:text-[3.9rem]">
+                Welche digitale Lösung bringt Ihr Unternehmen wirklich weiter?
+              </h2>
+              <p className="font-ui mx-auto mt-7 max-w-[46rem] text-[1rem] leading-[1.72] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                Lassen Sie uns gemeinsam klären, was Ihr Unternehmen braucht
+                und welche Lösung den größten Unterschied macht.
+              </p>
+
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-4 sm:mt-12">
+                <PrimaryCta to="/kontakt" label="Projekt besprechen" />
+                <Link
+                  to="/kontakt"
+                  className="inline-flex min-h-11 items-center rounded-full border border-[rgb(var(--magicks-line-rgb)/0.2)] bg-transparent px-6 py-2.5 font-ui text-[15px] font-[560] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.82)] no-underline transition-[border-color,transform,color,background-color] duration-500 hover:-translate-y-[1px] hover:border-[rgb(var(--magicks-line-rgb)/0.42)] hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/0.66)] hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[15.5px]"
+                >
+                  Kontakt aufnehmen
+                </Link>
+              </div>
+
+              <p className="font-ui mt-8 text-[14px] leading-[1.6] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:text-[14.5px]">
+                Oder direkt:
+                <a
+                  href="mailto:hello@magicks.de"
+                  className="ml-2 text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline underline decoration-[rgb(var(--magicks-line-rgb)/0.36)] underline-offset-[4px] hover:text-[rgb(var(--magicks-ink-rgb)/1)]"
+                >
+                  hello@magicks.de
+                </a>
+              </p>
             </div>
           </div>
         </section>

@@ -57,6 +57,7 @@ export function BulkAutoCheckModal({
   phaseRef.current = phase;
   const indexRef = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
+  const isStopped = () => phaseRef.current === "stopped";
 
   const updateRow = (leadId: string, patch: Partial<RowState>) => {
     setRows((prev) =>
@@ -68,7 +69,7 @@ export function BulkAutoCheckModal({
     new Promise<void>((resolve) => {
       const t = setTimeout(resolve, ms);
       const check = () => {
-        if (phaseRef.current === "stopped") {
+        if (isStopped()) {
           clearTimeout(t);
           resolve();
         } else if (phaseRef.current === "paused") {
@@ -86,7 +87,7 @@ export function BulkAutoCheckModal({
       while (phaseRef.current === "paused") {
         await sleep(150);
       }
-      if (phaseRef.current === "stopped") return;
+      if (isStopped()) return;
 
       indexRef.current = i;
       setIndex(i);
@@ -139,7 +140,7 @@ export function BulkAutoCheckModal({
           changedCount: changedFields.length,
         });
       } catch (err) {
-        if (ctrl.signal.aborted && phaseRef.current === "stopped") {
+        if (ctrl.signal.aborted && isStopped()) {
           updateRow(lead.id, {
             status: "skipped",
             message: "Abbruch durch Nutzer.",
@@ -161,7 +162,7 @@ export function BulkAutoCheckModal({
       if (i < candidates.length - 1) {
         await sleep(DELAY_MS);
       }
-      if (phaseRef.current === "stopped") return;
+      if (isStopped()) return;
     }
     setPhase("done");
   };

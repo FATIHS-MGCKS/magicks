@@ -4,6 +4,7 @@ import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import {
   presenceEnvelope,
+  prefersCheapMotion,
   rackFocusTrack,
   sectionFarewell,
 } from "../../lib/scrollMotion";
@@ -84,6 +85,7 @@ const SOFTWARE_LOGOS = [
 export function ValueStatement() {
   const rootRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
+  const cheapMotion = prefersCheapMotion();
 
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -133,7 +135,6 @@ export function ValueStatement() {
             y: 0,
             scale: 1,
             scaleX: 1,
-            filter: "blur(0px)",
           },
         );
         if (focusBand) gsap.set(focusBand, { opacity: 0 });
@@ -270,23 +271,41 @@ export function ValueStatement() {
       }
 
       if (proofItems.length) {
+        const proofFrom = cheapMotion
+          ? { opacity: 0, y: 20 }
+          : { opacity: 0, y: 20, filter: "blur(4px)" };
+        const proofTo = cheapMotion
+          ? {
+              opacity: 1,
+              y: 0,
+              stagger: 0.055,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: proofItems[0],
+                start: "top 86%",
+                end: "top 58%",
+                scrub: 0.8,
+                invalidateOnRefresh: true,
+              },
+            }
+          : {
+              opacity: 1,
+              y: 0,
+              filter: "blur(0px)",
+              stagger: 0.055,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: proofItems[0],
+                start: "top 86%",
+                end: "top 58%",
+                scrub: 0.8,
+                invalidateOnRefresh: true,
+              },
+            };
         gsap.fromTo(
           proofItems,
-          { opacity: 0, y: 20, filter: "blur(4px)" },
-          {
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-            stagger: 0.055,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: proofItems[0],
-              start: "top 86%",
-              end: "top 58%",
-              scrub: 0.8,
-              invalidateOnRefresh: true,
-            },
-          },
+          proofFrom,
+          proofTo,
         );
       }
 
@@ -304,7 +323,7 @@ export function ValueStatement() {
       removeFocusBandListeners?.();
       ctx.revert();
     };
-  }, [reduced]);
+  }, [cheapMotion, reduced]);
 
   return (
     <section
@@ -328,7 +347,7 @@ export function ValueStatement() {
             background:
               "linear-gradient(135deg, transparent 34%, rgba(255,255,255,0.38) 45%, rgba(222,214,202,0.48) 50%, rgba(255,255,255,0.26) 56%, transparent 68%)",
             transform: "translate3d(0, -20%, 0) rotate(-15deg)",
-            filter: "blur(40px)",
+            filter: cheapMotion ? "blur(18px)" : "blur(40px)",
             mixBlendMode: "soft-light",
           }}
         />

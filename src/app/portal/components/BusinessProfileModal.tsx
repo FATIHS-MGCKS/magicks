@@ -493,7 +493,7 @@ function ReviewPhase({
                 <a
                   href={s.uri}
                   target="_blank"
-                  rel="noreferrer noopener"
+                  rel="noopener noreferrer"
                   className="text-white/80 underline decoration-white/20 hover:text-white"
                 >
                   {s.title || s.uri}

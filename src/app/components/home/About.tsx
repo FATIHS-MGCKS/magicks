@@ -13,21 +13,21 @@ import { sectionFarewell } from "../../lib/scrollMotion";
 
 const PARTNER_CARDS = [
   {
-    src: "/media/home/ihr partner (1).png",
+    src: "/media/home/alles-aus-einer-hand.webp",
     title: "Alles aus einer Hand",
     description:
       "Von Strategie, Content und Design bis Entwicklung, SEO und Hosting: alles greift ineinander.",
     alt: "Illustration zur Leistung Alles aus einer Hand",
   },
   {
-    src: "/media/home/ihr partner (2).png",
+    src: "/media/home/wir-denken-mit.webp",
     title: "Wir denken mit",
     description:
       "Wir setzen nicht einfach um. Wir verstehen Ihr Angebot, strukturieren Ihre Botschaft und denken den digitalen Auftritt weiter.",
     alt: "Illustration zur Leistung Wir denken mit",
   },
   {
-    src: "/media/home/ihr partner (3).png",
+    src: "/media/home/für-wirkung-gebaut.webp",
     title: "Für Wirkung gebaut",
     description:
       "Sichtbarkeit, Performance und Nutzerführung werden von Anfang an mitgedacht — damit Ihr Auftritt nicht nur gut aussieht, sondern arbeitet.",

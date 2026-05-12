@@ -32,7 +32,7 @@ type ProblemSlide = {
   variant: "search" | "trust" | "conversion";
 };
 
-const PHONE_FRAME_SRC = "/media/home/ihpone-display.png";
+const PHONE_FRAME_SRC = "/media/home/ihpone-display.webp";
 
 const PROBLEM_SLIDES: ProblemSlide[] = [
   {
@@ -67,7 +67,7 @@ export function ProblemSection() {
     const root = rootRef.current;
     if (!root) return;
 
-    const { gsap, ScrollTrigger } = registerGsap();
+    const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
       const copyItems = gsap.utils.toArray<HTMLElement>("[data-problem-copy]");

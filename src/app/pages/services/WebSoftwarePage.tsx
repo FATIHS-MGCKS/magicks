@@ -2,180 +2,291 @@ import { useLayoutEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
-import { ChapterMarker } from "../../components/home/ChapterMarker";
+import { runRouteReveal } from "../../lib/routeReveal";
+import { RouteSEO } from "../../seo/RouteSEO";
 import { ContextualCrossLink } from "../../components/service/ContextualCrossLink";
 import { EditorialAnchor } from "../../components/service/EditorialAnchor";
-import { SectionTransition } from "../../components/service/SectionTransition";
-import { presenceEnvelope } from "../../lib/scrollMotion";
-import { RouteSEO } from "../../seo/RouteSEO";
 import { SERVICE_PAGE_IMAGES } from "../../data/imageWorld";
 
-/* ------------------------------------------------------------------
- * /web-software — bespoke editorial landing page.
- *
- * Emphasis: system architecture, structure, calm confidence.
- * Visual language: more architectural than sales-oriented. The hero motif
- * is a 4-module "system schema" — hairline nodes connected with thin
- * dotted connectors. More restraint, more structural rhythm.
- *
- * Sections:
- *   · Hero                — chapter folio, serif H1, CTA, meta triad, SystemSchema, vertical credit
- *   · Statement 01        — "Wenn Standard-Tools nicht mehr reichen"
- *   · Audience            — "Für Unternehmen mit echten digitalen Prozessen"
- *   · Includes            — 6-item taxonomy (labeled kind/role per cell)
- *   · Approach            — "Wie wir an Web-Software rangehen"
- *   · Negation            — "Was du nicht bekommst"
- *   · Ceremonial Pull     — "Web-Software mit Klarheit..."
- *   · Cross-links         — /ki-automationen-integrationen AND /shops-produktkonfiguratoren
- *   · Final CTA           — serif headline + session ledger + white pill
- * ------------------------------------------------------------------ */
+type BenefitPoint = {
+  title: string;
+  text: string;
+};
 
-const INCLUDES: { mod: string; kind: string; title: string; body: string }[] = [
+type AudienceCase = {
+  title: string;
+  text: string;
+};
+
+type Deliverable = {
+  title: string;
+  text: string;
+};
+
+type WorkflowStep = {
+  title: string;
+  text: string;
+};
+
+const STANDARD_TOOL_LIMITS: BenefitPoint[] = [
   {
-    mod: "MOD-01",
-    kind: "Interface",
-    title: "Portale & Plattformen",
-    body:
-      "Individuelle Web-Lösungen für Kunden, Mitarbeiter, Partner oder interne Abläufe.",
+    title: "Tabellen ersetzen keine Prozesse",
+    text: "Listen können Daten sammeln, aber sie führen selten sauber durch Zuständigkeiten, Status und nächste Schritte.",
   },
   {
-    mod: "MOD-02",
-    kind: "Daten",
-    title: "Dashboards & Übersichten",
-    body:
-      "Strukturiert aufgebaute Interfaces für Daten, Status, KPIs oder operative Prozesse.",
+    title: "E-Mails ersetzen keine klare Zuständigkeit",
+    text: "Wichtige Entscheidungen verschwinden schnell in Verläufen, Anhängen und Rückfragen.",
   },
   {
-    mod: "MOD-03",
-    kind: "Werkzeug",
-    title: "Interne Tools",
-    body:
-      "Anwendungen, die Teams entlasten, Abläufe vereinfachen und manuelle Schritte reduzieren.",
+    title: "Tool-Chaos erzeugt doppelte Arbeit",
+    text: "Wenn Systeme nicht zusammenspielen, werden Daten mehrfach gepflegt und Abläufe unnötig langsam.",
   },
   {
-    mod: "MOD-04",
-    kind: "System",
-    title: "Prozesslogik & Struktur",
-    body:
-      "Wir denken nicht nur in Screens, sondern in Rollen, Abläufen, Zuständen und sinnvollen Systemen.",
+    title: "Verteilte Daten erschweren Entscheidungen",
+    text: "Teams brauchen verlässliche Übersichten, statt Informationen in mehreren Anwendungen suchen zu müssen.",
   },
   {
-    mod: "MOD-05",
-    kind: "Verbindung",
-    title: "Integrationen",
-    body:
-      "Anbindungen an bestehende Tools, APIs, Datenquellen oder andere digitale Systeme.",
+    title: "Manuelle Schritte bremsen Wachstum",
+    text: "Was bei wenigen Vorgängen funktioniert, wird bei mehr Volumen schnell zur operativen Belastung.",
   },
   {
-    mod: "MOD-06",
-    kind: "Basis",
-    title: "Skalierbare Umsetzung",
-    body:
-      "Technisch sauber aufgebaut, damit die Lösung nicht nur heute funktioniert, sondern mitwachsen kann.",
+    title: "Standardsoftware passt nicht immer zum realen Ablauf",
+    text: "Manche Prozesse brauchen eine Anwendung, die Rollen, Daten und Logik präziser abbildet.",
   },
 ];
 
-/**
- * Each audience case maps to an architectural "zone" — the part of the
- * system where that scenario lives. Turns an ordinary list into a
- * routing table that reinforces the page's system vocabulary.
- */
-const AUDIENCE: { text: string; zone: string }[] = [
-  { text: "interne Abläufe digitalisieren willst", zone: "Prozess" },
-  { text: "ein Portal für Kunden, Teams oder Partner brauchst", zone: "Interface" },
-  { text: "Daten, Status oder Prozesse in Dashboards sichtbar machen willst", zone: "Daten" },
-  { text: "mehrere Systeme sinnvoll verbinden musst", zone: "Verbindung" },
-  { text: "eine individuelle Anwendung brauchst, die genau zu deinem Workflow passt", zone: "Rolle" },
+const AUDIENCE_CASES: AudienceCase[] = [
+  {
+    title: "Ihre Teams arbeiten zu viel mit Tabellen, E-Mails oder manuellen Listen.",
+    text: "Abläufe sind vorhanden, aber nicht sauber digital geführt.",
+  },
+  {
+    title: "Informationen liegen in mehreren Tools verteilt.",
+    text: "Daten müssen gesucht, kopiert oder manuell zusammengeführt werden.",
+  },
+  {
+    title: "Kunden, Mitarbeiter oder Partner brauchen ein eigenes Portal.",
+    text: "Zugriff, Status, Dokumente, Aufgaben oder Anfragen sollen zentral erreichbar sein.",
+  },
+  {
+    title: "Sie möchten Status, Aufgaben, Daten oder Vorgänge übersichtlich sichtbar machen.",
+    text: "Dashboards und operative Übersichten schaffen Klarheit für Entscheidungen.",
+  },
+  {
+    title: "Ihr Prozess passt nicht sauber in Standardsoftware.",
+    text: "Die Realität Ihres Unternehmens ist genauer als die Vorgaben eines fertigen Tools.",
+  },
+  {
+    title: "Sie brauchen Rollen, Rechte, Workflows und Datenlogik.",
+    text: "Nicht jeder Nutzer darf alles sehen, bearbeiten oder freigeben.",
+  },
+  {
+    title: "Sie möchten Abläufe digitalisieren, ohne ein überladenes System einzuführen.",
+    text: "Die Anwendung soll entlasten, nicht neue Komplexität erzeugen.",
+  },
 ];
 
-/* ------------------------------------------------------------------
- * SystemSchema — four modular nodes connected by hairline lines.
- * The visual signal of this page: a blueprint, not a product catalog.
- *
- * Each module carries a tree-numbered sub-index (01.01, 02.01 …) —
- * reading as a real system document with nested addressing. The
- * connectors step directionally left-to-right with a mid-arrow glyph
- * suggesting information flow rather than decoration.
- *
- * Modules: Rolle · Daten · Prozess · Interface.
- * ------------------------------------------------------------------ */
+const DELIVERABLES: Deliverable[] = [
+  {
+    title: "Kundenportale",
+    text: "Damit Kunden Status, Dokumente, Anfragen oder nächste Schritte an einem klaren Ort finden.",
+  },
+  {
+    title: "Mitarbeiter- und Partnerportale",
+    text: "Für geregelten Zugriff auf Informationen, Aufgaben, Freigaben oder gemeinsame Abläufe.",
+  },
+  {
+    title: "Interne Dashboards",
+    text: "Damit Teams Daten, Vorgänge und Kennzahlen schneller verstehen und priorisieren können.",
+  },
+  {
+    title: "Admin-Systeme",
+    text: "Für gepflegte Daten, nachvollziehbare Verwaltung und weniger manuelle Einzelarbeit.",
+  },
+  {
+    title: "Buchungs- und Anfrageprozesse",
+    text: "Damit Eingaben strukturiert ankommen und direkt weiterverarbeitet werden können.",
+  },
+  {
+    title: "Freigabe- und Statusworkflows",
+    text: "Damit Zuständigkeiten, Entscheidungen und Bearbeitungsstände sichtbar bleiben.",
+  },
+  {
+    title: "Datenverwaltung und Übersichten",
+    text: "Für zentrale Daten, klare Filter, Listen, Detailansichten und verlässliche Auswertungen.",
+  },
+  {
+    title: "Rollen- und Rechtekonzepte",
+    text: "Damit Nutzer nur sehen und bearbeiten, was für ihre Aufgabe relevant ist.",
+  },
+  {
+    title: "CRM-nahe Tools",
+    text: "Für Lead-, Kunden- oder Projektprozesse, die näher am tatsächlichen Vertrieb oder Betrieb liegen.",
+  },
+  {
+    title: "Schnittstellen und API-Anbindungen",
+    text: "Damit bestehende Systeme nicht isoliert bleiben und Daten sinnvoll fließen.",
+  },
+  {
+    title: "Individuelle Plattformen",
+    text: "Für digitale Systeme, die mehrere Rollen, Module und Abläufe zusammenführen.",
+  },
+  {
+    title: "Reporting- und Analyseansichten",
+    text: "Damit relevante Entwicklungen sichtbar werden, statt im Tagesgeschäft unterzugehen.",
+  },
+  {
+    title: "Responsive Web-Anwendungen",
+    text: "Damit wichtige Aufgaben auf Desktop, Tablet und Mobile sauber funktionieren.",
+  },
+  {
+    title: "Hosting, Wartung und Weiterentwicklung",
+    text: "Auf Wunsch begleiten wir Betrieb, Analyse, Anpassungen und sinnvolle Erweiterungen nach dem Launch.",
+  },
+];
+
+const PROCESS_QUESTIONS = [
+  "Wer nutzt die Anwendung?",
+  "Welche Rollen und Rechte gibt es?",
+  "Welche Daten müssen sichtbar oder bearbeitbar sein?",
+  "Welche Schritte sollen automatisiert werden?",
+  "Welche Systeme müssen angebunden werden?",
+  "Welche Entscheidungen soll die Software erleichtern?",
+] as const;
+
+const INTEGRATION_POINTS = [
+  "CRM-Anbindungen",
+  "API-Schnittstellen",
+  "Formular- und Anfrageflows",
+  "Kalender- oder Buchungslogik",
+  "Benachrichtigungen",
+  "Reports",
+  "Datenimporte und Exporte",
+  "Automatisierte Folgeprozesse",
+] as const;
+
+const AVOID_POINTS = [
+  "Kein überladenes Tool ohne klare Logik.",
+  "Keine Oberfläche, die gut aussieht, aber den Prozess nicht trägt.",
+  "Keine halbfertige Sonderlösung, die später nur Probleme macht.",
+  "Keine Software ohne nachvollziehbare Struktur.",
+  "Keine Funktionen, die niemand im Alltag wirklich braucht.",
+  "Keine technische Lösung, die Ihr Team unnötig abhängig macht.",
+] as const;
+
+const WORKFLOW_STEPS: WorkflowStep[] = [
+  {
+    title: "Verstehen",
+    text: "Wir analysieren Ziel, Nutzer, Rollen, Daten, Abläufe und bestehende Werkzeuge.",
+  },
+  {
+    title: "Strukturieren",
+    text: "Wir übersetzen den Prozess in klare Module, Zustände, Rechte und Informationsflüsse.",
+  },
+  {
+    title: "Konzipieren",
+    text: "Wir entwickeln Logik, Seitenstruktur und Nutzerführung, bevor visuelle Details entstehen.",
+  },
+  {
+    title: "Gestalten",
+    text: "Das Interface macht komplexe Abläufe verständlich, bedienbar und hochwertig.",
+  },
+  {
+    title: "Entwickeln",
+    text: "Die Anwendung wird sauber, responsiv, performant und erweiterbar umgesetzt.",
+  },
+  {
+    title: "Verbinden",
+    text: "Schnittstellen, Datenquellen und Automationen werden dort integriert, wo sie echten Nutzen schaffen.",
+  },
+  {
+    title: "Optimieren",
+    text: "Nach dem Launch können Analyse, Anpassungen und Weiterentwicklung folgen.",
+  },
+];
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[11px] sm:tracking-[0.22em]">
+      <span
+        aria-hidden
+        className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.72)]"
+      />
+      {children}
+    </span>
+  );
+}
+
+function PrimaryCta({ to, label }: { to: string; label: string }) {
+  return (
+    <Link
+      to={to}
+      className="group relative inline-flex min-h-12 items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[linear-gradient(180deg,rgba(255,253,249,0.96)_0%,rgba(244,238,227,0.9)_100%)] py-2.5 pl-6 pr-2 font-ui text-[15.5px] font-[600] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline shadow-[0_22px_62px_-42px_rgba(20,28,44,0.46),inset_0_1px_0_rgba(255,255,255,0.88),inset_0_-1px_0_rgba(148,124,92,0.12)] transition-[transform,box-shadow,border-color] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:border-[rgb(var(--magicks-accent-line-rgb)/0.4)] hover:shadow-[0_32px_82px_-40px_rgba(20,28,44,0.52),inset_0_1px_0_rgba(255,255,255,0.92),inset_0_-1px_0_rgba(148,124,92,0.16)] active:translate-y-0 active:scale-[0.99] sm:pl-7 sm:pr-2.5 sm:text-[16px] md:text-[16.5px]"
+    >
+      <span>{label}</span>
+      <span
+        aria-hidden
+        className="ml-1 h-5 w-px bg-[rgb(var(--magicks-accent-rgb)/0.22)] transition-colors duration-[720ms] group-hover:bg-[rgb(var(--magicks-accent-rgb)/0.42)] sm:h-6"
+      />
+      <span
+        aria-hidden
+        className="font-instrument flex h-8 w-8 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.34)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.9)] text-[1.05em] italic text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] transition-transform duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[3px]"
+      >
+        {"\u2197\uFE0E"}
+      </span>
+    </Link>
+  );
+}
+
 function SystemSchema() {
-  const modules: { label: string; kind: string; sub: string }[] = [
-    { label: "Rolle", kind: "01", sub: "01.01" },
-    { label: "Daten", kind: "02", sub: "02.01" },
-    { label: "Prozess", kind: "03", sub: "03.01" },
-    { label: "Interface", kind: "04", sub: "04.01" },
-  ];
+  const modules = [
+    { label: "Rollen", meta: "Wer darf was?" },
+    { label: "Daten", meta: "Was ist relevant?" },
+    { label: "Workflow", meta: "Was passiert wann?" },
+    { label: "Interface", meta: "Wie wird es nutzbar?" },
+  ] as const;
 
   return (
-    <div aria-hidden className="w-full max-w-[44rem]">
-      <div className="flex items-stretch gap-2 sm:gap-3">
-        {modules.map((m, i) => (
-          <div key={m.label} className="flex flex-1 items-stretch">
-            <div
+    <div className="w-full" aria-label="Visualisierte Struktur einer Web-Anwendung">
+      <div className="rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.62)] p-5 shadow-[0_24px_68px_-52px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.74)] sm:p-6">
+        <div className="mb-5 flex items-center justify-between gap-4">
+          <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.72)]">
+            Prozessschema
+          </span>
+          <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-ink-rgb)/0.38)]">
+            4 Module · 1 Ablauf
+          </span>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          {modules.map((module, index) => (
+            <article
+              key={module.label}
               data-ws-module
-              className="relative flex flex-1 flex-col justify-between gap-4 border border-white/[0.14] bg-[var(--magicks-bg-lifted)] px-3 py-3 sm:px-4 sm:py-4"
+              className="relative min-h-[7.2rem] rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-base-rgb)/0.58)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.66)]"
             >
-              <div className="flex flex-col gap-2">
-                <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.32em] text-white/40 sm:text-[9.5px]">
-                  § {m.kind}
-                </span>
-                <span className="font-instrument text-[0.98rem] leading-none tracking-[-0.01em] text-white/92 sm:text-[1.1rem] md:text-[1.18rem]">
-                  {m.label}
-                </span>
-              </div>
-
-              {/* Sub-index — reads like a nested address in a system document */}
-              <span className="font-mono tabular-nums text-[8.5px] font-medium uppercase leading-none tracking-[0.3em] text-white/30 sm:text-[9px]">
-                {m.sub}
+              <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.62)]">
+                {String(index + 1).padStart(2, "0")}
               </span>
-
-              {/* Node corner hints */}
+              <h3 className="font-ui mt-4 text-[1.05rem] font-[620] leading-[1.2] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+                {module.label}
+              </h3>
+              <p className="font-ui mt-2 text-[13.5px] leading-[1.55] text-[rgb(var(--magicks-ink-rgb)/0.58)]">
+                {module.meta}
+              </p>
               <span
                 aria-hidden
-                className="pointer-events-none absolute left-0 top-0 h-1 w-1 border-l border-t border-white/30"
+                className="absolute right-3 top-3 h-2 w-2 border-r border-t border-[rgb(var(--magicks-line-rgb)/0.22)]"
               />
-              <span
-                aria-hidden
-                className="pointer-events-none absolute bottom-0 right-0 h-1 w-1 border-b border-r border-white/30"
-              />
-            </div>
+            </article>
+          ))}
+        </div>
 
-            {/*
-             * Connector — hairline with a directional chevron at midpoint.
-             * Chevron is svg so it can animate consistently and stays crisp.
-             */}
-            {i < modules.length - 1 ? (
-              <div
-                data-ws-connector
-                aria-hidden
-                className="relative flex h-auto flex-shrink-0 items-center self-center"
-                style={{ width: "clamp(20px, 3.6vw, 44px)" }}
-              >
-                <span className="block h-px w-full bg-white/22" />
-                <span className="absolute right-0 top-1/2 flex h-3 w-3 -translate-y-1/2 items-center justify-center">
-                  <svg
-                    viewBox="0 0 10 10"
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    className="text-white/46"
-                    strokeWidth="1.2"
-                  >
-                    <path d="M3 2 L7 5 L3 8" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-              </div>
-            ) : null}
-          </div>
-        ))}
-      </div>
-
-      <div className="font-mono mt-3 flex items-start justify-between text-[9px] font-medium uppercase leading-none tracking-[0.28em] text-white/30 sm:text-[9.5px]">
-        <span>Eingang</span>
-        <span className="text-white/44">Systemarchitektur · 4 Module</span>
-        <span>Ausgabe</span>
+        <div className="font-mono mt-5 flex items-start justify-between gap-4 text-[9.5px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-ink-rgb)/0.38)] sm:text-[10px]">
+          <span>Eingang</span>
+          <span className="text-[rgb(var(--magicks-ink-rgb)/0.58)]">Ablauf wird nutzbar</span>
+          <span>Ausgabe</span>
+        </div>
       </div>
     </div>
   );
@@ -191,277 +302,38 @@ export default function WebSoftwarePage() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
-      // ——— Hero ———
-      const heroChapter = root.querySelector<HTMLElement>("[data-ws-chapter]");
-      const heroLineA = gsap.utils.toArray<HTMLElement>("[data-ws-h1a]");
-      const heroLineB = gsap.utils.toArray<HTMLElement>("[data-ws-h1b]");
-      const heroH1 = root.querySelector<HTMLElement>("[data-ws-h1]");
-      const heroLead = root.querySelector<HTMLElement>("[data-ws-lead]");
-      const heroCta = root.querySelector<HTMLElement>("[data-ws-cta]");
-      const heroCtaRule = root.querySelector<HTMLElement>("[data-ws-cta-rule]");
-      const heroMeta = gsap.utils.toArray<HTMLElement>("[data-ws-meta]");
-      const heroModules = gsap.utils.toArray<HTMLElement>("[data-ws-module]");
-      const heroConnectors = gsap.utils.toArray<HTMLElement>("[data-ws-connector]");
-      const heroSchema = root.querySelector<HTMLElement>("[data-ws-schema]");
-      const heroCredit = root.querySelector<HTMLElement>("[data-ws-credit]");
-      const heroSection = root.querySelector<HTMLElement>("[data-ws-hero]");
-      const heroCopy = root.querySelector<HTMLElement>("[data-ws-herocopy]");
-
-      // ——— Scroll reveals ———
+      const heroItems = gsap.utils.toArray<HTMLElement>("[data-ws-hero-item]");
+      const modules = gsap.utils.toArray<HTMLElement>("[data-ws-module]");
       const reveals = gsap.utils.toArray<HTMLElement>("[data-ws-reveal]");
-      const pullLines = gsap.utils.toArray<HTMLElement>("[data-ws-pull]");
-      const pullHeading = root.querySelector<HTMLElement>("[data-ws-pullheading]");
-      const finalLineA = gsap.utils.toArray<HTMLElement>("[data-ws-finala]");
-      const finalLineB = gsap.utils.toArray<HTMLElement>("[data-ws-finalb]");
-      const finalRule = root.querySelector<HTMLElement>("[data-ws-finalrule]");
-      const finalLedger = gsap.utils.toArray<HTMLElement>("[data-ws-finalledger]");
-      const finalCta = root.querySelector<HTMLElement>("[data-ws-finalcta]");
 
       if (reduced) {
-        gsap.set(
-          [
-            heroChapter,
-            ...heroLineA,
-            ...heroLineB,
-            heroLead,
-            heroCta,
-            heroCtaRule,
-            ...heroMeta,
-            ...heroModules,
-            ...heroConnectors,
-            heroSchema,
-            heroCredit,
-            ...reveals,
-            ...pullLines,
-            pullHeading,
-            ...finalLineA,
-            ...finalLineB,
-            finalRule,
-            ...finalLedger,
-            finalCta,
-          ],
-          { opacity: 1, y: 0, yPercent: 0, scaleX: 1, letterSpacing: "normal" },
-        );
+        gsap.set([...heroItems, ...modules, ...reveals], {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+        });
         return;
       }
 
-      // ——— Hero choreography ———
-      gsap.set(heroChapter, { opacity: 0, y: 12 });
-      gsap.set([...heroLineA, ...heroLineB], { yPercent: 118, opacity: 0 });
-      if (heroH1) gsap.set(heroH1, { letterSpacing: "0.008em" });
-      gsap.set(heroLead, { opacity: 0, y: 16 });
-      gsap.set(heroCta, { opacity: 0, y: 14 });
-      gsap.set(heroCtaRule, { scaleX: 0, transformOrigin: "left center" });
-      gsap.set(heroMeta, { opacity: 0, y: 8 });
-      gsap.set(heroSchema, { opacity: 0 });
-      gsap.set(heroModules, { opacity: 0, y: 10 });
-      gsap.set(heroConnectors, { scaleX: 0, transformOrigin: "left center" });
-      gsap.set(heroCredit, { opacity: 0, y: 8 });
-
-      gsap
-        .timeline({ delay: 0.15, defaults: { ease: "power3.out" } })
-        .to(heroChapter, { opacity: 1, y: 0, duration: 0.9 }, 0)
-        .to(
-          heroLineA,
-          { yPercent: 0, opacity: 1, duration: 1.25, stagger: 0.08, ease: "power4.out" },
-          0.3,
-        )
-        .to(
-          heroLineB,
-          { yPercent: 0, opacity: 1, duration: 1.35, stagger: 0.08, ease: "power4.out" },
-          0.62,
-        )
-        .to(
-          heroH1,
-          { letterSpacing: "-0.038em", duration: 1.65, ease: "power2.out" },
-          0.45,
-        )
-        .to(heroLead, { opacity: 1, y: 0, duration: 1.0 }, 1.05)
-        .to(heroCta, { opacity: 1, y: 0, duration: 0.95 }, 1.4)
-        .to(heroCtaRule, { scaleX: 1, duration: 1.15, ease: "power2.inOut" }, 1.5)
-        .to(heroMeta, { opacity: 1, y: 0, duration: 0.85, stagger: 0.09 }, 1.65)
-        .to(heroSchema, { opacity: 1, duration: 1.15 }, 1.78)
-        // Modules + connectors arrive left-to-right in an architectural sweep
-        // (slower, more deliberate — mature restraint)
-        .to(
-          heroModules,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.85,
-            stagger: 0.17,
-            ease: "power3.out",
-          },
-          1.85,
-        )
-        .to(
-          heroConnectors,
-          {
-            scaleX: 1,
-            duration: 0.75,
-            stagger: 0.17,
-            ease: "power2.inOut",
-          },
-          2.02,
-        )
-        .to(heroCredit, { opacity: 1, y: 0, duration: 1.0 }, 2.45);
-
-      // ——— Hero camera push — very subtle scroll-linked drift ———
-      if (heroCopy && heroSection) {
-        gsap.to(heroCopy, {
-          yPercent: -7,
-          opacity: 0.42,
-          ease: "none",
-          scrollTrigger: {
-            trigger: heroSection,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      }
-      if (heroCredit && heroSection) {
-        gsap.to(heroCredit, {
-          opacity: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: heroSection,
-            start: "center top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      }
-
-      // ——— Generic scroll reveals ———
-      reveals.forEach((el) => {
-        presenceEnvelope(el, {
-          trigger: el,
-          start: "top 88%",
-          end: "bottom 20%",
-          yFrom: 18,
-          yTo: -10,
-          blur: 3,
-          opacityFloor: 0.18,
-          holdRatio: 0.52,
-          scrub: 0.9,
-        });
+      runRouteReveal({
+        gsap,
+        root,
+        heroItems,
+        revealItems: reveals,
       });
 
-      // ——— Ceremonial pull statement ———
-      if (pullLines.length) {
-        presenceEnvelope(pullLines, {
-          trigger: pullLines[0],
-          start: "top 84%",
-          end: "bottom 18%",
-          yFrom: 22,
-          yTo: -12,
-          blur: 3.6,
-          opacityFloor: 0.16,
-          holdRatio: 0.56,
-          stagger: 0.035,
-          scrub: 1.0,
-        });
-        if (pullHeading) {
-          gsap.fromTo(
-            pullHeading,
-            { letterSpacing: "0.008em" },
-            {
-              letterSpacing: "-0.038em",
-              ease: "none",
-              scrollTrigger: {
-                trigger: pullLines[0],
-                start: "top 84%",
-                end: "bottom 22%",
-                scrub: 1.0,
-                invalidateOnRefresh: true,
-              },
-            },
-          );
-        }
-      }
+      gsap.fromTo(
+        modules,
+        { opacity: 0, y: 12 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.62,
+          stagger: 0.08,
+          ease: "power2.out",
+        },
+      );
 
-      // ——— Final CTA choreography ———
-      if (finalLineA.length || finalLineB.length) {
-        const trigger =
-          (finalLineA[0] as HTMLElement | undefined)?.closest("section") ?? finalLineA[0];
-
-        presenceEnvelope(finalLineA, {
-          trigger,
-          start: "top 84%",
-          end: "bottom 18%",
-          yFrom: 20,
-          yTo: -10,
-          blur: 3.2,
-          opacityFloor: 0.16,
-          holdRatio: 0.56,
-          stagger: 0.03,
-          scrub: 1.0,
-        });
-        presenceEnvelope(finalLineB, {
-          trigger,
-          start: "top 80%",
-          end: "bottom 16%",
-          yFrom: 22,
-          yTo: -10,
-          blur: 3.2,
-          opacityFloor: 0.16,
-          holdRatio: 0.56,
-          stagger: 0.03,
-          scrub: 1.0,
-        });
-
-        gsap.fromTo(
-          finalRule,
-          { scaleX: 0, transformOrigin: "center center" },
-          {
-            scaleX: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger,
-              start: "top 84%",
-              end: "top 46%",
-              scrub: 1.0,
-              invalidateOnRefresh: true,
-            },
-          },
-        );
-        gsap.to(finalRule, {
-          scaleX: 0.58,
-          ease: "none",
-          scrollTrigger: {
-            trigger,
-            start: "top 20%",
-            end: "bottom 0%",
-            scrub: 1.0,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        presenceEnvelope(finalCta, {
-          trigger,
-          start: "top 82%",
-          end: "bottom 8%",
-          yFrom: 16,
-          yTo: -8,
-          blur: 2.6,
-          opacityFloor: 0.18,
-          holdRatio: 0.6,
-          scrub: 1.0,
-        });
-        presenceEnvelope(finalLedger, {
-          trigger,
-          start: "top 80%",
-          end: "bottom 10%",
-          yFrom: 14,
-          yTo: -8,
-          blur: 2.4,
-          opacityFloor: 0.22,
-          holdRatio: 0.58,
-          stagger: 0.02,
-          scrub: 1.0,
-        });
-      }
     }, root);
 
     return () => ctx.revert();
@@ -473,661 +345,404 @@ export default function WebSoftwarePage() {
 
       <main
         ref={rootRef}
-        className="relative bg-[var(--magicks-bg-base)] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative overflow-hidden bg-[var(--magicks-bg-base)] pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.25rem]"
       >
-        {/* =========================================================
-           HERO — architectural blueprint energy
-        ========================================================= */}
         <section
           data-ws-hero
-          className="relative overflow-hidden px-5 pb-28 sm:px-8 sm:pb-32 md:px-12 md:pb-44 lg:px-16 lg:pb-52"
+          className="relative overflow-hidden px-5 pb-24 pt-8 sm:px-8 sm:pb-32 sm:pt-10 md:px-12 md:pb-40 lg:px-16 lg:pb-48"
         >
-          {/* Subtle blueprint grid — distinguishing from Shops page's horizontal lines */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.36]"
+            className="pointer-events-none absolute inset-0"
             style={{
               backgroundImage:
-                "linear-gradient(rgba(255,255,255,0.011) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.011) 1px, transparent 1px)",
-              backgroundSize: "64px 64px",
+                "radial-gradient(ellipse 58% 46% at 18% 18%, rgba(166,138,98,0.14), transparent 72%), radial-gradient(ellipse 52% 40% at 82% 36%, rgba(104,132,164,0.13), transparent 74%), radial-gradient(ellipse 74% 44% at 50% 94%, rgba(255,255,255,0.58), transparent 76%)",
+            }}
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-[0.28]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(46,56,76,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(46,56,76,0.035) 1px, transparent 1px)",
+              backgroundSize: "72px 72px",
               maskImage:
-                "radial-gradient(ellipse 58% 68% at 26% 56%, black, transparent)",
+                "radial-gradient(ellipse 70% 60% at 50% 42%, black, transparent)",
               WebkitMaskImage:
-                "radial-gradient(ellipse 58% 68% at 26% 56%, black, transparent)",
+                "radial-gradient(ellipse 70% 60% at 50% 42%, black, transparent)",
             }}
           />
 
-          {/* Vertical editorial credit — left edge, fades on scroll */}
-          <div
-            data-ws-credit
-            aria-hidden
-            className="pointer-events-none absolute bottom-14 left-5 z-10 hidden md:block lg:bottom-16 lg:left-8"
-          >
-            <span className="hero-vertical-credit">
-              MAGICKS &nbsp;·&nbsp; LEISTUNG 04 &nbsp;·&nbsp; WEB-SOFTWARE &nbsp;·&nbsp; BLUEPRINT MMXXVI
-            </span>
-          </div>
-
           <div className="relative layout-max">
-            <div data-ws-herocopy>
-              <div data-ws-chapter className="mb-10 sm:mb-14">
-                <ChapterMarker num="04" label="Leistungen / Web-Software" />
-              </div>
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.66fr)] lg:items-end lg:gap-16">
+                <div>
+                  <div data-ws-hero-item>
+                    <Eyebrow>Web-Software</Eyebrow>
+                  </div>
 
-              {/* H1 */}
-              <h1
-                data-ws-h1
-                className="font-instrument max-w-[58rem] text-[2.4rem] leading-[0.98] tracking-[-0.038em] text-white sm:text-[3.1rem] md:text-[4rem] lg:text-[4.7rem] xl:text-[5.3rem]"
-              >
-                <span className="block">
-                  {["Web-Software,", "die", "Prozesse"].map((w, i) => (
-                    <span
-                      key={`a-${i}`}
-                      className="mr-[0.2em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span data-ws-h1a className="inline-block will-change-[transform,opacity]">
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-                <span className="mt-1 block italic text-white/64 sm:mt-2">
-                  {["digital", "wirklich", "weiterbringt."].map((w, i) => (
-                    <span
-                      key={`b-${i}`}
-                      className="mr-[0.2em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span data-ws-h1b className="inline-block will-change-[transform,opacity]">
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-              </h1>
-
-              {/* Intro */}
-              <div data-ws-lead className="mt-10 max-w-[46rem] sm:mt-12 md:mt-14">
-                <p className="font-instrument text-[1.3rem] italic leading-[1.35] tracking-[-0.01em] text-white/82 sm:text-[1.5rem] md:text-[1.65rem]">
-                  Nicht jede digitale Lösung ist eine klassische Website.
-                </p>
-                <p className="font-ui mt-6 text-[15px] leading-[1.72] text-white/58 md:text-[16px] md:leading-[1.72]">
-                  Manche Projekte brauchen mehr: Portale, Dashboards, interne Tools oder
-                  individuelle Anwendungen, die Prozesse abbilden, Teams entlasten und mit dem
-                  Unternehmen mitwachsen.
-                </p>
-                <p className="font-ui mt-5 text-[15px] leading-[1.72] text-white/58 md:text-[16px] md:leading-[1.72]">
-                  Genau dafür entwickeln wir Web-Software, die{" "}
-                  <em className="italic text-white/86">
-                    technisch sauber geplant, hochwertig umgesetzt
-                  </em>{" "}
-                  und im Alltag wirklich nutzbar ist.
-                </p>
-              </div>
-
-              {/* CTA */}
-              <div
-                data-ws-cta
-                className="mt-12 inline-flex items-baseline gap-3 sm:mt-14 md:mt-16"
-              >
-                <Link
-                  to="/kontakt"
-                  className="group relative inline-flex items-baseline gap-3 text-[15px] font-medium tracking-[-0.005em] text-white no-underline sm:text-[16px] md:text-[17px]"
-                  aria-label="Projekt anfragen"
-                >
-                  <span className="relative pb-3">
-                    <span className="font-ui">Projekt anfragen</span>
-                    <span
-                      data-ws-cta-rule
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left bg-white/32"
-                    />
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white transition-transform duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
-                    />
-                  </span>
-                  <span
-                    aria-hidden
-                    className="font-instrument text-[1.05em] italic text-white/85 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
+                  <h1
+                    data-ws-hero-item
+                    className="font-ui mt-7 max-w-[17ch] text-[2.42rem] font-[630] leading-[0.98] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.97)] sm:text-[3.35rem] md:text-[4.42rem] lg:text-[5.1rem]"
                   >
-                    ↗︎
-                  </span>
-                </Link>
+                    Web-Software, die Prozesse klarer macht und Teams
+                    entlastet.
+                  </h1>
+
+                  <p
+                    data-ws-hero-item
+                    className="font-ui mt-8 max-w-[50rem] text-[1.03rem] font-[480] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.72)] sm:text-[1.1rem] md:text-[1.18rem]"
+                  >
+                    MAGICKS entwickelt Portale, Dashboards, interne Tools und
+                    individuelle Web-Anwendungen, die Abläufe strukturieren,
+                    Informationen zugänglich machen und Teams im Alltag spürbar
+                    entlasten.
+                  </p>
+
+                  <div
+                    data-ws-hero-item
+                    className="mt-10 flex flex-wrap items-center gap-4 sm:mt-12"
+                  >
+                    <PrimaryCta to="/kontakt" label="Web-Software-Projekt besprechen" />
+                    <a
+                      href="#leistungen-ansehen"
+                      className="group inline-flex min-h-11 items-center gap-2 px-2 font-ui text-[15px] font-[560] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.74)] no-underline transition-colors duration-500 hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[15.5px]"
+                    >
+                      <span className="relative pb-1">
+                        Leistungen ansehen
+                        <span
+                          aria-hidden
+                          className="absolute inset-x-0 bottom-0 h-px bg-[rgb(var(--magicks-line-rgb)/0.28)] transition-colors duration-500 group-hover:bg-[rgb(var(--magicks-line-rgb)/0.62)]"
+                        />
+                      </span>
+                      <span aria-hidden className="font-instrument text-[1.04em] italic">
+                        ↓
+                      </span>
+                    </a>
+                  </div>
+                </div>
+
+                <aside data-ws-hero-item className="lg:mb-2">
+                  <SystemSchema />
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div aria-hidden className="section-top-rule" />
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+                <div data-ws-reveal>
+                  <Eyebrow>Wenn Standard-Tools nicht mehr reichen</Eyebrow>
+                  <h2 className="font-ui mt-7 max-w-[17ch] text-[2.1rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.85rem] md:text-[3.55rem]">
+                    Wenn Standard-Tools nicht mehr reichen.
+                  </h2>
+                </div>
+
+                <div data-ws-reveal className="lg:pt-14">
+                  <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                    Viele Prozesse funktionieren eine Zeit lang mit Tabellen,
+                    E-Mails, einzelnen Tools oder manuellen Umwegen. Doch
+                    irgendwann werden Abläufe unübersichtlich, Daten liegen
+                    verteilt, Zuständigkeiten bleiben unklar und Teams verlieren
+                    Zeit. Genau dann braucht es keine weitere Notlösung, sondern
+                    eine Web-Anwendung, die den Prozess sauber abbildet.
+                  </p>
+                </div>
               </div>
 
-              {/* Meta triad — mobile stacks as ledger column. */}
-              <div className="mt-12 flex flex-col gap-2 sm:mt-18 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-7 sm:gap-y-3 md:mt-20">
-                {["Struktur", "System", "Prozess"].map((m, i) => (
-                  <span
-                    key={m}
-                    data-ws-meta
-                    className="font-mono flex items-center gap-3 text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/52 sm:text-[10.5px]"
+              <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {STANDARD_TOOL_LIMITS.map((point) => (
+                  <article
+                    key={point.title}
+                    data-ws-reveal
+                    className="rounded-[1.05rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-base-rgb)/0.54)] p-5 shadow-[0_18px_52px_-44px_rgba(20,28,44,0.28),inset_0_1px_0_rgba(255,255,255,0.72)] sm:p-6"
                   >
-                    <span className="tabular-nums text-white/34">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    {m}
-                  </span>
+                    <h3 className="font-ui text-[1.05rem] font-[620] leading-[1.26] tracking-[-0.013em] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+                      {point.title}
+                    </h3>
+                    <p className="font-ui mt-3 text-[14.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.66)]">
+                      {point.text}
+                    </p>
+                  </article>
                 ))}
               </div>
 
-              {/* System Schema — blueprint motif, draws in left-to-right */}
-              <div
-                data-ws-schema
-                className="mt-16 flex flex-col gap-3 sm:mt-20 md:mt-24"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/38 sm:text-[10.5px]">
-                    Systemarchitektur · Schema
-                  </span>
-                  <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/32 sm:text-[10.5px]">
-                    4 Module · 1 Fluss
-                  </span>
-                </div>
-                <SystemSchema />
+              <div data-ws-reveal className="mt-18 sm:mt-20 md:mt-24">
+                <EditorialAnchor
+                  src={SERVICE_PAGE_IMAGES.software.portal.src}
+                  alt={SERVICE_PAGE_IMAGES.software.portal.alt}
+                  folio="Mod. 01"
+                  context="Portal"
+                  leftCaption="Rollen · Status · Zugriff"
+                  rightCaption="Operative Web-Anwendung"
+                  aspect="16/9"
+                  align="left"
+                  maxWidth="48rem"
+                  revealAttr="data-ws-reveal"
+                />
               </div>
-            </div>
-          </div>
-
-          {/* Specimen readout — blueprint vocabulary */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute bottom-6 right-5 hidden items-center gap-4 md:right-12 md:flex lg:right-16 lg:bottom-10"
-          >
-            <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/34">
-              Blueprint · Leistung 04
-            </span>
-            <span aria-hidden className="h-px w-10 bg-white/18" />
-            <span className="font-mono tabular-nums text-[9.5px] font-medium uppercase leading-none tracking-[0.26em] text-white/34">
-              ROLLE — DATEN — PROZESS — INTERFACE
-            </span>
-          </div>
-        </section>
-
-        {/* Transition → § 01 Grenze */}
-        <SectionTransition from="§ Hero — Leistungen 04" to="§ 01  Grenze" />
-
-        {/* =========================================================
-           STATEMENT 01 — "Wenn Standard-Tools nicht mehr reichen"
-        ========================================================= */}
-        <section className="relative px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-20 lg:gap-24">
-              <div data-ws-reveal>
-                <p className="font-mono mb-8 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                  § 01 — Grenze
-                </p>
-                <h2 className="font-instrument text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]">
-                  Wenn Standard-Tools{" "}
-                  <em className="italic text-white/58">nicht mehr reichen.</em>
-                </h2>
-
-                {/* Forward cross-ref */}
-                <div data-ws-reveal className="mt-10 flex items-center gap-4 md:mt-14">
-                  <span aria-hidden className="h-px w-10 bg-white/22 md:w-14" />
-                  <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                    → Siehe § 04 Herangehen
-                  </span>
-                </div>
-              </div>
-
-              <div data-ws-reveal className="md:pt-3">
-                <p className="font-ui text-[15px] leading-[1.72] text-white/62 md:text-[16px] md:leading-[1.72]">
-                  Viele Prozesse lassen sich mit Standardsoftware nur bis zu einem gewissen Punkt
-                  sauber abbilden. Irgendwann wird es{" "}
-                  <em className="italic text-white/88">
-                    unübersichtlich, ineffizient oder zu abhängig von Workarounds.
-                  </em>
-                </p>
-                <p className="font-ui mt-6 text-[15px] leading-[1.72] text-white/62 md:text-[16px] md:leading-[1.72]">
-                  Dann braucht es keine weitere Notlösung, sondern eine digitale Lösung, die zum
-                  Unternehmen passt. Wir entwickeln Web-Software, die Abläufe sinnvoll
-                  digitalisiert, Informationen strukturiert zugänglich macht und Teams spürbar
-                  entlastet.
-                </p>
-              </div>
-            </div>
-
-            {/* First editorial anchor — a calm, architectural portal scene.
-                Aligned left to read as "system-first" rather than "sales-
-                front": pairs with the § 01 Grenze argument about structure
-                over standard tools. */}
-            <div className="mt-20 sm:mt-24 md:mt-28">
-              <EditorialAnchor
-                src={SERVICE_PAGE_IMAGES.software.portal.src}
-                alt={SERVICE_PAGE_IMAGES.software.portal.alt}
-                folio="Mod. 01"
-                context="Plattform"
-                leftCaption="Einsatzplanung · Portal"
-                rightCaption="Kalenderwoche 18"
-                aspect="16/9"
-                align="left"
-                maxWidth="48rem"
-                revealAttr="data-ws-reveal"
-              />
             </div>
           </div>
         </section>
 
-        {/* Transition → § 02 Zielbild */}
-        <SectionTransition from="§ 01  Grenze" to="§ 02  Zielbild" />
-
-        {/* =========================================================
-           AUDIENCE — "Für Unternehmen mit echten digitalen Prozessen"
-        ========================================================= */}
-        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
           <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-ws-reveal className="md:pt-2">
-                <ChapterMarker num="02" label="Zielbild" />
+            <div className="mx-auto max-w-[76rem]">
+              <div data-ws-reveal className="max-w-[60rem]">
+                <Eyebrow>Für wen diese Leistung passt</Eyebrow>
+                <h2 className="font-ui mt-7 max-w-[24ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                  Für Unternehmen mit Prozessen, die digital klarer werden
+                  müssen.
+                </h2>
               </div>
 
-              <div>
-                <h2
-                  data-ws-reveal
-                  className="font-instrument max-w-[48rem] text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]"
-                >
-                  Für Unternehmen mit echten{" "}
-                  <em className="italic text-white/58">digitalen Prozessen</em>.
-                </h2>
-
-                <p
-                  data-ws-reveal
-                  className="font-ui mt-8 max-w-xl text-[15px] leading-[1.7] text-white/56 md:mt-10 md:text-[15.5px]"
-                >
-                  Diese Leistung ist für Unternehmen, die mehr brauchen als Marketingseiten oder
-                  einfache Frontends.
-                </p>
-
-                <p
-                  data-ws-reveal
-                  className="font-instrument mt-10 text-[1.18rem] italic leading-[1.4] tracking-[-0.01em] text-white/72 md:text-[1.32rem]"
-                >
-                  Zum Beispiel, wenn du:
-                </p>
-
-                {/*
-                 * Routing table — each audience case is tagged with the
-                 * architectural zone where it lives. Reads as a real
-                 * system document: numbered case · scenario · zone.
-                 */}
-                <ul className="mt-10 space-y-0 border-t border-white/[0.07] md:mt-14">
-                  {AUDIENCE.map((item, i) => (
-                    <li
-                      key={item.text}
-                      data-ws-reveal
-                      className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-6 gap-y-2 border-b border-white/[0.07] py-6 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-x-9 md:py-8"
-                    >
-                      <span className="font-mono text-[10.5px] font-medium leading-none tracking-[0.28em] text-white/44 md:text-[11.5px]">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <p className="font-instrument text-[1.2rem] leading-[1.32] tracking-[-0.01em] text-white/90 md:text-[1.45rem] lg:text-[1.6rem]">
+              <div className="mt-12 grid gap-4 md:grid-cols-2">
+                {AUDIENCE_CASES.map((item) => (
+                  <article
+                    key={item.title}
+                    data-ws-reveal
+                    className="grid gap-4 rounded-[1.15rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] p-5 shadow-[0_20px_56px_-48px_rgba(20,28,44,0.28),inset_0_1px_0_rgba(255,255,255,0.74)] sm:grid-cols-[auto_minmax(0,1fr)] sm:p-6"
+                  >
+                    <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.7)]">
+                      →
+                    </span>
+                    <div>
+                      <h3 className="font-ui text-[1.05rem] font-[620] leading-[1.28] tracking-[-0.013em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:text-[1.12rem]">
+                        {item.title}
+                      </h3>
+                      <p className="font-ui mt-2.5 text-[14.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.66)]">
                         {item.text}
                       </p>
-                      <span
-                        aria-hidden
-                        className="font-mono col-span-2 inline-flex items-center gap-2 text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/38 md:col-span-1 md:text-[10px]"
-                      >
-                        <span aria-hidden className="h-px w-6 bg-white/22 md:w-8" />
-                        <span className="text-white/30">→</span>
-                        <span>Zone</span>
-                        <span className="text-white/60">· {item.zone}</span>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                    </div>
+                  </article>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
-        {/* Transition → § 03 Umfang */}
-        <SectionTransition from="§ 02  Zielbild" to="§ 03  Umfang" />
-
-        {/* =========================================================
-           INCLUDES — "Was wir für dich umsetzen" (kind-labeled taxonomy)
-        ========================================================= */}
-        <section className="relative px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section
+          id="leistungen-ansehen"
+          className="relative bg-[var(--magicks-bg-elevated)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16"
+        >
+          <div aria-hidden className="section-top-rule" />
           <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-ws-reveal className="md:pt-2">
-                <div className="flex flex-col gap-4">
-                  <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                    § 03 — Umfang
-                  </p>
-                  <span
-                    aria-hidden
-                    className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/34 sm:text-[10.5px]"
+            <div className="mx-auto max-w-[76rem]">
+              <div data-ws-reveal className="max-w-[60rem]">
+                <Eyebrow>Was MAGICKS für Sie umsetzt</Eyebrow>
+                <h2 className="font-ui mt-7 max-w-[20ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                  Digitale Werkzeuge für echte Abläufe.
+                </h2>
+                <p className="font-ui mt-7 max-w-[50rem] text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                  Web-Software ist kein dekoratives Frontend. Sie muss Daten,
+                  Rollen, Workflows und Entscheidungen so abbilden, dass der
+                  Alltag einfacher wird.
+                </p>
+              </div>
+
+              <ol className="mt-12 grid gap-x-8 gap-y-5 md:grid-cols-2 lg:grid-cols-3">
+                {DELIVERABLES.map((item, index) => (
+                  <li
+                    key={item.title}
+                    data-ws-reveal
+                    className="rounded-[1.05rem] border border-[rgb(var(--magicks-line-rgb)/0.095)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.52)] p-5 shadow-[0_18px_48px_-42px_rgba(20,28,44,0.24),inset_0_1px_0_rgba(255,255,255,0.72)]"
                   >
-                    Register · 06 Module
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <h2
-                  data-ws-reveal
-                  className="font-instrument max-w-[48rem] text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]"
-                >
-                  Was wir für dich <em className="italic text-white/58">umsetzen</em>.
-                </h2>
-
-                {/*
-                 * Module register — each row is a taxonomy entry
-                 * addressed by module ID (MOD-NN) and zone-kind chip.
-                 * Reads as a system inventory, not a product list.
-                 */}
-                <ol className="mt-14 grid gap-x-14 gap-y-0 border-t border-white/[0.06] md:mt-20 md:grid-cols-2">
-                  {INCLUDES.map((item) => (
-                    <li
-                      key={item.title}
-                      data-ws-reveal
-                      className="relative grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-6 border-b border-white/[0.06] py-8 sm:gap-x-8 md:py-10"
-                    >
-                      <span className="font-mono pt-[0.4rem] text-[10.5px] font-medium leading-none tracking-[0.28em] text-white/52 md:text-[11.5px]">
-                        {item.mod}
-                      </span>
-                      <div>
-                        <div className="mb-3 flex flex-wrap items-center gap-2">
-                          <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/50 md:text-[10.5px]">
-                            {item.kind}
-                          </span>
-                          <span aria-hidden className="h-px w-3 bg-white/18 md:w-5" />
-                          <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/28 md:text-[9.5px]">
-                            v01
-                          </span>
-                        </div>
-                        <h3 className="font-instrument text-[1.3rem] leading-[1.18] tracking-[-0.016em] text-white md:text-[1.5rem] lg:text-[1.65rem]">
-                          {item.title}
-                        </h3>
-                        <p className="font-ui mt-3 max-w-md text-[14px] leading-[1.65] text-white/54 md:text-[14.5px]">
-                          {item.body}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-
-                {/* Register footer — blueprint signature */}
-                <div
-                  data-ws-reveal
-                  className="font-mono mt-6 flex items-center justify-between gap-4 text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/32 md:mt-8"
-                >
-                  <span>Register · Module</span>
-                  <span aria-hidden className="h-px flex-1 bg-white/[0.07]" />
-                  <span className="tabular-nums">Blueprint 04 · MMXXVI</span>
-                </div>
-              </div>
+                    <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.19em] text-[rgb(var(--magicks-accent-ink-rgb)/0.68)]">
+                      {String(index + 1).padStart(2, "0")}
+                    </p>
+                    <h3 className="font-ui mt-3 text-[1rem] font-[620] leading-[1.26] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+                      {item.title}
+                    </h3>
+                    <p className="font-ui mt-2.5 text-[14.2px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.66)]">
+                      {item.text}
+                    </p>
+                  </li>
+                ))}
+              </ol>
             </div>
           </div>
         </section>
 
-        {/* Transition → § 04 Herangehen */}
-        <SectionTransition from="§ 03  Umfang" to="§ 04  Herangehen" />
-
-        {/* =========================================================
-           APPROACH — "Wie wir an Web-Software rangehen"
-        ========================================================= */}
-        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
           <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:gap-20 lg:gap-28">
-              <div data-ws-reveal>
-                <p className="font-mono mb-8 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                  § 04 — Herangehen
-                </p>
-                <h2 className="font-instrument text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]">
-                  Wie wir an Web-Software{" "}
-                  <em className="italic text-white/58">rangehen</em>.
-                </h2>
-              </div>
-
-              <div data-ws-reveal className="md:pt-3">
-                <p className="font-ui text-[15px] leading-[1.72] text-white/62 md:text-[16px] md:leading-[1.72]">
-                  Wir starten nicht mit Oberfläche, sondern mit Struktur.
-                </p>
-
-                {/* Three architectural questions — hairline bordered left */}
-                <div className="mt-10 flex flex-col gap-4 border-l border-white/[0.12] pl-6 md:mt-12 md:pl-8">
-                  <p className="font-instrument text-[1.2rem] italic leading-[1.4] tracking-[-0.012em] text-white/90 md:text-[1.4rem] lg:text-[1.55rem]">
-                    Welche Rollen gibt es?
-                  </p>
-                  <p className="font-instrument text-[1.2rem] italic leading-[1.4] tracking-[-0.012em] text-white/90 md:text-[1.4rem] lg:text-[1.55rem]">
-                    Welche Abläufe sind wirklich relevant?
-                  </p>
-                  <p className="font-instrument text-[1.2rem] italic leading-[1.4] tracking-[-0.012em] text-white/90 md:text-[1.4rem] lg:text-[1.55rem]">
-                    Welche Informationen müssen sichtbar, bearbeitbar oder automatisiert sein?
-                  </p>
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-12 lg:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] lg:gap-16">
+                <div data-ws-reveal>
+                  <Eyebrow>Von Prozesslogik zu nutzbarer Software</Eyebrow>
+                  <h2 className="font-ui mt-7 max-w-[18ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                    Wir starten nicht mit Oberfläche. Wir starten mit Struktur.
+                  </h2>
                 </div>
 
-                <p className="font-ui mt-10 text-[15px] leading-[1.72] text-white/62 md:text-[16px] md:leading-[1.72]">
-                  Auf dieser Basis entwickeln wir eine Lösung, die{" "}
-                  <em className="italic text-white/88">
-                    klar aufgebaut, verständlich bedienbar und technisch belastbar
-                  </em>{" "}
-                  ist.
-                </p>
-                <p className="font-ui mt-5 text-[15px] leading-[1.72] text-white/60 md:text-[16px] md:leading-[1.72]">
-                  So entsteht Web-Software, die nicht unnötig kompliziert wirkt, aber intern genau
-                  die Tiefe hat, die sie braucht.
-                </p>
-              </div>
-            </div>
+                <div data-ws-reveal className="lg:pt-14">
+                  <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                    Gute Web-Software entsteht nicht, indem man Screens
+                    gestaltet und später Logik ergänzt. Zuerst müssen Rollen,
+                    Daten, Zustände, Abläufe und Entscheidungen verstanden
+                    werden. Erst danach entsteht ein Interface, das nicht nur
+                    gut aussieht, sondern den Prozess wirklich trägt.
+                  </p>
 
-            {/* Second editorial anchor — an interface-plate crop showing
-                real operational structure (status workflow, filter chips,
-                assignment rows). A view into the "internal depth" the
-                paragraph above refers to — not a marketing shot. */}
-            <div className="mt-20 sm:mt-24 md:mt-28">
-              <EditorialAnchor
-                src={SERVICE_PAGE_IMAGES.software.workflow.src}
-                alt={SERVICE_PAGE_IMAGES.software.workflow.alt}
-                folio="Mod. 02"
-                context="Ablauf-Logik"
-                leftCaption="Status · Filter · Tabelle"
-                rightCaption="Freigabe-Workflow"
-                aspect="16/9"
-                align="right"
-                maxWidth="48rem"
-                revealAttr="data-ws-reveal"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* Transition → § 05 Absage */}
-        <SectionTransition from="§ 04  Herangehen" to="§ 05  Absage" />
-
-        {/* =========================================================
-           NEGATION — "Was du nicht bekommst"
-        ========================================================= */}
-        <section className="relative overflow-hidden px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-52 lg:px-16 lg:py-56">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.55]"
-            style={{
-              background:
-                "radial-gradient(ellipse 55% 42% at 50% 50%, rgba(255,255,255,0.032), transparent 62%)",
-            }}
-          />
-
-          <div className="relative layout-max">
-            <div className="grid gap-16 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-ws-reveal className="md:pt-2">
-                <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                  § 05 — Absage
-                </p>
-              </div>
-
-              <div>
-                <h2
-                  data-ws-reveal
-                  className="font-instrument max-w-[48rem] text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]"
-                >
-                  Was du von uns{" "}
-                  <em className="italic text-white/58">nicht bekommst</em>.
-                </h2>
-
-                {/* Three anti-lines — calm, slightly smaller than shops page */}
-                <ul className="mt-14 space-y-8 md:mt-20 md:space-y-10">
-                  {[
-                    "Kein überladenes Tool ohne klare Logik.",
-                    "Keine Oberfläche, die hübsch aussieht, aber Prozesse nicht sauber trägt.",
-                    "Keine halbfertige Sonderlösung, die später nur Probleme macht.",
-                  ].map((line) => (
-                    <li
-                      key={line}
-                      data-ws-reveal
-                      className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-6 md:gap-x-9"
-                    >
-                      <span
-                        aria-hidden
-                        className="font-instrument text-[1.55rem] italic leading-none text-white/38 md:text-[1.95rem] lg:text-[2.15rem]"
+                  <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+                    {PROCESS_QUESTIONS.map((item) => (
+                      <li
+                        key={item}
+                        className="font-ui rounded-[0.9rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-base-rgb)/0.5)] px-4 py-3 text-[14.5px] font-[560] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.74)]"
                       >
-                        —
-                      </span>
-                      <p className="font-instrument text-[1.35rem] leading-[1.3] tracking-[-0.014em] text-white/80 md:text-[1.8rem] lg:text-[2.1rem] xl:text-[2.25rem]">
-                        {line}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
 
-                <p
-                  data-ws-reveal
-                  className="font-ui mt-16 max-w-[42rem] text-[15.5px] leading-[1.72] text-white/62 md:mt-20 md:text-[16.5px]"
-                >
-                  Was du bekommst, ist eine Web-Anwendung mit{" "}
-                  <em className="italic text-white/92">
-                    Struktur, Anspruch und echter Alltagstauglichkeit.
-                  </em>
-                </p>
+              <div data-ws-reveal className="mt-18 sm:mt-20 md:mt-24">
+                <EditorialAnchor
+                  src={SERVICE_PAGE_IMAGES.software.workflow.src}
+                  alt={SERVICE_PAGE_IMAGES.software.workflow.alt}
+                  folio="Mod. 02"
+                  context="Workflow"
+                  leftCaption="Status · Freigabe · Aufgabe"
+                  rightCaption="Prozesslogik"
+                  aspect="16/9"
+                  align="right"
+                  maxWidth="48rem"
+                  revealAttr="data-ws-reveal"
+                />
               </div>
             </div>
           </div>
         </section>
 
-        {/* Transition → Positionierung (darker) */}
-        <SectionTransition from="§ 05  Absage" to="§ Positionierung" tone="darker" />
-
-        {/* =========================================================
-           CEREMONIAL PULL-STATEMENT
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 py-36 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.85]"
-            style={{
-              background:
-                "radial-gradient(ellipse 62% 48% at 50% 50%, rgba(255,255,255,0.045), transparent 62%)",
-            }}
-          />
-          {/* Architectural blueprint background — dots instead of horizontal lines, differentiates from shops */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.22]"
-            style={{
-              backgroundImage:
-                "radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px)",
-              backgroundSize: "32px 32px",
-              maskImage:
-                "radial-gradient(ellipse 66% 56% at 50% 50%, black, transparent)",
-              WebkitMaskImage:
-                "radial-gradient(ellipse 66% 56% at 50% 50%, black, transparent)",
-            }}
-          />
-
-          <div className="relative layout-max">
-            <div className="mx-auto max-w-[74rem]">
-              <div className="mb-16 flex items-center gap-5 sm:mb-20">
-                <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
-                <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/46 sm:text-[10.5px]">
-                  § Positionierung
-                </span>
-                <span aria-hidden className="h-px flex-1 bg-white/12" />
-              </div>
-
-              {/*
-               * Pull-statement as a three-axis declaration — quiet A/B/C
-               * coordinate labels sit in the left gutter, threading the
-               * page's architectural vocabulary into the ceremonial moment.
-               */}
-              <div className="relative">
-                {/* Coordinate column — desktop only */}
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute -left-8 top-0 hidden h-full flex-col justify-between py-[0.4em] md:-left-10 md:flex lg:-left-14"
-                >
-                  {["A", "B", "C"].map((letter) => (
-                    <span
-                      key={letter}
-                      className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/32 sm:text-[10px]"
-                    >
-                      {letter}
-                    </span>
-                  ))}
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-12 lg:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)] lg:items-start lg:gap-16">
+                <div data-ws-reveal>
+                  <Eyebrow>Integrationen & Automationen</Eyebrow>
+                  <h2 className="font-ui mt-7 max-w-[20ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                    Web-Software wird stärker, wenn sie mit Ihren Systemen
+                    zusammenarbeitet.
+                  </h2>
                 </div>
 
-                <h3
-                  data-ws-pullheading
-                  className="font-instrument text-[2.6rem] leading-[1.0] tracking-[-0.038em] text-white sm:text-[3.6rem] md:text-[4.7rem] lg:text-[5.4rem] xl:text-[6rem]"
-                >
-                  <span className="block overflow-hidden">
-                    <span data-ws-pull className="inline-block">
-                      Web-Software mit Klarheit.
-                    </span>
-                  </span>
-                  <span className="block overflow-hidden">
-                    <span data-ws-pull className="inline-block italic text-white/64">
-                      Systeme mit Struktur.
-                    </span>
-                  </span>
-                  <span className="block overflow-hidden">
-                    <span data-ws-pull className="inline-block">
-                      Digitale Lösungen, die mitwachsen.
-                    </span>
-                  </span>
-                </h3>
-              </div>
+                <div data-ws-reveal className="lg:pt-14">
+                  <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                    Viele Anwendungen entfalten ihren Wert erst durch saubere
+                    Verbindungen: zu CRM-Systemen, Formularen,
+                    Zahlungsprozessen, Kalendern, E-Mail, Datenquellen, APIs
+                    oder Automationen. MAGICKS denkt diese Schnittstellen früh
+                    mit, damit Ihre Web-Software nicht isoliert steht.
+                  </p>
 
-              <div className="mt-16 flex items-center gap-5 sm:mt-20">
-                <span aria-hidden className="h-px flex-1 bg-white/12" />
-                <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/38 sm:text-[10.5px]">
-                  Edition · Positionierung 04
-                </span>
-                <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
+                  <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+                    {INTEGRATION_POINTS.map((item) => (
+                      <li
+                        key={item}
+                        className="font-ui rounded-[0.9rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.5)] px-4 py-3 text-[14.5px] font-[560] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.74)]"
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/*
-         * ========================================================
-         * CONTEXTUAL CROSS-LINKS — two stacked gates, tighter rhythm.
-         *
-         * First gate: "Fortlauf" (architectural continuation) toward
-         * the natural next discipline. Second gate: "Seitenachse"
-         * (lateral axis) toward the sister product-oriented discipline.
-         * Reads as two chapters in one book rather than two unrelated
-         * suggestions.
-         * ========================================================
-         */}
-        <section className="relative px-5 py-16 sm:px-8 sm:py-20 md:px-12 md:py-24 lg:px-16 lg:py-28">
-          <div className="layout-max space-y-14 sm:space-y-16 md:space-y-20">
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div aria-hidden className="section-top-rule" />
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div data-ws-reveal className="max-w-[58rem]">
+                <Eyebrow>Was wir bewusst vermeiden</Eyebrow>
+                <h2 className="font-ui mt-7 max-w-[18ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                  Software darf Komplexität nicht einfach nur schöner machen.
+                </h2>
+              </div>
+
+              <ul className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {AVOID_POINTS.map((line) => (
+                  <li
+                    key={line}
+                    data-ws-reveal
+                    className="rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-base-rgb)/0.5)] p-5 shadow-[0_18px_48px_-42px_rgba(20,28,44,0.24),inset_0_1px_0_rgba(255,255,255,0.72)]"
+                  >
+                    <p className="font-ui text-[1rem] font-[610] leading-[1.34] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.88)]">
+                      {line}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div data-ws-reveal className="max-w-[58rem]">
+                <Eyebrow>Unser Ablauf</Eyebrow>
+                <h2 className="font-ui mt-7 max-w-[22ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                  Von der Prozessanalyse zur nutzbaren Anwendung.
+                </h2>
+              </div>
+
+              <ol className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {WORKFLOW_STEPS.map((step, index) => (
+                  <li
+                    key={step.title}
+                    data-ws-reveal
+                    className="rounded-[1.15rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[linear-gradient(160deg,rgba(255,255,255,0.82)_0%,rgba(246,242,233,0.68)_100%)] p-5 shadow-[0_20px_58px_-48px_rgba(20,28,44,0.28),inset_0_1px_0_rgba(255,255,255,0.72)] sm:p-6"
+                  >
+                    <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.74)] sm:text-[11px]">
+                      Schritt {index + 1}
+                    </p>
+                    <h3 className="font-ui mt-3 text-[1.08rem] font-[620] leading-[1.28] tracking-[-0.013em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:text-[1.16rem]">
+                      {step.title}
+                    </h3>
+                    <p className="font-ui mt-2.5 text-[14.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.67)]">
+                      {step.text}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative px-5 py-20 sm:px-8 sm:py-24 md:px-12 md:py-28 lg:px-16 lg:py-32">
+          <div className="layout-max">
             <div data-ws-reveal>
               <ContextualCrossLink
-                eyebrow="Fortlauf"
+                eyebrow="Überblick"
+                folio="Service Hub"
+                lead="Wenn Sie Website, Shop, Software und Automationen zusammen denken möchten, zeigt die Leistungsübersicht den gesamten MAGICKS-Rahmen."
+                linkLabel="Alle Leistungen ansehen"
+                to="/leistungen"
+              />
+            </div>
+
+            <div data-ws-reveal className="mt-12 sm:mt-14 md:mt-16">
+              <ContextualCrossLink
+                eyebrow="Automationen"
                 folio="KI-Automationen & Integrationen"
-                lead="Wenn Prozesse nicht nur digitalisiert, sondern auch intelligent automatisiert werden sollen, schau dir unsere KI-Automationen & Integrationen an."
+                lead="Wenn wiederkehrende Schritte, Datenübergaben oder Benachrichtigungen automatisiert werden sollen, ist dieser Bereich der passende nächste Schritt."
                 linkLabel="KI-Automationen ansehen"
                 to="/ki-automationen-integrationen"
               />
             </div>
 
-            <div data-ws-reveal>
+            <div data-ws-reveal className="mt-12 sm:mt-14 md:mt-16">
               <ContextualCrossLink
-                eyebrow="Seitenachse"
-                folio="Shops & Konfiguratoren"
-                lead="Wenn dein Projekt stärker auf Verkauf, Produktdarstellung oder Nutzerentscheidung einzahlt, wirf auch einen Blick auf Shops & Produktkonfiguratoren."
+                eyebrow="Verkauf"
+                folio="Shops & Produktkonfiguratoren"
+                lead="Wenn Ihr System stärker auf Produktdarstellung, Auswahl oder Verkaufsprozesse einzahlt, ist der Commerce-Bereich relevant."
                 linkLabel="Shops & Konfiguratoren ansehen"
                 to="/shops-produktkonfiguratoren"
               />
@@ -1135,199 +750,49 @@ export default function WebSoftwarePage() {
           </div>
         </section>
 
-        {/* =========================================================
-           FINAL CTA — architectural plan-view composition
-
-           Corner crop marks + A/B/C/D labels sit just inside the page
-           bounds, reading as a blueprint plate title. Together with the
-           dotted grid they shift the final moment toward planning, not
-           advertising — distinct from the Shops page's catalog strip.
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
-          <div aria-hidden className="section-top-rule" />
-
-          {/* Corner crop marks — blueprint plate signage */}
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-soft)] px-5 pb-24 pt-24 sm:px-8 sm:pb-32 sm:pt-32 md:px-12 md:pb-40 md:pt-40 lg:px-16">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-5 hidden md:inset-8 md:block lg:inset-10"
-          >
-            {/* NW */}
-            <span className="absolute left-0 top-0 block h-3 w-3 border-l border-t border-white/28" />
-            <span className="font-mono absolute left-5 top-1 text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[9.5px]">
-              A · NW
-            </span>
-            {/* NE */}
-            <span className="absolute right-0 top-0 block h-3 w-3 border-r border-t border-white/28" />
-            <span className="font-mono absolute right-5 top-1 text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[9.5px]">
-              B · NE
-            </span>
-            {/* SW */}
-            <span className="absolute bottom-0 left-0 block h-3 w-3 border-b border-l border-white/28" />
-            <span className="font-mono absolute bottom-1 left-5 text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[9.5px]">
-              C · SW
-            </span>
-            {/* SE */}
-            <span className="absolute bottom-0 right-0 block h-3 w-3 border-b border-r border-white/28" />
-            <span className="font-mono absolute bottom-1 right-5 text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[9.5px]">
-              D · SE
-            </span>
-          </div>
-
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-[46%] aspect-square w-[118vw] max-w-[1180px] -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle at center, rgba(255,255,255,0.048) 0%, rgba(255,255,255,0.016) 32%, transparent 62%)",
-            }}
-          />
-          {/* Blueprint dotted grid — reinforces architectural tone */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.2]"
+            className="pointer-events-none absolute inset-0"
             style={{
               backgroundImage:
-                "radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px)",
-              backgroundSize: "40px 40px",
-              maskImage: "radial-gradient(ellipse 72% 62% at 50% 46%, black, transparent)",
+                "radial-gradient(ellipse 62% 46% at 24% 20%, rgba(166,138,98,0.12), transparent 74%), radial-gradient(ellipse 52% 40% at 80% 76%, rgba(96,118,146,0.1), transparent 76%)",
             }}
           />
-
           <div className="relative layout-max">
-            <div className="mx-auto max-w-[66rem] text-center">
-              <div className="mb-14 inline-flex sm:mb-20">
-                <ChapterMarker num="END" label="Projekt" align="center" variant="end" />
-              </div>
-
-              <h2 className="font-instrument text-[2.5rem] leading-[0.97] tracking-[-0.038em] text-white sm:text-[3.4rem] md:text-[4.7rem] lg:text-[5.8rem] xl:text-[6.6rem]">
-                <span className="block">
-                  {["Bereit", "für", "eine", "Web-Lösung,"].map((w, i) => (
-                    <span
-                      key={`fa-${i}`}
-                      className="mr-[0.18em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span data-ws-finala className="inline-block">
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-                <span className="mt-1 block italic text-white/76 sm:mt-2">
-                  {["die", "mehr", "kann", "als", "nur", "Oberfläche?"].map((w, i) => (
-                    <span
-                      key={`fb-${i}`}
-                      className="mr-[0.18em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span data-ws-finalb className="inline-block">
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
+            <div
+              data-ws-reveal
+              className="mx-auto max-w-[70rem] rounded-[2rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[linear-gradient(170deg,rgba(255,255,255,0.82)_0%,rgba(245,241,233,0.7)_100%)] px-6 py-12 text-center shadow-[0_30px_86px_-56px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.84)] sm:px-10 sm:py-14 md:px-14 md:py-18"
+            >
+              <Eyebrow>Nächster Schritt</Eyebrow>
+              <h2 className="font-ui mx-auto mt-7 max-w-[19ch] text-[2.2rem] font-[620] leading-[1.01] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3rem] md:text-[3.9rem]">
+                Bereit für Web-Software, die Ihren Alltag wirklich erleichtert?
               </h2>
-
-              {/* Editorial rule — draws in from center */}
-              <div className="mx-auto mt-12 flex w-full max-w-[42rem] items-center gap-4 sm:mt-16">
-                <span aria-hidden className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/40">
-                  ·
-                </span>
-                <div aria-hidden className="relative h-px flex-1">
-                  <span
-                    data-ws-finalrule
-                    className="absolute inset-0 block bg-gradient-to-r from-transparent via-white/60 to-transparent"
-                  />
-                </div>
-                <span aria-hidden className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/40">
-                  ·
-                </span>
-              </div>
-
-              <p className="font-ui mx-auto mt-10 max-w-[40rem] text-[15px] leading-[1.72] text-white/60 md:mt-12 md:text-[16.5px]">
-                Wir entwickeln Web-Software, die Prozesse sinnvoll digitalisiert, Teams entlastet
-                und technisch sauber mit deinem Unternehmen mitwächst.
+              <p className="font-ui mx-auto mt-7 max-w-[46rem] text-[1rem] leading-[1.72] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                Lassen Sie uns klären, welche Abläufe in Ihrem Unternehmen
+                durch eine individuelle Web-Anwendung klarer, schneller und
+                besser nutzbar werden können.
               </p>
 
-              {/* Ledger block — architecture-flavored session metadata */}
-              <div className="mt-14 grid items-center gap-10 text-left sm:mt-18 sm:grid-cols-[auto_1fr] sm:gap-14 md:gap-20">
-                <div data-ws-finalcta className="flex justify-center sm:justify-start">
-                  <Link
-                    to="/kontakt"
-                    className="group relative inline-flex items-center gap-3 rounded-full border border-white/22 bg-white py-4 pl-8 pr-3 text-[15px] font-medium tracking-wide text-[#0A0A0A] no-underline shadow-[0_34px_80px_-32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.45)] magicks-duration-hover magicks-ease-out transition-[transform,box-shadow] hover:-translate-y-[2px] hover:shadow-[0_44px_90px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.55)] active:translate-y-0 active:scale-[0.985] md:text-[16px]"
-                  >
-                    <span>Projekt besprechen</span>
-                    <span
-                      aria-hidden
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
-                    >
-                      <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.4">
-                        <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
-                  </Link>
-                </div>
-
-                <div className="flex flex-col gap-4 border-l border-white/[0.08] pl-6 sm:pl-10 md:pl-12">
-                  <div data-ws-finalledger className="flex flex-col gap-1.5">
-                    <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/40 sm:text-[10.5px]">
-                      Projekt
-                    </span>
-                    <span className="font-instrument text-[1.2rem] italic leading-[1.3] text-white/90 sm:text-[1.4rem] md:text-[1.5rem]">
-                      Portal · Dashboard · Plattform
-                    </span>
-                  </div>
-
-                  <div data-ws-finalledger className="flex flex-col gap-1.5">
-                    <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/40 sm:text-[10.5px]">
-                      Architektur
-                    </span>
-                    <span className="font-ui text-[13.5px] leading-[1.5] text-white/62 sm:text-[14.5px]">
-                      Rollen, Abläufe und Datenflüsse — geplant, bevor gebaut wird.
-                    </span>
-                  </div>
-
-                  <div data-ws-finalledger className="flex flex-col gap-1.5">
-                    <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/40 sm:text-[10.5px]">
-                      Direkt
-                    </span>
-                    <a
-                      href="mailto:hello@magicks.de"
-                      className="font-instrument text-[1.1rem] italic text-white no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white/82 sm:text-[1.25rem] md:text-[1.35rem]"
-                    >
-                      hello@magicks.de
-                    </a>
-                  </div>
-                </div>
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-4 sm:mt-12">
+                <PrimaryCta to="/kontakt" label="Web-Software-Projekt besprechen" />
+                <Link
+                  to="/kontakt"
+                  className="inline-flex min-h-11 items-center rounded-full border border-[rgb(var(--magicks-line-rgb)/0.2)] bg-transparent px-6 py-2.5 font-ui text-[15px] font-[560] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.82)] no-underline transition-[border-color,transform,color,background-color] duration-500 hover:-translate-y-[1px] hover:border-[rgb(var(--magicks-line-rgb)/0.42)] hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/0.66)] hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[15.5px]"
+                >
+                  Kontakt aufnehmen
+                </Link>
               </div>
-            </div>
 
-            {/*
-             * Title block — architectural plate signature, 4 fields,
-             * mirroring the Shops catalog strip in structure but reading
-             * as a blueprint cartouche rather than a product back-cover.
-             */}
-            <div className="mt-24 border-t border-white/[0.06] pt-7 sm:mt-28">
-              <div className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4 sm:gap-x-0">
-                {[
-                  { k: "§ End", v: "Leistungen 04" },
-                  { k: "Blueprint", v: "04 · Web-Software" },
-                  { k: "Scope", v: "Portal · Plattform · Tool" },
-                  { k: "Edition", v: "Magicks · MMXXVI" },
-                ].map((item, i) => (
-                  <div
-                    key={item.k}
-                    className={`flex flex-col gap-2 ${
-                      i > 0 ? "sm:border-l sm:border-white/[0.08] sm:pl-5 md:pl-7" : ""
-                    }`}
-                  >
-                    <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/36 sm:text-[9.5px]">
-                      {item.k}
-                    </span>
-                    <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.28em] text-white/68 sm:text-[10.5px]">
-                      {item.v}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <p className="font-ui mt-8 text-[14px] leading-[1.6] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:text-[14.5px]">
+                Oder direkt:
+                <a
+                  href="mailto:hello@magicks.de"
+                  className="ml-2 text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline underline decoration-[rgb(var(--magicks-line-rgb)/0.36)] underline-offset-[4px] hover:text-[rgb(var(--magicks-ink-rgb)/1)]"
+                >
+                  hello@magicks.de
+                </a>
+              </p>
             </div>
           </div>
         </section>

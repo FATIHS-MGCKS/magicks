@@ -198,7 +198,7 @@ export function Bildwelt() {
                 data-bw-headline
                 className="font-ui mt-5 max-w-[18ch] text-[2.32rem] font-[620] leading-[1.04] tracking-[-0.028em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:mt-6 sm:text-[3.05rem] md:text-[3.78rem] lg:text-[4.4rem]"
               >
-                Alles, was ihren Auftritt{" "}
+                Alles, was Ihren Auftritt{" "}
                 <em className="font-instrument italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.6)]">
                   stark macht
                 </em>

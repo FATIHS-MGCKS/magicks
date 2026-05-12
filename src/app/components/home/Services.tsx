@@ -29,8 +29,8 @@ const SERVICES: Service[] = [
     teaser: "Digitale Auftritte, die überzeugen, Vertrauen schaffen und Anfragen erzeugen.",
     href: "/websites-landingpages",
     icon: "web",
-    image: HOME_SERVICE_IMAGES.websites.src,
-    imageAlt: HOME_SERVICE_IMAGES.websites.alt,
+    image: "/media/home/notbook-magicks.webp",
+    imageAlt: "Notebook mit MAGICKS Website Darstellung",
   },
   {
     slug: "shops",

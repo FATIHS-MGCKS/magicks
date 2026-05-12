@@ -238,7 +238,7 @@ export default function SettingsPage() {
               <a
                 href="https://aistudio.google.com/apikey"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="underline decoration-white/30 hover:text-white/65"
               >
                 aistudio.google.com/apikey

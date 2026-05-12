@@ -35,14 +35,11 @@
       fetchpriority="high"
     />
 
-    <!-- Hero video preload: keep the cinematic background ahead of poster images. -->
-    <link
-      rel="preload"
-      as="video"
-      href="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260419_065931_e3ca7b53-d32e-4ad5-81de-dc9d6fcfda6d.mp4"
-      type="video/mp4"
-      fetchpriority="high"
-    />
+    <!--
+      Hero video is loaded by the component with `preload="metadata"`.
+      Avoiding a head-level high-priority video preload keeps render-critical
+      CSS/JS/font/logo requests ahead of the large MP4 on slow devices.
+    -->
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />

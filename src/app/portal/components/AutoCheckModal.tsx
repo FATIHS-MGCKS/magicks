@@ -531,7 +531,7 @@ export function AutoCheckModal({ lead, onClose }: AutoCheckModalProps) {
                               <a
                                 href={row.suggested}
                                 target="_blank"
-                                rel="noreferrer"
+                                rel="noopener noreferrer"
                                 className="underline decoration-white/30 underline-offset-2 hover:text-white/85"
                               >
                                 {row.suggested}
@@ -643,7 +643,7 @@ export function AutoCheckModal({ lead, onClose }: AutoCheckModalProps) {
                             <a
                               href={c.website}
                               target="_blank"
-                              rel="noreferrer"
+                              rel="noopener noreferrer"
                               className="mt-1 block truncate text-[11.5px] text-white/65 underline decoration-white/20 underline-offset-2 hover:text-white"
                             >
                               {c.website}
@@ -728,7 +728,7 @@ export function AutoCheckModal({ lead, onClose }: AutoCheckModalProps) {
                         <a
                           href={s.uri}
                           target="_blank"
-                          rel="noreferrer"
+                          rel="noopener noreferrer"
                           className="text-white/70 underline decoration-white/20 underline-offset-2 hover:text-white"
                         >
                           {s.title || s.uri}

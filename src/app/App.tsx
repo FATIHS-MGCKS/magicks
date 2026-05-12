@@ -77,8 +77,8 @@ export default function App() {
              *
              * Client-side SPA redirect for deep links that land in the
              * React app (e.g. via bookmarks or internal navigation). The
-             * host's `public/_redirects` additionally issues a proper
-             * 301 at the edge, which is what search engines will see.
+             * host's `public/.htaccess` additionally issues a proper
+             * 301 at the edge before the SPA is served.
              */}
             <Route path="/ueber-magicks" element={<Navigate to="/ueber-uns" replace />} />
 

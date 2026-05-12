@@ -506,7 +506,7 @@ export default function LeadDetailPage() {
                       <a
                         href={c.website}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="mt-1 block truncate text-[11.5px] text-white/65 underline decoration-white/20 underline-offset-2 hover:text-white"
                       >
                         {c.website}
@@ -568,7 +568,7 @@ export default function LeadDetailPage() {
                         key={key}
                         href={url}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="rounded-md border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[12px] text-white/85 hover:bg-white/[0.07]"
                       >
                         {label}

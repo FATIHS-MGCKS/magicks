@@ -190,8 +190,7 @@ export function Hero() {
       );
 
       // 03 — copy exhale: lifts and loses contrast before the frame goes.
-      // This stays transform/opacity-only so it does not compete with the
-      // video zoom for paint time during scroll.
+      // This stays transform/opacity-only so the video layer remains static.
       const copyExit: gsap.TweenVars = {
         yPercent: -10,
         opacity: 0.26,
@@ -229,12 +228,8 @@ export function Hero() {
       className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-[var(--magicks-bg-base)]"
       aria-labelledby="hero-heading"
     >
-      {/* Camera push layer */}
-      <div
-        data-hero-scaler
-        className="absolute inset-0 origin-center"
-        aria-hidden
-      >
+      {/* Static hero media layer */}
+      <div className="absolute inset-0" aria-hidden>
         <HeroVideoBackground />
       </div>
 
