@@ -15,7 +15,8 @@
 # if a module is missing.
 # ------------------------------------------------------------------
 
-Options -MultiViews
+Options -MultiViews -Indexes
+DirectoryIndex index.html
 RewriteEngine On
 
 # ------------------------------------------------------------------
@@ -39,7 +40,17 @@ RewriteRule ^(.*)$ https://magicks.de/$1 [L,R=301]
 RewriteRule ^ueber-magicks/?$ /ueber-uns [R=301,L]
 
 # ------------------------------------------------------------------
-# 4) SPA fallback.
+# 4) Vite asset guard.
+#    Real files under /assets/ must be served as static files. Missing
+#    hashed assets should fail as 404 instead of being rewritten to the
+#    SPA shell, which prevents stale HTML from hiding a broken deploy.
+# ------------------------------------------------------------------
+RewriteCond %{REQUEST_URI} ^/assets/ [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ - [R=404,L]
+
+# ------------------------------------------------------------------
+# 5) SPA fallback.
 #    If the request is not a real file or directory, hand it to
 #    /index.html so React Router can resolve the route. Without this
 #    rule, refreshing /webdesign-kassel returns Apache's stock 404.
@@ -50,7 +61,7 @@ RewriteCond %{REQUEST_URI} !^/api/
 RewriteRule ^ /index.html [L]
 
 # ------------------------------------------------------------------
-# 5) Caching headers.
+# 6) Caching headers.
 #    Long-cache fingerprinted assets (Vite emits hashed filenames
 #    under /assets/) and short-cache HTML so deploys propagate fast.
 # ------------------------------------------------------------------
@@ -93,7 +104,7 @@ RewriteRule ^ /index.html [L]
 </IfModule>
 
 # ------------------------------------------------------------------
-# 6) Compression — Hostinger usually enables this globally, but the
+# 7) Compression — Hostinger usually enables this globally, but the
 #    fallback declaration here costs nothing and helps if it isn't on.
 # ------------------------------------------------------------------
 <IfModule mod_deflate.c>
@@ -104,8 +115,12 @@ RewriteRule ^ /index.html [L]
 </IfModule>
 
 # ------------------------------------------------------------------
-# 7) MIME hints (Hostinger auto-detects these, but be explicit).
+# 8) MIME hints (Hostinger auto-detects these, but be explicit).
 # ------------------------------------------------------------------
-AddType image/webp .webp
-AddType application/manifest+json .webmanifest
-AddType image/svg+xml .svg
+<IfModule mod_mime.c>
+  AddType text/javascript .js .mjs
+  AddType text/css .css
+  AddType image/webp .webp
+  AddType application/manifest+json .webmanifest
+  AddType image/svg+xml .svg
+</IfModule>

@@ -10,7 +10,7 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
  *
  * Composition:
  *   · vertical production credit (left edge)
- *   · centred two-line headline — "Digitale Erlebnisse / die begeistern"
+ *   · centred two-line headline — "Digitale Erlebnisse / die überzeugen"
  *   · success-oriented subtext in a high-contrast reading field
  *   · centred CTA with dual underline sweep
  *   · thin scroll cue (bottom-centre)
@@ -21,7 +21,7 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
  */
 
 const LINE_A = ["Digitale", "Erlebnisse"];
-const LINE_B = ["die", "begeistern"];
+const LINE_B = ["die", "überzeugen"];
 
 export function Hero() {
   const rootRef = useRef<HTMLElement>(null);
@@ -34,6 +34,9 @@ export function Hero() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
+      const mobileViewport =
+        window.matchMedia("(max-width: 767px)").matches ||
+        window.matchMedia("(pointer: coarse)").matches;
       const credit = root.querySelector<HTMLElement>("[data-hero-credit]");
       const lineA = gsap.utils.toArray<HTMLElement>("[data-hero-a]");
       const lineB = gsap.utils.toArray<HTMLElement>("[data-hero-b]");
@@ -153,7 +156,11 @@ export function Hero() {
 
       // ─── Scroll-coupled cinematic step-back ──────────────────────────
       // The video stays fixed in scale while scroll only adjusts atmosphere
-      // and copy presence. This avoids the distracting mobile zoom-in.
+      // and copy presence. On mobile/coarse viewports those atmosphere
+      // changes stay deliberately quiet so they do not read as video zoom.
+      const depthTargetOpacity = mobileViewport ? 0.14 : 0.62;
+      const vignetteStartOpacity = mobileViewport ? 0.56 : 0.94;
+      const vignetteEndOpacity = mobileViewport ? 0.62 : 1.04;
 
       // 01 — the depth layer darkens in two beats: a soft cool grade
       // first, then a stronger mid-frame falloff as the copy clears.
@@ -161,7 +168,7 @@ export function Hero() {
         depth,
         { opacity: 0 },
         {
-          opacity: 0.62,
+          opacity: depthTargetOpacity,
           ease: "none",
           scrollTrigger: {
             trigger: root,
@@ -176,9 +183,9 @@ export function Hero() {
       // eye off the hero and priming the next section.
       gsap.fromTo(
         vignette,
-        { opacity: 0.94 },
+        { opacity: vignetteStartOpacity },
         {
-          opacity: 1.04,
+          opacity: vignetteEndOpacity,
           ease: "none",
           scrollTrigger: {
             trigger: root,
@@ -225,7 +232,7 @@ export function Hero() {
   return (
     <section
       ref={rootRef}
-      className="relative flex min-h-[100dvh] flex-col overflow-hidden bg-[var(--magicks-bg-base)]"
+      className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[var(--magicks-bg-base)] md:min-h-[100dvh]"
       aria-labelledby="hero-heading"
     >
       {/* Static hero media layer */}
@@ -373,7 +380,10 @@ export function Hero() {
                 .
               </span>
               <span className="mt-1.5 block text-[rgb(var(--magicks-ink-rgb)/0.98)]">
-                Überzeugen Sie von sich.
+                Zeigen Sie, warum man sich
+              </span>
+              <span className="block text-[rgb(var(--magicks-ink-rgb)/0.98)]">
+                für Sie entscheiden sollte
               </span>
             </h2>
 

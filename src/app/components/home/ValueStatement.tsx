@@ -40,7 +40,7 @@ const STATEMENT_BLOCKS: ValueStatementBlock[] = [
   {
     tone: "body",
     text:
-      "Wir kreieren starke digitale Auftritte, die Ihre Besucher überzeugen und Ihrem Unternehmen zu mehr Umsatz und Wachstum verhelfen.",
+      "Wir kreieren starke digitale Auftritte,\ndie Ihre Besucher überzeugen und Ihrem Unternehmen zu mehr Umsatz\nund Wachstum verhelfen.",
   },
 ];
 
@@ -168,7 +168,7 @@ export function ValueStatement() {
       // travels downward. It keeps the section cinematic without turning
       // into a hard visual effect.
       if (spotlight) {
-        gsap.set(spotlight, { opacity: 0, xPercent: -8, scale: 0.96 });
+        gsap.set(spotlight, { opacity: 0, xPercent: -6, scale: 0.98 });
         gsap
           .timeline({
             scrollTrigger: {
@@ -180,9 +180,9 @@ export function ValueStatement() {
             },
             defaults: { ease: "none" },
           })
-          .to(spotlight, { opacity: 0.56, xPercent: 0, scale: 1, duration: 0.4, ease: "power2.out" }, 0)
-          .to(spotlight, { opacity: 0.64, xPercent: 7, scale: 1.04, duration: 0.28, ease: "none" }, 0.4)
-          .to(spotlight, { opacity: 0.24, xPercent: 11, scale: 1.08, duration: 0.32, ease: "power2.in" }, 0.68);
+          .to(spotlight, { opacity: cheapMotion ? 0.18 : 0.34, xPercent: 0, scale: 1, duration: 0.4, ease: "power2.out" }, 0)
+          .to(spotlight, { opacity: cheapMotion ? 0.22 : 0.42, xPercent: 5, scale: 1.025, duration: 0.28, ease: "none" }, 0.4)
+          .to(spotlight, { opacity: cheapMotion ? 0.08 : 0.16, xPercent: 8, scale: 1.045, duration: 0.32, ease: "power2.in" }, 0.68);
       }
 
       // ─── Volumetric God Ray: slow diagonal sweep ─────────────────────
@@ -191,11 +191,11 @@ export function ValueStatement() {
       if (godray) {
         gsap.fromTo(
           godray,
-          { opacity: 0, xPercent: -12, yPercent: -16 },
+          { opacity: 0, xPercent: -9, yPercent: -12 },
           {
-            opacity: 0.66,
-            xPercent: 8,
-            yPercent: 8,
+            opacity: cheapMotion ? 0.16 : 0.34,
+            xPercent: 6,
+            yPercent: 5,
             ease: "none",
             scrollTrigger: {
               trigger: root,
@@ -345,9 +345,9 @@ export function ValueStatement() {
           className="absolute -inset-[50%] h-[200%] w-[200%] origin-top-left opacity-0"
           style={{
             background:
-              "linear-gradient(135deg, transparent 34%, rgba(255,255,255,0.38) 45%, rgba(222,214,202,0.48) 50%, rgba(255,255,255,0.26) 56%, transparent 68%)",
-            transform: "translate3d(0, -20%, 0) rotate(-15deg)",
-            filter: cheapMotion ? "blur(18px)" : "blur(40px)",
+              "linear-gradient(135deg, transparent 36%, rgba(255,250,236,0.2) 45%, rgba(223,198,156,0.26) 51%, rgba(255,252,242,0.16) 58%, transparent 70%)",
+            transform: "translate3d(0, -18%, 0) rotate(-15deg)",
+            filter: cheapMotion ? "blur(10px)" : "blur(34px)",
             mixBlendMode: "soft-light",
           }}
         />
@@ -370,7 +370,7 @@ export function ValueStatement() {
         className="pointer-events-none absolute inset-0 will-change-[opacity,transform]"
         style={{
           backgroundImage:
-            "radial-gradient(ellipse 54% 38% at 76% 34%, rgba(255,245,222,0.46), rgba(255,245,222,0.08) 44%, transparent 74%), radial-gradient(ellipse 36% 28% at 16% 68%, rgba(86,108,142,0.14), transparent 72%)",
+            "radial-gradient(ellipse 54% 38% at 76% 34%, rgba(255,241,210,0.32), rgba(222,190,142,0.08) 44%, transparent 74%), radial-gradient(ellipse 36% 28% at 16% 68%, rgba(166,138,98,0.08), transparent 72%)",
           mixBlendMode: "soft-light",
         }}
       />
@@ -427,7 +427,7 @@ export function ValueStatement() {
                   <p
                     key={block.text}
                     data-value-sentence
-                    className="font-ui mx-auto mt-12 max-w-[42rem] text-[1.02rem] font-[500] leading-[1.66] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.74)] will-change-[opacity] sm:mt-14 sm:text-[1.1rem] md:text-[1.18rem] md:will-change-[opacity,filter] lg:text-[1.24rem]"
+                    className="font-ui mx-auto mt-12 max-w-[42rem] whitespace-pre-line text-[1.02rem] font-[500] leading-[1.66] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.74)] will-change-[opacity] sm:mt-14 sm:text-[1.1rem] md:text-[1.18rem] md:will-change-[opacity,filter] lg:text-[1.24rem]"
                   >
                     {block.text}
                   </p>
@@ -486,23 +486,27 @@ function TrustBadgeGrid() {
   return (
     <div
       data-value-proof
-      className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+      className="grid gap-4 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4"
       aria-label="MAGICKS Vertrauensmerkmale"
     >
       {TRUST_BADGES.map(({ title, text, Icon }) => (
         <article
           key={title}
-          className="group rounded-[1.15rem] border border-[rgb(var(--magicks-line-rgb)/0.105)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.62)] p-4 text-left shadow-[0_24px_68px_-58px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.74)] transition-[transform,border-color,background-color,box-shadow] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-[rgb(var(--magicks-accent-line-rgb)/0.24)] hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/0.78)] hover:shadow-[0_32px_80px_-58px_rgba(20,28,44,0.42),inset_0_1px_0_rgba(255,255,255,0.82)] sm:p-5"
+          className="group grid min-h-[9.45rem] grid-cols-[4.65rem_minmax(0,1fr)] items-center gap-x-4 rounded-[1.55rem] border border-[rgb(var(--magicks-line-rgb)/0.105)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.72)] px-5 py-5 text-left shadow-[0_24px_68px_-58px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.74)] transition-[transform,border-color,background-color,box-shadow] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-[rgb(var(--magicks-accent-line-rgb)/0.24)] hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/0.84)] hover:shadow-[0_32px_80px_-58px_rgba(20,28,44,0.42),inset_0_1px_0_rgba(255,255,255,0.82)] sm:block sm:min-h-0 sm:rounded-[1.15rem] sm:p-5"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.2)] bg-[rgb(var(--magicks-accent-rgb)/0.075)] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.68)]">
-            <Icon aria-hidden size={18} strokeWidth={1.35} />
+          <div className="relative flex h-full items-center justify-start pr-4 after:absolute after:right-0 after:top-1/2 after:h-[4.9rem] after:w-px after:-translate-y-1/2 after:bg-[rgb(var(--magicks-line-rgb)/0.14)] sm:h-auto sm:pr-0 sm:after:hidden">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.18)] bg-[rgb(var(--magicks-accent-rgb)/0.06)] text-[rgb(var(--magicks-accent-ink-rgb)/0.7)] shadow-[inset_0_1px_0_rgba(255,255,255,0.68),0_16px_36px_-30px_rgba(20,28,44,0.34)] sm:h-10 sm:w-10 sm:border-[rgb(var(--magicks-accent-line-rgb)/0.2)] sm:bg-[rgb(var(--magicks-accent-rgb)/0.075)] sm:text-[rgb(var(--magicks-accent-ink-rgb)/0.78)]">
+              <Icon aria-hidden size={24} strokeWidth={1.25} className="sm:h-[18px] sm:w-[18px]" />
+            </div>
           </div>
-          <h3 className="font-ui mt-4 text-[1.02rem] font-[650] leading-[1.16] tracking-[-0.014em] text-[rgb(var(--magicks-ink-rgb)/0.94)]">
-            {title}
-          </h3>
-          <p className="font-ui mt-2 text-[0.9rem] font-[450] leading-[1.58] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.62)]">
-            {text}
-          </p>
+          <div className="min-w-0">
+            <h3 className="font-ui text-[1.28rem] font-[720] leading-[1.16] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:mt-4 sm:text-[1.02rem] sm:font-[650] sm:leading-[1.16] sm:tracking-[-0.014em] sm:text-[rgb(var(--magicks-ink-rgb)/0.94)]">
+              {title}
+            </h3>
+            <p className="font-ui mt-2 text-[1rem] font-[450] leading-[1.5] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:text-[0.9rem] sm:leading-[1.58]">
+              {text}
+            </p>
+          </div>
         </article>
       ))}
     </div>

@@ -18,11 +18,9 @@ import { Link } from "react-router-dom";
  *     thickens the hairline from white/14 to white.
  *   · Projektart renders as a custom chip-radio register (not a native
  *     <select>) so it integrates with the editorial typography.
- *   · On submit, hands off to the user's mail client via `mailto:` and
- *     transitions into an honest "handoff" confirmation state — no
- *     fake success. When a real backend is added, replace the single
- *     `submitAnfrage()` function and delete the handoff-fallback copy;
- *     nothing else on the page needs to change.
+ *   · On submit, posts to the server-side `/api/contact.php` endpoint.
+ *     Success is shown only after the server confirms that the message
+ *     was accepted for delivery. Direct email remains visible as fallback.
  * ------------------------------------------------------------------ */
 
 export const PROJECT_KIND_OPTIONS = [
@@ -42,11 +40,12 @@ type FormState = {
   company: string;
   projectKind: ProjectKindValue | "";
   message: string;
+  website: string;
 };
 
 type FormErrors = Partial<Record<keyof FormState, string>>;
 
-type SubmitStatus = "idle" | "handoff" | "error";
+type SubmitStatus = "idle" | "sending" | "success" | "error";
 
 const INITIAL: FormState = {
   name: "",
@@ -54,41 +53,62 @@ const INITIAL: FormState = {
   company: "",
   projectKind: "",
   message: "",
+  website: "",
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const CONTACT_ENDPOINT = "/api/contact.php";
 
-/** Swap this single function for a real backend call later. */
-function submitAnfrage(data: FormState): void {
+function projectKindLabel(value: ProjectKindValue | ""): string {
+  return PROJECT_KIND_OPTIONS.find((o) => o.value === value)?.label ?? "Noch offen / Beratung";
+}
+
+async function submitAnfrage(data: FormState): Promise<void> {
   const kindLabel =
-    PROJECT_KIND_OPTIONS.find((o) => o.value === data.projectKind)?.label ??
-    "Noch offen / Beratung";
+    projectKindLabel(data.projectKind);
 
-  const subject = `Anfrage MAGICKS — ${data.company.trim() || data.name.trim() || "Projekt"}`;
+  const response = await fetch(CONTACT_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      name: data.name.trim(),
+      email: data.email.trim(),
+      company: data.company.trim(),
+      projectKind: data.projectKind,
+      projectKindLabel: kindLabel,
+      message: data.message.trim(),
+      website: data.website.trim(),
+      source: "/kontakt",
+    }),
+  });
 
-  const bodyLines = [
-    `Name: ${data.name.trim()}`,
-    data.company.trim() ? `Unternehmen: ${data.company.trim()}` : "",
-    `E-Mail: ${data.email.trim()}`,
-    `Projektart: ${kindLabel}`,
-    "",
-    "Nachricht:",
-    data.message.trim(),
-  ].filter(Boolean);
+  let payload: unknown = null;
+  try {
+    payload = await response.json();
+  } catch {
+    payload = null;
+  }
 
-  const href =
-    `mailto:hello@magicks.de` +
-    `?subject=${encodeURIComponent(subject)}` +
-    `&body=${encodeURIComponent(bodyLines.join("\n"))}`;
+  const ok =
+    response.ok &&
+    typeof payload === "object" &&
+    payload !== null &&
+    "ok" in payload &&
+    payload.ok === true;
 
-  window.location.href = href;
+  if (!ok) {
+    throw new Error("contact_submission_failed");
+  }
 }
 
 function validate(data: FormState): FormErrors {
   const errors: FormErrors = {};
   if (!data.name.trim()) errors.name = "Ein kurzer Name reicht.";
   if (!EMAIL_RE.test(data.email.trim())) errors.email = "Bitte eine gültige E-Mail-Adresse.";
-  if (!data.projectKind) errors.projectKind = "Wähle die Richtung, die am ehesten passt.";
+  if (!data.projectKind) errors.projectKind = "Wählen Sie die Richtung, die am ehesten passt.";
   if (data.message.trim().length < 10) errors.message = "Ein, zwei Sätze zum Vorhaben reichen schon.";
   return errors;
 }
@@ -114,8 +134,10 @@ export function ProjectIntakeForm() {
   };
 
   const onSubmit = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
+    async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      if (status === "sending") return;
+
       const v = validate(data);
       setErrors(v);
 
@@ -131,13 +153,14 @@ export function ProjectIntakeForm() {
       }
 
       try {
-        submitAnfrage(data);
-        setStatus("handoff");
+        setStatus("sending");
+        await submitAnfrage(data);
+        setStatus("success");
       } catch {
         setStatus("error");
       }
     },
-    [data],
+    [data, status],
   );
 
   const resetAndRewrite = () => {
@@ -146,25 +169,25 @@ export function ProjectIntakeForm() {
     setData(INITIAL);
   };
 
-  /* -------- Handoff state -------- */
-  if (status === "handoff" || status === "error") {
+  /* -------- Result state -------- */
+  if (status === "success" || status === "error") {
     return (
       <div
         aria-live="polite"
         className="relative mx-auto max-w-[56rem] border-y border-[rgb(var(--magicks-line-rgb)/0.22)] px-1 py-14 text-center sm:py-16 md:py-20"
       >
         <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.3em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[11px]">
-          § Status · {status === "handoff" ? "Übergabe an Mail-Programm" : "Übergabe unterbrochen"}
+          § Status · {status === "success" ? "Anfrage gesendet" : "Versand nicht möglich"}
         </p>
 
         <p className="font-instrument mt-8 text-[2rem] italic leading-[1.06] tracking-[-0.025em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:mt-10 sm:text-[2.55rem] md:text-[3rem]">
-          {status === "handoff" ? "Danke — der Rest läuft jetzt per Mail." : "Da ist etwas schiefgegangen."}
+          {status === "success" ? "Danke — Ihre Anfrage wurde gesendet." : "Da ist etwas schiefgegangen."}
         </p>
 
         <p className="font-ui mx-auto mt-6 max-w-[36rem] text-[15.5px] leading-[1.72] text-[rgb(var(--magicks-ink-rgb)/0.66)] md:text-[16.5px]">
-          {status === "handoff"
-            ? "Dein Mail-Programm wurde geöffnet und die Anfrage ist vorbereitet. Wenn sich nichts geöffnet hat, schick uns deine Nachricht einfach direkt an die Studio-Adresse."
-            : "Bitte schick uns deine Nachricht direkt an die Studio-Adresse — wir melden uns auf demselben Weg zurück."}
+          {status === "success"
+            ? "MAGICKS hat Ihre Anfrage erhalten. Wir melden uns mit einer klaren Einschätzung zurück."
+            : "Bitte senden Sie Ihre Nachricht direkt an hello@magicks.de — wir melden uns auf demselben Weg zurück."}
         </p>
 
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-8">
@@ -185,25 +208,26 @@ export function ProjectIntakeForm() {
             onClick={resetAndRewrite}
             className="font-mono text-[11px] font-medium uppercase leading-none tracking-[0.24em] text-[rgb(var(--magicks-ink-rgb)/0.56)] no-underline transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:text-[rgb(var(--magicks-ink-rgb)/0.9)]"
           >
-            ↺ Neue Anfrage beginnen
+            Neue Anfrage beginnen
           </button>
         </div>
       </div>
     );
   }
 
-  /* -------- Idle (form) state -------- */
+  const isSending = status === "sending";
+
+  /* -------- Idle / sending form state -------- */
   return (
     <form
       ref={formRef}
-      id="anfrage"
+      id="projektanfrage-form"
       onSubmit={onSubmit}
       noValidate
       aria-describedby={`${uid}-hint`}
+      aria-busy={isSending}
       className="relative"
     >
-      {/* Opening hairline — the section already carries the folio above,
-          so the form opens with a pure rule rather than a repeated label. */}
       <span
         aria-hidden
         className="block h-px w-full bg-[rgb(var(--magicks-line-rgb)/0.2)]"
@@ -211,6 +235,21 @@ export function ProjectIntakeForm() {
 
       {/* Fields */}
       <div className="grid grid-cols-1 gap-x-12 gap-y-0 sm:grid-cols-2">
+        <label className="sr-only" htmlFor={`${uid}-website`}>
+          Website
+        </label>
+        <input
+          id={`${uid}-website`}
+          name="website"
+          type="text"
+          autoComplete="off"
+          tabIndex={-1}
+          value={data.website}
+          onChange={onChange("website")}
+          className="hidden"
+          aria-hidden="true"
+        />
+
         <Field
           id={`${uid}-name`}
           label="Name"
@@ -227,6 +266,7 @@ export function ProjectIntakeForm() {
             value={data.name}
             onChange={onChange("name")}
             className={inputClass}
+            disabled={isSending}
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? `${uid}-name-err` : undefined}
           />
@@ -248,6 +288,7 @@ export function ProjectIntakeForm() {
             value={data.email}
             onChange={onChange("email")}
             className={inputClass}
+            disabled={isSending}
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? `${uid}-email-err` : undefined}
           />
@@ -269,6 +310,7 @@ export function ProjectIntakeForm() {
               value={data.company}
               onChange={onChange("company")}
               className={inputClass}
+              disabled={isSending}
             />
           </Field>
         </div>
@@ -297,12 +339,14 @@ export function ProjectIntakeForm() {
                     role="radio"
                     aria-checked={active}
                     data-field={i === 0 ? "projectKind" : undefined}
+                    disabled={isSending}
                     onClick={() => onProjectKind(opt.value)}
                     className={[
                       "group relative inline-flex items-baseline gap-2 rounded-full border px-4 py-[0.55rem] text-[13px] font-medium outline-none transition-[color,border-color,background-color] duration-[520ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] sm:px-5 sm:py-[0.65rem] sm:text-[13.5px] md:text-[14px]",
                       active
                         ? "border-[rgb(var(--magicks-line-rgb)/0.52)] bg-[rgb(var(--magicks-ink-rgb)/0.08)] text-[rgb(var(--magicks-ink-rgb)/0.9)]"
                         : "border-[rgb(var(--magicks-line-rgb)/0.22)] bg-transparent text-[rgb(var(--magicks-ink-rgb)/0.66)] hover:border-[rgb(var(--magicks-line-rgb)/0.34)] hover:text-[rgb(var(--magicks-ink-rgb)/0.9)] focus-visible:border-[rgb(var(--magicks-line-rgb)/0.34)] focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.9)]",
+                      isSending ? "cursor-wait opacity-60" : "",
                     ].join(" ")}
                   >
                     <span className="font-ui">{opt.label}</span>
@@ -344,6 +388,7 @@ export function ProjectIntakeForm() {
               onChange={onChange("message")}
               rows={5}
               className={`${inputClass} min-h-[9.5rem] resize-y py-4`}
+              disabled={isSending}
               aria-invalid={Boolean(errors.message)}
               aria-describedby={errors.message ? `${uid}-message-err` : undefined}
             />
@@ -359,7 +404,7 @@ export function ProjectIntakeForm() {
               § Anfrage · hello@magicks.de
             </span>
             <span id={`${uid}-hint`} className="font-ui text-[13px] leading-[1.6] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[13.5px]">
-              Kein Druck, keine Agenturschleife — erste Einschätzung in der Regel innerhalb von 24 Stunden.
+              Kein Druck, keine Agenturschleife — die Anfrage wird sicher an MAGICKS gesendet.
             </span>
           </div>
 
@@ -368,19 +413,19 @@ export function ProjectIntakeForm() {
               submit button on larger screens. */}
           <button
             type="submit"
-            className="group inline-flex w-full items-center justify-center gap-3 rounded-full border border-[rgb(var(--magicks-line-rgb)/0.28)] bg-[var(--magicks-ink-strong)] px-9 py-[1.05rem] text-[15.5px] font-semibold text-[var(--magicks-bg-lifted)] no-underline shadow-[0_28px_64px_-34px_rgba(20,28,44,0.52),inset_0_1px_0_rgba(255,255,255,0.18)] transition-[transform,box-shadow] duration-[560ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[2px] hover:shadow-[0_38px_82px_-30px_rgba(20,28,44,0.62),inset_0_1px_0_rgba(255,255,255,0.24)] sm:w-auto sm:gap-3.5 sm:self-auto sm:px-10 sm:py-[1.2rem] sm:text-[16px] md:px-11 md:text-[16.5px]"
+            disabled={isSending}
+            className="group inline-flex w-full items-center justify-center gap-3 rounded-full border border-[rgb(var(--magicks-line-rgb)/0.28)] bg-[var(--magicks-ink-strong)] px-9 py-[1.05rem] text-[15.5px] font-semibold text-[var(--magicks-bg-lifted)] no-underline shadow-[0_28px_64px_-34px_rgba(20,28,44,0.52),inset_0_1px_0_rgba(255,255,255,0.18)] transition-[transform,box-shadow,opacity] duration-[560ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[2px] hover:shadow-[0_38px_82px_-30px_rgba(20,28,44,0.62),inset_0_1px_0_rgba(255,255,255,0.24)] disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0 sm:w-auto sm:gap-3.5 sm:self-auto sm:px-10 sm:py-[1.2rem] sm:text-[16px] md:px-11 md:text-[16.5px]"
           >
-            <span>Nachricht senden</span>
+            <span>{isSending ? "Wird gesendet" : "Nachricht senden"}</span>
             <span
               aria-hidden
               className="font-instrument text-[1.1em] italic transition-transform duration-[560ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[3px]"
             >
-              →
+              {isSending ? "…" : "→"}
             </span>
           </button>
         </div>
 
-        {/* Footnote — privacy + honest handoff reassurance */}
         <div className="mt-7 flex flex-col items-start gap-3 text-[12.5px] text-[rgb(var(--magicks-ink-rgb)/0.38)] sm:mt-9 sm:flex-row sm:items-center sm:gap-6">
           <span className="font-mono uppercase leading-none tracking-[0.22em]">
             · Kein Newsletter · Keine Weitergabe ·
@@ -389,7 +434,7 @@ export function ProjectIntakeForm() {
             className="hidden h-3 w-px bg-[rgb(var(--magicks-line-rgb)/0.2)] sm:inline-block"
           />
           <span className="font-ui text-[13px] leading-[1.6]">
-            Mit dem Absenden stimmst du unseren{" "}
+            Mit dem Absenden stimmen Sie unseren{" "}
             <Link
               to="/datenschutz"
               className="underline decoration-[rgb(var(--magicks-line-rgb)/0.3)] underline-offset-[3px] transition-colors duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:text-[rgb(var(--magicks-ink-rgb)/0.92)] hover:decoration-[rgb(var(--magicks-line-rgb)/0.58)]"

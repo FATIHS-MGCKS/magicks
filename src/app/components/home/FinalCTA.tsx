@@ -6,6 +6,7 @@ import {
   atmosphericField,
   focusEnvelope,
   presenceEnvelope,
+  prefersCheapMotion,
 } from "../../lib/scrollMotion";
 
 /**
@@ -27,6 +28,7 @@ export function FinalCTA() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
+      const cheapMotion = prefersCheapMotion();
       const lineAWords = gsap.utils.toArray<HTMLElement>("[data-fc-a]");
       const lineBWords = gsap.utils.toArray<HTMLElement>("[data-fc-b]");
       const rule = root.querySelector<HTMLElement>("[data-fc-rule]");
@@ -37,14 +39,70 @@ export function FinalCTA() {
       const grid = root.querySelector<HTMLElement>("[data-fc-grid]");
       const ground = root.querySelector<HTMLElement>("[data-fc-ground]");
       const heading = root.querySelector<HTMLElement>("[data-fc-heading]");
+      const apertureMatte = root.querySelector<HTMLElement>("[data-fc-aperture-matte]");
+      const apertureLight = root.querySelector<HTMLElement>("[data-fc-aperture-light]");
+      const apertureVignette = root.querySelector<HTMLElement>("[data-fc-aperture-vignette]");
 
       if (reduced) {
         gsap.set(
-          [...lineAWords, ...lineBWords, rule, ...ledger, cta, halo, ...runEnd, grid, ground],
+          [
+            ...lineAWords,
+            ...lineBWords,
+            rule,
+            ...ledger,
+            cta,
+            halo,
+            ...runEnd,
+            grid,
+            ground,
+            apertureMatte,
+            apertureLight,
+            apertureVignette,
+          ],
           { opacity: 1, y: 0, yPercent: 0, scale: 1, scaleX: 1, filter: "blur(0px)" },
         );
         if (ground) gsap.set(ground, { opacity: 0 });
+        gsap.set([apertureMatte, apertureLight, apertureVignette], { opacity: 0 });
         return;
+      }
+
+      // ─── Aperture reveal: a soft central exposure opens the final frame ──
+      if (apertureMatte || apertureLight || apertureVignette) {
+        gsap.set(apertureMatte, { opacity: cheapMotion ? 0.08 : 0.16 });
+        gsap.set(apertureLight, { opacity: 0, scale: cheapMotion ? 0.98 : 0.92 });
+        gsap.set(apertureVignette, { opacity: cheapMotion ? 0.08 : 0.18 });
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: root,
+            start: "top 82%",
+            end: "top 18%",
+            scrub: cheapMotion ? 1.0 : 1.45,
+            invalidateOnRefresh: true,
+          },
+          defaults: { ease: "none" },
+        });
+
+        tl.to(apertureMatte, { opacity: 0.02, duration: 0.62, ease: "power2.out" }, 0)
+          .to(
+            apertureLight,
+            {
+              opacity: cheapMotion ? 0.26 : 0.58,
+              scale: cheapMotion ? 1.02 : 1.08,
+              duration: 0.72,
+              ease: "power2.out",
+            },
+            0.04,
+          )
+          .to(
+            apertureVignette,
+            {
+              opacity: cheapMotion ? 0.04 : 0.08,
+              duration: 0.72,
+              ease: "power2.out",
+            },
+            0,
+          );
       }
 
       // ─── Halo: atmospheric field ─────────────────────────────────────
@@ -204,6 +262,36 @@ export function FinalCTA() {
       aria-labelledby="fc-heading"
     >
       <div aria-hidden className="section-top-rule" />
+
+      <div
+        data-fc-aperture-matte
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 will-change-[opacity]"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(38,44,58,0.06) 0%, rgba(38,44,58,0.11) 48%, rgba(38,44,58,0.08) 100%)",
+        }}
+      />
+
+      <div
+        data-fc-aperture-light
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-[34%] z-0 aspect-square w-[112vw] max-w-[1040px] -translate-x-1/2 -translate-y-1/2 rounded-full will-change-[opacity,transform]"
+        style={{
+          background:
+            "radial-gradient(circle at center, rgba(255,253,244,0.48) 0%, rgba(237,215,178,0.24) 30%, rgba(255,252,244,0.1) 52%, transparent 72%)",
+        }}
+      />
+
+      <div
+        data-fc-aperture-vignette
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 will-change-[opacity]"
+        style={{
+          background:
+            "radial-gradient(ellipse 72% 60% at 50% 42%, transparent 0%, transparent 58%, rgba(106,86,62,0.08) 100%)",
+        }}
+      />
 
       <div
         data-fc-halo

@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 import { registerGsap } from "../../lib/gsap";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
-import { sectionFarewell } from "../../lib/scrollMotion";
+import { prefersCheapMotion, sectionFarewell } from "../../lib/scrollMotion";
 
 /**
  * Section 04 — Ihr Partner.
@@ -48,10 +48,12 @@ export function About() {
       const introItems = gsap.utils.toArray<HTMLElement>("[data-about-intro]");
       const cards = gsap.utils.toArray<HTMLElement>("[data-about-card]");
       const farewell = root.querySelector<HTMLElement>("[data-about-farewell]");
+      const lightLeak = root.querySelector<HTMLElement>("[data-about-lightleak]");
+      const cheapMotion = prefersCheapMotion();
 
       if (reduced) {
         gsap.set(
-          [...introItems, ...cards, farewell].filter(Boolean) as HTMLElement[],
+          [...introItems, ...cards, farewell, lightLeak].filter(Boolean) as HTMLElement[],
           {
             opacity: 1,
             y: 0,
@@ -60,6 +62,7 @@ export function About() {
           },
         );
         if (farewell) gsap.set(farewell, { opacity: 0 });
+        if (lightLeak) gsap.set(lightLeak, { opacity: 0 });
         return;
       }
 
@@ -80,6 +83,24 @@ export function About() {
             },
           },
         );
+      }
+
+      if (lightLeak) {
+        gsap.set(lightLeak, { opacity: 0, xPercent: -5, yPercent: -3, scale: 0.98 });
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: cards[0] ?? root,
+              start: "top 88%",
+              end: "bottom 30%",
+              scrub: 1.2,
+              invalidateOnRefresh: true,
+            },
+            defaults: { ease: "none" },
+          })
+          .to(lightLeak, { opacity: cheapMotion ? 0.1 : 0.24, xPercent: 0, yPercent: 0, scale: 1, duration: 0.38, ease: "power2.out" }, 0)
+          .to(lightLeak, { opacity: cheapMotion ? 0.12 : 0.3, xPercent: 3, yPercent: 2, scale: 1.02, duration: 0.3, ease: "none" }, 0.38)
+          .to(lightLeak, { opacity: 0.04, xPercent: 7, yPercent: 5, scale: 1.04, duration: 0.32, ease: "power2.in" }, 0.68);
       }
 
       gsap.fromTo(
@@ -146,6 +167,17 @@ export function About() {
         style={{
           backgroundImage:
             "radial-gradient(ellipse 54% 40% at 18% 10%, rgba(34,44,64,0.075), transparent 70%), radial-gradient(ellipse 44% 34% at 84% 80%, rgba(255,255,255,0.22), transparent 74%)",
+        }}
+      />
+
+      <div
+        data-about-lightleak
+        aria-hidden
+        className="pointer-events-none absolute -inset-x-[30%] top-[16%] z-0 h-[62%] origin-center rotate-[-12deg] will-change-[opacity,transform]"
+        style={{
+          background:
+            "linear-gradient(105deg, transparent 24%, rgba(255,250,236,0.16) 39%, rgba(220,190,142,0.2) 48%, rgba(255,253,246,0.14) 57%, transparent 74%)",
+          mixBlendMode: "soft-light",
         }}
       />
 

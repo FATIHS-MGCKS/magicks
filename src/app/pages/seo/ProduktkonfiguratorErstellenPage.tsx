@@ -1,108 +1,98 @@
 import { useLayoutEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { registerGsap } from "../../lib/gsap";
-import { useReducedMotion } from "../../hooks/useReducedMotion";
-import { ChapterMarker } from "../../components/home/ChapterMarker";
+
 import { ContextualCrossLink } from "../../components/service/ContextualCrossLink";
-import { SectionTransition } from "../../components/service/SectionTransition";
-import { presenceEnvelope } from "../../lib/scrollMotion";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { registerGsap } from "../../lib/gsap";
+import { runRouteReveal } from "../../lib/routeReveal";
+import { FaqJsonLd, type FaqItem } from "../../seo/FaqJsonLd";
 import { RouteSEO } from "../../seo/RouteSEO";
 
-/* ------------------------------------------------------------------
- * /produktkonfigurator-erstellen — bespoke editorial landing page.
- *
- * Emphasis: 3D configurators for construction and made-to-measure
- * businesses. Visually strong, product-driven, immersive but controlled.
- * Sharper than Web-Software, more expressive than the KI page, but
- * distinctly its own idiom — a specimen object on a technical plate.
- *
- * Hero motif: SpecimenCube — a cabinet-projected wireframe cube with
- * H · B · T dimension callouts, corner crop marks, and a single
- * breathing interaction point. Reads unambiguously as "3D object with
- * measurements", which telegraphs the entire page's premise in one
- * glance: configurators for dimensioned, made-to-measure products.
- *
- * Sections:
- *   · Hero                — H1, CTA, meta triad, SpecimenCube, vertical credit
- *   · § 01  Lage          — "Wenn Produkte erklärungsbedürftig sind"
- *   · § 02  Branchenatlas — 15 industries grouped in 3 editorial columns
- *   · § 03  Zielbild      — 5 audience cases routed to config-axes
- *   · § 04  Umfang        — 6-item SPEC register
- *   · § 05  Herangehen    — "Wie wir Produktkonfiguratoren denken"
- *   · § 06  Absage        — "Was du nicht bekommst"
- *   · § Positionierung    — "3D, die erklärt. Konfiguration, die führt..."
- *   · Cross-links         — Shops · Web-Software · KI
- *   · Final CTA           — specimen plate signature
- * ------------------------------------------------------------------ */
+type TextBlock = {
+  title: string;
+  text: string;
+};
 
-const INCLUDES: { spec: string; kind: string; title: string; body: string }[] = [
+type BranchGroup = {
+  code: string;
+  title: string;
+  items: string[];
+};
+
+type RelatedLink = {
+  to: string;
+  eyebrow: string;
+  folio: string;
+  lead: string;
+  linkLabel: string;
+};
+
+const TRUST_CHIPS = [
+  "3D",
+  "Variantenlogik",
+  "Anfrageprozess",
+  "Technische Umsetzung",
+] as const;
+
+const VALUE_POINTS: TextBlock[] = [
   {
-    spec: "SPEC-01",
-    kind: "3D",
-    title: "3D-Produktkonfiguratoren",
-    body:
-      "Interaktive Lösungen, die Produkte räumlich, hochwertig und verständlich erlebbar machen.",
+    title: "Varianten verständlich machen",
+    text: "Optionen, Ausstattungen und Abhängigkeiten werden sichtbar, statt in langen Listen oder PDF-Tabellen zu verschwinden.",
   },
   {
-    spec: "SPEC-02",
-    kind: "Logik",
-    title: "Varianten- und Optionslogik",
-    body:
-      "Maße, Farben, Materialien, Ausstattungen und Abhängigkeiten sauber digital abbilden.",
+    title: "Maße und Materialien erklären",
+    text: "Kunden können Dimensionen, Materialien, Farben und Ausführungen im richtigen Zusammenhang auswählen.",
   },
   {
-    spec: "SPEC-03",
-    kind: "Führung",
-    title: "Nutzerführung mit Klarheit",
-    body:
-      "Konfiguratoren, die Entscheidungen leichter machen statt zusätzliche Reibung zu erzeugen.",
+    title: "Auswahl sicherer führen",
+    text: "Geführte Schritte reduzieren Unsicherheit und helfen, sinnvolle Kombinationen zu verstehen.",
   },
   {
-    spec: "SPEC-04",
-    kind: "Übergabe",
-    title: "Anfrage- und Vertriebslogik",
-    body:
-      "Strukturierte Übergaben, bessere Vorqualifizierung und saubere Anschlussprozesse.",
+    title: "Fehlanfragen reduzieren",
+    text: "Wenn die Auswahl sauber vorbereitet wird, kommen Anfragen vollständiger und nachvollziehbarer im Vertrieb an.",
   },
   {
-    spec: "SPEC-05",
-    kind: "Technik",
-    title: "Technische Umsetzung",
-    body:
-      "Performant, modern und sauber aufgebaut – für echte Nutzung, nicht nur Demo-Effekt.",
+    title: "Vertrieb besser vorbereiten",
+    text: "Konfiguration, Wünsche und Kontaktdaten können als Grundlage für Angebot, Beratung oder Rückfrage übergeben werden.",
   },
   {
-    spec: "SPEC-06",
-    kind: "Brücke",
-    title: "Integrationen",
-    body:
-      "Anbindungen an CRM, Anfrageprozesse, Kalkulationslogik oder andere Systeme, wenn sie Teil der Lösung sind.",
+    title: "Produkte hochwertiger präsentieren",
+    text: "Interaktive Darstellung zeigt Qualität und Möglichkeiten, ohne das Produkt auf einen statischen Ausschnitt zu reduzieren.",
   },
 ];
 
-/**
- * Audience cases mapped to a config-axis — Varianz, Mass, Erklärung,
- * Übergabe, Führung. Reads as a configurator dimensioning document
- * rather than a generic bullet list.
- */
-const AUDIENCE: { text: string; axis: string }[] = [
-  { text: "Produkte mit vielen Varianten oder Optionen anbietest", axis: "Varianz" },
+const USE_CASES: TextBlock[] = [
   {
-    text: "Maße, Farben, Materialien oder Ausstattungen digital auswählbar machen willst",
-    axis: "Mass",
+    title: "Ihre Produkte haben viele Varianten oder Optionen.",
+    text: "Wenn Auswahlmöglichkeiten online schwer erklärbar sind, kann ein Konfigurator Ordnung schaffen.",
   },
-  { text: "individuelle Produkte besser erklärbar machen musst", axis: "Erklärung" },
-  { text: "Anfragen strukturierter vorbereiten willst", axis: "Übergabe" },
-  { text: "Vertrieb und Nutzerführung digital verbessern möchtest", axis: "Führung" },
+  {
+    title: "Maße, Farben, Materialien oder Ausstattungen müssen auswählbar sein.",
+    text: "Der Konfigurator macht sichtbar, welche Entscheidungen zusammengehören und welche Kombinationen sinnvoll sind.",
+  },
+  {
+    title: "Kunden stellen häufig ähnliche Rückfragen.",
+    text: "Wiederkehrende Fragen können in der Auswahlführung aufgefangen werden, bevor der Vertrieb einsteigt.",
+  },
+  {
+    title: "Statische Bilder erklären Ihr Produkt nicht ausreichend.",
+    text: "Wenn Perspektive, Maß, Material oder Ausstattung wichtig sind, braucht die Darstellung mehr Kontext.",
+  },
+  {
+    title: "Ihr Vertrieb braucht besser vorbereitete Anfragen.",
+    text: "Anfragen können mit Varianten, Maßen, Wünschen und Kontaktdaten strukturiert übergeben werden.",
+  },
+  {
+    title: "Individuelle Produkte sollen digital hochwertiger wirken.",
+    text: "Ein Konfigurator kann Maßprodukte, B2B-Angebote und komplexe Varianten seriös online erklären.",
+  },
+  {
+    title: "Konfiguration, Anfrage und Übergabe sollen verbunden werden.",
+    text: "Die Auswahl endet nicht im Interface, sondern wird in Beratung, Angebot oder Systemübergabe weitergeführt.",
+  },
 ];
 
-/**
- * Industry groupings — 15 construction-related and made-to-measure
- * business types grouped into 3 editorial chapters. The groupings are
- * real (Gebäudehülle · Innenausbau · Spezialgewerke) so the section
- * reads as a trade directory, not a keyword dump.
- */
-const BRANCHEN: { code: string; title: string; items: string[] }[] = [
+const BRANCH_GROUPS: BranchGroup[] = [
   {
     code: "§ A",
     title: "Gebäudehülle & Außenraum",
@@ -138,160 +128,369 @@ const BRANCHEN: { code: string; title: string; items: string[] }[] = [
   },
 ];
 
-/* ------------------------------------------------------------------
- * SpecimenCube — cabinet-projected wireframe with H / B / T callouts.
- *
- * Drawn in SVG so it stays crisp at every width and can animate
- * deterministically. Three dimension labels sit outside the cube
- * (ruler-style with tick marks), one interaction point breathes at
- * a configurable corner, and corner crop-marks anchor the specimen
- * on the technical plate.
- *
- * Cabinet projection with 30° depth angle:
- *   screen_x = x + 0.5 · y · cos(30°)
- *   screen_y = -z − 0.5 · y · sin(30°)
- * Cube edge = 110. Origin at front-bottom-left = (60, 170).
- * ------------------------------------------------------------------ */
-function SpecimenCube() {
-  // Pre-computed 2D coords for the 8 cube corners
-  // F = Front face, B = Back face. {T,B}op, {L,R}eft
-  const FBL: [number, number] = [60, 170];
-  const FBR: [number, number] = [170, 170];
-  const FTL: [number, number] = [60, 60];
-  const FTR: [number, number] = [170, 60];
-  const BBL: [number, number] = [108, 142]; // +48 / -28 depth offset
-  const BBR: [number, number] = [218, 142];
-  const BTL: [number, number] = [108, 32];
-  const BTR: [number, number] = [218, 32];
+const DELIVERABLES: TextBlock[] = [
+  {
+    title: "Produktkonfiguratoren",
+    text: "Für Produkte, die mit Standardseiten, PDF-Listen oder statischen Galerien nicht verständlich genug werden.",
+  },
+  {
+    title: "3D-Produktkonfiguratoren",
+    text: "Für Produkte, bei denen räumliche Darstellung echten Entscheidungswert schafft.",
+  },
+  {
+    title: "Varianten- und Optionslogik",
+    text: "Auswahlregeln, Abhängigkeiten, Pakete, Zubehör und sinnvolle Kombinationen werden sauber abgebildet.",
+  },
+  {
+    title: "Maß-, Material-, Farb- und Ausstattungslogik",
+    text: "Dimensionen und Eigenschaften werden so geführt, dass Kunden die Auswirkungen ihrer Auswahl verstehen.",
+  },
+  {
+    title: "Interaktive Produktdarstellung",
+    text: "2D, 3D, Bildlogik oder geführte Schritte werden nach Nutzen ausgewählt, nicht nach Effekt.",
+  },
+  {
+    title: "Anfrage- und Angebotsflows",
+    text: "Die fertige Konfiguration kann als Angebotsgrundlage, Anfrage, Warenkorb oder Beratungseinstieg weiterlaufen.",
+  },
+  {
+    title: "Zusammenfassung der Konfiguration",
+    text: "Kunden und Vertrieb sehen nachvollziehbar, was ausgewählt wurde und welche Informationen noch fehlen.",
+  },
+  {
+    title: "Lead- und Vertriebsübergabe",
+    text: "CRM, Formular, E-Mail oder interne Systeme können dort angebunden werden, wo sie den Prozess vereinfachen.",
+  },
+  {
+    title: "Technische Web-Umsetzung",
+    text: "Responsive, performant und so aufgebaut, dass Erweiterungen später möglich bleiben.",
+  },
+  {
+    title: "Performance-Optimierung",
+    text: "Interaktive Produktdarstellung muss schnell und stabil bleiben, besonders auf mobilen Geräten.",
+  },
+];
 
-  const line = (p1: [number, number], p2: [number, number]) =>
-    `M ${p1[0]} ${p1[1]} L ${p2[0]} ${p2[1]}`;
+const SALES_FLOW_POINTS: TextBlock[] = [
+  {
+    title: "Konfigurierte Auswahl zusammenfassen",
+    text: "Alle relevanten Varianten, Maße, Materialien und Optionen werden nachvollziehbar gebündelt.",
+  },
+  {
+    title: "Kontaktdaten erfassen",
+    text: "Der nächste Schritt bleibt klar, ohne den Nutzer mit unnötigen Formularfeldern zu verlieren.",
+  },
+  {
+    title: "Anfrage übergeben",
+    text: "E-Mail, CRM, Formular oder internes System erhalten eine strukturierte Grundlage statt loser Freitexte.",
+  },
+  {
+    title: "Angebotsprozess vorbereiten",
+    text: "Der Vertrieb sieht schneller, worum es geht, welche Auswahl getroffen wurde und wo Rückfragen nötig sind.",
+  },
+  {
+    title: "Beratung erleichtern",
+    text: "Kunden kommen mit einem konkreteren Bild in das Gespräch, nicht nur mit einer vagen Anfrage.",
+  },
+  {
+    title: "Preisindikation zeigen, wenn sinnvoll",
+    text: "Wo Regeln und Daten es erlauben, kann eine grobe Orientierung helfen. Nicht jedes Produkt braucht sofort einen Preis.",
+  },
+];
 
+const CONFIG_TYPES: TextBlock[] = [
+  {
+    title: "3D-Konfigurator",
+    text: "Für Produkte, bei denen Raum, Perspektive, Maß oder Varianten visuell verstanden werden müssen.",
+  },
+  {
+    title: "2D- oder bildbasierter Konfigurator",
+    text: "Für Auswahlprozesse, bei denen klare Bilder, Zustände oder Variantenansichten ausreichen.",
+  },
+  {
+    title: "Schritt-für-Schritt-Auswahl",
+    text: "Für komplexe Entscheidungen, die in sinnvoller Reihenfolge geführt werden sollten.",
+  },
+  {
+    title: "Anfrage-Konfigurator",
+    text: "Für Produkte, bei denen nicht der Checkout, sondern eine qualifizierte Anfrage das Ziel ist.",
+  },
+  {
+    title: "Produktberater",
+    text: "Für Angebote, bei denen Nutzer erst herausfinden müssen, welche Lösung zu ihrem Bedarf passt.",
+  },
+  {
+    title: "Varianten- oder Paketlogik",
+    text: "Für Zubehör, Pakete, Ausstattungen oder Kombinationen, die voneinander abhängen.",
+  },
+];
+
+const DECISION_QUESTIONS = [
+  "Welche Varianten sind relevant?",
+  "Welche Maße, Materialien oder Farben müssen auswählbar sein?",
+  "Welche Entscheidungen müssen nacheinander passieren?",
+  "Wo brauchen Nutzer Orientierung?",
+  "Welche Daten braucht Ihr Vertrieb?",
+  "Was soll am Ende entstehen: Anfrage, Angebot, Bestellung oder Beratung?",
+  "Welche Systeme müssen angebunden werden?",
+] as const;
+
+const AVOID_POINTS = [
+  "Keinen Konfigurator ohne klaren Nutzen.",
+  "Keine 3D-Demo, die den Anfrageprozess nicht verbessert.",
+  "Keine unübersichtliche Variantenlogik.",
+  "Keine Oberfläche, die beeindruckt, aber Nutzer nicht führt.",
+  "Keine technische Lösung, die später schwer zu pflegen ist.",
+  "Keine Funktionen, die im Vertrieb oder Alltag keinen echten Wert schaffen.",
+] as const;
+
+const FAQ_ITEMS: ReadonlyArray<FaqItem> = [
+  {
+    question: "Was ist ein Produktkonfigurator?",
+    answer:
+      "Ein Produktkonfigurator führt Nutzer durch Varianten, Maße, Materialien, Farben, Optionen oder Pakete und bereitet daraus eine Anfrage, Bestellung, Beratung oder Angebotsgrundlage vor.",
+  },
+  {
+    question: "Wann lohnt sich ein 3D-Produktkonfigurator?",
+    answer:
+      "Ein 3D-Produktkonfigurator lohnt sich, wenn räumliche Darstellung, Dimensionen, Materialien oder Ausstattungen für die Entscheidung wichtig sind und statische Bilder nicht genug erklären.",
+  },
+  {
+    question: "Muss ein Konfigurator immer in 3D sein?",
+    answer:
+      "Nein. Manche Produkte brauchen 3D, andere funktionieren besser mit 2D, Bildern, geführten Schritten oder einer klaren Anfrage-Logik. Die technische Form sollte dem Entscheidungsprozess dienen.",
+  },
+  {
+    question: "Für welche Branchen eignet sich ein Produktkonfigurator?",
+    answer:
+      "Besonders geeignet sind Produkte mit Maß, Varianten oder Erklärungsbedarf: Bau-Branche, Wintergärten, Carports, Zäune, Vordächer, Möbel nach Maß, Küchen, Innenausbau, Modulbau oder technische Produkte.",
+  },
+  {
+    question: "Kann ein Konfigurator Anfragen an CRM oder E-Mail übergeben?",
+    answer:
+      "Ja. Konfigurationen können per E-Mail, Formular, CRM oder an andere Systeme übergeben werden, wenn die Schnittstellen und der Prozess dafür definiert sind.",
+  },
+  {
+    question: "Kann ein Produktkonfigurator Preise berechnen?",
+    answer:
+      "Ja, wenn Preisregeln, Daten und Variantenlogik sauber vorliegen. In manchen Fällen ist eine Preisindikation sinnvoller als ein verbindlicher Preis.",
+  },
+  {
+    question: "Funktioniert ein Konfigurator auch mobil?",
+    answer:
+      "Ja. Ein Konfigurator sollte auf Desktop und Mobile funktionieren. Bei komplexen 3D- oder Variantenlogiken muss die mobile Führung besonders klar und performant geplant werden.",
+  },
+  {
+    question: "Wie aufwendig ist ein Produktkonfigurator?",
+    answer:
+      "Der Aufwand hängt von Produktlogik, 3D- oder 2D-Darstellung, Datenlage, Integrationen und Anfrageprozess ab. Deshalb beginnt MAGICKS mit einer Analyse der Entscheidungen und Anforderungen.",
+  },
+  {
+    question: "Kann MAGICKS bestehende Produktdaten oder Systeme anbinden?",
+    answer:
+      "Ja, wenn Datenstruktur und Schnittstellen es erlauben. Möglich sind Anbindungen an CRM, E-Mail, Formulare, Produktdaten, Kalkulationslogik oder andere Systeme.",
+  },
+];
+
+const RELATED_LINKS: RelatedLink[] = [
+  {
+    to: "/shops-produktkonfiguratoren",
+    eyebrow: "Commerce",
+    folio: "Shops & Konfiguratoren",
+    lead: "Wenn Produktpräsentation, Shop-Struktur, Anfragewege und Konfigurator als zusammenhängender Verkaufsprozess gedacht werden sollen.",
+    linkLabel: "Shops & Konfiguratoren ansehen",
+  },
+  {
+    to: "/web-software",
+    eyebrow: "System",
+    folio: "Web-Software",
+    lead: "Wenn der Konfigurator Teil einer größeren Plattform, eines Portals oder einer individuellen Anwendung wird.",
+    linkLabel: "Web-Software ansehen",
+  },
+  {
+    to: "/ki-automationen-integrationen",
+    eyebrow: "Automation",
+    folio: "KI & Integrationen",
+    lead: "Wenn hinter der Konfiguration Automationen, Anfrageverarbeitung, Systemverbindungen oder intelligente Workflows entstehen sollen.",
+    linkLabel: "KI-Automationen ansehen",
+  },
+  {
+    to: "/websites-landingpages",
+    eyebrow: "Auftritt",
+    folio: "Websites & Landingpages",
+    lead: "Wenn der Konfigurator in einen hochwertigen Webauftritt mit klarer Nutzerführung eingebettet werden soll.",
+    linkLabel: "Websites & Landingpages ansehen",
+  },
+  {
+    to: "/leistungen",
+    eyebrow: "Studio",
+    folio: "Leistungen",
+    lead: "Wenn Sie den gesamten MAGICKS-Rahmen aus Auftritt, Commerce, Web-Software und Automationen einordnen möchten.",
+    linkLabel: "Leistungen ansehen",
+  },
+  {
+    to: "/kontakt",
+    eyebrow: "Direkt",
+    folio: "Kontakt",
+    lead: "Wenn ein konkretes Produkt, eine Variantenlogik oder ein Anfrageprozess bereits im Raum steht.",
+    linkLabel: "Kontakt aufnehmen",
+  },
+];
+
+function Eyebrow({ children }: { children: string }) {
   return (
-    <div aria-hidden className="w-full max-w-[44rem]">
-      <svg
-        viewBox="0 0 280 200"
-        className="w-full"
-        role="presentation"
+    <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.72)] sm:text-[10.75px]">
+      {children}
+    </p>
+  );
+}
+
+function PrimaryCta({ to, label }: { to: string; label: string }) {
+  return (
+    <Link
+      to={to}
+      className="group inline-flex min-h-12 items-center gap-3 rounded-full bg-[var(--magicks-ink-strong)] py-3 pl-6 pr-3 font-ui text-[15px] font-[590] tracking-[-0.004em] text-[var(--magicks-bg-lifted)] no-underline shadow-[0_20px_54px_-34px_rgba(20,28,44,0.42)] transition-[transform,box-shadow,background-color] duration-500 hover:-translate-y-[1px] hover:shadow-[0_26px_64px_-36px_rgba(20,28,44,0.52)] active:translate-y-0 active:scale-[0.985] sm:text-[15.5px]"
+    >
+      <span>{label}</span>
+      <span
         aria-hidden
+        className="flex h-8 w-8 items-center justify-center rounded-full bg-[rgb(var(--magicks-bg-lifted-rgb)/0.12)] transition-transform duration-500 group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
       >
-        {/* Hidden edges — very thin, barely visible, for completeness */}
-        <g stroke="rgba(255,255,255,0.11)" strokeWidth="0.6" strokeDasharray="2 2" fill="none">
-          <path d={line(BBL, BBR)} />
-          <path d={line(BBL, BTL)} />
-          <path d={line(FBL, BBL)} />
-        </g>
+        ↗
+      </span>
+    </Link>
+  );
+}
 
-        {/* Visible wireframe — front face + top + right-top + right-bottom depth */}
-        <g stroke="rgba(255,255,255,0.55)" strokeWidth="1" fill="none" strokeLinecap="round">
-          {/* Front face */}
-          <path d={line(FBL, FBR)} data-pk-edge />
-          <path d={line(FBR, FTR)} data-pk-edge />
-          <path d={line(FTR, FTL)} data-pk-edge />
-          <path d={line(FTL, FBL)} data-pk-edge />
-          {/* Top face — back edges */}
-          <path d={line(FTL, BTL)} data-pk-edge />
-          <path d={line(BTL, BTR)} data-pk-edge />
-          <path d={line(FTR, BTR)} data-pk-edge />
-          {/* Right face — back edges */}
-          <path d={line(FBR, BBR)} data-pk-edge />
-          <path d={line(BBR, BTR)} data-pk-edge />
-        </g>
+function SecondaryCta({ to, label }: { to: string; label: string }) {
+  return (
+    <Link
+      to={to}
+      className="group inline-flex min-h-12 items-center gap-2 rounded-full border border-[rgb(var(--magicks-line-rgb)/0.18)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.5)] px-5 py-3 font-ui text-[15px] font-[560] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.78)] no-underline transition-[border-color,transform,color,background-color] duration-500 hover:-translate-y-[1px] hover:border-[rgb(var(--magicks-line-rgb)/0.34)] hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/0.82)] hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[15.5px]"
+    >
+      <span>{label}</span>
+      <span aria-hidden className="font-instrument italic transition-transform duration-500 group-hover:translate-x-[2px]">
+        ↗
+      </span>
+    </Link>
+  );
+}
 
-        {/* Dimension rulers — Height (left).
-            Main rail + end caps + 3 subdivision ticks reading as a
-            calibrated measuring instrument, not just an abstract label. */}
-        <g stroke="rgba(255,255,255,0.32)" strokeWidth="0.8" fill="none">
-          <path d="M 44 60 L 44 170" />
-          <path d="M 40 60 L 48 60" />
-          <path d="M 40 170 L 48 170" />
-          {/* subdivisions — quarter, half, three-quarter */}
-          <path d="M 42 87.5 L 46 87.5" opacity="0.6" />
-          <path d="M 41 115 L 47 115" opacity="0.7" />
-          <path d="M 42 142.5 L 46 142.5" opacity="0.6" />
-        </g>
-        <text
-          x="38"
-          y="122"
-          textAnchor="end"
-          fill="rgba(255,255,255,0.78)"
-          className="font-mono"
-          fontSize="8.5"
-          letterSpacing="2.2"
-          style={{ textTransform: "uppercase", fontWeight: 500 }}
+function SectionIntro({
+  eyebrow,
+  title,
+  text,
+}: {
+  eyebrow: string;
+  title: string;
+  text?: string;
+}) {
+  return (
+    <div data-pk-reveal className="max-w-[62rem]">
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <h2 className="font-ui mt-7 max-w-[23ch] text-[2.05rem] font-[620] leading-[1.02] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+        {title}
+      </h2>
+      {text ? (
+        <p className="font-ui mt-7 max-w-[54rem] text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+          {text}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function InfoCard({ item, index }: { item: TextBlock; index?: number }) {
+  return (
+    <article
+      data-pk-reveal
+      className="rounded-[1.1rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] p-5 shadow-[0_18px_52px_-44px_rgba(20,28,44,0.28),inset_0_1px_0_rgba(255,255,255,0.72)] sm:p-6"
+    >
+      {typeof index === "number" ? (
+        <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.7)]">
+          {String(index + 1).padStart(2, "0")}
+        </p>
+      ) : null}
+      <h3 className="font-ui mt-3 text-[1.08rem] font-[620] leading-[1.28] tracking-[-0.013em] text-[rgb(var(--magicks-ink-rgb)/0.92)] sm:text-[1.16rem]">
+        {item.title}
+      </h3>
+      <p className="font-ui mt-3 text-[14.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.66)]">
+        {item.text}
+      </p>
+    </article>
+  );
+}
+
+function SpecimenPlate() {
+  return (
+    <div className="relative overflow-hidden rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.66)] p-5 shadow-[0_24px_68px_-52px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.76)] sm:p-6">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.22]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(46,56,76,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(46,56,76,0.06) 1px, transparent 1px)",
+          backgroundSize: "36px 36px",
+        }}
+      />
+      <div className="relative">
+        <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.72)]">
+          SpecimenCube · H × B × T
+        </p>
+        <svg
+          viewBox="0 0 280 210"
+          className="mt-6 w-full"
+          role="img"
+          aria-label="Technische Skizze eines konfigurierbaren Produktwürfels mit Höhe, Breite und Tiefe"
         >
-          H
-        </text>
-
-        {/* Dimension rulers — Breite (bottom) */}
-        <g stroke="rgba(255,255,255,0.32)" strokeWidth="0.8" fill="none">
-          <path d="M 60 186 L 170 186" />
-          <path d="M 60 182 L 60 190" />
-          <path d="M 170 182 L 170 190" />
-          <path d="M 87.5 184 L 87.5 188" opacity="0.6" />
-          <path d="M 115 183 L 115 189" opacity="0.7" />
-          <path d="M 142.5 184 L 142.5 188" opacity="0.6" />
-        </g>
-        <text
-          x="115"
-          y="198"
-          textAnchor="middle"
-          fill="rgba(255,255,255,0.78)"
-          className="font-mono"
-          fontSize="8.5"
-          letterSpacing="2.2"
-          style={{ textTransform: "uppercase", fontWeight: 500 }}
-        >
-          B
-        </text>
-
-        {/* Dimension rulers — Tiefe (top-right diagonal) */}
-        <g stroke="rgba(255,255,255,0.32)" strokeWidth="0.8" fill="none">
-          <path d="M 182 52 L 230 24" />
-          <path d="M 178 48 L 186 56" />
-          <path d="M 226 20 L 234 28" />
-          <path d="M 192 44 L 198 48" opacity="0.6" />
-          <path d="M 204 37 L 211 41" opacity="0.7" />
-          <path d="M 216 30 L 222 33" opacity="0.6" />
-        </g>
-        <text
-          x="226"
-          y="50"
-          textAnchor="start"
-          fill="rgba(255,255,255,0.78)"
-          className="font-mono"
-          fontSize="8.5"
-          letterSpacing="2.2"
-          style={{ textTransform: "uppercase", fontWeight: 500 }}
-        >
-          T
-        </text>
-
-        {/* Corner crosshair — top-right front, the "configurable" point */}
-        <g stroke="rgba(255,255,255,0.82)" strokeWidth="1" fill="none">
-          <path d="M 170 54 L 170 66" />
-          <path d="M 164 60 L 176 60" />
-        </g>
-        <circle
-          cx="170"
-          cy="60"
-          r="2.2"
-          fill="rgba(255,255,255,0.92)"
-          data-pk-tick
-        />
-
-        {/* Subtle axis anchors — tiny corner ticks on the other 3 front corners */}
-        <g fill="rgba(255,255,255,0.44)">
-          <circle cx="60" cy="60" r="1.4" />
-          <circle cx="60" cy="170" r="1.4" />
-          <circle cx="170" cy="170" r="1.4" />
-        </g>
-      </svg>
-
-      <div className="font-mono mt-3 grid grid-cols-[minmax(0,auto)_1fr_minmax(0,auto)] items-center gap-4 text-[9px] font-medium uppercase leading-none tracking-[0.28em] text-white/30 sm:text-[9.5px]">
-        <span className="tabular-nums">Specimen No. 01</span>
-        <span aria-hidden className="h-px w-full bg-white/12" />
-        <span className="tabular-nums text-white/46">H × B × T · Konfigurierbar</span>
+          <g stroke="rgb(24 28 37 / 0.14)" strokeWidth="0.8" fill="none">
+            <path d="M 44 54 L 44 170" />
+            <path d="M 40 54 L 48 54" />
+            <path d="M 40 170 L 48 170" />
+            <path d="M 60 188 L 170 188" />
+            <path d="M 60 184 L 60 192" />
+            <path d="M 170 184 L 170 192" />
+            <path d="M 182 52 L 230 24" />
+            <path d="M 178 48 L 186 56" />
+            <path d="M 226 20 L 234 28" />
+          </g>
+          <g stroke="rgb(24 28 37 / 0.55)" strokeWidth="1.2" fill="none" strokeLinecap="round">
+            <path data-pk-edge d="M 60 170 L 170 170" />
+            <path data-pk-edge d="M 170 170 L 170 60" />
+            <path data-pk-edge d="M 170 60 L 60 60" />
+            <path data-pk-edge d="M 60 60 L 60 170" />
+            <path data-pk-edge d="M 60 60 L 108 32" />
+            <path data-pk-edge d="M 108 32 L 218 32" />
+            <path data-pk-edge d="M 170 60 L 218 32" />
+            <path data-pk-edge d="M 170 170 L 218 142" />
+            <path data-pk-edge d="M 218 142 L 218 32" />
+          </g>
+          <g stroke="rgb(24 28 37 / 0.2)" strokeWidth="0.8" strokeDasharray="2 3" fill="none">
+            <path d="M 108 142 L 218 142" />
+            <path d="M 108 32 L 108 142" />
+            <path d="M 60 170 L 108 142" />
+          </g>
+          <g fill="rgb(24 28 37 / 0.68)" className="font-mono" fontSize="9" letterSpacing="2">
+            <text x="37" y="118" textAnchor="end">H</text>
+            <text x="115" y="205" textAnchor="middle">B</text>
+            <text x="226" y="51" textAnchor="start">T</text>
+          </g>
+          <g stroke="rgb(24 28 37 / 0.8)" strokeWidth="1" fill="none">
+            <path d="M 170 54 L 170 66" />
+            <path d="M 164 60 L 176 60" />
+          </g>
+          <circle data-pk-axis cx="170" cy="60" r="2.6" fill="rgb(122 96 66 / 0.82)" />
+          <g fill="rgb(24 28 37 / 0.38)">
+            <circle cx="60" cy="60" r="1.5" />
+            <circle cx="60" cy="170" r="1.5" />
+            <circle cx="170" cy="170" r="1.5" />
+          </g>
+        </svg>
+        <div className="font-mono mt-4 grid grid-cols-[minmax(0,auto)_1fr_minmax(0,auto)] items-center gap-4 text-[10px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-ink-rgb)/0.42)]">
+          <span>Specimen No. 01</span>
+          <span aria-hidden className="h-px bg-[rgb(var(--magicks-line-rgb)/0.16)]" />
+          <span>Maß · Variante · Anfrage</span>
+        </div>
       </div>
     </div>
   );
@@ -307,329 +506,59 @@ export default function ProduktkonfiguratorErstellenPage() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
-      // ——— Hero ———
-      const heroChapter = root.querySelector<HTMLElement>("[data-pk-chapter]");
-      const heroLineA = gsap.utils.toArray<HTMLElement>("[data-pk-h1a]");
-      const heroLineB = gsap.utils.toArray<HTMLElement>("[data-pk-h1b]");
-      const heroH1 = root.querySelector<HTMLElement>("[data-pk-h1]");
-      const heroLead = root.querySelector<HTMLElement>("[data-pk-lead]");
-      const heroCta = root.querySelector<HTMLElement>("[data-pk-cta]");
-      const heroCtaRule = root.querySelector<HTMLElement>("[data-pk-cta-rule]");
-      const heroMeta = gsap.utils.toArray<HTMLElement>("[data-pk-meta]");
-      const heroSpecimen = root.querySelector<HTMLElement>("[data-pk-specimen]");
-      const heroEdges = gsap.utils.toArray<SVGPathElement>("[data-pk-edge]");
-      const heroTick = root.querySelector<SVGCircleElement>("[data-pk-tick]");
-      const heroCredit = root.querySelector<HTMLElement>("[data-pk-credit]");
-      const heroSection = root.querySelector<HTMLElement>("[data-pk-hero]");
-      const heroCopy = root.querySelector<HTMLElement>("[data-pk-herocopy]");
-
-      // ——— Scroll reveals ———
+      const heroItems = gsap.utils.toArray<HTMLElement>("[data-pk-hero-item]");
       const reveals = gsap.utils.toArray<HTMLElement>("[data-pk-reveal]");
-      const branchGroups = gsap.utils.toArray<HTMLElement>("[data-pk-branchgroup]");
-      const pullLines = gsap.utils.toArray<HTMLElement>("[data-pk-pull]");
-      const pullHeading = root.querySelector<HTMLElement>("[data-pk-pullheading]");
-      const finalLineA = gsap.utils.toArray<HTMLElement>("[data-pk-finala]");
-      const finalLineB = gsap.utils.toArray<HTMLElement>("[data-pk-finalb]");
-      const finalRule = root.querySelector<HTMLElement>("[data-pk-finalrule]");
-      const finalLedger = gsap.utils.toArray<HTMLElement>("[data-pk-finalledger]");
-      const finalCta = root.querySelector<HTMLElement>("[data-pk-finalcta]");
+      const edges = gsap.utils.toArray<SVGPathElement>("[data-pk-edge]");
+      const axis = root.querySelector<SVGCircleElement>("[data-pk-axis]");
 
       if (reduced) {
-        gsap.set(
-          [
-            heroChapter,
-            ...heroLineA,
-            ...heroLineB,
-            heroLead,
-            heroCta,
-            heroCtaRule,
-            ...heroMeta,
-            heroSpecimen,
-            heroTick,
-            heroCredit,
-            ...reveals,
-            ...branchGroups,
-            ...pullLines,
-            pullHeading,
-            ...finalLineA,
-            ...finalLineB,
-            finalRule,
-            ...finalLedger,
-            finalCta,
-          ],
-          { opacity: 1, y: 0, yPercent: 0, scaleX: 1, letterSpacing: "normal", rotate: 0 },
-        );
-        heroEdges.forEach((e) => {
-          try {
-            const length = e.getTotalLength();
-            gsap.set(e, { strokeDasharray: length, strokeDashoffset: 0 });
-          } catch {
-            // Path length not available
-          }
+        gsap.set([...heroItems, ...reveals, ...edges, axis], {
+          opacity: 1,
+          y: 0,
+          filter: "none",
+          strokeDashoffset: 0,
+          scale: 1,
         });
         return;
       }
 
-      // ——— Hero choreography ———
-      gsap.set(heroChapter, { opacity: 0, y: 12 });
-      gsap.set([...heroLineA, ...heroLineB], { yPercent: 118, opacity: 0 });
-      if (heroH1) gsap.set(heroH1, { letterSpacing: "0.008em" });
-      gsap.set(heroLead, { opacity: 0, y: 16 });
-      gsap.set(heroCta, { opacity: 0, y: 14 });
-      gsap.set(heroCtaRule, { scaleX: 0, transformOrigin: "left center" });
-      gsap.set(heroMeta, { opacity: 0, y: 8 });
-      gsap.set(heroSpecimen, { opacity: 0, scale: 0.98, transformOrigin: "center center" });
-      gsap.set(heroTick, { opacity: 0, scale: 0, transformOrigin: "center center" });
-      gsap.set(heroCredit, { opacity: 0, y: 8 });
-
-      // Cube edges draw in sequentially
-      heroEdges.forEach((e) => {
-        try {
-          const length = e.getTotalLength();
-          gsap.set(e, { strokeDasharray: length, strokeDashoffset: length });
-        } catch {
-          // Path length not available
-        }
+      runRouteReveal({
+        gsap,
+        root,
+        heroItems,
+        revealItems: reveals,
+        heroYOffset: 16,
+        revealYOffset: 18,
+        blur: 4,
+        duration: 0.72,
+        heroStagger: 0.055,
+        revealStart: "top 88%",
       });
 
-      gsap
-        .timeline({ delay: 0.15, defaults: { ease: "power3.out" } })
-        .to(heroChapter, { opacity: 1, y: 0, duration: 0.9 }, 0)
-        .to(
-          heroLineA,
-          { yPercent: 0, opacity: 1, duration: 1.25, stagger: 0.08, ease: "power4.out" },
-          0.3,
-        )
-        .to(
-          heroLineB,
-          { yPercent: 0, opacity: 1, duration: 1.35, stagger: 0.08, ease: "power4.out" },
-          0.62,
-        )
-        .to(
-          heroH1,
-          { letterSpacing: "-0.038em", duration: 1.65, ease: "power2.out" },
-          0.45,
-        )
-        .to(heroLead, { opacity: 1, y: 0, duration: 1.0 }, 1.05)
-        .to(heroCta, { opacity: 1, y: 0, duration: 0.95 }, 1.4)
-        .to(heroCtaRule, { scaleX: 1, duration: 1.15, ease: "power2.inOut" }, 1.5)
-        .to(heroMeta, { opacity: 1, y: 0, duration: 0.85, stagger: 0.09 }, 1.65)
-        .to(heroSpecimen, { opacity: 1, scale: 1, duration: 1.2 }, 1.78)
-        // Edges draw in — 9 visible edges, paced like a technical drawing
-        // being laid out. Slightly slower stagger = more considered,
-        // more specimen-plate energy, less "loader" energy.
-        .to(
-          heroEdges,
-          {
-            strokeDashoffset: 0,
-            duration: 1.0,
-            stagger: 0.095,
-            ease: "power2.inOut",
-          },
-          1.88,
-        )
-        .to(
-          heroTick,
-          { opacity: 1, scale: 1, duration: 0.9, ease: "power3.out" },
-          2.95,
-        )
-        .to(heroCredit, { opacity: 1, y: 0, duration: 1.0 }, 3.05);
-
-      // Subtle idle drift on the specimen — reads as "real object in space"
-      if (heroSpecimen) {
-        gsap.to(heroSpecimen, {
-          y: -3,
-          duration: 5.2,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-          delay: 3.5,
-        });
-      }
-
-      // ——— Hero camera push ———
-      if (heroCopy && heroSection) {
-        gsap.to(heroCopy, {
-          yPercent: -7,
-          opacity: 0.42,
-          ease: "none",
-          scrollTrigger: {
-            trigger: heroSection,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      }
-      if (heroCredit && heroSection) {
-        gsap.to(heroCredit, {
-          opacity: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: heroSection,
-            start: "center top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      }
-
-      // ——— Generic scroll reveals ———
-      reveals.forEach((el) => {
-        presenceEnvelope(el, {
-          trigger: el,
-          start: "top 88%",
-          end: "bottom 20%",
-          yFrom: 18,
-          yTo: -10,
-          blur: 3,
-          opacityFloor: 0.18,
-          holdRatio: 0.52,
-          scrub: 0.9,
+      edges.forEach((edge) => {
+        const length = edge.getTotalLength();
+        gsap.set(edge, { strokeDasharray: length, strokeDashoffset: length });
+        gsap.to(edge, {
+          strokeDashoffset: 0,
+          duration: 1.1,
+          ease: "power2.out",
+          delay: 0.2,
         });
       });
 
-      // ——— Branchenatlas reveal — groups stagger in as a sweep ———
-      branchGroups.forEach((group, i) => {
-        const items = group.querySelectorAll<HTMLElement>("[data-pk-branchitem]");
-        presenceEnvelope(group, {
-          trigger: group,
-          start: "top 88%",
-          end: "bottom 20%",
-          yFrom: 16,
-          yTo: -8,
-          blur: 2.8,
-          opacityFloor: 0.2,
-          holdRatio: 0.54,
-          scrub: 1.0,
-        });
-        presenceEnvelope(Array.from(items), {
-          trigger: group,
-          start: "top 84%",
-          end: "bottom 18%",
-          yFrom: 12,
-          yTo: -6,
-          blur: 2.2,
-          opacityFloor: 0.22,
-          holdRatio: 0.56,
-          stagger: 0.012 + i * 0.002,
-          scrub: 1.0,
-        });
-      });
-
-      // ——— Ceremonial pull statement ———
-      if (pullLines.length) {
-        presenceEnvelope(pullLines, {
-          trigger: pullLines[0],
-          start: "top 84%",
-          end: "bottom 18%",
-          yFrom: 22,
-          yTo: -12,
-          blur: 3.6,
-          opacityFloor: 0.16,
-          holdRatio: 0.56,
-          stagger: 0.035,
-          scrub: 1.0,
-        });
-        if (pullHeading) {
-          gsap.fromTo(
-            pullHeading,
-            { letterSpacing: "0.008em" },
-            {
-              letterSpacing: "-0.038em",
-              ease: "none",
-              scrollTrigger: {
-                trigger: pullLines[0],
-                start: "top 84%",
-                end: "bottom 22%",
-                scrub: 1.0,
-                invalidateOnRefresh: true,
-              },
-            },
-          );
-        }
-      }
-
-      // ——— Final CTA choreography ———
-      if (finalLineA.length || finalLineB.length) {
-        const trigger =
-          (finalLineA[0] as HTMLElement | undefined)?.closest("section") ?? finalLineA[0];
-
-        presenceEnvelope(finalLineA, {
-          trigger,
-          start: "top 84%",
-          end: "bottom 18%",
-          yFrom: 20,
-          yTo: -10,
-          blur: 3.2,
-          opacityFloor: 0.16,
-          holdRatio: 0.56,
-          stagger: 0.03,
-          scrub: 1.0,
-        });
-        presenceEnvelope(finalLineB, {
-          trigger,
-          start: "top 80%",
-          end: "bottom 16%",
-          yFrom: 22,
-          yTo: -10,
-          blur: 3.2,
-          opacityFloor: 0.16,
-          holdRatio: 0.56,
-          stagger: 0.03,
-          scrub: 1.0,
-        });
-
+      if (axis) {
         gsap.fromTo(
-          finalRule,
-          { scaleX: 0, transformOrigin: "center center" },
+          axis,
+          { scale: 0.5, opacity: 0.35, transformOrigin: "center" },
           {
-            scaleX: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger,
-              start: "top 84%",
-              end: "top 46%",
-              scrub: 1.0,
-              invalidateOnRefresh: true,
-            },
+            scale: 1,
+            opacity: 1,
+            duration: 0.78,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
           },
         );
-        gsap.to(finalRule, {
-          scaleX: 0.58,
-          ease: "none",
-          scrollTrigger: {
-            trigger,
-            start: "top 20%",
-            end: "bottom 0%",
-            scrub: 1.0,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        presenceEnvelope(finalCta, {
-          trigger,
-          start: "top 82%",
-          end: "bottom 8%",
-          yFrom: 16,
-          yTo: -8,
-          blur: 2.6,
-          opacityFloor: 0.18,
-          holdRatio: 0.6,
-          scrub: 1.0,
-        });
-        presenceEnvelope(finalLedger, {
-          trigger,
-          start: "top 80%",
-          end: "bottom 10%",
-          yFrom: 14,
-          yTo: -8,
-          blur: 2.4,
-          opacityFloor: 0.22,
-          holdRatio: 0.58,
-          stagger: 0.02,
-          scrub: 1.0,
-        });
       }
     }, root);
 
@@ -642,1011 +571,426 @@ export default function ProduktkonfiguratorErstellenPage() {
 
       <main
         ref={rootRef}
-        className="relative bg-[var(--magicks-bg-base)] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative overflow-hidden bg-[var(--magicks-bg-base)] pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.25rem]"
       >
-        {/* =========================================================
-           HERO — specimen object on a technical plate
-        ========================================================= */}
         <section
           data-pk-hero
-          className="relative overflow-hidden px-5 pb-28 sm:px-8 sm:pb-32 md:px-12 md:pb-44 lg:px-16 lg:pb-52"
+          className="relative overflow-hidden px-5 pb-24 pt-8 sm:px-8 sm:pb-32 sm:pt-10 md:px-12 md:pb-40 lg:px-16 lg:pb-48"
         >
-          {/* Isometric plate texture — distinguished from Web-Software's
-              uniform dot grid by angled strokes at 30° */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(ellipse 58% 46% at 18% 18%, rgba(166,138,98,0.15), transparent 72%), radial-gradient(ellipse 52% 40% at 84% 36%, rgba(118,132,150,0.11), transparent 74%), radial-gradient(ellipse 74% 44% at 50% 94%, rgba(255,255,255,0.58), transparent 76%)",
+            }}
+          />
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.28]"
             style={{
               backgroundImage:
-                "repeating-linear-gradient(30deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 64px), repeating-linear-gradient(-30deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 64px)",
+                "linear-gradient(rgba(46,56,76,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(46,56,76,0.035) 1px, transparent 1px)",
+              backgroundSize: "72px 72px",
               maskImage:
-                "radial-gradient(ellipse 60% 66% at 32% 54%, black, transparent)",
+                "radial-gradient(ellipse 70% 60% at 50% 42%, black, transparent)",
               WebkitMaskImage:
-                "radial-gradient(ellipse 60% 66% at 32% 54%, black, transparent)",
+                "radial-gradient(ellipse 70% 60% at 50% 42%, black, transparent)",
             }}
           />
 
-          <div
-            data-pk-credit
-            aria-hidden
-            className="pointer-events-none absolute bottom-14 left-5 z-10 hidden md:block lg:bottom-16 lg:left-8"
-          >
-            <span className="hero-vertical-credit">
-              MAGICKS &nbsp;·&nbsp; SPEZIAL &nbsp;·&nbsp; 3D-KONFIGURATOR &nbsp;·&nbsp; SPECIMEN MMXXVI
-            </span>
-          </div>
-
           <div className="relative layout-max">
-            <div data-pk-herocopy>
-              <div data-pk-chapter className="mb-10 sm:mb-14">
-                <ChapterMarker num="Spezial" label="3D Konfiguratoren" />
-              </div>
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.66fr)] lg:items-end lg:gap-16">
+                <div>
+                  <div data-pk-hero-item>
+                    <Eyebrow>Produktkonfigurator erstellen lassen</Eyebrow>
+                  </div>
 
-              {/* H1 */}
-              <h1
-                data-pk-h1
-                className="font-instrument max-w-[62rem] text-[2.25rem] leading-[0.98] tracking-[-0.038em] text-white sm:text-[2.95rem] md:text-[3.8rem] lg:text-[4.5rem] xl:text-[5.05rem]"
-              >
-                <span className="block">
-                  {["3D-Produktkonfiguratoren,", "die", "Produkte"].map((w, i) => (
-                    <span
-                      key={`a-${i}`}
-                      className="mr-[0.2em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span data-pk-h1a className="inline-block will-change-[transform,opacity]">
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-                <span className="mt-1 block italic text-white/64 sm:mt-2">
-                  {["verständlich", "machen", "und", "Anfragen", "besser", "führen."].map(
-                    (w, i) => (
+                  <h1
+                    data-pk-hero-item
+                    className="font-ui mt-7 max-w-[18ch] text-[2.42rem] font-[650] leading-[0.98] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.97)] sm:text-[3.35rem] md:text-[4.42rem] lg:text-[5.1rem]"
+                  >
+                    Produktkonfiguratoren, die Varianten verständlich machen und
+                    Anfragen besser vorbereiten.
+                  </h1>
+
+                  <p
+                    data-pk-hero-item
+                    className="font-ui mt-8 max-w-[52rem] text-[1.03rem] font-[480] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.72)] sm:text-[1.1rem] md:text-[1.18rem]"
+                  >
+                    MAGICKS entwickelt Produktkonfiguratoren und 3D-Konfiguratoren,
+                    die Maße, Varianten, Materialien, Farben und Optionen
+                    verständlich machen — damit Kunden sicherer auswählen und
+                    Anfragen strukturierter bei Ihnen ankommen.
+                  </p>
+
+                  <div
+                    data-pk-hero-item
+                    className="mt-10 flex flex-wrap items-center gap-4 sm:mt-12"
+                  >
+                    <PrimaryCta to="/kontakt" label="Produktkonfigurator besprechen" />
+                    <SecondaryCta
+                      to="/shops-produktkonfiguratoren"
+                      label="Mehr zu Shops & Konfiguratoren"
+                    />
+                  </div>
+
+                  <div
+                    data-pk-hero-item
+                    className="mt-8 flex max-w-[54rem] flex-wrap gap-2.5"
+                  >
+                    {TRUST_CHIPS.map((chip) => (
                       <span
-                        key={`b-${i}`}
-                        className="mr-[0.2em] inline-block overflow-hidden align-bottom"
+                        key={chip}
+                        className="font-ui rounded-full border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.62)] px-3 py-2 text-[13.2px] font-[560] leading-none text-[rgb(var(--magicks-ink-rgb)/0.7)] shadow-[inset_0_1px_0_rgba(255,255,255,0.68)]"
                       >
-                        <span data-pk-h1b className="inline-block will-change-[transform,opacity]">
-                          {w}
-                        </span>
+                        {chip}
                       </span>
-                    ),
-                  )}
-                </span>
-              </h1>
+                    ))}
+                  </div>
+                </div>
 
-              {/* Intro */}
-              <div data-pk-lead className="mt-10 max-w-[46rem] sm:mt-12 md:mt-14">
-                <p className="font-instrument text-[1.3rem] italic leading-[1.35] tracking-[-0.01em] text-white/82 sm:text-[1.5rem] md:text-[1.65rem]">
-                  Ein guter Produktkonfigurator ist mehr als eine technische Spielerei.
-                </p>
-                <p className="font-ui mt-6 text-[15px] leading-[1.72] text-white/58 md:text-[16px] md:leading-[1.72]">
-                  Er hilft Nutzern, Produkte besser zu verstehen, Varianten sicher auszuwählen und
-                  schneller zu einer klaren Entscheidung oder Anfrage zu kommen.
-                </p>
-                <p className="font-ui mt-5 text-[15px] leading-[1.72] text-white/58 md:text-[16px] md:leading-[1.72]">
-                  Genau dafür entwickeln wir 3D-Produktkonfiguratoren, die{" "}
-                  <em className="italic text-white/86">
-                    visuell hochwertig wirken, technisch sauber funktionieren
-                  </em>{" "}
-                  und im Vertrieb oder Anfrageprozess echten Mehrwert schaffen.
-                </p>
+                <div data-pk-hero-item>
+                  <SpecimenPlate />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div aria-hidden className="section-top-rule" />
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+                <SectionIntro
+                  eyebrow="Mehr als 3D-Effekt"
+                  title="Ein Produktkonfigurator ist mehr als ein 3D-Effekt."
+                />
+                <div data-pk-reveal className="lg:pt-14">
+                  <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                    Ein guter Konfigurator macht Produkte nicht nur sichtbar. Er
+                    macht Auswahl verständlich. Nutzer sehen Varianten, Maße,
+                    Materialien oder Optionen im richtigen Zusammenhang und
+                    können Schritt für Schritt zu einer sinnvollen Anfrage oder
+                    Bestellung geführt werden.
+                  </p>
+                </div>
               </div>
 
-              {/* CTA */}
-              <div
-                data-pk-cta
-                className="mt-12 inline-flex items-baseline gap-3 sm:mt-14 md:mt-16"
-              >
-                <Link
-                  to="/kontakt"
-                  className="group relative inline-flex items-baseline gap-3 text-[15px] font-medium tracking-[-0.005em] text-white no-underline sm:text-[16px] md:text-[17px]"
-                  aria-label="Projekt anfragen"
-                >
-                  <span className="relative pb-3">
-                    <span className="font-ui">Projekt anfragen</span>
-                    <span
-                      data-pk-cta-rule
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left bg-white/32"
-                    />
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white transition-transform duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
-                    />
-                  </span>
-                  <span
-                    aria-hidden
-                    className="font-instrument text-[1.05em] italic text-white/85 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
-                  >
-                    ↗︎
-                  </span>
-                </Link>
-              </div>
-
-              {/* Meta triad — mobile stacks as ledger column. */}
-              <div className="mt-12 flex flex-col gap-2 sm:mt-18 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-7 sm:gap-y-3 md:mt-20">
-                {["Raum", "Varianz", "Anfrage"].map((m, i) => (
-                  <span
-                    key={m}
-                    data-pk-meta
-                    className="font-mono flex items-center gap-3 text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/52 sm:text-[10.5px]"
-                  >
-                    <span className="tabular-nums text-white/34">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    {m}
-                  </span>
+              <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {VALUE_POINTS.map((item, index) => (
+                  <InfoCard key={item.title} item={item} index={index} />
                 ))}
               </div>
-
-              {/*
-               * SpecimenCube — the signature motif.
-               * Caption row uses a three-field folio (prefix · hairline ·
-               * right spec) that mirrors a technical plate caption
-               * instead of two floating chips.
-               */}
-              <div
-                data-pk-specimen
-                className="mt-16 flex flex-col gap-3 sm:mt-20 md:mt-24"
-              >
-                <div className="font-mono grid grid-cols-[minmax(0,auto)_1fr_minmax(0,auto)] items-center gap-5 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/38 sm:text-[10.5px]">
-                  <span>Fig. 01 · Specimen</span>
-                  <span aria-hidden className="h-px w-full bg-white/14" />
-                  <span className="tabular-nums text-white/32">H · B · T · Konfigurierbar</span>
-                </div>
-                <SpecimenCube />
-              </div>
             </div>
-          </div>
-
-          {/*
-           * Specimen plate readout — a 3D-object footer line that mirrors
-           * the KI page's "Signal · Live" indicator but carries the
-           * specimen vocabulary. The breathing tick reads as "object is
-           * in frame", staying distinct from a signal-flow aesthetic.
-           */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute bottom-6 right-5 hidden items-center gap-4 md:right-12 md:flex lg:right-16 lg:bottom-10"
-          >
-            <span className="font-mono flex items-center gap-2 text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/36">
-              <span className="tick-breathing block h-1.5 w-1.5 rounded-full bg-white/75" />
-              Specimen · Live
-            </span>
-            <span aria-hidden className="h-px w-8 bg-white/18" />
-            <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/34">
-              Specimen · Spezial
-            </span>
-            <span aria-hidden className="h-px w-10 bg-white/18" />
-            <span className="font-mono tabular-nums text-[9.5px] font-medium uppercase leading-none tracking-[0.26em] text-white/34">
-              RAUM — VARIANZ — MASS — ANFRAGE
-            </span>
           </div>
         </section>
 
-        {/* Transition → § 01 Lage */}
-        <SectionTransition from="§ Hero — Spezial" to="§ 01  Lage" />
-
-        {/* =========================================================
-           § 01 — "Wenn Produkte erklärungsbedürftig sind"
-        ========================================================= */}
-        <section className="relative px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
           <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-20 lg:gap-24">
-              <div data-pk-reveal>
-                <p className="font-mono mb-8 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                  § 01 — Lage
-                </p>
-                <h2 className="font-instrument text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]">
-                  Wenn Produkte erklärungsbedürftig, variantenreich oder{" "}
-                  <em className="italic text-white/58">maßgefertigt</em> sind.
-                </h2>
-
-                <div data-pk-reveal className="mt-10 flex items-center gap-4 md:mt-14">
-                  <span aria-hidden className="h-px w-10 bg-white/22 md:w-14" />
-                  <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                    → Siehe § 02 Branchenatlas
-                  </span>
-                </div>
-              </div>
-
-              <div data-pk-reveal className="md:pt-3">
-                <p className="font-ui text-[15px] leading-[1.72] text-white/62 md:text-[16px] md:leading-[1.72]">
-                  Nicht jedes Produkt lässt sich mit ein paar statischen Bildern sauber verkaufen
-                  oder erklären.
-                </p>
-                <p className="font-ui mt-5 text-[15px] leading-[1.72] text-white/62 md:text-[16px] md:leading-[1.72]">
-                  Sobald{" "}
-                  <em className="italic text-white/88">
-                    Varianten, Maße, Ausstattungen, Farben, Optionen oder individuelle
-                    Zusammenstellungen
-                  </em>{" "}
-                  ins Spiel kommen, wird gute Nutzerführung entscheidend.
-                </p>
-                <p className="font-ui mt-6 text-[15px] leading-[1.72] text-white/62 md:text-[16px] md:leading-[1.72]">
-                  Wir entwickeln 3D-Produktkonfiguratoren, die genau diese Komplexität verständlich
-                  machen. So entstehen digitale Erlebnisse, die Produkte klarer zeigen,
-                  Auswahlprozesse strukturieren und Anfragen deutlich besser vorbereiten.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Transition → § 02 Branchenatlas */}
-        <SectionTransition from="§ 01  Lage" to="§ 02  Branchenatlas" />
-
-        {/* =========================================================
-           § 02 — BRANCHENATLAS
-           15 industries grouped in 3 editorial chapters.
-           This is the SEO-critical section: it must feel premium,
-           trustworthy, and structured — never a spammy list.
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          {/* Subtle isometric texture for this section */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.2]"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(30deg, rgba(255,255,255,0.01) 0 1px, transparent 1px 72px), repeating-linear-gradient(-30deg, rgba(255,255,255,0.01) 0 1px, transparent 1px 72px)",
-              maskImage:
-                "radial-gradient(ellipse 70% 62% at 50% 50%, black, transparent)",
-              WebkitMaskImage:
-                "radial-gradient(ellipse 70% 62% at 50% 50%, black, transparent)",
-            }}
-          />
-
-          <div className="relative layout-max">
-            <div className="grid gap-14 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-pk-reveal className="md:pt-2">
-                <div className="flex flex-col gap-4">
-                  <ChapterMarker num="02" label="Branchenatlas" />
-                  <span
-                    aria-hidden
-                    className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/34 sm:text-[10.5px]"
-                  >
-                    03 Kapitel · 15 Gewerke
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                {/* Atlas frontispiece — positions the section as a real
-                    trade directory, not a keyword dump. */}
-                <p
-                  data-pk-reveal
-                  className="font-mono mb-6 flex items-center gap-3 text-[9.5px] font-medium uppercase leading-none tracking-[0.38em] text-white/38 sm:text-[10px]"
-                >
-                  <span aria-hidden className="h-px w-8 bg-white/24 sm:w-12" />
-                  <span>Atlas · Gewerke &amp; Mass</span>
-                </p>
-
-                <h2
-                  data-pk-reveal
-                  className="font-instrument max-w-[52rem] text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]"
-                >
-                  3D-Produktkonfiguratoren für die{" "}
-                  <em className="italic text-white/58">Bau-Branche</em> und maßgefertigte Produkte.
-                </h2>
-
-                <p
-                  data-pk-reveal
-                  className="font-ui mt-8 max-w-[42rem] text-[15px] leading-[1.7] text-white/58 md:mt-10 md:text-[15.5px]"
-                >
-                  Gerade in der Bau-Branche und überall dort, wo Produkte konfigurierbar,
-                  erklärungsbedürftig oder individuell gefertigt sind, kann ein
-                  3D-Produktkonfigurator einen echten Unterschied machen.
-                </p>
-
-                <p
-                  data-pk-reveal
-                  className="font-instrument mt-8 text-[1.18rem] italic leading-[1.4] tracking-[-0.01em] text-white/72 md:mt-10 md:text-[1.32rem]"
-                >
-                  Zum Beispiel für:
-                </p>
-
-                {/*
-                 * Editorial Branchenatlas — 3 grouped chapters, each
-                 * presented as an addressable register (§ A / § B / § C)
-                 * with its own title, code and itemized list. Thin rules
-                 * between items, mono trade index, and a right-hung trade
-                 * count per chapter. Reads as a professional trade
-                 * directory rather than a bullet list.
-                 */}
-                <div className="mt-12 flex flex-col gap-20 md:mt-16 md:gap-28">
-                  {BRANCHEN.map((group, groupIndex) => (
-                    <div
-                      key={group.code}
-                      data-pk-branchgroup
-                      className="relative"
-                    >
-                      {/*
-                       * Group header — folio-style. Register code + big
-                       * italicized serif title on the left, atlas
-                       * pagination + gewerke count on the right. Title
-                       * was sized up (~1.9→2.35rem) so each chapter
-                       * reads as a confident editorial statement
-                       * instead of a list heading.
-                       */}
-                      <div className="flex flex-col gap-5 pb-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8 sm:pb-6">
-                        <div className="flex items-baseline gap-4 sm:gap-6">
-                          <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.36em] text-white/60 sm:text-[10.5px]">
-                            {group.code}
-                          </span>
-                          <h3 className="font-instrument text-[1.55rem] leading-[1.08] tracking-[-0.022em] text-white sm:text-[1.9rem] md:text-[2.15rem] lg:text-[2.35rem]">
-                            <em className="italic text-white">{group.title}</em>
-                          </h3>
-                        </div>
-
-                        <div className="flex items-baseline gap-4 font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/36 sm:text-[10px]">
-                          <span className="tabular-nums">
-                            Blatt · {String(groupIndex + 1).padStart(2, "0")} / {String(BRANCHEN.length).padStart(2, "0")}
-                          </span>
-                          <span aria-hidden className="h-px w-5 bg-white/22" />
-                          <span className="tabular-nums">
-                            {String(group.items.length).padStart(2, "0")} Gewerke
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Folio divider — a touch stronger and paired with
-                          two corner ticks that read as atlas page anchors. */}
-                      <div aria-hidden className="relative h-px w-full bg-white/[0.14]">
-                        <span className="absolute -left-px -top-[3px] block h-[7px] w-px bg-white/32" />
-                        <span className="absolute -right-px -top-[3px] block h-[7px] w-px bg-white/32" />
-                      </div>
-
-                      {/*
-                       * Industry items — two columns on desktop, hairline
-                       * rows with a dual trade index (group · position).
-                       * Rows hover-lift subtly on desktop for a live
-                       * directory-entry feeling without visual noise.
-                       */}
-                      <ul className="grid grid-cols-1 gap-x-10 gap-y-0 sm:grid-cols-2 md:gap-x-14">
-                        {group.items.map((item, i) => (
-                          <li
-                            key={item}
-                            data-pk-branchitem
-                            className="group/branchrow relative grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-5 border-b border-white/[0.07] py-4 md:py-5"
-                          >
-                            <span className="font-mono tabular-nums text-[9.5px] font-medium leading-none tracking-[0.28em] text-white/42 md:text-[10px]">
-                              {String.fromCharCode(65 + groupIndex)}
-                              <span className="mx-[0.3em] text-white/22">·</span>
-                              {String(i + 1).padStart(2, "0")}
-                            </span>
-                            <p className="font-instrument text-[1.04rem] leading-[1.3] tracking-[-0.01em] text-white/90 transition-colors duration-500 group-hover/branchrow:text-white md:text-[1.12rem] lg:text-[1.2rem]">
-                              {item}
-                            </p>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Atlas footer — specimen signature */}
-                <div
-                  data-pk-reveal
-                  className="font-mono mt-14 flex items-center justify-between gap-4 text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/32 md:mt-20"
-                >
-                  <span>Register · Branchenatlas</span>
-                  <span aria-hidden className="h-px flex-1 bg-white/[0.07]" />
-                  <span className="tabular-nums">15 Gewerke · MMXXVI</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Transition → § 03 Zielbild */}
-        <SectionTransition from="§ 02  Branchenatlas" to="§ 03  Zielbild" />
-
-        {/* =========================================================
-           § 03 — AUDIENCE ZIELBILD
-           5 cases routed to config-axes.
-        ========================================================= */}
-        <section className="relative px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-pk-reveal className="md:pt-2">
-                <ChapterMarker num="03" label="Zielbild" />
-              </div>
-
-              <div>
-                <h2
-                  data-pk-reveal
-                  className="font-instrument max-w-[52rem] text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]"
-                >
-                  Für Unternehmen, die{" "}
-                  <em className="italic text-white/58">
-                    Auswahl, Varianten und Anfrageprozesse
-                  </em>{" "}
-                  klarer digital abbilden wollen.
-                </h2>
-
-                <p
-                  data-pk-reveal
-                  className="font-ui mt-8 max-w-xl text-[15px] leading-[1.7] text-white/56 md:mt-10 md:text-[15.5px]"
-                >
-                  Diese Leistung ist für Unternehmen, die Produkte nicht nur zeigen, sondern digital
-                  verständlich konfigurieren und sauber zum nächsten Schritt führen wollen.
-                </p>
-
-                <p
-                  data-pk-reveal
-                  className="font-instrument mt-10 text-[1.18rem] italic leading-[1.4] tracking-[-0.01em] text-white/72 md:text-[1.32rem]"
-                >
-                  Zum Beispiel, wenn du:
-                </p>
-
-                {/*
-                 * Config-axis routing table — each case routes to a
-                 * coded axis (AX-01 … AX-05) plus its human label. The
-                 * technical AX-NN prefix gives the table a real
-                 * specimen-catalogue structure; the italicized serif
-                 * name keeps it readable, not cold.
-                 */}
-                <ul className="mt-10 space-y-0 border-t border-white/[0.07] md:mt-14">
-                  {AUDIENCE.map((item, i) => (
-                    <li
-                      key={item.text}
-                      data-pk-reveal
-                      className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-6 gap-y-2 border-b border-white/[0.07] py-6 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-x-9 md:py-8"
-                    >
-                      <span className="font-mono text-[10.5px] font-medium leading-none tracking-[0.28em] text-white/44 md:text-[11.5px]">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <p className="font-instrument text-[1.2rem] leading-[1.32] tracking-[-0.01em] text-white/90 md:text-[1.45rem] lg:text-[1.6rem]">
-                        {item.text}
-                      </p>
-                      <span
-                        aria-hidden
-                        className="col-span-2 inline-flex items-center gap-3 md:col-span-1"
-                      >
-                        <span aria-hidden className="h-px w-6 bg-white/22 md:w-9" />
-                        <span className="font-mono tabular-nums text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/58 md:text-[10px]">
-                          AX-{String(i + 1).padStart(2, "0")}
-                        </span>
-                        <span className="font-instrument text-[0.95rem] italic leading-none tracking-[-0.005em] text-white/68 md:text-[1.02rem]">
-                          {item.axis}
-                        </span>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Transition → § 04 Umfang */}
-        <SectionTransition from="§ 03  Zielbild" to="§ 04  Umfang" />
-
-        {/* =========================================================
-           § 04 — INCLUDES — "Was wir für dich umsetzen"
-           Spec-register — 6 items with SPEC-NN prefix and kind chip.
-        ========================================================= */}
-        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-pk-reveal className="md:pt-2">
-                <div className="flex flex-col gap-4">
-                  <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                    § 04 — Umfang
-                  </p>
-                  <span
-                    aria-hidden
-                    className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/34 sm:text-[10.5px]"
-                  >
-                    Specimen-Register · 06 Positionen
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <h2
-                  data-pk-reveal
-                  className="font-instrument max-w-[48rem] text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]"
-                >
-                  Was wir für dich <em className="italic text-white/58">umsetzen</em>.
-                </h2>
-
-                <ol className="mt-14 grid gap-x-14 gap-y-0 border-t border-white/[0.06] md:mt-20 md:grid-cols-2">
-                  {INCLUDES.map((item, i) => (
-                    <li
-                      key={item.title}
-                      data-pk-reveal
-                      className="relative grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-6 border-b border-white/[0.06] py-8 sm:gap-x-8 md:py-10"
-                    >
-                      <span className="font-mono pt-[0.4rem] text-[10.5px] font-medium leading-none tracking-[0.28em] text-white/52 md:text-[11.5px]">
-                        {item.spec}
-                      </span>
-                      <div>
-                        {/*
-                         * Row chip — specimen kind + position in the
-                         * register. "Position NN / 06" replaces the
-                         * generic "axis" placeholder with a real
-                         * specimen-catalogue position marker.
-                         */}
-                        <div className="mb-3 flex flex-wrap items-center gap-2">
-                          <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/50 md:text-[10.5px]">
-                            {item.kind}
-                          </span>
-                          <span aria-hidden className="h-px w-3 bg-white/18 md:w-5" />
-                          <span className="font-mono tabular-nums text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/32 md:text-[9.5px]">
-                            Position · {String(i + 1).padStart(2, "0")} / {String(INCLUDES.length).padStart(2, "0")}
-                          </span>
-                        </div>
-                        <h3 className="font-instrument text-[1.3rem] leading-[1.18] tracking-[-0.016em] text-white md:text-[1.5rem] lg:text-[1.65rem]">
-                          {item.title}
-                        </h3>
-                        <p className="font-ui mt-3 max-w-md text-[14px] leading-[1.65] text-white/54 md:text-[14.5px]">
-                          {item.body}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-
-                <div
-                  data-pk-reveal
-                  className="font-mono mt-6 flex items-center justify-between gap-4 text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/32 md:mt-8"
-                >
-                  <span>Register · Specimen</span>
-                  <span aria-hidden className="h-px flex-1 bg-white/[0.07]" />
-                  <span className="tabular-nums">3D · Dim · H×B×T</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Transition → § 05 Herangehen */}
-        <SectionTransition from="§ 04  Umfang" to="§ 05  Herangehen" />
-
-        {/* =========================================================
-           § 05 — APPROACH
-        ========================================================= */}
-        <section className="relative px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:gap-20 lg:gap-28">
-              <div data-pk-reveal>
-                <p className="font-mono mb-8 text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                  § 05 — Herangehen
-                </p>
-                <h2 className="font-instrument text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]">
-                  Wie wir Produktkonfiguratoren{" "}
-                  <em className="italic text-white/58">denken</em>.
-                </h2>
-              </div>
-
-              <div data-pk-reveal className="md:pt-3">
-                <p className="font-ui text-[15px] leading-[1.72] text-white/62 md:text-[16px] md:leading-[1.72]">
-                  Wir starten nicht mit Technik um der Technik willen.
-                </p>
-
-                <p className="font-ui mt-5 text-[15px] leading-[1.72] text-white/62 md:text-[16px] md:leading-[1.72]">
-                  Wir schauen zuerst darauf, wie ein Produkt{" "}
-                  <em className="italic text-white/88">
-                    erklärt, verstanden und ausgewählt
-                  </em>{" "}
-                  wird.
-                </p>
-
-                {/* Four configurator questions */}
-                <div className="mt-8 flex flex-col gap-4 border-l border-white/[0.12] pl-6 md:mt-10 md:pl-8">
-                  <p className="font-instrument text-[1.2rem] italic leading-[1.4] tracking-[-0.012em] text-white/90 md:text-[1.4rem] lg:text-[1.55rem]">
-                    Welche Varianten sind relevant?
-                  </p>
-                  <p className="font-instrument text-[1.2rem] italic leading-[1.4] tracking-[-0.012em] text-white/90 md:text-[1.4rem] lg:text-[1.55rem]">
-                    Welche Entscheidungen müssen nacheinander passieren?
-                  </p>
-                  <p className="font-instrument text-[1.2rem] italic leading-[1.4] tracking-[-0.012em] text-white/90 md:text-[1.4rem] lg:text-[1.55rem]">
-                    Wo braucht es Orientierung?
-                  </p>
-                  <p className="font-instrument text-[1.2rem] italic leading-[1.4] tracking-[-0.012em] text-white/90 md:text-[1.4rem] lg:text-[1.55rem]">
-                    Wie wird daraus am Ende eine gute Anfrage oder ein sauberer Abschluss?
-                  </p>
-                </div>
-
-                <p className="font-ui mt-10 text-[15px] leading-[1.72] text-white/62 md:text-[16px] md:leading-[1.72]">
-                  Darauf bauen wir Konfiguratoren, die nicht nur beeindrucken, sondern{" "}
-                  <em className="italic text-white/88">im echten Prozess funktionieren.</em>
-                </p>
-                <p className="font-ui mt-5 text-[15px] leading-[1.72] text-white/60 md:text-[16px] md:leading-[1.72]">
-                  Visuell stark, logisch aufgebaut und klar geführt.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Transition → § 06 Absage */}
-        <SectionTransition from="§ 05  Herangehen" to="§ 06  Absage" />
-
-        {/* =========================================================
-           § 06 — NEGATION
-        ========================================================= */}
-        <section className="relative overflow-hidden px-5 py-32 sm:px-8 sm:py-40 md:px-12 md:py-52 lg:px-16 lg:py-56">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.55]"
-            style={{
-              background:
-                "radial-gradient(ellipse 55% 42% at 50% 50%, rgba(255,255,255,0.03), transparent 62%)",
-            }}
-          />
-
-          <div className="relative layout-max">
-            <div className="grid gap-16 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-pk-reveal className="md:pt-2">
-                <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/46 sm:text-[10.5px]">
-                  § 06 — Absage
-                </p>
-              </div>
-
-              <div>
-                <h2
-                  data-pk-reveal
-                  className="font-instrument max-w-[48rem] text-[2.05rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.6rem]"
-                >
-                  Was du von uns{" "}
-                  <em className="italic text-white/58">nicht bekommst</em>.
-                </h2>
-
-                <ul className="mt-14 space-y-8 md:mt-20 md:space-y-10">
-                  {[
-                    "Keinen Spielerei-Konfigurator ohne echten Nutzen.",
-                    "Keine unübersichtliche Variantenhölle.",
-                    "Keine 3D-Lösung, die beeindruckt, aber Vertrieb, Anfrage oder Nutzerführung nicht wirklich verbessert.",
-                  ].map((line) => (
-                    <li
-                      key={line}
-                      data-pk-reveal
-                      className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-6 md:gap-x-9"
-                    >
-                      <span
-                        aria-hidden
-                        className="font-instrument text-[1.55rem] italic leading-none text-white/38 md:text-[1.95rem] lg:text-[2.15rem]"
-                      >
-                        —
-                      </span>
-                      <p className="font-instrument text-[1.35rem] leading-[1.3] tracking-[-0.014em] text-white/80 md:text-[1.8rem] lg:text-[2.1rem] xl:text-[2.25rem]">
-                        {line}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-
-                <p
-                  data-pk-reveal
-                  className="font-ui mt-16 max-w-[44rem] text-[15.5px] leading-[1.72] text-white/62 md:mt-20 md:text-[16.5px]"
-                >
-                  Was du bekommst, ist ein Produktkonfigurator mit{" "}
-                  <em className="italic text-white/92">
-                    Klarheit, Funktion und echter Relevanz für deinen Prozess.
-                  </em>
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Transition → Positionierung */}
-        <SectionTransition from="§ 06  Absage" to="§ Positionierung" tone="darker" />
-
-        {/* =========================================================
-           CEREMONIAL PULL — "3D, die erklärt. Konfiguration, die führt..."
-           H / B / T coordinate column threading the specimen vocabulary.
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 py-36 sm:px-8 sm:py-44 md:px-12 md:py-56 lg:px-16 lg:py-64">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.85]"
-            style={{
-              background:
-                "radial-gradient(ellipse 62% 48% at 50% 50%, rgba(255,255,255,0.045), transparent 62%)",
-            }}
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.2]"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(30deg, rgba(255,255,255,0.10) 0 1px, transparent 1px 56px), repeating-linear-gradient(-30deg, rgba(255,255,255,0.10) 0 1px, transparent 1px 56px)",
-              maskImage:
-                "radial-gradient(ellipse 66% 56% at 50% 50%, black, transparent)",
-              WebkitMaskImage:
-                "radial-gradient(ellipse 66% 56% at 50% 50%, black, transparent)",
-            }}
-          />
-
-          <div className="relative layout-max">
-            <div className="mx-auto max-w-[74rem]">
-              <div className="mb-16 flex items-center gap-5 sm:mb-20">
-                <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
-                <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/46 sm:text-[10.5px]">
-                  § Positionierung
-                </span>
-                <span aria-hidden className="h-px flex-1 bg-white/12" />
-              </div>
-
-              <div className="relative">
-                {/*
-                 * Dimension gutter — ceremonial labels threaded onto a
-                 * vertical hairline reading as a calibrated H/B/T axis
-                 * running along the page's left edge. Small cross-ticks
-                 * sit at each dimension letter like real ruler marks.
-                 */}
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute -left-10 top-0 hidden h-full flex-col justify-between py-[0.4em] md:-left-12 md:flex lg:-left-16"
-                >
-                  <span aria-hidden className="absolute left-[3px] top-[0.5em] bottom-[0.5em] w-px bg-white/14" />
-                  {["H", "B", "T"].map((letter) => (
-                    <span
-                      key={letter}
-                      className="font-mono relative flex items-center gap-2 text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/36 sm:text-[10px]"
-                    >
-                      <span aria-hidden className="block h-px w-2 bg-white/34" />
-                      {letter}
-                    </span>
-                  ))}
-                </div>
-
-                <h3
-                  data-pk-pullheading
-                  className="font-instrument text-[2.35rem] leading-[1.02] tracking-[-0.038em] text-white sm:text-[3.15rem] md:text-[4.05rem] lg:text-[4.65rem] xl:text-[5.2rem]"
-                >
-                  <span className="block overflow-hidden">
-                    <span data-pk-pull className="inline-block">
-                      3D, die erklärt.
-                    </span>
-                  </span>
-                  <span className="block overflow-hidden">
-                    <span data-pk-pull className="inline-block italic text-white/64">
-                      Konfiguration, die führt.
-                    </span>
-                  </span>
-                  <span className="block overflow-hidden">
-                    <span data-pk-pull className="inline-block">
-                      Umsetzung, die im Vertrieb wirklich hilft.
-                    </span>
-                  </span>
-                </h3>
-              </div>
-
-              <div className="mt-16 flex items-center gap-5 sm:mt-20">
-                <span aria-hidden className="h-px flex-1 bg-white/12" />
-                <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/38 sm:text-[10.5px]">
-                  Edition · Positionierung · Spezial
-                </span>
-                <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/*
-         * ========================================================
-         * CONTEXTUAL CROSS-LINKS — three stacked gates.
-         *  · Kollektion  → /shops-produktkonfiguratoren
-         *  · Fundament   → /web-software
-         *  · Nebenstrang → /ki-automationen-integrationen
-         * ========================================================
-         */}
-        <section className="relative px-5 py-16 sm:px-8 sm:py-20 md:px-12 md:py-24 lg:px-16 lg:py-28">
-          <div className="layout-max space-y-14 sm:space-y-16 md:space-y-20">
-            <div data-pk-reveal>
-              <ContextualCrossLink
-                eyebrow="Kollektion"
-                folio="Plate · Shops & Konfiguratoren"
-                lead="Wenn dein Projekt stärker auf Shop, Verkauf und digitale Produktpräsentation einzahlt, schau dir auch unsere Shops & Produktkonfiguratoren an."
-                linkLabel="Shops & Konfiguratoren ansehen"
-                to="/shops-produktkonfiguratoren"
+            <div className="mx-auto max-w-[76rem]">
+              <SectionIntro
+                eyebrow="Wann ein Produktkonfigurator sinnvoll ist"
+                title="Wenn Auswahl, Maß und Erklärung digital geführt werden müssen."
+                text="Ein Konfigurator lohnt sich nicht wegen der Technik allein, sondern wenn er Entscheidungen klarer macht und den Anfrage- oder Angebotsprozess verbessert."
               />
-            </div>
 
-            <div data-pk-reveal>
-              <ContextualCrossLink
-                eyebrow="Fundament"
-                folio="Plate 04 · Web-Software"
-                lead="Wenn dein Konfigurator eher Teil einer größeren Plattform oder individuellen Anwendung wird, wirf einen Blick auf unsere Web-Software."
-                linkLabel="Web-Software ansehen"
-                to="/web-software"
-              />
-            </div>
-
-            <div data-pk-reveal>
-              <ContextualCrossLink
-                eyebrow="Nebenstrang"
-                folio="Protocol 05 · KI & Automationen"
-                lead="Wenn hinter dem Konfigurator zusätzlich Automationen, Anfragenlogik oder Systemverbindungen laufen sollen, schau dir auch unsere KI-Automationen & Integrationen an."
-                linkLabel="KI & Automationen ansehen"
-                to="/ki-automationen-integrationen"
-              />
+              <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {USE_CASES.map((item, index) => (
+                  <InfoCard key={item.title} item={item} index={index} />
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
-        {/* =========================================================
-           FINAL CTA — specimen plate composition.
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56">
+        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
           <div aria-hidden className="section-top-rule" />
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <SectionIntro
+                eyebrow="Branchenatlas"
+                title="Für Bau-Branche, Maßprodukte und erklärungsbedürftige Angebote."
+                text="Diese Beispiele zeigen typische Fälle. Entscheidend ist nicht die Branche allein, sondern ob Ihr Produkt Auswahl, Maß, Varianten oder Erklärung braucht."
+              />
 
-          {/* Specimen plate corner crop marks */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-5 hidden md:inset-8 md:block lg:inset-10"
-          >
-            <span className="absolute left-0 top-0 block h-3 w-3 border-l border-t border-white/28" />
-            <span className="font-mono absolute left-5 top-1 text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[9.5px]">
-              H · NW
-            </span>
-            <span className="absolute right-0 top-0 block h-3 w-3 border-r border-t border-white/28" />
-            <span className="font-mono absolute right-5 top-1 text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[9.5px]">
-              T · NE
-            </span>
-            <span className="absolute bottom-0 left-0 block h-3 w-3 border-b border-l border-white/28" />
-            <span className="font-mono absolute bottom-1 left-5 text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[9.5px]">
-              B · SW
-            </span>
-            <span className="absolute bottom-0 right-0 block h-3 w-3 border-b border-r border-white/28" />
-            <span className="font-mono absolute bottom-1 right-5 text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[9.5px]">
-              M · SE
-            </span>
+              <div className="mt-12 grid gap-5 lg:grid-cols-3">
+                {BRANCH_GROUPS.map((group) => (
+                  <article
+                    key={group.title}
+                    data-pk-reveal
+                    className="rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] p-5 shadow-[0_20px_58px_-48px_rgba(20,28,44,0.28),inset_0_1px_0_rgba(255,255,255,0.72)] sm:p-6"
+                  >
+                    <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.7)]">
+                      {group.code}
+                    </p>
+                    <h3 className="font-ui mt-3 text-[1.2rem] font-[620] leading-[1.22] tracking-[-0.014em] text-[rgb(var(--magicks-ink-rgb)/0.93)]">
+                      {group.title}
+                    </h3>
+                    <ul className="mt-5 grid gap-3">
+                      {group.items.map((item) => (
+                        <li
+                          key={item}
+                          className="font-ui rounded-[0.85rem] border border-[rgb(var(--magicks-line-rgb)/0.09)] bg-[rgb(var(--magicks-bg-base-rgb)/0.5)] px-4 py-3 text-[14.2px] font-[560] leading-[1.45] text-[rgb(var(--magicks-ink-rgb)/0.68)]"
+                        >
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </div>
           </div>
+        </section>
 
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-[46%] aspect-square w-[118vw] max-w-[1180px] -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle at center, rgba(255,255,255,0.048) 0%, rgba(255,255,255,0.016) 32%, transparent 62%)",
-            }}
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.18]"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(30deg, rgba(255,255,255,0.10) 0 1px, transparent 1px 72px), repeating-linear-gradient(-30deg, rgba(255,255,255,0.10) 0 1px, transparent 1px 72px)",
-              maskImage: "radial-gradient(ellipse 72% 62% at 50% 46%, black, transparent)",
-            }}
-          />
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <SectionIntro
+                eyebrow="Was MAGICKS für Sie umsetzt"
+                title="Konfiguratoren mit Produktlogik, Darstellung und sauberem Anschlussprozess."
+                text="Die Umsetzung verbindet Auswahlführung, Darstellung, technische Logik und den nächsten Schritt im Vertrieb."
+              />
 
-          <div className="relative layout-max">
-            <div className="mx-auto max-w-[68rem] text-center">
-              <div className="mb-14 inline-flex sm:mb-20">
-                <ChapterMarker num="END" label="Projekt" align="center" variant="end" />
+              <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+                {DELIVERABLES.map((item, index) => (
+                  <InfoCard key={item.title} item={item} index={index} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-12 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-16">
+                <SectionIntro
+                  eyebrow="Von Auswahl zur Anfrage"
+                  title="Der wichtigste Moment ist nicht die Animation. Es ist die Anfrage."
+                />
+                <div data-pk-reveal className="lg:pt-14">
+                  <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                    Ein Konfigurator entfaltet seinen Wert, wenn die Auswahl am
+                    Ende sauber weitergeführt wird: als strukturierte Anfrage,
+                    Angebotsgrundlage, Warenkorb, Termin, Beratungsgespräch
+                    oder Vertriebsübergabe. Deshalb plant MAGICKS nicht nur die
+                    Oberfläche, sondern auch den nächsten Schritt.
+                  </p>
+                </div>
               </div>
 
-              <h2 className="font-instrument text-[2.35rem] leading-[0.98] tracking-[-0.038em] text-white sm:text-[3.25rem] md:text-[4.3rem] lg:text-[5.2rem] xl:text-[5.9rem]">
-                <span className="block">
-                  {["Bereit", "für", "einen", "3D-Produktkonfigurator,"].map((w, i) => (
-                    <span
-                      key={`fa-${i}`}
-                      className="mr-[0.18em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span data-pk-finala className="inline-block">
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-                <span className="mt-1 block italic text-white/76 sm:mt-2">
-                  {["der", "mehr", "kann", "als", "nur", "gut", "aussehen?"].map((w, i) => (
-                    <span
-                      key={`fb-${i}`}
-                      className="mr-[0.18em] inline-block overflow-hidden align-bottom"
-                    >
-                      <span data-pk-finalb className="inline-block">
-                        {w}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-              </h2>
+              <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {SALES_FLOW_POINTS.map((item, index) => (
+                  <InfoCard key={item.title} item={item} index={index} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
 
-              <div className="mx-auto mt-12 flex w-full max-w-[42rem] items-center gap-4 sm:mt-16">
-                <span aria-hidden className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/40">
-                  ·
-                </span>
-                <div aria-hidden className="relative h-px flex-1">
-                  <span
-                    data-pk-finalrule
-                    className="absolute inset-0 block bg-gradient-to-r from-transparent via-white/60 to-transparent"
+        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div aria-hidden className="section-top-rule" />
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-12 lg:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)] lg:gap-16">
+                <SectionIntro
+                  eyebrow="3D, 2D oder geführte Auswahl"
+                  title="Nicht jedes Produkt braucht 3D. Aber jedes Produkt braucht Klarheit."
+                />
+                <div data-pk-reveal className="lg:pt-14">
+                  <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                    Manche Produkte profitieren stark von einer räumlichen
+                    3D-Darstellung. Andere brauchen vor allem eine klare
+                    Variantenlogik, gute Bilder, geführte Schritte oder eine
+                    saubere Anfrageführung. MAGICKS entscheidet die technische
+                    Form nicht nach Effekt, sondern danach, was Nutzern und
+                    Vertrieb wirklich hilft.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {CONFIG_TYPES.map((item, index) => (
+                  <InfoCard key={item.title} item={item} index={index} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div
+                data-pk-reveal
+                className="rounded-[1.65rem] border border-[rgb(var(--magicks-line-rgb)/0.11)] bg-[linear-gradient(160deg,rgba(255,255,255,0.78)_0%,rgba(246,242,233,0.64)_100%)] p-6 shadow-[0_24px_72px_-54px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.78)] sm:p-8 md:p-10"
+              >
+                <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+                  <div>
+                    <Eyebrow>Wie MAGICKS Produktkonfiguratoren denkt</Eyebrow>
+                    <h2 className="font-ui mt-7 max-w-[20ch] text-[2.05rem] font-[620] leading-[1.03] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.65rem] md:text-[3.25rem]">
+                      Wir starten nicht mit Technik. Wir starten mit der Entscheidung.
+                    </h2>
+                  </div>
+                  <div className="lg:pt-14">
+                    <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                      Bevor ein Konfigurator gestaltet oder entwickelt wird, muss
+                      klar sein, welche Entscheidungen Nutzer treffen müssen,
+                      welche Optionen voneinander abhängen und welches Ergebnis
+                      am Ende entstehen soll.
+                    </p>
+                  </div>
+                </div>
+
+                <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {DECISION_QUESTIONS.map((question) => (
+                    <li
+                      key={question}
+                      className="font-ui rounded-[0.9rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-base-rgb)/0.54)] px-4 py-3 text-[14.5px] font-[560] leading-[1.5] text-[rgb(var(--magicks-ink-rgb)/0.68)]"
+                    >
+                      {question}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <SectionIntro
+                eyebrow="Was wir bewusst vermeiden"
+                title="Ein Konfigurator muss führen, nicht nur beeindrucken."
+              />
+
+              <ul className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {AVOID_POINTS.map((line) => (
+                  <li
+                    key={line}
+                    data-pk-reveal
+                    className="rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] p-5 shadow-[0_18px_48px_-42px_rgba(20,28,44,0.24),inset_0_1px_0_rgba(255,255,255,0.72)]"
+                  >
+                    <p className="font-ui text-[1rem] font-[610] leading-[1.34] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.88)]">
+                      {line}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div aria-hidden className="section-top-rule" />
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <SectionIntro
+                eyebrow="Häufige Fragen"
+                title="Was Unternehmen vor einem Produktkonfigurator wissen möchten."
+                text="Kurze Antworten zu 3D, Variantenlogik, Preisen, CRM-Anbindung, Mobile und Projektaufwand."
+              />
+
+              <ol className="mt-12 border-t border-[rgb(var(--magicks-line-rgb)/0.12)]">
+                {FAQ_ITEMS.map((item, index) => (
+                  <li
+                    key={item.question}
+                    data-pk-reveal
+                    className="border-b border-[rgb(var(--magicks-line-rgb)/0.12)]"
+                  >
+                    <details className="group/pkfaq">
+                      <summary className="grid cursor-pointer list-none grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-5 py-6 outline-none [&::-webkit-details-marker]:hidden md:gap-x-8 md:py-7">
+                        <span className="font-mono pt-[0.32rem] text-[10.5px] font-medium leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.68)]">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <h3 className="font-ui text-[1.08rem] font-[620] leading-[1.28] tracking-[-0.013em] text-[rgb(var(--magicks-ink-rgb)/0.92)] md:text-[1.22rem]">
+                          {item.question}
+                        </h3>
+                        <span
+                          aria-hidden
+                          className="font-instrument self-center text-[1.4rem] italic leading-none text-[rgb(var(--magicks-ink-rgb)/0.5)] transition-transform duration-500 group-open/pkfaq:rotate-45"
+                        >
+                          +
+                        </span>
+                      </summary>
+                      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-5 pb-7 md:gap-x-8">
+                        <span aria-hidden />
+                        <p className="font-ui max-w-[50rem] text-[14.6px] leading-[1.72] text-[rgb(var(--magicks-ink-rgb)/0.66)] md:text-[15px]">
+                          {item.answer}
+                        </p>
+                        <span aria-hidden />
+                      </div>
+                    </details>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+
+          <FaqJsonLd id="produktkonfigurator-erstellen" items={FAQ_ITEMS} />
+        </section>
+
+        <section className="relative px-5 py-20 sm:px-8 sm:py-24 md:px-12 md:py-28 lg:px-16 lg:py-32">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem] space-y-12 sm:space-y-14 md:space-y-16">
+              {RELATED_LINKS.map((item) => (
+                <div key={item.to} data-pk-reveal>
+                  <ContextualCrossLink
+                    eyebrow={item.eyebrow}
+                    folio={item.folio}
+                    lead={item.lead}
+                    linkLabel={item.linkLabel}
+                    to={item.to}
                   />
                 </div>
-                <span aria-hidden className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/40">
-                  ·
-                </span>
-              </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-              <p className="font-ui mx-auto mt-10 max-w-[44rem] text-[15px] leading-[1.72] text-white/60 md:mt-12 md:text-[16.5px]">
-                Wir entwickeln Produktkonfiguratoren, die Varianten verständlich machen, Nutzer klar
-                führen und Anfragen oder Verkaufsprozesse digital spürbar verbessern.
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-soft)] px-5 pb-24 pt-24 sm:px-8 sm:pb-32 sm:pt-32 md:px-12 md:pb-40 md:pt-40 lg:px-16">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(ellipse 62% 46% at 24% 20%, rgba(166,138,98,0.13), transparent 74%), radial-gradient(ellipse 52% 40% at 80% 76%, rgba(104,132,164,0.1), transparent 76%)",
+            }}
+          />
+          <div className="relative layout-max">
+            <div
+              data-pk-reveal
+              className="mx-auto max-w-[70rem] rounded-[2rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[linear-gradient(170deg,rgba(255,255,255,0.82)_0%,rgba(245,241,233,0.7)_100%)] px-6 py-12 text-center shadow-[0_30px_86px_-56px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.84)] sm:px-10 sm:py-14 md:px-14 md:py-18"
+            >
+              <Eyebrow>Nächster Schritt</Eyebrow>
+              <h2 className="font-ui mx-auto mt-7 max-w-[22ch] text-[2.2rem] font-[620] leading-[1.01] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3rem] md:text-[3.9rem]">
+                Bereit für einen Produktkonfigurator, der Auswahl verständlich macht?
+              </h2>
+              <p className="font-ui mx-auto mt-7 max-w-[50rem] text-[1rem] leading-[1.72] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                Lassen Sie uns klären, welche Varianten, Maße, Optionen und
+                Anfragewege Ihr Produkt braucht — und ob 3D, eine geführte
+                Auswahl oder ein individueller Konfigurator der richtige Weg ist.
               </p>
 
-              <div className="mt-14 grid items-center gap-10 text-left sm:mt-18 sm:grid-cols-[auto_1fr] sm:gap-14 md:gap-20">
-                <div data-pk-finalcta className="flex justify-center sm:justify-start">
-                  <Link
-                    to="/kontakt"
-                    className="group relative inline-flex items-center gap-3 rounded-full border border-white/22 bg-white py-4 pl-8 pr-3 text-[15px] font-medium tracking-wide text-[#0A0A0A] no-underline shadow-[0_34px_80px_-32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.45)] magicks-duration-hover magicks-ease-out transition-[transform,box-shadow] hover:-translate-y-[2px] hover:shadow-[0_44px_90px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.55)] active:translate-y-0 active:scale-[0.985] md:text-[16px]"
-                  >
-                    <span>Projekt besprechen</span>
-                    <span
-                      aria-hidden
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
-                    >
-                      <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.4">
-                        <path d="M3 11 L11 3 M5 3 H11 V9" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
-                  </Link>
-                </div>
-
-                <div className="flex flex-col gap-4 border-l border-white/[0.08] pl-6 sm:pl-10 md:pl-12">
-                  <div data-pk-finalledger className="flex flex-col gap-1.5">
-                    <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/40 sm:text-[10.5px]">
-                      Projekt
-                    </span>
-                    <span className="font-instrument text-[1.2rem] italic leading-[1.3] text-white/90 sm:text-[1.4rem] md:text-[1.5rem]">
-                      3D Konfigurator · Varianten · Anfrage
-                    </span>
-                  </div>
-
-                  <div data-pk-finalledger className="flex flex-col gap-1.5">
-                    <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/40 sm:text-[10.5px]">
-                      Specimen
-                    </span>
-                    <span className="font-ui text-[13.5px] leading-[1.5] text-white/62 sm:text-[14.5px]">
-                      Maße, Optionen und Übergaben — geplant, bevor gebaut wird.
-                    </span>
-                  </div>
-
-                  <div data-pk-finalledger className="flex flex-col gap-1.5">
-                    <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.32em] text-white/40 sm:text-[10.5px]">
-                      Direkt
-                    </span>
-                    <a
-                      href="mailto:hello@magicks.de"
-                      className="font-instrument text-[1.1rem] italic text-white no-underline magicks-duration-hover magicks-ease-out transition-colors hover:text-white/82 sm:text-[1.25rem] md:text-[1.35rem]"
-                    >
-                      hello@magicks.de
-                    </a>
-                  </div>
-                </div>
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-4 sm:mt-12">
+                <PrimaryCta to="/kontakt" label="Produktkonfigurator besprechen" />
+                <SecondaryCta to="/kontakt" label="Kontakt aufnehmen" />
               </div>
-            </div>
 
-            {/* Specimen plate cartouche — 4-field signature */}
-            <div className="mt-24 border-t border-white/[0.06] pt-7 sm:mt-28">
-              <div className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4 sm:gap-x-0">
-                {[
-                  { k: "§ End", v: "Spezial · 3D" },
-                  { k: "Specimen", v: "3D Konfigurator" },
-                  { k: "Dim", v: "H × B × T" },
-                  { k: "Edition", v: "Magicks · MMXXVI" },
-                ].map((item, i) => (
-                  <div
-                    key={item.k}
-                    className={`flex flex-col gap-2 ${
-                      i > 0 ? "sm:border-l sm:border-white/[0.08] sm:pl-5 md:pl-7" : ""
-                    }`}
-                  >
-                    <span className="font-mono text-[9px] font-medium uppercase leading-none tracking-[0.34em] text-white/36 sm:text-[9.5px]">
-                      {item.k}
-                    </span>
-                    <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.28em] text-white/68 sm:text-[10.5px]">
-                      {item.v}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <p className="font-ui mt-8 text-[14px] leading-[1.6] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:text-[14.5px]">
+                Oder direkt:
+                <a
+                  href="mailto:hello@magicks.de"
+                  className="ml-2 text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline underline decoration-[rgb(var(--magicks-line-rgb)/0.36)] underline-offset-[4px] hover:text-[rgb(var(--magicks-ink-rgb)/1)]"
+                >
+                  hello@magicks.de
+                </a>
+              </p>
             </div>
           </div>
         </section>

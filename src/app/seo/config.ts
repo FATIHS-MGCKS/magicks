@@ -92,19 +92,19 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/ueber-uns": {
     path: "/ueber-uns",
-    title: "Über uns — Kreatives Tech-Studio aus Kassel | MAGICKS Studio",
+    title: "Über MAGICKS Studio | Webagentur & Creative Tech Studio aus Kassel",
     description:
-      "MAGICKS Studio ist ein kleines, kreativ-technisches Web-Studio aus Kassel — direkt, anspruchsvoll, ohne Agentur-Standard. Studio statt Bürokratie.",
+      "MAGICKS Studio aus Kassel entwickelt Websites, Landingpages, Shops, Web-Software und KI-Automationen — mit Design, Entwicklung, SEO, Content und klarer digitaler Strategie.",
     ogType: "profile",
-    ogImageAlt: "MAGICKS Studio — Kreatives Tech-Studio aus Kassel",
+    ogImageAlt: "Über MAGICKS Studio — Webagentur und Creative Tech Studio aus Kassel",
     breadcrumbs: [{ name: "Über uns", path: "/ueber-uns" }],
   },
 
   "/kontakt": {
     path: "/kontakt",
-    title: "Projekt anfragen — Kontakt zu MAGICKS Studio aus Kassel",
+    title: "Kontakt | MAGICKS Studio Kassel",
     description:
-      "Projekt anfragen, Idee besprechen oder unverbindlich austauschen — so erreichst du MAGICKS Studio aus Kassel. Direkter Kontakt, klare Antworten.",
+      "Kontaktieren Sie MAGICKS Studio für Websites, Landingpages, Shops, Web-Software, Produktkonfiguratoren und KI-Automationen. Eine kurze Projektbeschreibung reicht für den ersten Schritt.",
     ogType: "website",
     breadcrumbs: [{ name: "Kontakt", path: "/kontakt" }],
   },
@@ -245,16 +245,16 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/webdesign-kassel": {
     path: "/webdesign-kassel",
-    title: "Webdesign Kassel — Webagentur für Unternehmen | MAGICKS",
+    title: "Webdesign Kassel | Websites & Homepages erstellen lassen | MAGICKS Studio",
     description:
-      "Webdesign Kassel: MAGICKS Studio entwickelt hochwertige Websites, Landing Pages und digitale Lösungen für Unternehmen in Kassel und Nordhessen — designstark und planbar.",
+      "MAGICKS erstellt professionelle Websites, Homepages und Landing Pages für Unternehmen in Kassel und Nordhessen — mit individuellem Design, lokaler Sichtbarkeit, Content und sauberer technischer Umsetzung.",
     ogType: "article",
     ogImageAlt: "Webdesign Kassel — MAGICKS Studio",
     service: {
       name: "Webdesign Kassel",
       serviceType: "Web Design",
       description:
-        "Webdesign und Webentwicklung für Unternehmen in Kassel und Nordhessen — hochwertige Websites, klare Führung, messbare Wirkung.",
+        "Webdesign und Webentwicklung für Unternehmen in Kassel und Nordhessen — professionelle Websites, klare Nutzerführung, lokale Sichtbarkeit und saubere technische Umsetzung.",
       local: true,
     },
     breadcrumbs: [
@@ -265,16 +265,16 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/landingpages-kassel": {
     path: "/landingpages-kassel",
-    title: "Landing Pages Kassel — Conversion-Design statt Template | MAGICKS",
+    title: "Landing Pages Kassel | Landingpage erstellen lassen | MAGICKS Studio",
     description:
-      "Conversion-starke Landing Pages für Unternehmen aus Kassel — designgetrieben, schnell und technisch sauber umgesetzt von MAGICKS Studio.",
+      "MAGICKS erstellt Landing Pages für Unternehmen in Kassel und Nordhessen — fokussiert auf klare Angebote, Nutzerführung, Conversion, lokale Sichtbarkeit und Anfragen.",
     ogType: "article",
     ogImageAlt: "Landing Pages Kassel — MAGICKS Studio",
     service: {
       name: "Landing Pages Kassel",
       serviceType: "Landing Page Design",
       description:
-        "Landing Pages für Kampagnen, Services und Anfragen — entwickelt für Unternehmen aus Kassel und Nordhessen.",
+        "Landing Pages für Kampagnen, Angebote und Anfragen — entwickelt für Unternehmen in Kassel und Nordhessen mit klarer Nutzerführung und Conversion-Fokus.",
       local: true,
     },
     breadcrumbs: [
@@ -285,16 +285,16 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/produktkonfigurator-erstellen": {
     path: "/produktkonfigurator-erstellen",
-    title: "3D-Produktkonfigurator erstellen lassen | MAGICKS Studio",
+    title: "Produktkonfigurator erstellen lassen | 3D-Konfigurator | MAGICKS Studio",
     description:
-      "3D-Produktkonfiguratoren für Unternehmen, Hersteller und die Bau-Branche — technisch sauber, visuell hochwertig, klar auf Anfrage und Vertrieb ausgerichtet.",
+      "MAGICKS entwickelt Produktkonfiguratoren und 3D-Konfiguratoren für Varianten, Maße, Materialien und Anfrageprozesse — verständlich, hochwertig und technisch sauber umgesetzt.",
     ogType: "article",
     ogImageAlt: "3D-Produktkonfigurator erstellen lassen — MAGICKS Studio",
     service: {
-      name: "3D-Produktkonfigurator entwickeln lassen",
-      serviceType: "3D Product Configurator Development",
+      name: "Produktkonfigurator erstellen lassen",
+      serviceType: "Product Configurator Development",
       description:
-        "Web-basierte 2D/3D-Produktkonfiguratoren für Hersteller, Bau-Branche und B2B — von Anfrage bis Angebot durchdacht.",
+        "Web-basierte Produktkonfiguratoren und 3D-Konfiguratoren für Varianten, Maße, Materialien, Optionen und strukturierte Anfrageprozesse.",
       local: false,
     },
     breadcrumbs: [
@@ -305,16 +305,16 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/ki-automation-unternehmen": {
     path: "/ki-automation-unternehmen",
-    title: "KI-Automation für Unternehmen — Workflows & Integrationen | MAGICKS",
+    title: "KI-Automation für Unternehmen | Workflows automatisieren | MAGICKS Studio",
     description:
-      "KI-Automationen und Workflows für Unternehmen, die Abläufe beschleunigen und manuelle Arbeit reduzieren wollen — sinnvoll eingesetzte KI von MAGICKS Studio.",
+      "MAGICKS entwickelt KI-Automationen für Unternehmen, die manuelle Arbeit reduzieren, Prozesse strukturieren und Systeme sinnvoll verbinden möchten.",
     ogType: "article",
     ogImageAlt: "KI-Automation für Unternehmen — MAGICKS Studio",
     service: {
       name: "KI-Automation für Unternehmen",
       serviceType: "AI Workflow Automation",
       description:
-        "KI-Automationen, Workflow-Integrationen und LLM-Anbindungen für KMU und Mittelstand — DSGVO-konform, übergabefähig, planbar.",
+        "KI-Automationen, Workflow-Integrationen und Prozessautomationen für Unternehmen, die wiederkehrende Aufgaben reduzieren, Systeme verbinden und Abläufe nachvollziehbar strukturieren möchten.",
       local: false,
     },
     breadcrumbs: [

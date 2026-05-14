@@ -7,6 +7,7 @@ import {
   focusEnvelope,
   parallaxDrift,
   presenceEnvelope,
+  prefersCheapMotion,
   sectionFarewell,
 } from "../../lib/scrollMotion";
 
@@ -52,14 +53,17 @@ export function Bildwelt() {
       const tiles = gsap.utils.toArray<HTMLElement>("[data-bw-tile]");
       const cta = root.querySelector<HTMLElement>("[data-bw-cta]");
       const ambient = root.querySelector<HTMLElement>("[data-bw-ambient]");
+      const lightLeak = root.querySelector<HTMLElement>("[data-bw-lightleak]");
       const farewell = root.querySelector<HTMLElement>("[data-bw-farewell]");
+      const cheapMotion = prefersCheapMotion();
 
       if (reduced) {
         gsap.set(
-          [headline, main, support, ...tiles, cta, ambient, farewell],
+          [headline, main, support, ...tiles, cta, ambient, lightLeak, farewell],
           { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" },
         );
         if (farewell) gsap.set(farewell, { opacity: 0 });
+        if (lightLeak) gsap.set(lightLeak, { opacity: 0 });
         return;
       }
 
@@ -81,6 +85,24 @@ export function Bildwelt() {
           .to(ambient, { opacity: 0.72, duration: 0.36, ease: "none" }, 0.32)
           .to(ambient, { opacity: 0.34, duration: 0.32, ease: "power2.in" }, 0.68);
         parallaxDrift(ambient, { trigger: root, from: -2, to: 4, scrub: true });
+      }
+
+      if (lightLeak) {
+        gsap.set(lightLeak, { opacity: 0, xPercent: -14, scale: 0.98 });
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: tiles[0] ?? root,
+              start: "top 88%",
+              end: "bottom 22%",
+              scrub: 1.25,
+              invalidateOnRefresh: true,
+            },
+            defaults: { ease: "none" },
+          })
+          .to(lightLeak, { opacity: cheapMotion ? 0.1 : 0.22, xPercent: -4, scale: 1, duration: 0.34, ease: "power2.out" }, 0)
+          .to(lightLeak, { opacity: cheapMotion ? 0.12 : 0.28, xPercent: 5, scale: 1.015, duration: 0.34, ease: "none" }, 0.34)
+          .to(lightLeak, { opacity: 0.04, xPercent: 16, scale: 1.03, duration: 0.32, ease: "power2.in" }, 0.68);
       }
 
       // ─── Header & body envelopes ────────────────────────────────────
@@ -173,6 +195,17 @@ export function Bildwelt() {
         style={{
           backgroundImage:
             "radial-gradient(ellipse 56% 48% at 72% 38%, rgba(34,44,64,0.07), transparent 70%)",
+        }}
+      />
+
+      <div
+        data-bw-lightleak
+        aria-hidden
+        className="pointer-events-none absolute -inset-x-[24%] top-[18%] z-0 h-[58%] origin-center rotate-[8deg] will-change-[opacity,transform]"
+        style={{
+          background:
+            "linear-gradient(96deg, transparent 24%, rgba(255,252,242,0.16) 39%, rgba(224,194,150,0.18) 47%, rgba(255,249,234,0.12) 56%, transparent 74%)",
+          mixBlendMode: "soft-light",
         }}
       />
 

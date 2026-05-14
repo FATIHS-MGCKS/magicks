@@ -242,28 +242,28 @@ function ProblemIntro() {
         data-problem-copy
         className="font-ui mx-auto mt-6 max-w-[14ch] text-[2.25rem] font-[700] leading-[0.98] tracking-[-0.044em] text-[rgb(var(--magicks-ink-rgb)/0.98)] will-change-[opacity,transform,filter] sm:text-[2.85rem] md:text-[62px] lg:mx-0 lg:max-w-[12ch] lg:text-[4.45rem]"
       >
-        Ihre Website bringt keinen Umsatz?
+        <span className="block">Ihre Website ist online.</span>
+        <span className="block">Aber verkauft sie auch?</span>
       </h2>
 
       <p
         data-problem-copy
         className="font-ui mx-auto mt-7 max-w-[36rem] text-center text-[1.08rem] font-[540] leading-[1.52] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.82)] will-change-[opacity,transform,filter] sm:text-[1.2rem] md:text-[1.32rem] lg:text-[1.24rem] lg:text-left"
       >
-        <span className="block">Sie arbeitet Tag und Nacht für Ihr Unternehmen.</span>
-        <span className="block">Sie präsentiert, erklärt und soll potenzielle Kunden überzeugen.</span>
-        <span className="block">Trotzdem bleibt der Erfolg aus?</span>
+        <span className="block">Ihre Website arbeitet rund um die Uhr</span>
+        <span className="block">für Ihr Unternehmen. Sie präsentiert</span>
+        <span className="block">Ihr Angebot, erklärt Ihre Leistungen</span>
+        <span className="block">und macht aus Besuchern Anfragen.</span>
       </p>
 
       <p
         data-problem-copy
         className="font-ui mx-auto mt-5 max-w-[38rem] rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-5 text-center text-[0.98rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] shadow-[0_28px_78px_-58px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.72)] will-change-[opacity,transform,filter] sm:px-6 sm:py-6 sm:text-[1.02rem] lg:text-[1.06rem]"
       >
-        Dann ist die entscheidende Frage, was Menschen sehen, wenn sie Sie
-        finden. Denn wenn dieser Eindruck nicht überzeugt, entscheiden sie sich
-        nicht später gegen Sie.
-        <strong className="font-instrument mt-3 block text-[24px] font-[600] italic tracking-[1px] text-[rgb(var(--magicks-ink-rgb)/0.9)]">
-          Sondern sofort
-        </strong>
+        <span className="block">Doch wenn am Ende keine Kontakte,</span>
+        <span className="block">keine Buchungen und keine neuen</span>
+        <span className="block">Kunden entstehen, bleibt sie nur</span>
+        <span className="block">sichtbar aber nicht wirksam.</span>
       </p>
     </div>
   );

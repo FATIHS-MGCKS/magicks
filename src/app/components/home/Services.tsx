@@ -62,42 +62,22 @@ const SERVICES: Service[] = [
 ];
 
 /**
- * Service image card — renders the hero visual for a single service with
- * the same editorial chrome as the original preview stack (meta-overlay,
- * gradient, studio-air sweep). Used in both the mobile inline slot and
- * the desktop card's right column.
+ * Service visual — intentionally no nested frame/chrome. The main service
+ * card is the surface; this image sits inside it like an editorial product
+ * visual, with only transform-based hover motion.
  */
 function ServiceImage({ s }: { s: Service }) {
   return (
-    <>
-      <img
-        src={s.image}
-        alt={s.imageAlt}
-        width={1440}
-        height={1800}
-        loading="lazy"
-        decoding="async"
-        draggable={false}
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.03]"
-      />
-
-      <div aria-hidden className="preview-sweep z-30 relative pointer-events-none" />
-
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-30 bg-[radial-gradient(ellipse_120%_78%_at_50%_4%,rgba(255,255,255,0.24),transparent_64%)]"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-30 bg-gradient-to-t from-[rgba(28,36,52,0.24)] via-[rgba(28,36,52,0.02)] to-[rgba(255,255,255,0.2)]"
-      />
-
-      <div className="pointer-events-none absolute bottom-5 left-5 right-5 z-40 flex items-baseline justify-between gap-4 sm:bottom-6 sm:left-6 sm:right-6">
-        <span className="font-ui text-[13.5px] font-[520] tracking-[-0.004em] text-[rgba(255,255,255,0.92)] sm:text-[14.5px]">
-          {s.title}
-        </span>
-      </div>
-    </>
+    <img
+      src={s.image}
+      alt={s.imageAlt}
+      width={1440}
+      height={1800}
+      loading="lazy"
+      decoding="async"
+      draggable={false}
+      className="block h-auto w-full max-w-none select-none object-contain transition-transform duration-1000 ease-out group-hover:scale-[1.015]"
+    />
   );
 }
 
@@ -292,10 +272,14 @@ export function Services() {
               <article
                 key={s.slug}
                 data-service-card
-                className="relative z-10 w-full origin-top rounded-[1.75rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[linear-gradient(165deg,rgba(255,255,255,0.86)_0%,rgba(246,242,233,0.72)_100%)] p-8 shadow-[0_28px_72px_-46px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.8)] will-change-[opacity] sm:p-10 md:p-12"
-                style={{ zIndex: 10 + i }}
+                className="relative z-10 isolate w-full origin-top overflow-hidden rounded-[1.75rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[var(--magicks-bg-lifted)] p-8 shadow-[0_28px_72px_-46px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.8)] opacity-100 will-change-transform sm:p-10 md:p-12"
+                style={{ zIndex: 20 + i }}
               >
-                <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-14 xl:gap-20">
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(165deg,rgba(255,255,255,0.72)_0%,rgba(246,242,233,0.58)_100%)]"
+                />
+                <div className="relative z-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-start lg:gap-14 xl:gap-20">
                   {/* Left — Text Content */}
                   <PrefetchLink
                     to={s.href}
@@ -350,18 +334,18 @@ export function Services() {
                           {s.teaser}
                         </p>
 
-                        {/* Inline media — mobile/tablet only */}
-                        <div className="relative mt-6 aspect-[16/10] w-full overflow-hidden rounded-[0.85rem] border border-[rgb(var(--magicks-line-rgb)/0.14)] bg-[var(--magicks-bg-base)] shadow-[0_20px_46px_-34px_rgba(20,28,44,0.32)] lg:hidden">
-                          <ServiceImage s={s} />
-                        </div>
-
-                        <span className="mt-6 inline-flex min-h-[40px] items-center gap-3 font-mono text-[11px] font-medium uppercase leading-none tracking-[0.16em] text-[rgb(var(--magicks-ink-rgb)/0.46)] magicks-duration-hover magicks-ease-out transition-colors sm:min-h-0 sm:text-[11.25px] sm:tracking-[0.2em] group-hover:text-[rgb(var(--magicks-ink-rgb)/0.9)] group-focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.9)]">
+                        <span className="mt-6 inline-flex min-h-[40px] items-center gap-3 font-mono text-[11px] font-medium uppercase leading-none tracking-[0.16em] text-[rgb(var(--magicks-ink-rgb)/0.46)] magicks-duration-hover magicks-ease-out transition-colors sm:min-h-0 sm:text-[11.25px] sm:tracking-[0.2em] lg:mt-8 group-hover:text-[rgb(var(--magicks-ink-rgb)/0.9)] group-focus-visible:text-[rgb(var(--magicks-ink-rgb)/0.9)]">
                           Ansehen
                           <span
                             aria-hidden
                             className="h-px w-5 bg-[rgb(var(--magicks-line-rgb)/0.26)] magicks-duration-hover magicks-ease-out transition-[width,background-color] group-hover:w-12 group-hover:bg-[rgb(var(--magicks-line-rgb)/0.56)] group-focus-visible:w-12 group-focus-visible:bg-[rgb(var(--magicks-line-rgb)/0.56)]"
                           />
                         </span>
+
+                        {/* Inline media — mobile/tablet only, without nested card chrome. */}
+                        <div className="relative z-0 mt-6 ml-auto -mr-8 w-[calc(100%+1rem)] overflow-visible sm:-mr-10 sm:mt-8 sm:w-[96%] md:-mr-12 md:w-[92%] lg:hidden">
+                          <ServiceImage s={s} />
+                        </div>
                       </div>
 
                       <span
@@ -376,8 +360,8 @@ export function Services() {
                   </PrefetchLink>
 
                   {/* Right — Image (Desktop only) */}
-                  <aside aria-hidden className="hidden lg:block relative">
-                    <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.48),rgba(240,235,226,0.8))] shadow-[0_42px_98px_-58px_rgba(19,26,40,0.28),inset_0_1px_0_rgba(255,255,255,0.76)]">
+                  <aside aria-hidden className="relative hidden overflow-visible lg:flex lg:items-end lg:justify-end">
+                    <div className="relative -mr-12 w-[114%] max-w-none overflow-visible xl:-mr-14 xl:w-[112%]">
                       <ServiceImage s={s} />
                     </div>
                   </aside>
