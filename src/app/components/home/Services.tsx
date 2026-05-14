@@ -343,7 +343,7 @@ export function Services() {
                         </span>
 
                         {/* Inline media — mobile/tablet only, without nested card chrome. */}
-                        <div className="relative z-0 mt-6 ml-auto -mr-8 w-[calc(100%+1rem)] overflow-visible sm:-mr-10 sm:mt-8 sm:w-[96%] md:-mr-12 md:w-[92%] lg:hidden">
+                        <div className="relative z-0 -mt-1 ml-auto -mr-8 w-[calc(100%+1rem)] overflow-visible sm:-mr-10 sm:mt-1 sm:w-[90%] md:-mr-12 md:-mt-2 md:w-[78%] lg:hidden">
                           <ServiceImage s={s} />
                         </div>
                       </div>
@@ -360,8 +360,8 @@ export function Services() {
                   </PrefetchLink>
 
                   {/* Right — Image (Desktop only) */}
-                  <aside aria-hidden className="relative hidden overflow-visible lg:flex lg:items-end lg:justify-end">
-                    <div className="relative -mr-12 w-[114%] max-w-none overflow-visible xl:-mr-14 xl:w-[112%]">
+                  <aside aria-hidden className="relative hidden overflow-visible lg:flex lg:items-start lg:justify-end">
+                    <div className="relative -mr-12 -mt-6 w-[108%] max-w-none overflow-visible xl:-mr-14 xl:-mt-8 xl:w-[106%]">
                       <ServiceImage s={s} />
                     </div>
                   </aside>
