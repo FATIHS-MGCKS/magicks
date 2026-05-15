@@ -163,10 +163,25 @@ export function About() {
 
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 z-0"
         style={{
           backgroundImage:
             "radial-gradient(ellipse 54% 40% at 18% 10%, rgba(34,44,64,0.075), transparent 70%), radial-gradient(ellipse 44% 34% at 84% 80%, rgba(255,255,255,0.22), transparent 74%)",
+        }}
+      />
+
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[1] opacity-70"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, rgba(20,20,20,0.13) 1.45px, transparent 1.45px)",
+          backgroundPosition: "center top",
+          backgroundSize: "64px 64px",
+          maskImage:
+            "radial-gradient(ellipse 88% 72% at 50% 42%, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.62) 52%, rgba(0,0,0,0.28) 82%, transparent 100%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 88% 72% at 50% 42%, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.62) 52%, rgba(0,0,0,0.28) 82%, transparent 100%)",
         }}
       />
 
@@ -222,17 +237,33 @@ export function About() {
               data-about-intro
               className="mx-auto mt-9 max-w-[52rem] text-balance sm:mt-11"
             >
-              <p className="font-ui rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-5 text-[1.02rem] font-[470] leading-[1.68] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.74)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-6 sm:py-6 sm:text-[1.1rem]">
-                <span className="block">3 Sekunden. Mehr Zeit bleibt oft nicht.</span>
-                <span className="block">Dann entscheidet ein potenzieller Kunde,</span>
-                <span className="block">ob er bleibt, vertraut — oder weitersucht.</span>
-                <span className="mt-5 block">Wir sorgen dafür, dass diese 3 Sekunden</span>
-                <span className="block">
-                  für Sie arbeiten. Als Ihr Partner für Strategie, Design, Inhalt
-                  und Technik machen wir Ihre Botschaft sichtbar, verständlich und
-                </span>
-                <span className="block">überzeugend.</span>
-              </p>
+              <div className="font-ui rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-6 text-center text-[1.28rem] font-[470] leading-[1.6] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.74)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-7 sm:py-7 sm:text-[1.38rem] md:text-[1.48rem]">
+                <div className="mx-auto max-w-[45rem]">
+                  <p className="m-0">
+                    <span className="block">
+                      <strong className="font-[720] text-[rgb(var(--magicks-ink-rgb)/0.94)]">
+                        3 Sekunden.
+                      </strong>{" "}
+                      Mehr Zeit bleibt oft nicht.
+                    </span>
+                    <span className="block">Dann entscheidet ein potenzieller Kunde,</span>
+                    <span className="block">ob er bleibt, vertraut — oder weitersucht.</span>
+                  </p>
+
+                  <p className="m-0 mt-8 sm:mt-9">
+                    <span className="block">Wir sorgen dafür, dass diese 3 Sekunden</span>
+                    <span className="block">für Sie arbeiten.</span>
+                  </p>
+
+                  <p className="m-0 mt-8 sm:mt-9">
+                    <span className="block">Als Ihr Partner für Strategie, Design,</span>
+                    <span className="block">
+                      Inhalt und Technik machen wir Ihre Botschaft
+                    </span>
+                    <span className="block">sichtbar, verständlich und überzeugend.</span>
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -255,7 +286,7 @@ export function About() {
                   className="pointer-events-none absolute inset-x-[9%] bottom-[6%] z-0 h-[34%] rounded-full bg-[rgba(183,158,117,0.13)] blur-2xl transition-opacity duration-[720ms] group-hover:opacity-80"
                 />
 
-                <div className="relative z-10 grid min-h-[24rem] w-full grid-rows-[auto_1fr] overflow-hidden rounded-[1.25rem] border border-[rgba(255,255,255,0.58)] bg-[rgba(255,253,248,0.34)] px-5 pb-0 pt-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] sm:min-h-[25rem] sm:px-6 sm:pt-7 lg:min-h-[26rem]">
+                <div className="relative z-10 grid min-h-[24rem] w-full grid-rows-[auto_1fr] overflow-visible px-1 pb-0 pt-4 sm:min-h-[25rem] sm:px-2 sm:pt-5 lg:min-h-[26rem]">
                   <div className="mx-auto flex min-h-[10.75rem] max-w-[18rem] flex-col items-center text-center sm:min-h-[11.25rem]">
                     <span className="font-mono text-[0.66rem] font-medium uppercase tracking-[0.24em] text-[rgb(var(--magicks-accent-ink-rgb)/0.58)]">
                       {String(index + 1).padStart(2, "0")}
@@ -268,20 +299,20 @@ export function About() {
                     </p>
                   </div>
 
-                  <div className="relative flex min-h-[12rem] items-end justify-center pt-6 sm:min-h-[13rem] lg:min-h-[13.5rem]">
+                  <div className="relative flex min-h-[12rem] items-end justify-center pt-3 sm:min-h-[13rem] sm:pt-4 lg:min-h-[13.5rem]">
                     <div
                       aria-hidden
                       className="pointer-events-none absolute inset-x-[8%] bottom-2 h-[38%] rounded-full bg-[linear-gradient(90deg,transparent,rgba(187,163,124,0.18),transparent)] blur-xl"
                     />
-                  <img
-                    src={card.src}
-                    alt={card.alt}
-                    loading="lazy"
-                    decoding="async"
-                    width={1024}
-                    height={1280}
-                      className="relative z-10 block h-auto max-h-[12.5rem] w-[92%] max-w-[18rem] object-contain object-bottom drop-shadow-[0_22px_34px_rgba(20,28,44,0.14)] transition-transform duration-[900ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-[-3px] group-hover:scale-[1.015] sm:max-h-[14rem]"
-                  />
+                    <img
+                      src={card.src}
+                      alt={card.alt}
+                      loading="lazy"
+                      decoding="async"
+                      width={1024}
+                      height={1280}
+                      className="relative z-10 block h-auto max-h-[13.75rem] w-[96%] max-w-[23rem] object-contain object-bottom drop-shadow-[0_22px_34px_rgba(20,28,44,0.14)] transition-transform duration-[900ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-[-3px] group-hover:scale-[1.015] sm:max-h-[15rem] lg:w-[98%] lg:max-w-[24rem]"
+                    />
                   </div>
                 </div>
               </article>

@@ -10,7 +10,7 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
  *
  * Composition:
  *   · vertical production credit (left edge)
- *   · centred two-line headline — "Digitale Erlebnisse / die überzeugen"
+ *   · centred two-line headline — "Mehr als nur / Online."
  *   · success-oriented subtext in a high-contrast reading field
  *   · centred CTA with dual underline sweep
  *   · thin scroll cue (bottom-centre)
@@ -20,8 +20,8 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
  * as the hero's editorial accent.
  */
 
-const LINE_A = ["Digitale", "Erlebnisse"];
-const LINE_B = ["die", "überzeugen"];
+const LINE_A = ["Mehr", "als", "nur"];
+const LINE_B = ["Online."];
 
 export function Hero() {
   const rootRef = useRef<HTMLElement>(null);
@@ -363,6 +363,14 @@ export function Hero() {
       >
         <div className="layout-max w-full">
           <div className="mx-auto flex max-w-[min(58rem,92vw)] flex-col items-center">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.7)] px-3.5 py-2 font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[0_18px_52px_-42px_rgba(20,28,44,0.4),inset_0_1px_0_rgba(255,255,255,0.78)] sm:mb-7 sm:px-4 sm:text-[10.5px] sm:tracking-[0.24em]">
+              <span
+                aria-hidden
+                className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.72)] shadow-[0_0_0_0.25em_rgb(var(--magicks-accent-rgb)/0.08)]"
+              />
+              WEBAGENTUR AUS KASSEL
+            </div>
+
             <h1
               id="hero-heading"
               className="font-ui text-[3rem] leading-[0.98] tracking-[-0.038em] text-[rgb(var(--magicks-ink-rgb)/0.98)] [text-shadow:0_1px_0_rgba(255,255,255,0.68)] sm:text-[4.35rem] md:text-[5.45rem] lg:text-[6.35rem] xl:text-[7rem]"
@@ -399,23 +407,7 @@ export function Hero() {
               data-hero-subline
               className="font-ui mx-auto mt-7 max-w-[38rem] rounded-[1.25rem] border border-[rgb(var(--magicks-line-rgb)/0.14)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.74)] px-5 py-4 text-center text-[16.5px] font-[520] leading-[1.54] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[0_24px_72px_-48px_rgba(20,28,44,0.38),inset_0_1px_0_rgba(255,255,255,0.76)] sm:mt-8 sm:max-w-[42rem] sm:px-7 sm:py-5 sm:text-[18px] md:mt-9 md:text-[19.5px] lg:text-[20.5px]"
             >
-              <span className="block">
-                Seien Sie nicht einfach nur{" "}
-                <span className="ml-1 whitespace-nowrap font-[620] text-emerald-700">
-                  <span
-                    aria-hidden
-                    className="relative -top-[0.06em] mr-1.5 inline-block h-[0.46em] w-[0.46em] rounded-full bg-emerald-500 align-middle shadow-[0_0_0_0.22em_rgba(16,185,129,0.14),0_0_1em_rgba(16,185,129,0.42)]"
-                  />
-                  Online
-                </span>
-                .
-              </span>
-              <span className="mt-1.5 block text-[rgb(var(--magicks-ink-rgb)/0.98)]">
-                Zeigen Sie, warum man sich
-              </span>
-              <span className="block text-[rgb(var(--magicks-ink-rgb)/0.98)]">
-                für Sie entscheiden sollte
-              </span>
+              Für Unternehmen, die klar zeigen wollen, warum Kunden sich für sie entscheiden sollten.
             </h2>
 
             {/* Hero CTA — warm ivory pill with a refined arrow chip. */}

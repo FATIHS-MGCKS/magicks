@@ -51,7 +51,7 @@ const TRUST_BADGES = [
     Icon: Layers3,
   },
   {
-    title: "Kreativer Content inklusive",
+    title: "Content mit Konzept",
     text: "Texte, Bilder, Videos und visuelle Konzepte entstehen direkt bei uns im Studio.",
     Icon: Sparkles,
   },
@@ -500,10 +500,10 @@ function TrustBadgeGrid() {
             </div>
           </div>
           <div className="min-w-0">
-            <h3 className="font-ui text-[1.28rem] font-[720] leading-[1.16] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:mt-4 sm:text-[1.02rem] sm:font-[650] sm:leading-[1.16] sm:tracking-[-0.014em] sm:text-[rgb(var(--magicks-ink-rgb)/0.94)]">
+            <h3 className="font-ui text-[1.14rem] font-[700] leading-[1.12] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.94)] sm:mt-4 sm:text-[0.95rem] sm:font-[650] sm:leading-[1.14] sm:tracking-[-0.012em]">
               {title}
             </h3>
-            <p className="font-ui mt-2 text-[1rem] font-[450] leading-[1.5] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:text-[0.9rem] sm:leading-[1.58]">
+            <p className="font-ui mt-2.5 text-[0.91rem] font-[440] leading-[1.56] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.6)] sm:mt-2 sm:text-[0.82rem] sm:leading-[1.55]">
               {text}
             </p>
           </div>

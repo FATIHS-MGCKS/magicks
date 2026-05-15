@@ -237,20 +237,29 @@ function ProblemIntro() {
       <h2
         id="problem-heading"
         data-problem-copy
-        className="font-ui mx-auto mt-6 max-w-[14ch] text-[2.25rem] font-[700] leading-[0.98] tracking-[-0.044em] text-[rgb(var(--magicks-ink-rgb)/0.98)] will-change-[opacity,transform,filter] sm:text-[2.85rem] md:text-[62px] lg:mx-0 lg:max-w-[12ch] lg:text-[4.45rem]"
+        className="font-ui mx-auto mt-6 max-w-[17ch] text-[2.25rem] font-[700] leading-[0.98] tracking-[-0.044em] text-[rgb(var(--magicks-ink-rgb)/0.98)] will-change-[opacity,transform,filter] sm:text-[2.85rem] md:text-[62px] lg:mx-0 lg:max-w-[15ch] lg:text-[4.45rem]"
       >
-        <span className="block">Ihre Website ist online.</span>
+        <span className="block">Ihre Webseite ist</span>
+        <span className="block whitespace-nowrap text-emerald-700">
+          <span className="inline-flex items-center whitespace-nowrap">
+            <span
+              aria-hidden
+              className="relative -top-[0.04em] mr-2 inline-block h-[0.4em] w-[0.4em] rounded-full bg-emerald-500 align-middle shadow-[0_0_0_0.22em_rgba(16,185,129,0.14),0_0_1em_rgba(16,185,129,0.38)]"
+            />
+            Online
+          </span>
+          .
+        </span>
         <span className="block">Aber verkauft sie auch?</span>
       </h2>
 
       <p
         data-problem-copy
-        className="font-ui mx-auto mt-7 max-w-[36rem] text-center text-[1.08rem] font-[540] leading-[1.52] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.82)] will-change-[opacity,transform,filter] sm:text-[1.2rem] md:text-[1.32rem] lg:text-[1.24rem] lg:text-left"
+        className="font-ui mx-auto mt-7 max-w-[36rem] text-justify text-[1.08rem] font-[540] leading-[1.52] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.82)] will-change-[opacity,transform,filter] sm:text-[1.2rem] md:text-[1.32rem] lg:text-[1.24rem]"
       >
-        <span className="block">Ihre Website arbeitet rund um die Uhr</span>
-        <span className="block">für Ihr Unternehmen. Sie präsentiert</span>
-        <span className="block">Ihr Angebot, erklärt Ihre Leistungen</span>
-        <span className="block">und macht aus Besuchern Anfragen.</span>
+        Ihre Website arbeitet rund um die Uhr für Ihr Unternehmen. Sie
+        präsentiert Ihr Angebot, erklärt Ihre Leistungen und macht aus Besuchern
+        Anfragen.
       </p>
 
       <p
@@ -260,7 +269,16 @@ function ProblemIntro() {
         <span className="block">Doch wenn am Ende keine Kontakte,</span>
         <span className="block">keine Buchungen und keine neuen</span>
         <span className="block">Kunden entstehen, bleibt sie nur</span>
-        <span className="block">sichtbar aber nicht wirksam.</span>
+        <span className="block">
+          <strong className="font-[680] text-[rgb(var(--magicks-ink-rgb)/0.82)]">
+            sichtbar
+          </strong>{" "}
+          aber nicht{" "}
+          <strong className="font-[720] text-[rgb(var(--magicks-ink-rgb)/0.9)] underline decoration-[rgb(var(--magicks-accent-rgb)/0.42)] decoration-2 underline-offset-[0.16em]">
+            wirksam
+          </strong>
+          .
+        </span>
       </p>
     </div>
   );
