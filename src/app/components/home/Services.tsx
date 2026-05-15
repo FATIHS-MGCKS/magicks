@@ -129,7 +129,7 @@ export function Services() {
         parallaxDrift(ambient, { trigger: root, from: -3, to: 4, scrub: true });
       }
 
-      // ─── Headline: "Unser Leistungsumfang" ──────────────────────────
+      // ─── Headline: "Von der Website bis zum smarten Prozess" ─────────
       const buildParts = root.querySelectorAll<HTMLElement>("[data-build-part]");
       if (buildParts.length > 0) {
         const buildFrom: gsap.TweenVars = cheapMotion
@@ -227,7 +227,7 @@ export function Services() {
               aria-hidden
               className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.72)]"
             />
-            Unser Leistungsumfang
+            Leistungen
           </span>
         </div>
         <div className="mb-16 grid gap-8 md:mb-24 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-end md:gap-14">
@@ -238,13 +238,13 @@ export function Services() {
             style={{ perspective: "1000px" }}
           >
             <span className="inline-block overflow-hidden pb-1 -mb-1">
-              <span data-build-part className="inline-block will-change-transform">Unser</span>
+              <span data-build-part className="inline-block will-change-transform">Von der Website</span>
             </span>{" "}
             <span className="inline-block overflow-hidden pb-1 -mb-1">
-              <span data-build-part className="inline-block will-change-transform">Leistungs</span>
+              <span data-build-part className="inline-block will-change-transform">bis zum smarten</span>
             </span>{" "}
             <em className="font-instrument inline-block italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.62)]">
-              {"umfang".split("").map((char, i) => (
+              {"Prozess".split("").map((char, i) => (
                 <span key={i} className="inline-block overflow-hidden pb-1 -mb-1">
                   <span data-build-part className="inline-block will-change-transform">{char}</span>
                 </span>

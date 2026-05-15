@@ -45,6 +45,7 @@ export function Hero() {
       const cue = root.querySelector<HTMLElement>("[data-hero-cue]");
       const vignette = root.querySelector<HTMLElement>("[data-hero-vignette]");
       const bottomFade = root.querySelector<HTMLElement>("[data-hero-bottomfade]");
+      const haze = root.querySelector<HTMLElement>("[data-hero-haze]");
       const wipe = root.querySelector<HTMLElement>("[data-hero-wipe]");
       const copy = root.querySelector<HTMLElement>("[data-hero-copy]");
       const depth = root.querySelector<HTMLElement>("[data-hero-depth]");
@@ -55,6 +56,7 @@ export function Hero() {
           { opacity: 1, y: 0, yPercent: 0, letterSpacing: "-0.032em", scaleX: 1 },
         );
         gsap.set(lineA, { letterSpacing: "-0.0275em" });
+        gsap.set(haze, { opacity: 0, yPercent: 0 });
         gsap.set(wipe, { opacity: 0 });
         gsap.set(depth, { opacity: 0 });
         return;
@@ -64,6 +66,7 @@ export function Hero() {
       gsap.set(wipe, { opacity: 0.3 });
       gsap.set(vignette, { opacity: 0.16 });
       gsap.set(bottomFade, { opacity: 0.14 });
+      gsap.set(haze, { opacity: 0, yPercent: 8 });
       gsap.set(credit, { opacity: 0, x: -4 });
       // Letter-spacing initial value must stay inside the "same-wrap" zone so
       // the animated settlement never crosses a line-wrap threshold. Measured
@@ -161,6 +164,8 @@ export function Hero() {
       const depthTargetOpacity = mobileViewport ? 0.14 : 0.62;
       const vignetteStartOpacity = mobileViewport ? 0.56 : 0.94;
       const vignetteEndOpacity = mobileViewport ? 0.62 : 1.04;
+      const hazeTargetOpacity = mobileViewport ? 0.34 : 0.48;
+      const hazeTargetY = mobileViewport ? 2 : -2;
 
       // 01 — the depth layer darkens in two beats: a soft cool grade
       // first, then a stronger mid-frame falloff as the copy clears.
@@ -196,7 +201,22 @@ export function Hero() {
         },
       );
 
-      // 03 — copy exhale: lifts and loses contrast before the frame goes.
+      // 03 — warm bottom haze: a champagne-toned mist that softens the
+      // lower video area as the hero hands off to the next section.
+      gsap.to(haze, {
+        opacity: hazeTargetOpacity,
+        yPercent: hazeTargetY,
+        force3D: true,
+        ease: "none",
+        scrollTrigger: {
+          trigger: root,
+          start: "top top",
+          end: "bottom 18%",
+          scrub: 0.9,
+        },
+      });
+
+      // 04 — copy exhale: lifts and loses contrast before the frame goes.
       // This stays transform/opacity-only so the video layer remains static.
       const copyExit: gsap.TweenVars = {
         yPercent: -10,
@@ -212,7 +232,7 @@ export function Hero() {
       };
       gsap.to(copy, copyExit);
 
-      // 04 — marginalia (cue + credit) dissolve earlier than the copy so
+      // 05 — marginalia (cue + credit) dissolve earlier than the copy so
       // the core headline holds the longest.
       gsap.to([cue, credit], {
         opacity: 0,
@@ -240,7 +260,7 @@ export function Hero() {
         <HeroVideoBackground />
       </div>
 
-      {/* Overlay stack — four deliberate layers, each a different job */}
+      {/* Overlay stack — deliberate atmosphere layers, each with one job */}
 
       {/* 1 — global color grade: soft ivory wash for light-theme legibility */}
       <div
@@ -305,6 +325,17 @@ export function Hero() {
         style={{
           background:
             "linear-gradient(180deg, rgba(34,44,62,0.01) 0%, rgba(34,44,62,0.05) 52%, rgba(34,44,62,0.09) 100%)",
+        }}
+      />
+
+      {/* 6 — scroll-coupled bottom haze: warm mist over the video edge only */}
+      <div
+        data-hero-haze
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-[-1px] h-[34%] opacity-0 will-change-[opacity,transform] sm:h-[39%] md:h-[46%]"
+        style={{
+          background:
+            "radial-gradient(ellipse 62% 42% at 18% 74%, rgba(255,250,239,0.72) 0%, rgba(250,243,228,0.34) 42%, transparent 72%), radial-gradient(ellipse 78% 46% at 82% 82%, rgba(244,231,205,0.56) 0%, rgba(239,226,201,0.26) 44%, transparent 76%), linear-gradient(180deg, transparent 0%, rgba(253,248,238,0.14) 24%, rgba(248,240,225,0.34) 58%, rgba(241,234,219,0.66) 82%, var(--magicks-bg-lifted) 100%)",
         }}
       />
 
