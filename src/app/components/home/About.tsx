@@ -172,16 +172,14 @@ export function About() {
 
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-[1] opacity-70"
+        className="pointer-events-none absolute inset-0 z-[1]"
         style={{
           backgroundImage:
-            "radial-gradient(circle, rgba(20,20,20,0.13) 1.45px, transparent 1.45px)",
+            "radial-gradient(circle, rgba(20,20,20,0.2) 1.6px, transparent 1.65px)",
           backgroundPosition: "center top",
-          backgroundSize: "64px 64px",
-          maskImage:
-            "radial-gradient(ellipse 88% 72% at 50% 42%, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.62) 52%, rgba(0,0,0,0.28) 82%, transparent 100%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 88% 72% at 50% 42%, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.62) 52%, rgba(0,0,0,0.28) 82%, transparent 100%)",
+          backgroundSize: "56px 56px",
+          mixBlendMode: "multiply",
+          opacity: 0.72,
         }}
       />
 
