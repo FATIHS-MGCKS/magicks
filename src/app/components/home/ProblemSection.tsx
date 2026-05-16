@@ -241,14 +241,19 @@ function ProblemIntro() {
       >
         <span className="block">Ihre Webseite ist</span>
         <span className="block whitespace-nowrap text-emerald-700">
-          <span className="inline-flex items-center whitespace-nowrap">
-            <span
-              aria-hidden
-              className="relative -top-[0.04em] mr-2 inline-block h-[0.4em] w-[0.4em] rounded-full bg-emerald-500 align-middle shadow-[0_0_0_0.22em_rgba(16,185,129,0.14),0_0_1em_rgba(16,185,129,0.38)]"
-            />
+          <span className="inline-flex items-center gap-[0.35em] whitespace-nowrap">
+            <span className="relative flex items-center justify-center">
+              <span
+                aria-hidden
+                className="absolute h-[0.42em] w-[0.42em] animate-pulse rounded-full bg-emerald-500 blur-[4px]"
+              />
+              <span
+                aria-hidden
+                className="relative inline-block h-[0.42em] w-[0.42em] rounded-full border border-emerald-300 bg-gradient-to-br from-emerald-400 to-emerald-600 align-middle shadow-[0_0_0_0.18em_rgba(16,185,129,0.18),0_0_1em_rgba(16,185,129,0.4)]"
+              />
+            </span>
             Online
           </span>
-          .
         </span>
         <span className="block">Aber verkauft sie auch?</span>
       </h2>
@@ -264,7 +269,7 @@ function ProblemIntro() {
 
       <p
         data-problem-copy
-        className="font-ui mx-auto mt-5 max-w-[38rem] rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-5 text-center text-[0.98rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] shadow-[0_28px_78px_-58px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.72)] will-change-[opacity,transform,filter] sm:px-6 sm:py-6 sm:text-[1.02rem] lg:text-[1.06rem]"
+        className="font-ui mx-auto mt-5 max-w-[38rem] rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-5 text-center text-[20px] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] shadow-[0_28px_78px_-58px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.72)] will-change-[opacity,transform,filter] sm:px-6 sm:py-6 sm:text-[20px] lg:text-[20px]"
       >
         <span className="block">Doch wenn am Ende keine Kontakte,</span>
         <span className="block">keine Buchungen und keine neuen</span>

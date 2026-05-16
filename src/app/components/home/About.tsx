@@ -235,7 +235,7 @@ export function About() {
               data-about-intro
               className="mx-auto mt-9 max-w-[52rem] text-balance sm:mt-11"
             >
-              <div className="font-ui rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-6 text-center text-[1.28rem] font-[470] leading-[1.6] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.74)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-7 sm:py-7 sm:text-[1.38rem] md:text-[1.48rem]">
+              <div className="font-ui rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-6 text-center text-[1.28rem] font-[470] leading-[1.6] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.74)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-7 sm:py-7 sm:text-[1.38rem] md:text-[18px]">
                 <div className="mx-auto max-w-[45rem]">
                   <p className="m-0">
                     <span className="block">
@@ -269,7 +269,7 @@ export function About() {
             className="mt-6 grid items-stretch gap-5 sm:mt-8 md:gap-6 lg:grid-cols-3 lg:gap-7"
             aria-label="Drei Gründe für MAGICKS als Partner"
           >
-            {PARTNER_CARDS.map((card, index) => (
+            {PARTNER_CARDS.map((card) => (
               <article
                 key={card.title}
                 data-about-card
@@ -286,13 +286,10 @@ export function About() {
 
                 <div className="relative z-10 grid min-h-[24rem] w-full grid-rows-[auto_1fr] overflow-visible px-1 pb-0 pt-4 sm:min-h-[25rem] sm:px-2 sm:pt-5 lg:min-h-[26rem]">
                   <div className="mx-auto flex min-h-[10.75rem] max-w-[18rem] flex-col items-center text-center sm:min-h-[11.25rem]">
-                    <span className="font-mono text-[0.66rem] font-medium uppercase tracking-[0.24em] text-[rgb(var(--magicks-accent-ink-rgb)/0.58)]">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <h3 className="font-ui mt-3 min-h-[3.9rem] text-[clamp(1.45rem,2.7vw,1.9rem)] font-[720] leading-[1.02] tracking-[-0.035em] text-[rgb(var(--magicks-ink-rgb)/0.94)]">
+                    <h3 className="font-ui min-h-[3.9rem] text-[28px] font-[720] leading-[1.02] tracking-[-0.035em] text-[rgb(var(--magicks-ink-rgb)/0.94)]">
                       {card.title}
                     </h3>
-                    <p className="font-ui mx-auto mt-3 max-w-[17.5rem] text-[0.9rem] font-[470] leading-[1.52] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.66)] sm:text-[0.95rem] lg:min-h-[5.8rem]">
+                    <p className="font-ui mx-auto mt-3 max-w-[17.5rem] text-[0.9rem] font-[600] leading-[1.52] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.66)] sm:text-[0.95rem] lg:min-h-[5.8rem]">
                       {card.description}
                     </p>
                   </div>
