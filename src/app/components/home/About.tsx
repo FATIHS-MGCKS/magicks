@@ -235,7 +235,7 @@ export function About() {
               data-about-intro
               className="mx-auto mt-9 max-w-[52rem] text-balance sm:mt-11"
             >
-              <div className="font-ui rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-6 text-center text-[1.28rem] font-[470] leading-[1.6] tracking-[-0.01em] text-[rgb(var(--magicks-ink-rgb)/0.74)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-7 sm:py-7 sm:text-[1.38rem] md:text-[18px]">
+              <div className="font-ui rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-6 text-center text-[1.02rem] font-[500] leading-[1.66] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.74)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-7 sm:py-7 sm:text-[1.1rem] md:text-[20px]">
                 <div className="mx-auto max-w-[45rem]">
                   <p className="m-0">
                     <span className="block">
@@ -284,8 +284,8 @@ export function About() {
                   className="pointer-events-none absolute inset-x-[9%] bottom-[6%] z-0 h-[34%] rounded-full bg-[rgba(183,158,117,0.13)] blur-2xl transition-opacity duration-[720ms] group-hover:opacity-80"
                 />
 
-                <div className="relative z-10 grid min-h-[24rem] w-full grid-rows-[auto_1fr] overflow-visible px-1 pb-0 pt-4 sm:min-h-[25rem] sm:px-2 sm:pt-5 lg:min-h-[26rem]">
-                  <div className="mx-auto flex min-h-[10.75rem] max-w-[18rem] flex-col items-center text-center sm:min-h-[11.25rem]">
+                <div className="relative z-10 grid min-h-[23rem] w-full grid-rows-[auto_1fr] overflow-visible px-1 pb-0 pt-3 sm:min-h-[24rem] sm:px-2 sm:pt-4 lg:min-h-[25rem]">
+                  <div className="mx-auto flex min-h-[9.75rem] max-w-[18rem] flex-col items-center text-center sm:min-h-[10.25rem]">
                     <h3 className="font-ui min-h-[3.9rem] text-[28px] font-[720] leading-[1.02] tracking-[-0.035em] text-[rgb(var(--magicks-ink-rgb)/0.94)]">
                       {card.title}
                     </h3>
@@ -294,7 +294,7 @@ export function About() {
                     </p>
                   </div>
 
-                  <div className="relative flex min-h-[12rem] items-end justify-center pt-3 sm:min-h-[13rem] sm:pt-4 lg:min-h-[13.5rem]">
+                  <div className="relative flex min-h-[11.5rem] items-end justify-center pt-1 sm:min-h-[12.25rem] sm:pt-2 lg:min-h-[12.75rem]">
                     <div
                       aria-hidden
                       className="pointer-events-none absolute inset-x-[8%] bottom-2 h-[38%] rounded-full bg-[linear-gradient(90deg,transparent,rgba(187,163,124,0.18),transparent)] blur-xl"
@@ -306,7 +306,7 @@ export function About() {
                       decoding="async"
                       width={1024}
                       height={1280}
-                      className="relative z-10 block h-auto max-h-[13.75rem] w-[96%] max-w-[23rem] object-contain object-bottom drop-shadow-[0_22px_34px_rgba(20,28,44,0.14)] transition-transform duration-[900ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-[-3px] group-hover:scale-[1.015] sm:max-h-[15rem] lg:w-[98%] lg:max-w-[24rem]"
+                      className="relative z-10 block h-auto max-h-[16rem] w-[112%] max-w-[27rem] object-contain object-bottom drop-shadow-[0_22px_34px_rgba(20,28,44,0.14)] transition-transform duration-[900ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-[-3px] group-hover:scale-[1.015] sm:max-h-[17.5rem] lg:w-[114%] lg:max-w-[28rem]"
                     />
                   </div>
                 </div>

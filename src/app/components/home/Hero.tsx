@@ -391,9 +391,19 @@ export function Hero() {
                 {LINE_B.map((w, i) => (
                   <span
                     key={`b-${i}`}
-                    className="mr-[0.18em] inline-block overflow-hidden align-bottom last:mr-0"
+                    className="mr-[0.18em] inline-block overflow-hidden px-[0.15em] -mx-[0.15em] py-[0.1em] -my-[0.1em] align-bottom last:mr-0 text-emerald-700"
                   >
-                    <span data-hero-b className="inline-block will-change-[transform,opacity]">
+                    <span data-hero-b className="inline-flex items-center gap-[0.25em] will-change-[transform,opacity]">
+                      <span className="relative flex items-center justify-center">
+                        <span
+                          aria-hidden
+                          className="absolute h-[0.26em] w-[0.26em] animate-pulse rounded-full bg-emerald-500 blur-[0.1em] opacity-80"
+                        />
+                        <span
+                          aria-hidden
+                          className="relative inline-block h-[0.26em] w-[0.26em] rounded-full border border-white/30 bg-[radial-gradient(circle_at_30%_30%,#34d399,#059669_70%,#022c22_100%)] align-middle shadow-[inset_0_0.04em_0.04em_rgba(255,255,255,0.6),inset_0_-0.04em_0.08em_rgba(0,0,0,0.4),0_0.04em_0.08em_rgba(0,0,0,0.2)]"
+                        />
+                      </span>
                       {w}
                     </span>
                   </span>
