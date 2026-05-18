@@ -373,13 +373,13 @@ export function Hero() {
 
             <h1
               id="hero-heading"
-              className="font-ui text-[3rem] leading-[0.98] tracking-[-0.038em] text-[rgb(var(--magicks-ink-rgb)/0.98)] [text-shadow:0_1px_0_rgba(255,255,255,0.68)] sm:text-[4.35rem] md:text-[5.45rem] lg:text-[6.35rem] xl:text-[7rem]"
+              className="font-ui text-[3rem] leading-[0.96] tracking-[-0.042em] text-[rgb(var(--magicks-ink-rgb)/0.98)] [text-shadow:0_1px_0_rgba(255,255,255,0.74)] sm:text-[4.35rem] md:text-[5.45rem] lg:text-[6.35rem] xl:text-[7rem]"
             >
-              <span className="block font-[620]">
+              <span className="block font-[640]">
                 {LINE_A.map((w, i) => (
                   <span
                     key={`a-${i}`}
-                    className="mr-[0.18em] inline-block overflow-hidden align-bottom last:mr-0"
+                    className="mr-[0.19em] inline-block overflow-hidden align-bottom last:mr-0"
                   >
                     <span data-hero-a className="inline-block will-change-[transform,opacity]">
                       {w}
@@ -391,9 +391,12 @@ export function Hero() {
                 {LINE_B.map((w, i) => (
                   <span
                     key={`b-${i}`}
-                    className="mr-[0.18em] inline-block overflow-hidden px-[0.15em] -mx-[0.15em] py-[0.1em] -my-[0.1em] align-bottom last:mr-0 text-emerald-700"
+                    className="mr-[0.18em] inline-block overflow-hidden px-[0.18em] -mx-[0.18em] py-[0.12em] -my-[0.12em] align-bottom last:mr-0 text-emerald-700"
                   >
-                    <span data-hero-b className="inline-flex items-center gap-[0.25em] will-change-[transform,opacity]">
+                    <span
+                      data-hero-b
+                      className="relative inline-flex items-center gap-[0.25em] text-emerald-700 [text-shadow:0_0.025em_0_rgba(255,255,255,0.72)] after:absolute after:inset-x-[0.02em] after:bottom-[0.08em] after:h-[0.045em] after:rounded-full after:bg-[linear-gradient(90deg,transparent_0%,rgb(var(--magicks-accent-rgb)/0.28)_18%,rgba(5,150,105,0.24)_50%,rgb(var(--magicks-accent-rgb)/0.18)_82%,transparent_100%)] after:content-[''] will-change-[transform,opacity]"
+                    >
                       <span className="relative flex items-center justify-center">
                         <span
                           aria-hidden
@@ -415,9 +418,17 @@ export function Hero() {
                 remains readable over the moving video frame. */}
             <h2
               data-hero-subline
-              className="font-ui mx-auto mt-7 max-w-[38rem] rounded-[1.25rem] border border-[rgb(var(--magicks-line-rgb)/0.14)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.74)] px-5 py-4 text-center text-[16.5px] font-[520] leading-[1.54] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[0_24px_72px_-48px_rgba(20,28,44,0.38),inset_0_1px_0_rgba(255,255,255,0.76)] sm:mt-8 sm:max-w-[42rem] sm:px-7 sm:py-5 sm:text-[18px] md:mt-9 md:text-[19.5px] lg:text-[20.5px]"
+              className="font-ui mx-auto mt-7 max-w-[38rem] rounded-[999px] border border-[rgb(var(--magicks-accent-line-rgb)/0.18)] bg-[linear-gradient(180deg,rgba(255,253,249,0.82)_0%,rgba(244,238,227,0.58)_100%)] px-5 py-3.5 text-center text-[16px] font-[520] leading-[1.5] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.8)] shadow-[0_22px_64px_-52px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(148,124,92,0.08)] sm:mt-8 sm:max-w-[42rem] sm:px-7 sm:py-4 sm:text-[17.5px] md:mt-9 md:text-[19px] lg:text-[20px]"
             >
-              Für Unternehmen, die klar zeigen wollen, warum Kunden sich für sie entscheiden sollten.
+              Für Unternehmen, die{" "}
+              <span className="font-instrument px-[0.06em] text-[1.12em] italic tracking-[-0.012em] text-[rgb(var(--magicks-accent-ink-rgb)/0.88)]">
+                klar zeigen
+              </span>{" "}
+              möchten, warum Kunden{" "}
+              <span className="font-[640] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+                Vertrauen fassen
+              </span>{" "}
+              und sich entscheiden.
             </h2>
 
             {/* Hero CTA — warm ivory pill with a refined arrow chip. */}
@@ -429,11 +440,11 @@ export function Hero() {
                 // drifts low on mobile. min-h-11 + py-1 keep the touch
                 // target ≥ 44 px below lg without affecting alignment.
                 className="group relative inline-flex min-h-12 items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[linear-gradient(180deg,rgba(255,253,249,0.96)_0%,rgba(244,238,227,0.9)_100%)] py-2.5 pl-6 pr-2 font-ui text-[15.5px] font-[600] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline shadow-[0_22px_62px_-42px_rgba(20,28,44,0.46),inset_0_1px_0_rgba(255,255,255,0.88),inset_0_-1px_0_rgba(148,124,92,0.12)] transition-[transform,box-shadow,background-color,border-color] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:border-[rgb(var(--magicks-accent-line-rgb)/0.4)] hover:bg-[linear-gradient(180deg,rgba(255,254,251,0.98)_0%,rgba(247,241,230,0.94)_100%)] hover:shadow-[0_32px_82px_-40px_rgba(20,28,44,0.52),inset_0_1px_0_rgba(255,255,255,0.92),inset_0_-1px_0_rgba(148,124,92,0.16)] active:translate-y-0 active:scale-[0.99] sm:min-h-[52px] sm:pl-7 sm:pr-2.5 sm:text-[16px] md:text-[16.5px]"
-                aria-label="Projekt besprechen"
+                aria-label="Kostenlose Ersteinschätzung"
               >
                 <span className="relative">
                   <span className="font-ui magicks-hero-cta-label inline-block transition-[letter-spacing,color] duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:tracking-[0.004em] group-focus-visible:tracking-[0.004em]">
-                    Ein Projekt besprechen
+                    Kostenlose Ersteinschätzung
                   </span>
                 </span>
 

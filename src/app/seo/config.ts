@@ -83,9 +83,9 @@ export const SEO_BY_PATH: Record<string, SeoConfig> = {
 
   "/projekte": {
     path: "/projekte",
-    title: "Projekte — Ausgewählte digitale Arbeiten | MAGICKS Studio",
+    title: "Projekte | Arbeiten von MAGICKS Studio",
     description:
-      "Ausgewählte Projekte, Konzepte und digitale Umsetzungen von MAGICKS Studio — mit Fokus auf Design, Funktion und messbare Wirkung.",
+      "Einblicke in ausgewählte Projekte von MAGICKS Studio: Websites, digitale Auftritte, Content, SEO-Grundlagen und technische Umsetzung für reale Unternehmen.",
     ogType: "website",
     breadcrumbs: [{ name: "Projekte", path: "/projekte" }],
   },

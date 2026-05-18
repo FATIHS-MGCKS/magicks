@@ -1,10 +1,7 @@
 import { useLayoutEffect, useMemo, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 
-import { ChapterMarker } from "../components/home/ChapterMarker";
-import { SectionTransition } from "../components/service/SectionTransition";
 import {
-  PROJECTS,
   type Project,
   type ProjectCaseSection,
   type ProjectImage,
@@ -14,46 +11,13 @@ import {
 } from "../data/projects";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { registerGsap } from "../lib/gsap";
-import {
-  breathingScale,
-  parallaxDrift,
-  presenceEnvelope,
-} from "../lib/scrollMotion";
+import { runRouteReveal } from "../lib/routeReveal";
 import { SEO } from "../seo/SEO";
 
-/* ------------------------------------------------------------------
- * /projekte/:slug — bespoke editorial case study template.
- *
- * Design intent: reads as a real project write-up, not a portfolio
- * item. The structural rhythm is adapted from the MAGICKS studio
- * sheet (WebdesignKasselPage / LandingPagesKasselPage) and pulls
- * its content from the project's `case[]` free-form sections, plus
- * a few structural blocks (meta strip, gallery, services ledger,
- * related links, closing CTA).
- *
- * Image-friendly:
- *   - Cover renders in the hero when present, else a staged empty
- *     plate (no broken images, no cheesy icons).
- *   - Gallery section always renders a composed grid. Real images
- *     take priority; any remaining slots render staged empty plates
- *     so the section reads as intentional today. When MAGICKS adds
- *     gallery entries later, the empty plates disappear automatically.
- *
- * Motion: restrained. Scroll reveals + a short hero fade — no word
- * choreography. Quiet confidence per the brief.
- * ------------------------------------------------------------------ */
-
-/* Minimum number of structural slots in the gallery so the section
- * always feels composed. Real images are rendered first; remaining
- * slots render empty plates ready for manual enrichment. */
-const GALLERY_MIN_SLOTS = 5;
-
-/* Cinematic default span sequence for the gallery grid. Produces a
- *   12  →  6 + 6  →  8 + 4
- * rhythm — a full-width hero plate, a balanced pair, and a
- * wide+accent combo. Reads as an editorial spread instead of a
- * uniform grid. Overrideable per-image via `ProjectImage.span`. */
-const CINEMATIC_SPANS = [12, 6, 6, 8, 4] as const;
+type ProjectMetaItem = {
+  label: string;
+  value: React.ReactNode;
+};
 
 export default function ProjectDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -66,10 +30,6 @@ export default function ProjectDetailPage() {
   return <ProjectDetail project={project} />;
 }
 
-/* ------------------------------------------------------------------
- * ProjectDetail — renders a full case study page.
- * ------------------------------------------------------------------ */
-
 function ProjectDetail({ project }: { project: Project }) {
   const rootRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
@@ -77,25 +37,33 @@ function ProjectDetail({ project }: { project: Project }) {
   const seoTitle = projectSeoTitle(project);
   const seoDescription = projectSeoDescription(project);
   const seoImage = project.seo?.ogImage ?? project.cover?.src;
+  const prettyLiveUrl = project.publicUrl ? prettyUrl(project.publicUrl) : null;
+  const galleryImages = useMemo(
+    () => [project.cover, ...(project.gallery ?? [])].filter(Boolean) as ProjectImage[],
+    [project.cover, project.gallery],
+  );
+  const primaryServiceLine = project.metaServices ?? project.services?.slice(0, 4).join(" · ") ?? project.category;
 
-  /* Folio number — derived from the project's position in the master
-   * PROJECTS array so every case study renders its own number ("01",
-   * "02", …) without hardcoding. Used by the masthead label, the
-   * editorial folio cue, and the cover plate folio. */
-  const projectIndex = PROJECTS.findIndex((p) => p.slug === project.slug);
-  const folioNumber = String(
-    (projectIndex >= 0 ? projectIndex : 0) + 1
-  ).padStart(2, "0");
-  const coverFolio = `F · ${folioNumber}`;
-
-  // Pre-compute the gallery slot list — real images, padded with
-  // empty plates up to GALLERY_MIN_SLOTS so the section always reads
-  // as intentional.
-  const gallerySlots = useMemo<(ProjectImage | null)[]>(() => {
-    const real = project.gallery ?? [];
-    const count = Math.max(real.length, GALLERY_MIN_SLOTS);
-    return Array.from({ length: count }, (_, i) => real[i] ?? null);
-  }, [project.gallery]);
+  const metaItems: ProjectMetaItem[] = [
+    { label: "Kunde", value: project.clientName ?? project.title },
+    { label: "Branche", value: project.industry ?? project.category },
+    { label: "Leistung", value: primaryServiceLine },
+    {
+      label: "Website",
+      value: project.publicUrl ? (
+        <a
+          href={project.publicUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[rgb(var(--magicks-ink-rgb)/0.86)] no-underline transition-colors duration-500 hover:text-[rgb(var(--magicks-ink-rgb)/1)]"
+        >
+          {prettyLiveUrl}
+        </a>
+      ) : (
+        "Nicht öffentlich"
+      ),
+    },
+  ];
 
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -103,113 +71,30 @@ function ProjectDetail({ project }: { project: Project }) {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
-      const reveals = gsap.utils.toArray<HTMLElement>("[data-cs-reveal]");
-      const heroCover = root.querySelector<HTMLElement>("[data-cs-cover]");
+      const heroItems = gsap.utils.toArray<HTMLElement>("[data-cs-hero]");
+      const revealItems = gsap.utils.toArray<HTMLElement>("[data-cs-reveal]");
 
       if (reduced) {
-        gsap.set([...reveals, heroCover], { opacity: 1, y: 0, scale: 1 });
+        gsap.set([...heroItems, ...revealItems], {
+          opacity: 1,
+          y: 0,
+          filter: "none",
+        });
         return;
       }
 
-      /* Hero cover — gentle scale + fade on first load (justified
-       * page-intro moment) layered with a slow scroll-linked parallax
-       * and breathing scale so it feels spatial rather than static
-       * once the reader starts scrolling. */
-      if (heroCover) {
-        gsap.set(heroCover, { opacity: 0.16, scale: 1.012 });
-        gsap.to(heroCover, {
-          opacity: 1,
-          scale: 1,
-          duration: 1.4,
-          ease: "power2.out",
-          delay: 0.12,
-        });
-
-        parallaxDrift(heroCover, {
-          from: 0,
-          to: -6,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        });
-
-        breathingScale(heroCover, {
-          from: 1,
-          peak: 1.011,
-          to: 1.004,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1.1,
-        });
-      }
-
-      /* Section reveals — bidirectional case-section envelope.
-       *
-       * Each block gains presence on entry, holds across its reading
-       * zone, then gently releases as the next block arrives. Because
-       * every block is its own trigger, long prose paragraphs breathe
-       * over their own height while compact meta rows resolve quickly.
-       * Nothing latches, so scrolling up re-engages the gallery and
-       * case chapters as the reader returns. */
-      presenceEnvelope(reveals, {
-        start: "top 90%",
-        end: "bottom 10%",
-        yFrom: 16,
-        yTo: -10,
-        blur: 3.2,
-        opacityFloor: 0.2,
-        holdRatio: 0.58,
-        scrub: 0.95,
+      runRouteReveal({
+        gsap,
+        root,
+        heroItems,
+        revealItems,
+        heroYOffset: 14,
+        revealYOffset: 16,
+        blur: 3,
+        duration: 0.62,
+        heroStagger: 0.045,
+        revealStart: "top 90%",
       });
-
-      /* ---- Hero masthead release — binds the typographic opening together ----
-       * Individual masthead elements already envelope in/out, but they can
-       * feel disconnected on exit because each one times independently. A
-       * shared parallax on the masthead wrapper gives the whole composition
-       * one unified release gesture without doubling the visual motion of
-       * any single element. */
-      const heroSection = root.querySelector<HTMLElement>("[data-cs-hero]");
-      const heroMasthead = root.querySelector<HTMLElement>("[data-cs-hero-copy]");
-      if (heroSection && heroMasthead) {
-        parallaxDrift(heroMasthead, {
-          trigger: heroSection,
-          from: 0,
-          to: -10,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        });
-      }
-
-      /* ---- Final CTA head — cinematic arrival ----
-       * The closing headline of the project case settles into focus:
-       * letter-spacing tightens while blur releases, scroll-coupled so
-       * the end of the case feels like a movement resolving rather than
-       * a block fading up. */
-      const finalSection = root.querySelector<HTMLElement>("[data-cs-final]");
-      const finalHead = root.querySelector<HTMLElement>("[data-cs-final-head]");
-      if (finalSection && finalHead) {
-        gsap.set(finalHead, {
-          opacity: 0.16,
-          y: 12,
-          letterSpacing: "0.034em",
-          filter: "blur(3.8px)",
-        });
-        gsap.to(finalHead, {
-          opacity: 1,
-          y: 0,
-          letterSpacing: "-0.036em",
-          filter: "blur(0px)",
-          ease: "none",
-          scrollTrigger: {
-            trigger: finalSection,
-            start: "top 82%",
-            end: "top 34%",
-            scrub: 1.1,
-            invalidateOnRefresh: true,
-          },
-        });
-      }
     }, root);
 
     return () => ctx.revert();
@@ -226,611 +111,252 @@ function ProjectDetail({ project }: { project: Project }) {
 
       <main
         ref={rootRef}
-        className="relative bg-[var(--magicks-bg-base)] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative overflow-hidden bg-[var(--magicks-bg-base)] pt-[6.25rem] sm:pt-[7.25rem] md:pt-[8rem]"
       >
-        {/* =========================================================
-           § 00 — HERO · TYPOGRAPHIC MASTHEAD
-        ========================================================= */}
-        <section
-          data-cs-hero
-          className="relative overflow-hidden px-5 pb-16 sm:px-8 sm:pb-20 md:px-12 md:pb-24 lg:px-16 lg:pb-28"
-        >
-          <div data-cs-hero-copy className="relative layout-max">
-            {/* Top masthead */}
-            <div className="mb-10 flex flex-col gap-5 sm:mb-14 md:mb-16">
-              <div className="flex items-start justify-between gap-6">
-                <div data-cs-reveal>
-                  <ChapterMarker num="REFERENZ" label={project.category} />
-                </div>
-                <div
-                  data-cs-reveal
-                  aria-hidden
-                  className="font-mono hidden items-center gap-3 whitespace-nowrap text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/42 sm:flex sm:text-[10px]"
-                >
-                  <span className="tabular-nums text-white/32">
-                    F · {folioNumber}
-                  </span>
-                  <span aria-hidden className="h-px w-5 bg-white/24" />
-                  <span>Projektakte · {project.title}</span>
-                </div>
-              </div>
-
-              <div
-                data-cs-reveal
-                className="flex items-center gap-4 sm:gap-5"
-              >
-                <span aria-hidden className="h-px w-10 bg-white/24 sm:w-14" />
-                <span className="font-mono flex items-center gap-3 whitespace-nowrap text-[10px] font-medium uppercase leading-none tracking-[0.24em] text-white/52 sm:gap-4 sm:text-[10.5px] sm:tracking-[0.22em] md:text-[10.75px]">
-                  <Link
-                    to="/projekte"
-                    className="text-white/56 no-underline transition-colors hover:text-white/88"
-                  >
-                    Projekte
-                  </Link>
-                  <span aria-hidden className="h-px w-4 bg-white/28 sm:w-5" />
-                  <span className="text-white/48">Referenz</span>
-                  <span aria-hidden className="h-px w-4 bg-white/28 sm:w-5" />
-                  <span className="text-white/36">{project.title}</span>
-                </span>
-                <span aria-hidden className="h-px flex-1 bg-white/12" />
-              </div>
-            </div>
-
-            {/* Identity block — purely typographic. Max-width limits
-                measure so the H1 reads as a masthead, not a banner. */}
-            <div className="max-w-[62rem]">
-              <p
-                data-cs-reveal
-                className="font-mono mb-7 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/54 sm:mb-9 sm:text-[11px] sm:tracking-[0.22em]"
-              >
-                <span className="text-white/72">{project.category}</span>
-                {project.industry ? (
-                  <>
-                    <span aria-hidden className="text-white/28">·</span>
-                    <span>{project.industry}</span>
-                  </>
-                ) : null}
-                <span aria-hidden className="text-white/28">·</span>
-                <span className="text-white/44">Projekt {folioNumber}</span>
-              </p>
-
-              <h1
-                data-cs-reveal
-                className="font-instrument text-[2.35rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[3.1rem] md:text-[3.95rem] lg:text-[4.65rem] xl:text-[5.2rem]"
-              >
-                {project.title}
-              </h1>
-
-              <p
-                data-cs-reveal
-                className="font-instrument mt-10 max-w-[42rem] text-[1.34rem] italic leading-[1.44] tracking-[-0.009em] text-white/90 sm:text-[1.5rem] md:mt-12 md:text-[1.64rem]"
-              >
-                {project.intro}
-              </p>
-
-              {project.supportingIntro ? (
-                <p
-                  data-cs-reveal
-                  className="font-ui mt-7 max-w-[42rem] border-t border-[rgb(var(--magicks-line-rgb)/0.18)] pt-6 text-[15px] leading-[1.76] text-white/62 md:mt-9 md:text-[16px]"
-                >
-                  {project.supportingIntro}
-                </p>
-              ) : null}
-
-              {/* CTA row — outline pill (CTA-escalation step 1 of 2)
-                  + visible domain tell as a parallel trust signal. */}
-              <div
-                data-cs-reveal
-                className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-5 sm:mt-14 md:mt-16"
-              >
-                <Link
-                  to="/kontakt"
-                  className="group relative inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-line-rgb)/0.3)] bg-[rgb(var(--magicks-ink-rgb)/0.04)] py-3 pl-7 pr-3 text-[15px] font-medium tracking-[0.008em] text-[rgb(var(--magicks-ink-rgb)/0.9)] no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.22)] magicks-duration-hover magicks-ease-out transition-[transform,border-color,background-color,box-shadow] hover:-translate-y-[1px] hover:border-[rgb(var(--magicks-line-rgb)/0.45)] hover:bg-[rgb(var(--magicks-ink-rgb)/0.07)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.36)] active:translate-y-0 active:scale-[0.985] md:text-[16px]"
-                  aria-label="Projekt anfragen"
-                >
-                  <span className="font-ui">Projekt anfragen</span>
-                  <span
-                    aria-hidden
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
-                  >
-                    <svg
-                      viewBox="0 0 14 14"
-                      width="11"
-                      height="11"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.4"
-                    >
-                      <path
-                        d="M3 11 L11 3 M5 3 H11 V9"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                </Link>
-
-                {project.publicUrl ? (
-                  <a
-                    href={project.publicUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group/live inline-flex items-center gap-3 no-underline"
-                    aria-label={`${project.title} live öffnen`}
-                  >
-                    <span
-                      aria-hidden
-                      className="h-[6px] w-[6px] rounded-full bg-white/84 tick-breathing"
-                    />
-                    <span className="font-mono text-[10.75px] font-medium uppercase leading-none tracking-[0.22em] text-white/66 transition-colors duration-[420ms] group-hover/live:text-white/92 sm:text-[11.25px] sm:tracking-[0.2em]">
-                      Live
-                    </span>
-                    <span
-                      aria-hidden
-                      className="h-px w-4 bg-white/24 sm:w-5"
-                    />
-                    <span className="font-mono tabular-nums text-[11px] font-medium uppercase leading-none tracking-[0.14em] text-white/82 transition-colors duration-[420ms] group-hover/live:text-white sm:text-[11.5px] md:text-[12px]">
-                      {prettyUrl(project.publicUrl)}
-                    </span>
-                    <span
-                      aria-hidden
-                      className="font-instrument text-[1.05rem] italic text-white/76 transition-transform duration-[480ms] group-hover/live:-translate-y-[2px] group-hover/live:translate-x-[2px] md:text-[1.12rem]"
-                    >
-                      ↗︎
-                    </span>
-                  </a>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* =========================================================
-           § 00b — FULL-BLEED COVER PLATE
-           Cinematic masthead shot (or premium staged plate) with
-           the live URL embedded in the caption bar. Sits between
-           typographic identity and the meta strip so the page reads
-           as: NAME · IMAGE · INDEX.
-        ========================================================= */}
-        <section className="relative px-5 pb-16 sm:px-8 sm:pb-20 md:px-12 md:pb-24 lg:px-16 lg:pb-28">
-          <div data-cs-cover className="layout-max">
-            <HeroCoverWide
-              cover={project.cover}
-              title={project.title}
-              publicUrl={project.publicUrl}
-              folio={coverFolio}
-            />
-          </div>
-        </section>
-
-        {/* =========================================================
-           § 00c — PROJECT META STRIP
-        ========================================================= */}
-        <section className="relative px-5 pb-20 sm:px-8 sm:pb-28 md:px-12 md:pb-32 lg:px-16 lg:pb-40">
-          <div data-cs-reveal className="layout-max">
-            {/* Rail label */}
-            <div className="flex items-center justify-between gap-4 border-t border-white/[0.08] py-4 md:py-5">
-              <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 sm:text-[10.5px] sm:tracking-[0.22em]">
-                Projektakte · Register
-              </span>
-              <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.22em] text-white/34 sm:text-[10.5px] sm:tracking-[0.2em]">
-                04 Einträge
-              </span>
-            </div>
-
-            <dl className="grid grid-cols-2 gap-x-0 gap-y-6 border-t border-white/[0.08] py-7 sm:grid-cols-4 sm:gap-y-0">
-              <MetaCell k="Kategorie" v={project.category} first />
-              <MetaCell k="Branche" v={project.industry ?? "—"} />
-              <MetaCell k="Jahr" v={project.year ?? "MMXXVI"} />
-              <MetaCell
-                k="Live"
-                v={
-                  project.publicUrl ? (
-                    <a
-                      href={project.publicUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-mono tabular-nums text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-white/86 no-underline transition-colors hover:text-white sm:text-[11px]"
-                    >
-                      {prettyUrl(project.publicUrl)} ↗︎
-                    </a>
-                  ) : (
-                    "—"
-                  )
-                }
-              />
-            </dl>
-            <div aria-hidden className="border-b border-white/[0.08]" />
-          </div>
-        </section>
-
-        <SectionTransition
-          from="§ 00  Hero"
-          to="§ 01  Projektziel"
-          tone="darker"
-        />
-
-        {/* =========================================================
-           CASE SECTIONS (from project.case[])
-        ========================================================= */}
-        {project.case.map((section, i) => (
-          <CaseSection
-            key={`${section.title}-${i}`}
-            section={section}
-            index={i}
-            totalBefore={i}
-          />
-        ))}
-
-        {/* =========================================================
-           § — PROJEKT-EINBLICKE (gallery)
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
+        <section className="relative px-5 pb-12 pt-8 sm:px-8 sm:pb-16 md:px-12 md:pb-20 lg:px-16">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.16]"
-            style={{
-              background:
-                "radial-gradient(ellipse 60% 44% at 50% 50%, rgba(255,255,255,0.026), transparent 64%)",
-            }}
-          />
-
-          <div className="relative layout-max">
-            <div
-              data-cs-reveal
-              className="mb-12 flex items-center gap-5 sm:mb-16"
-            >
-              <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
-              <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 sm:text-[11px] sm:tracking-[0.22em]">
-                § {String(project.case.length + 1).padStart(2, "0")} — Projekt-Einblicke
-              </span>
-              <span aria-hidden className="h-px flex-1 bg-white/12" />
-              <span className="font-mono tabular-nums hidden whitespace-nowrap text-[10px] font-medium uppercase leading-none tracking-[0.22em] text-white/36 sm:inline sm:text-[10.5px] sm:tracking-[0.2em]">
-                {String(gallerySlots.length).padStart(2, "0")} Plates
-              </span>
-            </div>
-
-            <div className="max-w-[58rem]">
-              <h2
-                data-cs-reveal
-                className="font-instrument text-[2rem] leading-[1.06] tracking-[-0.026em] text-white sm:text-[2.65rem] md:text-[3.2rem] lg:text-[3.65rem] xl:text-[3.95rem]"
-              >
-                Projekt-Einblicke
-              </h2>
-              <p
-                data-cs-reveal
-                className="font-instrument mt-7 max-w-[42rem] text-[1.24rem] italic leading-[1.48] tracking-[-0.008em] text-white/76 sm:text-[1.36rem] md:mt-9 md:text-[1.46rem]"
-              >
-                Seitenansichten, Kompositionen, Details —{" "}
-                <em className="not-italic text-white/50">
-                  ein ruhiger Blick in die Gestaltung.
-                </em>
-              </p>
-            </div>
-
-            <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-12 md:mt-20 md:gap-7 lg:gap-8">
-              {gallerySlots.map((slot, i) => (
-                <GalleryTile
-                  key={i}
-                  slot={slot}
-                  index={i}
-                  projectTitle={project.title}
-                  publicUrl={project.publicUrl}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <SectionTransition
-          from="§ Projekt-Einblicke"
-          to="§ Leistung im Überblick"
-        />
-
-        {/* =========================================================
-           § — LEISTUNG IM ÜBERBLICK
-        ========================================================= */}
-        {project.services && project.services.length > 0 ? (
-          <section className="relative px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-            <div className="layout-max">
-              <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-                <div data-cs-reveal className="md:pt-2">
-                  <div className="flex flex-col gap-4">
-                    <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/48 sm:text-[11px] sm:tracking-[0.22em]">
-                      § {String(project.case.length + 2).padStart(2, "0")} — Leistung
-                    </p>
-                    <ChapterMarker num="LP" label="Umfang" />
-                    <span
-                      aria-hidden
-                      className="font-mono tabular-nums text-[10.5px] font-medium uppercase leading-none tracking-[0.2em] text-white/34 sm:text-[11px] sm:tracking-[0.18em]"
-                    >
-                      {String(project.services.length).padStart(2, "0")}{" "}
-                      Positionen
-                    </span>
-                  </div>
-                </div>
-
-                <div>
-                  <h2
-                    data-cs-reveal
-                    className="font-instrument max-w-[52rem] text-[2rem] leading-[1.08] tracking-[-0.024em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
-                  >
-                    Leistung im Überblick
-                  </h2>
-
-                  <ol
-                    data-cs-reveal
-                    className="mt-12 grid grid-cols-1 border-y border-white/[0.08] md:mt-16 md:grid-cols-2"
-                  >
-                    {project.services.map((service, i) => {
-                      const isLeftCol = i % 2 === 0;
-                      const isInLastRow =
-                        i >= project.services!.length - (project.services!.length % 2 === 0 ? 2 : 1);
-                      return (
-                        <li
-                          key={service}
-                          className={`grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-5 py-6 sm:gap-x-7 md:py-8 ${
-                            i < project.services!.length - 1
-                              ? "border-b border-white/[0.08] md:border-b-0"
-                              : ""
-                          } ${
-                            !isInLastRow
-                              ? "md:border-b md:border-white/[0.08]"
-                              : ""
-                          } ${
-                            isLeftCol
-                              ? "md:border-r md:border-white/[0.08] md:pr-8 lg:pr-10"
-                              : "md:pl-8 lg:pl-10"
-                          }`}
-                        >
-                          <span className="font-mono tabular-nums pt-[0.24rem] text-[10.75px] font-medium leading-none tracking-[0.18em] text-white/52 md:text-[11.5px]">
-                            {String(i + 1).padStart(2, "0")}
-                          </span>
-                          <p className="font-instrument max-w-[24rem] text-[1.26rem] leading-[1.36] tracking-[-0.01em] text-white/94 sm:text-[1.42rem] md:text-[1.56rem]">
-                            {service}
-                          </p>
-                        </li>
-                      );
-                    })}
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </section>
-        ) : null}
-
-        {/* =========================================================
-           § — PASSENDE LEISTUNGEN (related links)
-        ========================================================= */}
-        {project.relatedServices && project.relatedServices.length > 0 ? (
-          <section className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-            <div className="relative layout-max">
-              <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-                <div data-cs-reveal className="md:pt-2">
-                  <div className="flex flex-col gap-4">
-                    <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/48 sm:text-[11px] sm:tracking-[0.22em]">
-                      § {String(project.case.length + 3).padStart(2, "0")} —
-                      Anschluss
-                    </p>
-                    <ChapterMarker num="LK" label="Passend" />
-                  </div>
-                </div>
-
-                <div>
-                  <h2
-                    data-cs-reveal
-                    className="font-instrument max-w-[52rem] text-[2rem] leading-[1.07] tracking-[-0.024em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
-                  >
-                    Passende Leistungen
-                  </h2>
-
-                  <p
-                    data-cs-reveal
-                    className="font-ui mt-7 max-w-[44rem] text-[16px] leading-[1.76] text-white/66 md:mt-9 md:text-[17px]"
-                  >
-                    Dieses Projekt knüpft an mehrere Leistungen des Studios an
-                    — von der Website-Umsetzung bis zur regionalen
-                    Sichtbarkeit.
-                  </p>
-                </div>
-              </div>
-
-              <ul
-                data-cs-reveal
-                className="mt-16 grid grid-cols-1 border-y border-white/[0.08] md:mt-20 md:grid-cols-2"
-              >
-                {project.relatedServices.map((link, i) => {
-                  const isInBottomRow =
-                    i >= project.relatedServices!.length - 2;
-                  const isLeftColumn = i % 2 === 0;
-                  const classes = [
-                    i !== project.relatedServices!.length - 1
-                      ? "border-b border-white/[0.08]"
-                      : "",
-                    isInBottomRow ? "md:border-b-0" : "",
-                    isLeftColumn ? "md:border-r md:border-white/[0.08]" : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ");
-
-                  return (
-                    <li key={link.to} className={classes}>
-                      <Link
-                        to={link.to}
-                        className="group/rl relative block px-0 py-9 md:px-5 md:py-12 lg:px-7 lg:py-14"
-                      >
-                        <span
-                          aria-hidden
-                          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-[620ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover/rl:opacity-100 group-focus-visible/rl:opacity-100"
-                          style={{
-                            background:
-                              "radial-gradient(ellipse 65% 90% at 28% 60%, rgba(255,255,255,0.035), transparent 70%)",
-                          }}
-                        />
-                        <span
-                          aria-hidden
-                          className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white/62 transition-transform duration-[760ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover/rl:scale-x-100 group-focus-visible/rl:scale-x-100"
-                        />
-
-                        <div className="relative flex items-baseline justify-between gap-5">
-                          <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 md:text-[10.75px] md:tracking-[0.22em]">
-                            {link.eyebrow ?? "Verwandt"}
-                          </span>
-                          <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.22em] text-white/36 md:text-[10.5px] md:tracking-[0.2em]">
-                            LK-{String.fromCharCode(65 + i)}
-                          </span>
-                        </div>
-
-                        <div className="relative mt-6 flex items-baseline justify-between gap-6 md:mt-8">
-                          <h3 className="font-instrument text-[1.7rem] leading-[1.1] tracking-[-0.02em] text-white transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover/rl:translate-x-[2px] sm:text-[2.05rem] md:text-[2.35rem] lg:text-[2.6rem]">
-                            {link.label}
-                          </h3>
-                          <span
-                            aria-hidden
-                            className="font-instrument flex-shrink-0 text-[1.25rem] italic text-white/72 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover/rl:-translate-y-[3px] group-hover/rl:translate-x-[3px] md:text-[1.45rem]"
-                          >
-                            ↗︎
-                          </span>
-                        </div>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </section>
-        ) : null}
-
-        {/* =========================================================
-           § END — FINAL CTA
-        ========================================================= */}
-        <section
-          data-cs-final
-          className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56"
-        >
-          <div aria-hidden className="section-top-rule" />
-
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-[44%] aspect-square w-[116vw] max-w-[1160px] -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle at center, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.014) 32%, transparent 62%)",
-            }}
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.16]"
+            className="pointer-events-none absolute inset-0"
             style={{
               backgroundImage:
-                "repeating-linear-gradient(90deg, rgba(255,255,255,0.09) 0 1px, transparent 1px 118px)",
-              maskImage:
-                "radial-gradient(ellipse 72% 60% at 50% 46%, black, transparent)",
-              WebkitMaskImage:
-                "radial-gradient(ellipse 72% 60% at 50% 46%, black, transparent)",
+                "radial-gradient(ellipse 58% 44% at 18% 12%, rgba(166,138,98,0.13), transparent 72%), radial-gradient(ellipse 52% 38% at 82% 34%, rgba(96,128,138,0.08), transparent 76%)",
             }}
           />
 
           <div className="relative layout-max">
-            <div className="mx-auto max-w-[72rem] text-center">
-              <p
-                data-cs-reveal
-                className="font-mono mb-6 text-[10px] font-medium uppercase leading-none tracking-[0.24em] text-white/42 sm:mb-8 sm:text-[10.5px] sm:tracking-[0.22em]"
-              >
-                Projektakte · Ende
-              </p>
-
-              <div data-cs-reveal className="mb-12 inline-flex sm:mb-16">
-                <ChapterMarker
-                  num="END"
-                  label="Projekt"
-                  align="center"
-                  variant="end"
-                />
-              </div>
-
-              <h2
-                data-cs-final-head
-                className="font-instrument text-[2.15rem] leading-[1.05] tracking-[-0.03em] text-white sm:text-[2.95rem] md:text-[3.85rem] lg:text-[4.6rem] xl:text-[5.15rem]"
-              >
-                Du willst einen Auftritt, der sichtbar wird{" "}
-                <em className="italic text-white/72">
-                  und dabei hochwertig bleibt?
-                </em>
-              </h2>
-
-              <p
-                data-cs-reveal
-                className="font-ui mx-auto mt-12 max-w-[46rem] text-[16px] leading-[1.76] text-white/66 md:mt-14 md:text-[17.5px]"
-              >
-                Wir entwickeln Websites und digitale Auftritte, die klar wirken,
-                technisch sauber funktionieren und eine starke Grundlage für
-                Sichtbarkeit schaffen.
-              </p>
-
-              <div
-                data-cs-reveal
-                className="mt-14 flex justify-center sm:mt-16 md:mt-20"
-              >
-                <Link
-                  to="/kontakt"
-                  className="group relative inline-flex items-center gap-3 rounded-full border border-white/22 bg-white py-4 pl-8 pr-3 text-[15.5px] font-medium tracking-[0.008em] text-[#0A0A0A] no-underline shadow-[0_34px_80px_-32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.45)] magicks-duration-hover magicks-ease-out transition-[transform,box-shadow] hover:-translate-y-[2px] hover:shadow-[0_44px_90px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.55)] active:translate-y-0 active:scale-[0.985] md:text-[16.5px]"
-                >
-                  <span>Projekt anfragen</span>
-                  <span
-                    aria-hidden
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
-                  >
-                    <svg
-                      viewBox="0 0 14 14"
-                      width="12"
-                      height="12"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.4"
-                    >
-                      <path
-                        d="M3 11 L11 3 M5 3 H11 V9"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                </Link>
-              </div>
-
-              {/* Back to all projects */}
-              <div
-                data-cs-reveal
-                className="mt-16 flex items-center justify-center gap-5 sm:mt-20"
-              >
-                <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
+            <div className="mx-auto max-w-[76rem]">
+              <div data-cs-hero>
                 <Link
                   to="/projekte"
-                  className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/54 no-underline transition-colors hover:text-white/82 sm:text-[11px] sm:tracking-[0.22em]"
+                  className="font-mono inline-flex min-h-11 items-center gap-2 text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-ink-rgb)/0.52)] no-underline transition-colors duration-500 hover:text-[rgb(var(--magicks-ink-rgb)/0.86)] sm:tracking-[0.22em]"
                 >
-                  ← Alle Projekte
+                  <span aria-hidden>{"\u2190"}</span>
+                  Alle Projekte
                 </Link>
-                <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
+              </div>
+
+              <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.58fr)] lg:items-end lg:gap-16">
+                <div>
+                  <p
+                    data-cs-hero
+                    className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.76)] sm:text-[11px] sm:tracking-[0.22em]"
+                  >
+                    {project.category}
+                  </p>
+
+                  <h1
+                    data-cs-hero
+                    className="font-ui mt-6 max-w-[15ch] text-[2.55rem] font-[650] leading-[0.98] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.97)] sm:text-[3.5rem] md:text-[4.45rem] lg:text-[5.15rem]"
+                  >
+                    {project.title}
+                  </h1>
+
+                  <p
+                    data-cs-hero
+                    className="font-ui mt-7 max-w-[42rem] text-[1.12rem] font-[560] leading-[1.5] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.84)] sm:text-[1.25rem] md:text-[1.38rem]"
+                  >
+                    {project.teaser}
+                  </p>
+
+                  <p
+                    data-cs-hero
+                    className="font-ui mt-5 max-w-[43rem] text-[1rem] leading-[1.7] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.68)] sm:text-[1.05rem]"
+                  >
+                    {project.intro}
+                  </p>
+
+                  <div
+                    data-cs-hero
+                    className="mt-9 flex flex-wrap items-center gap-4 sm:mt-10"
+                  >
+                    {project.publicUrl ? (
+                      <a
+                        href={project.publicUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group inline-flex min-h-12 items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[linear-gradient(180deg,rgba(255,253,249,0.96)_0%,rgba(244,238,227,0.9)_100%)] py-2.5 pl-6 pr-2 font-ui text-[15.5px] font-[620] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline shadow-[0_22px_62px_-42px_rgba(20,28,44,0.46),inset_0_1px_0_rgba(255,255,255,0.88),inset_0_-1px_0_rgba(148,124,92,0.12)] transition-[transform,box-shadow,border-color] duration-[620ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:border-[rgb(var(--magicks-accent-line-rgb)/0.4)] hover:shadow-[0_32px_82px_-40px_rgba(20,28,44,0.52),inset_0_1px_0_rgba(255,255,255,0.92),inset_0_-1px_0_rgba(148,124,92,0.16)] active:translate-y-0 active:scale-[0.99]"
+                      >
+                        <span>Live ansehen</span>
+                        <CtaArrow />
+                      </a>
+                    ) : null}
+                    <Link
+                      to="/kontakt"
+                      className="group inline-flex min-h-12 items-center gap-2 rounded-full border border-[rgb(var(--magicks-line-rgb)/0.18)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.54)] px-5 py-3 font-ui text-[15px] font-[560] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.76)] no-underline transition-[border-color,transform,color,background-color] duration-500 hover:-translate-y-[1px] hover:border-[rgb(var(--magicks-line-rgb)/0.34)] hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/0.84)] hover:text-[rgb(var(--magicks-ink-rgb)/0.96)]"
+                    >
+                      <span>Projekt besprechen</span>
+                      <span aria-hidden className="font-instrument italic transition-transform duration-500 group-hover:translate-x-[2px]">
+                        ↗
+                      </span>
+                    </Link>
+                  </div>
+                </div>
+
+                <dl
+                  data-cs-hero
+                  className="grid gap-0 overflow-hidden rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.68)] shadow-[0_22px_64px_-50px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.78)]"
+                >
+                  {metaItems.map((item) => (
+                    <MetaRow key={item.label} item={item} />
+                  ))}
+                </dl>
               </div>
             </div>
+          </div>
+        </section>
 
-            {/* Closing cartouche */}
+        <section className="relative px-5 pb-20 sm:px-8 sm:pb-24 md:px-12 md:pb-32 lg:px-16">
+          <div className="layout-max">
+            <div data-cs-reveal className="mx-auto max-w-[76rem]">
+              <ProjectCover image={project.cover} title={project.title} publicUrl={project.publicUrl} />
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-20 sm:px-8 sm:py-24 md:px-12 md:py-32 lg:px-16">
+          <div aria-hidden className="section-top-rule" />
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <SectionHeader
+                eyebrow="Kurzfassung"
+                title="Was umgesetzt wurde."
+                body="Ein kompakter Blick auf Aufgabe, Gestaltung und digitale Grundlage des Projekts."
+              />
+
+              <div className="mt-10 grid gap-4 md:grid-cols-3">
+                {project.case.map((section, index) => (
+                  <CaseSummaryCard key={`${section.title}-${index}`} section={section} index={index} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {galleryImages.length > 0 ? (
+          <section className="relative bg-[var(--magicks-bg-base)] px-5 py-20 sm:px-8 sm:py-24 md:px-12 md:py-32 lg:px-16">
+            <div className="layout-max">
+              <div className="mx-auto max-w-[76rem]">
+                <SectionHeader
+                  eyebrow="Einblicke"
+                  title="Einblicke in den Auftritt."
+                  body="Screens und Detailansichten aus dem Projekt."
+                />
+
+                <div className="mt-10 grid gap-5 md:grid-cols-12 md:gap-6">
+                  {galleryImages.map((image, index) => (
+                    <GalleryImage
+                      key={`${image.src}-${index}`}
+                      image={image}
+                      index={index}
+                      publicUrl={project.publicUrl}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        {project.services && project.services.length > 0 ? (
+          <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-20 sm:px-8 sm:py-24 md:px-12 md:py-32 lg:px-16">
+            <div aria-hidden className="section-top-rule" />
+            <div className="layout-max">
+              <div className="mx-auto grid max-w-[76rem] gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+                <SectionHeader
+                  eyebrow="Leistungen"
+                  title="Was MAGICKS beigetragen hat."
+                  body="Die wichtigsten Leistungen im Projekt, bewusst kompakt gehalten."
+                />
+
+                <ul data-cs-reveal className="flex flex-wrap content-start gap-3 lg:pt-12">
+                  {project.services.map((service) => (
+                    <li
+                      key={service}
+                      className="rounded-full border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.62)] px-4 py-2.5 font-ui text-[14.5px] font-[540] leading-none text-[rgb(var(--magicks-ink-rgb)/0.72)] shadow-[inset_0_1px_0_rgba(255,255,255,0.68)]"
+                    >
+                      {service}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        {project.relatedServices && project.relatedServices.length > 0 ? (
+          <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-20 sm:px-8 sm:py-24 md:px-12 md:py-32 lg:px-16">
+            <div className="layout-max">
+              <div className="mx-auto max-w-[76rem]">
+                <SectionHeader
+                  eyebrow="Weiterführend"
+                  title="Passende Leistungen."
+                  body="Nützliche interne Wege, wenn ein ähnliches Projekt geplant ist."
+                />
+
+                <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  {project.relatedServices.map((link) => (
+                    <Link
+                      data-cs-reveal
+                      key={link.to}
+                      to={link.to}
+                      className="group rounded-[1.05rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-base-rgb)/0.46)] p-5 no-underline shadow-[0_18px_48px_-42px_rgba(20,28,44,0.24),inset_0_1px_0_rgba(255,255,255,0.68)] transition-[transform,border-color,background-color] duration-500 hover:-translate-y-[1px] hover:border-[rgb(var(--magicks-line-rgb)/0.2)] hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/0.72)]"
+                    >
+                      <h3 className="font-ui text-[1.02rem] font-[620] leading-[1.3] tracking-[-0.013em] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+                        {link.label}
+                        <span className="font-instrument ml-2 italic text-[rgb(var(--magicks-accent-ink-rgb)/0.7)] transition-transform duration-500 group-hover:translate-x-1">
+                          ↗
+                        </span>
+                      </h3>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-soft)] px-5 pb-24 pt-24 sm:px-8 sm:pb-32 sm:pt-32 md:px-12 md:pb-40 md:pt-40 lg:px-16">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(ellipse 62% 46% at 24% 20%, rgba(166,138,98,0.13), transparent 74%), radial-gradient(ellipse 52% 40% at 80% 76%, rgba(96,128,138,0.1), transparent 76%)",
+            }}
+          />
+          <div className="relative layout-max">
             <div
               data-cs-reveal
-              className="mt-20 border-t border-white/[0.06] pt-7 sm:mt-24"
+              className="mx-auto max-w-[68rem] rounded-[2rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[linear-gradient(170deg,rgba(255,255,255,0.82)_0%,rgba(245,241,233,0.7)_100%)] px-6 py-12 text-center shadow-[0_30px_86px_-56px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.84)] sm:px-10 sm:py-14 md:px-14 md:py-18"
             >
-              <div className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4 sm:gap-x-0">
-                <MetaCell k="§ End" v={project.title} first />
-                <MetaCell
-                  k="Studio"
-                  v="Kassel · Nordhessen"
-                />
-                <MetaCell
-                  k="Live"
-                  v={project.publicUrl ? prettyUrl(project.publicUrl) : "—"}
-                />
-                <MetaCell k="Edition" v="Magicks · MMXXVI" />
+              <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.72)] sm:tracking-[0.22em]">
+                Nächster Schritt
+              </p>
+              <h2 className="font-ui mx-auto mt-7 max-w-[18ch] text-[2.1rem] font-[620] leading-[1.03] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[2.85rem] md:text-[3.6rem]">
+                Sie planen einen ähnlichen Webauftritt?
+              </h2>
+              <p className="font-ui mx-auto mt-6 max-w-[42rem] text-[1rem] leading-[1.7] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.06rem]">
+                MAGICKS entwickelt Websites, die Leistungen klar erklären,
+                Vertrauen schaffen und technisch sauber umgesetzt sind.
+              </p>
+
+              <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+                <Link
+                  to="/kontakt"
+                  className="group inline-flex min-h-12 items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[linear-gradient(180deg,rgba(255,253,249,0.96)_0%,rgba(244,238,227,0.9)_100%)] py-2.5 pl-6 pr-2 font-ui text-[15.5px] font-[620] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline shadow-[0_22px_62px_-42px_rgba(20,28,44,0.46),inset_0_1px_0_rgba(255,255,255,0.88),inset_0_-1px_0_rgba(148,124,92,0.12)] transition-[transform,box-shadow,border-color] duration-[620ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:border-[rgb(var(--magicks-accent-line-rgb)/0.4)] active:translate-y-0 active:scale-[0.99]"
+                >
+                  <span>Projekt besprechen</span>
+                  <CtaArrow />
+                </Link>
+                <Link
+                  to="/projekte"
+                  className="group inline-flex min-h-12 items-center gap-2 rounded-full border border-[rgb(var(--magicks-line-rgb)/0.18)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.54)] px-5 py-3 font-ui text-[15px] font-[560] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.76)] no-underline transition-[border-color,transform,color,background-color] duration-500 hover:-translate-y-[1px] hover:border-[rgb(var(--magicks-line-rgb)/0.34)] hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/0.84)] hover:text-[rgb(var(--magicks-ink-rgb)/0.96)]"
+                >
+                  <span>Alle Projekte ansehen</span>
+                  <span aria-hidden className="font-instrument italic transition-transform duration-500 group-hover:translate-x-[2px]">
+                    ↗
+                  </span>
+                </Link>
               </div>
             </div>
           </div>
@@ -840,669 +366,215 @@ function ProjectDetail({ project }: { project: Project }) {
   );
 }
 
-/* ------------------------------------------------------------------
- * CaseSection — renders a single entry of project.case[].
- *
- * Variants:
- *   default  → two-column register with folio rail
- *   plate    → full-width hairline-bordered list plate
- *   centered → ceremonial centered block
- * ------------------------------------------------------------------ */
+function SectionHeader({
+  eyebrow,
+  title,
+  body,
+}: {
+  eyebrow: string;
+  title: string;
+  body?: string;
+}) {
+  return (
+    <div data-cs-reveal className="max-w-[48rem]">
+      <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.72)] sm:tracking-[0.22em]">
+        {eyebrow}
+      </p>
+      <h2 className="font-ui mt-5 max-w-[18ch] text-[2rem] font-[620] leading-[1.04] tracking-[-0.032em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.55rem] md:text-[3.1rem]">
+        {title}
+      </h2>
+      {body ? (
+        <p className="font-ui mt-5 max-w-[42rem] text-[1rem] leading-[1.7] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.68)] sm:text-[1.05rem]">
+          {body}
+        </p>
+      ) : null}
+    </div>
+  );
+}
 
-function CaseSection({
+function MetaRow({ item }: { item: ProjectMetaItem }) {
+  return (
+    <div className="grid gap-2 border-b border-[rgb(var(--magicks-line-rgb)/0.09)] px-5 py-4 last:border-b-0 sm:grid-cols-[7rem_minmax(0,1fr)] sm:gap-5 sm:px-6">
+      <dt className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-ink-rgb)/0.42)]">
+        {item.label}
+      </dt>
+      <dd className="font-ui m-0 text-[14.5px] font-[560] leading-[1.42] text-[rgb(var(--magicks-ink-rgb)/0.78)]">
+        {item.value}
+      </dd>
+    </div>
+  );
+}
+
+function ProjectCover({
+  image,
+  title,
+  publicUrl,
+}: {
+  image?: ProjectImage;
+  title: string;
+  publicUrl?: string;
+}) {
+  if (image) {
+    const content = (
+      <figure className="m-0">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-[1.4rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[var(--magicks-bg-lifted)] shadow-[0_28px_78px_-54px_rgba(20,28,44,0.38),inset_0_1px_0_rgba(255,255,255,0.74)] sm:aspect-[3/2] md:aspect-[16/9]">
+          <img
+            src={image.src}
+            alt={image.alt}
+            className="h-full w-full object-cover transition-transform duration-[900ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.012]"
+            fetchPriority="high"
+          />
+        </div>
+        {image.caption ? (
+          <figcaption className="font-ui mt-4 text-[14px] leading-[1.5] text-[rgb(var(--magicks-ink-rgb)/0.54)]">
+            {image.caption}
+          </figcaption>
+        ) : null}
+      </figure>
+    );
+
+    if (publicUrl) {
+      return (
+        <a
+          href={publicUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group block no-underline"
+          aria-label={`${title} live ansehen`}
+        >
+          {content}
+        </a>
+      );
+    }
+
+    return content;
+  }
+
+  return (
+    <div
+      className="relative aspect-[4/3] overflow-hidden rounded-[1.4rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[linear-gradient(160deg,rgba(255,255,255,0.72)_0%,rgba(239,235,226,0.82)_100%)] shadow-[0_28px_78px_-54px_rgba(20,28,44,0.3)] sm:aspect-[3/2] md:aspect-[16/9]"
+      role="img"
+      aria-label={`${title} — Bildmaterial folgt`}
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.18]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(46,56,76,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(46,56,76,0.06) 1px, transparent 1px)",
+          backgroundSize: "56px 56px",
+        }}
+      />
+      <span className="font-mono absolute bottom-6 left-6 text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-ink-rgb)/0.46)]">
+        Bildmaterial folgt
+      </span>
+    </div>
+  );
+}
+
+function CaseSummaryCard({
   section,
   index,
 }: {
   section: ProjectCaseSection;
   index: number;
-  totalBefore: number;
 }) {
-  const folio = section.folio ?? String(index + 1).padStart(2, "0");
-  const eyebrow = section.eyebrow ?? section.title;
   const paragraphs = Array.isArray(section.body)
     ? section.body
     : section.body
     ? [section.body]
     : [];
-  const hasItems = section.items && section.items.length > 0;
-
-  const bg = index % 2 === 0 ? "bg-[var(--magicks-bg-elevated)]" : "bg-transparent";
-
-  const variant = section.variant ?? (hasItems && !paragraphs.length ? "plate" : "default");
 
   return (
-    <section className={`relative ${bg} px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16`}>
-      <div className="layout-max">
-        {variant === "centered" ? (
-          <CaseSectionCentered
-            folio={folio}
-            eyebrow={eyebrow}
-            title={section.title}
-            titleItalic={section.titleItalic}
-            paragraphs={paragraphs}
-            items={section.items}
-          />
-        ) : variant === "plate" ? (
-          <CaseSectionPlate
-            folio={folio}
-            eyebrow={eyebrow}
-            title={section.title}
-            titleItalic={section.titleItalic}
-            paragraphs={paragraphs}
-            items={section.items ?? []}
-          />
-        ) : (
-          <CaseSectionDefault
-            folio={folio}
-            eyebrow={eyebrow}
-            title={section.title}
-            titleItalic={section.titleItalic}
-            paragraphs={paragraphs}
-            items={section.items}
-          />
-        )}
-      </div>
-    </section>
-  );
-}
-
-function CaseSectionDefault({
-  folio,
-  eyebrow,
-  title,
-  titleItalic,
-  paragraphs,
-  items,
-}: {
-  folio: string;
-  eyebrow: string;
-  title: string;
-  titleItalic?: string;
-  paragraphs: string[];
-  items?: string[];
-}) {
-  return (
-    <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-      <div data-cs-reveal className="md:pt-2">
-        <div className="flex flex-col gap-4">
-          <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
-            § {folio} — {eyebrow}
-          </p>
-          <ChapterMarker num={folio} label={eyebrow} />
-        </div>
-      </div>
-
-      <div>
-        <h2
-          data-cs-reveal
-          className="font-instrument max-w-[52rem] text-[2rem] leading-[1.04] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
-        >
-          {title}
-          {titleItalic ? (
-            <> — <em className="italic text-white/62">{titleItalic}</em></>
-          ) : null}
-        </h2>
-
-        {paragraphs.length > 0 ? (
-          <div className="mt-10 max-w-[44rem] space-y-5 md:mt-14 md:space-y-6">
-            {paragraphs.map((p, i) => (
-              <p
-                key={i}
-                data-cs-reveal
-                className={
-                  i === 0
-                    ? "font-instrument text-[1.24rem] italic leading-[1.4] tracking-[-0.012em] text-white/90 sm:text-[1.34rem] md:text-[1.46rem]"
-                    : "font-ui text-[15.5px] leading-[1.72] text-white/68 md:text-[16.5px]"
-                }
-              >
-                {p}
-              </p>
-            ))}
-          </div>
-        ) : null}
-
-        {items && items.length > 0 ? (
-          <ul className="mt-10 grid grid-cols-1 border-t border-white/[0.08] md:grid-cols-2">
-            {items.map((item, i) => {
-              const isLastOdd = items.length % 2 === 1 && i === items.length - 1;
-              return (
-                <li
-                  key={item}
-                  data-cs-reveal
-                  className={`flex items-baseline gap-5 border-b border-white/[0.08] py-5 md:py-6 ${
-                    i % 2 === 0 && !isLastOdd
-                      ? "md:border-r md:border-white/[0.08] md:pr-8 lg:pr-10"
-                      : "md:pl-8 lg:pl-10"
-                  }`}
-                >
-                  <span className="font-mono tabular-nums shrink-0 text-[10px] font-medium leading-none tracking-[0.3em] text-white/44 md:text-[10.5px]">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="font-instrument text-[1.1rem] italic leading-[1.3] tracking-[-0.01em] text-white/90 md:text-[1.22rem]">
-                    {item}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
-function CaseSectionPlate({
-  folio,
-  eyebrow,
-  title,
-  paragraphs,
-  items,
-}: {
-  folio: string;
-  eyebrow: string;
-  title: string;
-  titleItalic?: string;
-  paragraphs: string[];
-  items: string[];
-}) {
-  return (
-    <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-      <div data-cs-reveal className="md:pt-2">
-        <div className="flex flex-col gap-4">
-          <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
-            § {folio} — {eyebrow}
-          </p>
-          <ChapterMarker num={folio} label={eyebrow} />
-          <span
-            aria-hidden
-            className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/34 sm:text-[10.5px]"
-          >
-            {String(items.length).padStart(2, "0")} Punkte
-          </span>
-        </div>
-      </div>
-
-      <div>
-        <h2
-          data-cs-reveal
-          className="font-instrument max-w-[52rem] text-[2rem] leading-[1.05] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
-        >
-          {title}
-        </h2>
-
-        {paragraphs.length > 0 ? (
-          <div className="mt-10 max-w-[44rem] space-y-5 md:mt-12">
-            {paragraphs.map((p, i) => (
-              <p
-                key={i}
-                data-cs-reveal
-                className="font-ui text-[15.5px] leading-[1.72] text-white/66 md:text-[16.5px]"
-              >
-                {p}
-              </p>
-            ))}
-          </div>
-        ) : null}
-
-        {/* Editorial plate — 2-col register with hairline dividers,
-            numbered folios, italic serif items. Designed to feel like
-            a printed index, never like a plain bullet dump. */}
-        <div
-          data-cs-reveal
-          className="mt-12 border-y border-white/[0.08] md:mt-16"
-        >
-          <div className="flex items-center justify-between gap-4 py-3 md:py-4">
-            <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/40 sm:text-[10px]">
-              Register · Fokus
-            </span>
-            <span className="font-mono tabular-nums text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[10px]">
-              {String(items.length).padStart(2, "0")} Einträge
-            </span>
-          </div>
-          <ul className="grid grid-cols-1 border-t border-white/[0.08] md:grid-cols-2">
-            {items.map((item, i) => {
-              const last = i === items.length - 1;
-              const lastOfCol =
-                i === items.length - 1 ||
-                (items.length % 2 === 0 && i === items.length - 2);
-              return (
-                <li
-                  key={item}
-                  className={`grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-5 py-6 md:py-7 ${
-                    !last ? "border-b border-white/[0.08] md:border-b-0" : ""
-                  } ${
-                    !lastOfCol ? "md:border-b md:border-white/[0.08]" : ""
-                  } ${
-                    i % 2 === 0
-                      ? "md:border-r md:border-white/[0.08] md:pr-8 lg:pr-10"
-                      : "md:pl-8 lg:pl-10"
-                  }`}
-                >
-                  <span className="font-mono tabular-nums pt-[0.2rem] text-[10px] font-medium leading-none tracking-[0.28em] text-white/44 md:text-[10.5px]">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="font-instrument text-[1.14rem] italic leading-[1.3] tracking-[-0.012em] text-white/94 md:text-[1.32rem] lg:text-[1.4rem]">
-                    {item}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CaseSectionCentered({
-  folio,
-  eyebrow,
-  title,
-  titleItalic,
-  paragraphs,
-  items,
-}: {
-  folio: string;
-  eyebrow: string;
-  title: string;
-  titleItalic?: string;
-  paragraphs: string[];
-  items?: string[];
-}) {
-  return (
-    <div className="mx-auto max-w-[72rem] text-center">
-      <div
-        data-cs-reveal
-        className="mb-12 flex items-center gap-5 sm:mb-16"
-      >
-        <span aria-hidden className="h-px flex-1 bg-white/12" />
-        <span className="font-mono whitespace-nowrap text-[10px] font-medium uppercase leading-none tracking-[0.42em] text-white/46 sm:text-[10.5px]">
-          § {folio} — {eyebrow}
-        </span>
-        <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
-      </div>
-
-      <h2
-        data-cs-reveal
-        className="font-instrument mx-auto max-w-[56rem] text-[2.15rem] leading-[1.04] tracking-[-0.032em] text-white sm:text-[2.85rem] md:text-[3.5rem] lg:text-[4.1rem] xl:text-[4.55rem]"
-      >
-        {title}
-        {titleItalic ? (
-          <> — <em className="italic text-white/66">{titleItalic}</em></>
-        ) : null}
-      </h2>
-
-      {paragraphs.length > 0 ? (
-        <div className="mx-auto mt-14 max-w-[44rem] space-y-6 sm:mt-16">
-          {paragraphs.map((p, i) => (
-            <p
-              key={i}
-              data-cs-reveal
-              className={
-                i === 0
-                  ? "font-instrument text-[1.26rem] italic leading-[1.42] tracking-[-0.012em] text-white/88 sm:text-[1.38rem] md:text-[1.52rem]"
-                  : "font-ui text-[15.5px] leading-[1.72] text-white/72 md:text-[16.5px]"
-              }
-            >
-              {p}
-            </p>
-          ))}
-        </div>
+    <article
+      data-cs-reveal
+      className="rounded-[1.15rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-base-rgb)/0.5)] p-5 shadow-[0_18px_52px_-44px_rgba(20,28,44,0.24),inset_0_1px_0_rgba(255,255,255,0.7)] sm:p-6"
+    >
+      <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.66)]">
+        {String(index + 1).padStart(2, "0")}
+      </p>
+      <h3 className="font-ui mt-4 text-[1.12rem] font-[620] leading-[1.28] tracking-[-0.014em] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+        {section.title}
+      </h3>
+      {paragraphs[0] ? (
+        <p className="font-ui mt-3 text-[14.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.66)]">
+          {paragraphs[0]}
+        </p>
       ) : null}
-
-      {items && items.length > 0 ? (
-        <ul className="mt-14 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
-          {items.map((item, i) => (
+      {section.items && section.items.length > 0 ? (
+        <ul className="mt-4 grid gap-2">
+          {section.items.slice(0, 6).map((item) => (
             <li
               key={item}
-              data-cs-reveal
-              className="font-mono flex items-center gap-3 text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/62 md:text-[10.5px]"
+              className="font-ui flex gap-2 text-[14px] leading-[1.5] text-[rgb(var(--magicks-ink-rgb)/0.66)]"
             >
-              <span className="tabular-nums text-white/40">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              {item}
+              <span aria-hidden className="mt-[0.62em] h-1 w-1 shrink-0 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.66)]" />
+              <span>{item}</span>
             </li>
           ))}
         </ul>
       ) : null}
-    </div>
+    </article>
   );
 }
 
-/* ------------------------------------------------------------------
- * HeroCoverWide — cinematic full-width masthead plate that sits
- * between the typographic hero and the meta strip.
- *
- * Aspect is intentionally wide (21:9 on large viewports, 16:9 on md,
- * 4:3 on mobile) so it reads as a magazine-cover moment rather than
- * a thumbnail. When a cover image is present it renders full-bleed
- * with a gradient foot; otherwise a premium staged plate renders in
- * the same footprint, with the live URL baked into the caption so
- * the trust signal stays present even without imagery.
- * ------------------------------------------------------------------ */
-
-function HeroCoverWide({
-  cover,
-  title,
-  publicUrl,
-  folio,
-}: {
-  cover?: ProjectImage;
-  title: string;
-  publicUrl?: string;
-  folio: string;
-}) {
-  const urlLabel = publicUrl ? prettyUrl(publicUrl) : null;
-
-  if (cover) {
-    return (
-      <div className="relative aspect-[4/3] w-full overflow-hidden border border-white/[0.08] bg-[var(--magicks-bg-lifted)] sm:aspect-[3/2] md:aspect-[16/9] lg:aspect-[21/9]">
-        <img
-          src={cover.src}
-          alt={cover.alt}
-          className="h-full w-full object-cover brightness-[0.88] saturate-[0.94]"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/60 via-transparent to-transparent"
-        />
-        <HeroCoverCaption folio={folio} label={title} live={urlLabel} />
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className="relative aspect-[4/3] w-full overflow-hidden border border-white/[0.08] bg-[var(--magicks-bg-lifted)] sm:aspect-[3/2] md:aspect-[16/9] lg:aspect-[21/9]"
-      role="img"
-      aria-label={`${title} — Bildmaterial folgt`}
-    >
-      {/* Grain rails */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.24]"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(90deg, rgba(255,255,255,0.014) 0 1px, transparent 1px 118px), repeating-linear-gradient(0deg, rgba(255,255,255,0.01) 0 1px, transparent 1px 118px)",
-          maskImage:
-            "radial-gradient(ellipse 70% 66% at 50% 50%, black, transparent)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 70% 66% at 50% 50%, black, transparent)",
-        }}
-      />
-      {/* Central halo */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 46% 46% at 50% 46%, rgba(255,255,255,0.06), transparent 62%)",
-        }}
-      />
-      {/* Inset frame */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-7 border border-white/[0.07] md:inset-12 lg:inset-16"
-      />
-      {/* Diamond marker */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-1/2 flex h-[22px] w-[22px] -translate-x-1/2 -translate-y-1/2 items-center justify-center"
-      >
-        <span className="absolute inset-0 block rotate-45 border border-white/62 bg-[var(--magicks-bg-lifted)]" />
-        <span className="absolute h-[8px] w-[8px] rotate-45 bg-white/84" />
-      </div>
-
-      <HeroCoverCaption
-        folio={folio}
-        label={`${title} · Bildmaterial folgt`}
-        live={urlLabel}
-        empty
-      />
-    </div>
-  );
-}
-
-function HeroCoverCaption({
-  folio,
-  label,
-  live,
-  empty = false,
-}: {
-  folio: string;
-  label: string;
-  live: string | null;
-  empty?: boolean;
-}) {
-  return (
-    <div className="pointer-events-none absolute inset-x-7 bottom-7 flex items-end justify-between gap-5 md:inset-x-12 md:bottom-10 lg:inset-x-16 lg:bottom-12">
-      <span className="font-mono tabular-nums text-[9.5px] font-medium uppercase leading-none tracking-[0.38em] text-white/48 md:text-[10px]">
-        {folio}
-      </span>
-      <div className="flex flex-col items-end gap-2 text-right">
-        <span
-          className={`font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] md:text-[10px] ${
-            empty ? "text-white/36" : "text-white/60"
-          }`}
-        >
-          {label}
-        </span>
-        {live ? (
-          <span className="font-mono tabular-nums hidden text-[10px] font-medium uppercase leading-none tracking-[0.18em] text-white/64 md:inline-block md:text-[10.5px]">
-            {live}
-          </span>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------
- * GalleryTile — a single plate in the detail gallery grid.
- * Renders a real image when `slot` is populated, else a premium
- * empty-state plate with an index folio.
- * ------------------------------------------------------------------ */
-
-function GalleryTile({
-  slot,
+function GalleryImage({
+  image,
   index,
-  projectTitle,
   publicUrl,
 }: {
-  slot: ProjectImage | null;
+  image: ProjectImage;
   index: number;
-  projectTitle: string;
   publicUrl?: string;
 }) {
-  // Cinematic opening sequence for the first 5 slots; repeating 6+6
-  // pairs thereafter so extra gallery entries stay editorial.
-  const defaultSpan =
-    index < CINEMATIC_SPANS.length ? CINEMATIC_SPANS[index] : index % 2 === 0 ? 6 : 6;
-  const span = slot?.span ?? defaultSpan;
-
-  // Aspect defaults tuned to span — wide for hero/detail plates,
-  // standard for pair plates, tall for accent plates.
-  const defaultAspect: ProjectImage["aspect"] =
-    span === 12 ? "21/9" : span === 8 ? "3/2" : span === 4 ? "3/4" : "4/3";
-  const aspectClass = aspectToClass(slot?.aspect ?? defaultAspect);
-
-  const colSpan =
-    span === 12
-      ? "sm:col-span-12"
-      : span === 8
-      ? "sm:col-span-8"
-      : span === 6
-      ? "sm:col-span-6"
-      : "sm:col-span-4";
-
-  // Editorial "plate kind" label based on span — frames each empty
-  // plate so the grid stays composed even without imagery.
-  const kindLabel =
-    span === 12
-      ? "Hero · Ansicht"
-      : span === 8
-      ? "Detail · Komposition"
-      : span === 4
-      ? "Akzent · Fragment"
-      : "Ansicht · Paar";
-
-  // Each populated plate is a deep-link into the actual live site
-  // (publicUrl) when one is available — every gallery image is a real
-  // screenshot of that page, so clicking through opens the section
-  // visitors are already looking at. Empty plates stay non-interactive.
-  const linked = Boolean(slot && publicUrl);
-
-  const plate = slot ? (
-    <div
-      className={`relative w-full overflow-hidden border border-white/[0.08] bg-[var(--magicks-bg-lifted)] ${aspectClass} ${
-        linked ? "transition-colors duration-[480ms] group-hover/plate:border-white/[0.18]" : ""
-      }`}
-    >
-      <img
-        src={slot.src}
-        alt={slot.alt}
-        className={`h-full w-full object-cover brightness-[0.9] saturate-[0.94] ${
-          linked
-            ? "magicks-duration-media magicks-ease-out transition-[transform,filter] group-hover/plate:scale-[1.012] group-hover/plate:brightness-[0.98]"
-            : ""
-        }`}
-        loading="lazy"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/40 via-transparent to-transparent"
-      />
-      {linked ? (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute right-5 top-5 flex items-center gap-2 opacity-0 transition-opacity duration-[420ms] group-hover/plate:opacity-100 group-focus-visible/plate:opacity-100 md:right-7 md:top-7"
-        >
-          <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/72 md:text-[10px]">
-            Live
-          </span>
-          <span className="font-instrument text-[1rem] italic text-white/82 transition-transform duration-[480ms] group-hover/plate:-translate-y-[2px] group-hover/plate:translate-x-[2px] md:text-[1.05rem]">
-            ↗︎
-          </span>
-        </span>
-      ) : null}
-      <GalleryTileCaption index={index} label={slot.caption ?? slot.alt} />
-    </div>
-  ) : null;
-
-  return (
-    <figure
-      data-cs-reveal
-      className={`relative ${colSpan} col-span-1`}
-    >
-      {slot ? (
-        linked ? (
-          <a
-            href={publicUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group/plate block no-underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]"
-            aria-label={`${projectTitle} live ansehen — ${slot.caption ?? slot.alt}`}
-          >
-            {plate}
-          </a>
-        ) : (
-          plate
-        )
-      ) : (
-        <div
-          className={`relative w-full overflow-hidden border border-white/[0.08] bg-[var(--magicks-bg-lifted)] ${aspectClass}`}
-          role="img"
-          aria-label={`${projectTitle} — Bild ${index + 1} folgt`}
-        >
-          {/* Grain rails */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.22]"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(90deg, rgba(255,255,255,0.014) 0 1px, transparent 1px 84px), repeating-linear-gradient(0deg, rgba(255,255,255,0.01) 0 1px, transparent 1px 84px)",
-              maskImage:
-                "radial-gradient(ellipse 72% 64% at 50% 50%, black, transparent)",
-              WebkitMaskImage:
-                "radial-gradient(ellipse 72% 64% at 50% 50%, black, transparent)",
-            }}
-          />
-          {/* Central halo */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(ellipse 42% 42% at 50% 46%, rgba(255,255,255,0.048), transparent 62%)",
-            }}
-          />
-          {/* Inset frame */}
-          <div
-            aria-hidden
-            className={`pointer-events-none absolute border border-white/[0.06] ${
-              span >= 8 ? "inset-6 md:inset-10" : "inset-5 md:inset-7"
-            }`}
-          />
-          {/* Center diamond marker */}
-          <div
-            aria-hidden
-            className={`absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center ${
-              span >= 8 ? "h-[18px] w-[18px]" : "h-[14px] w-[14px]"
-            }`}
-          >
-            <span className="absolute inset-0 block rotate-45 border border-white/60 bg-[var(--magicks-bg-lifted)]" />
-            <span
-              className={`absolute rotate-45 bg-white/80 ${
-                span >= 8 ? "h-[6px] w-[6px]" : "h-[5px] w-[5px]"
-              }`}
-            />
-          </div>
-          {/* Plate-kind top label (only on larger plates) */}
-          {span >= 8 ? (
-            <span className="font-mono pointer-events-none absolute left-6 top-6 text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/38 md:left-10 md:top-10 md:text-[10px]">
-              {kindLabel}
-            </span>
-          ) : null}
-          <GalleryTileCaption
-            index={index}
-            label="Bildmaterial folgt"
-            empty
-          />
-        </div>
-      )}
-
-      {slot?.caption ? (
-        <figcaption className="font-mono mt-3 text-[10px] font-medium uppercase leading-none tracking-[0.3em] text-white/46 md:text-[10.5px]">
-          {slot.caption}
+  const colSpan = index === 0 ? "md:col-span-12" : index === 1 ? "md:col-span-7" : "md:col-span-5";
+  const aspectClass = index === 0 ? "aspect-[16/10] md:aspect-[16/9]" : aspectToClass(image.aspect ?? "4/3");
+  const content = (
+    <figure className="m-0">
+      <div className={`relative overflow-hidden rounded-[1.15rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[var(--magicks-bg-lifted)] shadow-[0_22px_58px_-50px_rgba(20,28,44,0.3)] ${aspectClass}`}>
+        <img
+          src={image.src}
+          alt={image.alt}
+          loading={index === 0 ? "eager" : "lazy"}
+          decoding="async"
+          className="h-full w-full object-cover transition-transform duration-[900ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.012]"
+        />
+      </div>
+      {image.caption ? (
+        <figcaption className="font-ui mt-3 text-[14px] leading-[1.5] text-[rgb(var(--magicks-ink-rgb)/0.54)]">
+          {image.caption}
         </figcaption>
       ) : null}
     </figure>
   );
+
+  return (
+    <div data-cs-reveal className={`${colSpan} col-span-1`}>
+      {publicUrl ? (
+        <a
+          href={publicUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group block no-underline"
+          aria-label={`Live ansehen: ${image.caption ?? "Projektbild"}`}
+        >
+          {content}
+        </a>
+      ) : (
+        content
+      )}
+    </div>
+  );
 }
 
-function GalleryTileCaption({
-  index,
-  label,
-  empty = false,
-}: {
-  index: number;
-  label: string;
-  empty?: boolean;
-}) {
+function CtaArrow() {
   return (
-    <div className="pointer-events-none absolute inset-x-5 bottom-5 flex items-end justify-between gap-5 md:inset-x-7 md:bottom-7">
-      <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.22em] text-white/46 md:text-[10.5px] md:tracking-[0.2em]">
-        Plate · {String(index + 1).padStart(2, "0")}
-      </span>
-      <span
-        className={`font-mono text-[10px] font-medium uppercase leading-none tracking-[0.24em] md:text-[10.5px] md:tracking-[0.22em] ${
-          empty ? "text-white/34" : "text-white/52"
-        }`}
-      >
-        {label}
-      </span>
-    </div>
+    <span
+      aria-hidden
+      className="font-instrument flex h-8 w-8 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.34)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.9)] text-[1.05em] italic text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] transition-transform duration-[620ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[3px]"
+    >
+      {"\u2197\uFE0E"}
+    </span>
   );
 }
 
@@ -1527,51 +599,9 @@ function aspectToClass(aspect: ProjectImage["aspect"]): string {
   }
 }
 
-/* ------------------------------------------------------------------
- * MetaCell — shared meta strip cell for project meta rows.
- * ------------------------------------------------------------------ */
-
-function MetaCell({
-  k,
-  v,
-  first = false,
-}: {
-  k: string;
-  v: React.ReactNode;
-  first?: boolean;
-}) {
-  return (
-    <div
-      className={`flex flex-col gap-2 ${
-        !first ? "sm:border-l sm:border-white/[0.08] sm:pl-5 md:pl-7" : ""
-      }`}
-    >
-      <span className="font-mono text-[9.75px] font-medium uppercase leading-none tracking-[0.22em] text-white/36 sm:text-[10px] sm:tracking-[0.2em]">
-        {k}
-      </span>
-      {typeof v === "string" ? (
-        <span className="font-mono tabular-nums text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-white/68 sm:text-[11px] sm:tracking-[0.16em]">
-          {v}
-        </span>
-      ) : (
-        v
-      )}
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------
- * prettyUrl — strips the protocol from a URL for display.
- * ------------------------------------------------------------------ */
-
 function prettyUrl(url: string): string {
   return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
 }
-
-/* ------------------------------------------------------------------
- * ProjectNotFound — graceful fallback for unknown slugs.
- * noindex so crawlers don't record it.
- * ------------------------------------------------------------------ */
 
 function ProjectNotFound() {
   return (
@@ -1582,24 +612,22 @@ function ProjectNotFound() {
         description="Das angefragte Projekt existiert nicht mehr oder wurde umbenannt. Zur Projektübersicht von MAGICKS Studio."
         robots="noindex, follow"
       />
-      <main className="relative bg-[var(--magicks-bg-base)] pb-32 pt-[8.5rem]">
-        <div className="layout-max px-5 text-center md:px-12">
-          <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 sm:tracking-[0.22em]">
-            § 00 — Nicht gefunden
+      <main className="relative bg-[var(--magicks-bg-base)] px-5 pb-32 pt-[8.5rem] md:px-12">
+        <div className="layout-max text-center">
+          <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.72)] sm:tracking-[0.22em]">
+            Nicht gefunden
           </p>
-          <h1 className="font-instrument mt-6 text-[1.9rem] leading-[1.12] tracking-[-0.026em] text-white sm:text-[2.3rem] md:text-[2.7rem]">
-            Dieses Projekt existiert{" "}
-            <em className="italic text-white/62">nicht mehr</em> oder wurde
-            umbenannt.
+          <h1 className="font-ui mx-auto mt-6 max-w-[16ch] text-[2rem] font-[620] leading-[1.06] tracking-[-0.03em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[2.65rem] md:text-[3.2rem]">
+            Dieses Projekt existiert nicht mehr oder wurde umbenannt.
           </h1>
-          <p className="font-ui mx-auto mt-6 max-w-[36rem] text-[15.5px] leading-[1.76] text-white/62 md:text-[16.5px]">
-            Alle veröffentlichten Arbeiten findest du in der aktuellen
-            Studio-Auswahl.
+          <p className="font-ui mx-auto mt-6 max-w-[36rem] text-[1rem] leading-[1.7] text-[rgb(var(--magicks-ink-rgb)/0.68)]">
+            Alle veröffentlichten Arbeiten finden Sie in der aktuellen
+            Projektübersicht.
           </p>
-          <div className="mt-10 flex items-center justify-center gap-5">
+          <div className="mt-9">
             <Link
               to="/projekte"
-              className="font-ui text-[15px] font-medium text-white no-underline underline-offset-4 transition-[letter-spacing,opacity] hover:tracking-[0.004em]"
+              className="font-ui inline-flex min-h-11 items-center text-[15px] font-[580] text-[rgb(var(--magicks-ink-rgb)/0.86)] no-underline underline-offset-4 transition-colors hover:text-[rgb(var(--magicks-ink-rgb)/1)]"
             >
               ← Zur Projektübersicht
             </Link>

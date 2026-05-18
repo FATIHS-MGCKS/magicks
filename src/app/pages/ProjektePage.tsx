@@ -1,99 +1,142 @@
 import { useLayoutEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
-import { ChapterMarker } from "../components/home/ChapterMarker";
-import { SectionTransition } from "../components/service/SectionTransition";
 import { featuredProjects, type Project } from "../data/projects";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { registerGsap } from "../lib/gsap";
-import { parallaxDrift, prefersCheapMotion, presenceEnvelope } from "../lib/scrollMotion";
+import { runRouteReveal } from "../lib/routeReveal";
 import { RouteSEO } from "../seo/RouteSEO";
 
-/* ------------------------------------------------------------------
- * /projekte — bespoke editorial projects overview.
- *
- * Design intent: a curated studio sheet, not a card grid.
- *
- * Signature composition:
- *   - Editorial hero with focal axis (Ausgangslage → Konzept → Wirkung).
- *   - Credo section that defines the curation policy before the work
- *     is shown (the opposite of a "click-heavy thumbnail wall").
- *   - A single large featured split per project — cover plate left,
- *     typographic identity right. This composition scales cleanly:
- *     the first entry is always the large split; subsequent entries
- *     fall into a compact editorial row list (see `CompactRow`).
- *   - A "so messen wir Projekte" register strip under the listing,
- *     which doubles as the studio's stance on what counts as work.
- *   - Closing cartouche + pill CTA mirroring the rest of the studio
- *     sheets so the whole site feels like one document.
- *
- * Motion policy: restrained. Scroll reveals only — no word-by-word
- * headline timelines here. The overview page should breathe, not
- * perform.
- * ------------------------------------------------------------------ */
+type MeasureItem = {
+  title: string;
+  text: string;
+};
 
-/* =======  VERBATIM COPY  =======
- * Brief-provided copy kept as module-level constants so the editorial
- * layout can be audited against the brief at a glance. */
+type ServiceLink = {
+  title: string;
+  text: string;
+  to: string;
+};
 
-const HERO_EYEBROW = "Studio · Arbeit · MMXXVI";
-// H1 copy from brief: "Ausgewählte Projekte von MAGICKS Studio."
-// Rendered inline to allow an italic pivot on "Projekte".
-const HERO_LEAD_1 =
-  "Nicht jede digitale Lösung sieht gleich aus. Und nicht jedes Projekt braucht denselben Weg.";
-const HERO_LEAD_2 =
-  "Hier zeigen wir ausgewählte Arbeiten, digitale Konzepte und Umsetzungen, bei denen Design, Technik, Nutzerführung und Wirkung sauber zusammenspielen.";
-
-const CREDO_HEADLINE_A = "Keine Sammlung schöner Screens.";
-const CREDO_HEADLINE_B = "Sondern digitale Arbeiten mit Substanz.";
-const CREDO_P1_A = "Wir zeigen hier keine beliebige Galerie.";
-const CREDO_P1_B =
-  "Sondern Projekte, bei denen Gestaltung, technische Umsetzung und digitale Logik wirklich zusammengehören.";
-const CREDO_TRIPTYCH = [
-  "Mal steht ein klarer Markenauftritt im Fokus.",
-  "Mal SEO, Nutzerführung oder Conversion.",
-  "Mal ein Shop, ein Konfigurator oder eine individuellere digitale Lösung.",
+const MEASURE_ITEMS: MeasureItem[] = [
+  {
+    title: "Struktur",
+    text: "Informationen sind so geordnet, dass Besucher schnell verstehen, worum es geht.",
+  },
+  {
+    title: "Nutzerführung",
+    text: "Der Weg zur Anfrage, Buchung oder nächsten Handlung bleibt klar.",
+  },
+  {
+    title: "Performance",
+    text: "Die technische Basis soll schnell, stabil und mobil sauber funktionieren.",
+  },
+  {
+    title: "Sichtbarkeit",
+    text: "Seitenstruktur, Inhalte und Technik schaffen eine Grundlage für Auffindbarkeit.",
+  },
+  {
+    title: "Wirkung",
+    text: "Der Auftritt soll nicht nur gut aussehen, sondern Vertrauen und Klarheit schaffen.",
+  },
 ];
 
-const MESSBAR_HEADLINE = "Woran wir Projekte messen";
-const MESSBAR_P1_A = "Nicht nur daran, wie etwas aussieht.";
-const MESSBAR_P1_B =
-  "Sondern daran, ob es klar führt, technisch sauber funktioniert und für das Unternehmen im Alltag wirklich einen Unterschied macht.";
-const MESSBAR_P2 =
-  "Deshalb denken wir Projekte nicht nur visuell, sondern immer auch in Struktur, Nutzerführung, Performance, Sichtbarkeit und digitaler Wirkung.";
-
-const FINAL_CTA_HEADLINE = "Bereit für ein Projekt, das nicht wie Standard endet?";
-const FINAL_CTA_BODY =
-  "Wenn du einen digitalen Auftritt oder eine Lösung willst, die hochwertig wirkt und sauber funktioniert, dann lass uns sprechen.";
-
-/** Focal-axis stops — three editorial studio beats for the hero gutter. */
-const FOCAL_STOPS: { label: string; tone: "outline" | "filled" }[] = [
-  { label: "Ausgangslage", tone: "outline" },
-  { label: "Konzept", tone: "filled" },
-  { label: "Wirkung", tone: "outline" },
+const SERVICE_LINKS: ServiceLink[] = [
+  {
+    title: "Websites & Landingpages",
+    text: "Digitale Auftritte, die Leistungen verständlich machen und Anfragen erleichtern.",
+    to: "/websites-landingpages",
+  },
+  {
+    title: "Shops & Produktkonfiguratoren",
+    text: "Verkaufsflächen und Konfiguratoren, die Produkte klarer erklären.",
+    to: "/shops-produktkonfiguratoren",
+  },
+  {
+    title: "Web-Software",
+    text: "Portale, Dashboards und Anwendungen für saubere digitale Prozesse.",
+    to: "/web-software",
+  },
+  {
+    title: "KI & Automationen",
+    text: "Workflows und Integrationen, die wiederkehrende Arbeit reduzieren.",
+    to: "/ki-automationen-integrationen",
+  },
+  {
+    title: "SEO & Sichtbarkeit",
+    text: "Struktur, Inhalte und Technik als Grundlage für Auffindbarkeit.",
+    to: "/seo-sichtbarkeit",
+  },
+  {
+    title: "Content, Bildwelt & Medien",
+    text: "Texte, Bilder und Medien, die den Auftritt eigenständiger machen.",
+    to: "/content-bildwelt-medien",
+  },
+  {
+    title: "Website Starter",
+    text: "Ein klarer Einstieg für kleinere Unternehmen mit Qualitätsanspruch.",
+    to: "/website-starter",
+  },
+  {
+    title: "Website im Abo",
+    text: "Website, Pflege und Weiterentwicklung in einem planbaren Modell.",
+    to: "/website-im-abo",
+  },
 ];
 
-/** Dimensions MAGICKS measures projects against.
- *
- * `label` items mirror the order from the brief's closing paragraph:
- *   "Struktur, Nutzerführung, Performance, Sichtbarkeit und digitaler Wirkung."
- * The short italic `note` is editorial gloss — a one-beat clarification of
- * what each dimension means in practice. Treated as structural ornament,
- * not added content. */
-const MESSBAR_ITEMS = [
-  { num: "01", label: "Struktur", note: "Architektur der Inhalte" },
-  { num: "02", label: "Nutzerführung", note: "Weg zum nächsten Schritt" },
-  { num: "03", label: "Performance", note: "Technisch saubere Basis" },
-  { num: "04", label: "Sichtbarkeit", note: "Auffindbar bleiben" },
-  { num: "05", label: "Digitale Wirkung", note: "Im Alltag spürbar" },
-];
+function Eyebrow({ children }: { children: string }) {
+  return (
+    <span className="inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[11px] sm:tracking-[0.22em]">
+      <span
+        aria-hidden
+        className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.72)]"
+      />
+      {children}
+    </span>
+  );
+}
 
-/* =======  PAGE  ======= */
+function PrimaryCta({ to, label }: { to: string; label: string }) {
+  return (
+    <Link
+      to={to}
+      className="group relative inline-flex min-h-12 items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[linear-gradient(180deg,rgba(255,253,249,0.96)_0%,rgba(244,238,227,0.9)_100%)] py-2.5 pl-6 pr-2 font-ui text-[15.5px] font-[600] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline shadow-[0_22px_62px_-42px_rgba(20,28,44,0.46),inset_0_1px_0_rgba(255,255,255,0.88),inset_0_-1px_0_rgba(148,124,92,0.12)] transition-[transform,box-shadow,border-color] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:border-[rgb(var(--magicks-accent-line-rgb)/0.4)] hover:shadow-[0_32px_82px_-40px_rgba(20,28,44,0.52),inset_0_1px_0_rgba(255,255,255,0.92),inset_0_-1px_0_rgba(148,124,92,0.16)] active:translate-y-0 active:scale-[0.99] sm:pl-7 sm:pr-2.5 sm:text-[16px] md:text-[16.5px]"
+    >
+      <span>{label}</span>
+      <span
+        aria-hidden
+        className="ml-1 h-5 w-px bg-[rgb(var(--magicks-accent-rgb)/0.22)] transition-colors duration-[720ms] group-hover:bg-[rgb(var(--magicks-accent-rgb)/0.42)] sm:h-6"
+      />
+      <span
+        aria-hidden
+        className="font-instrument flex h-8 w-8 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.34)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.9)] text-[1.05em] italic text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] transition-transform duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[3px]"
+        style={{ fontVariantEmoji: "text" }}
+      >
+        {"\u2197\uFE0E"}
+      </span>
+    </Link>
+  );
+}
+
+function SecondaryCta({ to, label }: { to: string; label: string }) {
+  return (
+    <Link
+      to={to}
+      className="group inline-flex min-h-12 items-center gap-2 rounded-full border border-[rgb(var(--magicks-line-rgb)/0.18)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.5)] px-5 py-3 font-ui text-[15px] font-[560] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.78)] no-underline transition-[border-color,transform,color,background-color] duration-500 hover:-translate-y-[1px] hover:border-[rgb(var(--magicks-line-rgb)/0.34)] hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/0.82)] hover:text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[15.5px]"
+    >
+      <span>{label}</span>
+      <span aria-hidden className="font-instrument italic transition-transform duration-500 group-hover:translate-x-[2px]">
+        ↗
+      </span>
+    </Link>
+  );
+}
 
 export default function ProjektePage() {
   const rootRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
   const projects = featuredProjects();
+  const [featured, ...remainingProjects] = projects;
 
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -101,134 +144,30 @@ export default function ProjektePage() {
     const { gsap } = registerGsap();
 
     const ctx = gsap.context(() => {
-      const cheapMotion = prefersCheapMotion();
-      const withBlur = (amount: number): gsap.TweenVars =>
-        cheapMotion ? {} : { filter: `blur(${amount}px)` };
-      const withTracking = (value: string): gsap.TweenVars =>
-        cheapMotion ? {} : { letterSpacing: value };
-
-      const reveals = gsap.utils.toArray<HTMLElement>("[data-pj-reveal]");
-      const heroAxisRule = root.querySelector<HTMLElement>("[data-pj-axis-rule]");
-      const heroAxisStops = gsap.utils.toArray<HTMLElement>("[data-pj-axis-stop]");
+      const heroItems = gsap.utils.toArray<HTMLElement>("[data-projects-hero]");
+      const revealItems = gsap.utils.toArray<HTMLElement>("[data-projects-reveal]");
 
       if (reduced) {
-        gsap.set([...reveals, heroAxisRule, ...heroAxisStops], {
+        gsap.set([...heroItems, ...revealItems], {
           opacity: 1,
           y: 0,
-          scaleY: 1,
+          filter: "none",
         });
         return;
       }
 
-      /* Project-entry motion — curated catalogue rhythm.
-       *
-       * Each [data-pj-reveal] block is now treated as a catalogue entry
-       * that passes through three zones as the reader scrolls:
-       *   · entry — entry gathers presence, drifts into the reading band
-       *   · focus — entry sits at full clarity, slightly forward
-       *   · exit  — entry gently recedes, so the next one can speak
-       *
-       * Because each element uses itself as a trigger with a wide
-       * envelope, long project rows and short meta lines both behave
-       * coherently: short items breathe quickly, long items breathe
-       * across their own height. Scrolling back up re-engages focus. */
-      presenceEnvelope(reveals, {
-        start: "top 90%",
-        end: "bottom 10%",
-        yFrom: 18,
-        yTo: -10,
-        blur: 3.2,
-        opacityFloor: 0.2,
-        holdRatio: 0.56,
-        scrub: 0.95,
+      runRouteReveal({
+        gsap,
+        root,
+        heroItems,
+        revealItems,
+        heroYOffset: 16,
+        revealYOffset: 18,
+        blur: 4,
+        duration: 0.72,
+        heroStagger: 0.055,
+        revealStart: "top 88%",
       });
-
-      // Hero intro — focal axis draws in on first load (justified
-      // page-intro moment). No back.out spring on the stops: the
-      // axis is a composed editorial element, not a UI toast.
-      if (heroAxisRule) {
-        gsap.set(heroAxisRule, { scaleY: 0, transformOrigin: "top center" });
-        gsap.to(heroAxisRule, {
-          scaleY: 1,
-          duration: 1.1,
-          ease: "power2.inOut",
-          delay: 0.4,
-        });
-      }
-      if (heroAxisStops.length) {
-        gsap.set(heroAxisStops, { opacity: 0, scale: 0.82 });
-        gsap.to(heroAxisStops, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.9,
-          ease: "power3.out",
-          stagger: 0.1,
-          delay: 1.1,
-        });
-      }
-
-      /* ---- Hero scroll-exit — curated catalogue opening releases gracefully ----
-       * The masthead and focal axis were static once loaded; now the whole
-       * hero composition drifts up and softens as the reader advances into
-       * the catalogue. Grain plate parallaxes at a gentler rate to separate
-       * backdrop from copy plane — subtle spatial depth, no gimmick. */
-      const heroSection = root.querySelector<HTMLElement>("[data-pj-hero]");
-      const heroCopy = root.querySelector<HTMLElement>("[data-pj-hero-copy]");
-      const heroTexture = root.querySelector<HTMLElement>("[data-pj-hero-texture]");
-
-      if (heroCopy && heroSection) {
-        gsap.to(heroCopy, {
-          yPercent: -4,
-          opacity: 0.64,
-          ease: "none",
-          scrollTrigger: {
-            trigger: heroSection,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      }
-
-      if (heroTexture && heroSection) {
-        parallaxDrift(heroTexture, {
-          trigger: heroSection,
-          from: 0,
-          to: -18,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        });
-      }
-
-      /* ---- Final CTA head — cinematic arrival ----
-       * The closing headline settles in place: letter-spacing tightens
-       * while blur releases and y resolves, scrub-driven so the final
-       * movement of the catalogue feels earned, not dropped in. */
-      const finalSection = root.querySelector<HTMLElement>("[data-pj-final]");
-      const finalHead = root.querySelector<HTMLElement>("[data-pj-final-head]");
-      if (finalSection && finalHead) {
-        gsap.set(finalHead, {
-          opacity: 0.16,
-          y: 12,
-          ...withTracking("0.034em"),
-          ...withBlur(3.8),
-        });
-        gsap.to(finalHead, {
-          opacity: 1,
-          y: 0,
-          ...withTracking("-0.036em"),
-          ...withBlur(0),
-          ease: "none",
-          scrollTrigger: {
-            trigger: finalSection,
-            start: "top 82%",
-            end: "top 34%",
-            scrub: 1.1,
-            invalidateOnRefresh: true,
-          },
-        });
-      }
     }, root);
 
     return () => ctx.revert();
@@ -240,570 +179,211 @@ export default function ProjektePage() {
 
       <main
         ref={rootRef}
-        className="relative bg-[var(--magicks-bg-base)] pb-0 pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.5rem]"
+        className="relative overflow-hidden bg-[var(--magicks-bg-base)] pt-[6.5rem] sm:pt-[7.5rem] md:pt-[8.25rem]"
       >
-        {/* =========================================================
-           § 00 — HERO
-        ========================================================= */}
         <section
           data-pj-hero
-          className="relative overflow-hidden px-5 pb-28 sm:px-8 sm:pb-32 md:px-12 md:pb-40 lg:px-16 lg:pb-48"
+          className="relative overflow-hidden px-5 pb-20 pt-8 sm:px-8 sm:pb-28 sm:pt-10 md:px-12 md:pb-36 lg:px-16 lg:pb-44"
         >
-          {/* Grain plate */}
           <div
             aria-hidden
-            data-pj-hero-texture
-            className="pointer-events-none absolute inset-0 opacity-[0.2]"
+            className="pointer-events-none absolute inset-0"
             style={{
               backgroundImage:
-                "repeating-linear-gradient(90deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 118px)",
-              maskImage:
-                "radial-gradient(ellipse 64% 68% at 38% 48%, black, transparent)",
-              WebkitMaskImage:
-                "radial-gradient(ellipse 64% 68% at 38% 48%, black, transparent)",
+                "radial-gradient(ellipse 58% 46% at 20% 16%, rgba(166,138,98,0.14), transparent 72%), radial-gradient(ellipse 54% 42% at 82% 38%, rgba(96,128,138,0.1), transparent 76%), radial-gradient(ellipse 76% 44% at 50% 96%, rgba(255,255,255,0.58), transparent 76%)",
             }}
           />
 
-          <div data-pj-hero-copy className="relative layout-max">
-            {/* Top masthead */}
-            <div className="mb-10 flex flex-col gap-5 sm:mb-14 md:mb-16">
-              <div className="flex items-start justify-between gap-6">
-                <div data-pj-reveal>
-                  <ChapterMarker num="01" label="Arbeit" />
-                </div>
-                <div
-                  data-pj-reveal
-                  aria-hidden
-                  className="font-mono hidden items-center gap-3 whitespace-nowrap text-[9.5px] font-medium uppercase leading-none tracking-[0.36em] text-white/42 sm:flex sm:text-[10px]"
-                >
-                  <span className="tabular-nums text-white/32">F · 01</span>
-                  <span aria-hidden className="h-px w-5 bg-white/24" />
-                  <span>Studio · Arbeit · MMXXVI</span>
-                </div>
-              </div>
-
-              {/* Studio dateline — three-part edition masthead:
-                  Name · Vol. · Location. Reads like a printed issue. */}
-              <div
-                data-pj-reveal
-                className="flex items-center gap-4 sm:gap-5"
-              >
-                <span aria-hidden className="h-px w-10 bg-white/24 sm:w-14" />
-                <span className="font-mono flex items-center gap-3 whitespace-nowrap text-[9.5px] font-medium uppercase leading-none tracking-[0.4em] text-white/54 sm:gap-4 sm:text-[10px] md:text-[10.5px]">
-                  <span className="text-white/72">Ausgewählte Arbeiten</span>
-                  <span aria-hidden className="h-px w-4 bg-white/28 sm:w-5" />
-                  <span className="tabular-nums">Vol. 01</span>
-                  <span aria-hidden className="hidden h-px w-4 bg-white/28 sm:inline-block sm:w-5" />
-                  <span className="hidden text-white/40 sm:inline">
-                    Studio · Kassel · MMXXVI
-                  </span>
-                </span>
-                <span aria-hidden className="h-px flex-1 bg-white/12" />
-              </div>
-            </div>
-
-            <div className="relative">
-              {/* Focal axis gutter (desktop only) */}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute left-0 top-[0.4rem] hidden h-[min(26rem,80%)] md:-left-8 md:block lg:-left-12"
-              >
-                <span
-                  data-pj-axis-rule
-                  className="absolute left-[5.5px] top-0 block h-full w-px bg-white/16"
-                />
-                <div className="absolute inset-0 flex flex-col justify-between">
-                  {FOCAL_STOPS.map((stop) => (
-                    <span
-                      key={stop.label}
-                      data-pj-axis-stop
-                      className="font-mono relative flex items-center gap-3 text-[9px] font-medium uppercase leading-none tracking-[0.38em] text-white/48 sm:text-[9.5px]"
-                    >
-                      {stop.tone === "filled" ? (
-                        <span
-                          aria-hidden
-                          className="relative block h-[11px] w-[11px] rounded-full bg-[var(--magicks-ink-strong)] shadow-[0_0_0_3px_rgba(247,244,238,1)]"
-                        />
-                      ) : (
-                        <span
-                          aria-hidden
-                          className="relative block h-[11px] w-[11px] rounded-full border border-[rgb(var(--magicks-line-rgb)/0.46)] bg-[rgb(var(--magicks-bg-base-rgb)/0.96)] shadow-[0_0_0_3px_rgba(247,244,238,1)]"
-                        />
-                      )}
-                      <span className="tabular-nums">{stop.label}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <p
-                data-pj-reveal
-                className="font-mono mb-8 text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/52 sm:mb-10 sm:text-[11px] sm:tracking-[0.22em]"
-              >
-                {HERO_EYEBROW}
-              </p>
-
-              <h1
-                data-pj-reveal
-                className="font-instrument max-w-[60rem] text-[2.2rem] leading-[1.03] tracking-[-0.03em] text-white sm:text-[2.95rem] md:text-[3.8rem] lg:text-[4.45rem] xl:text-[4.95rem]"
-              >
-                Ausgewählte <em className="italic text-white/68">Projekte</em>{" "}
-                von MAGICKS Studio.
-              </h1>
-
-              <div className="mt-10 max-w-[46rem] sm:mt-12 md:mt-14">
-                <p
-                  data-pj-reveal
-                  className="font-instrument text-[1.32rem] italic leading-[1.44] tracking-[-0.008em] text-white/86 sm:text-[1.52rem] md:text-[1.66rem]"
-                >
-                  {HERO_LEAD_1}
-                </p>
-                <p
-                  data-pj-reveal
-                  className="font-ui mt-5 text-[15.5px] leading-[1.76] text-white/64 md:text-[16.5px]"
-                >
-                  {HERO_LEAD_2}
-                </p>
-              </div>
-
-              {/* Primary CTA — understated underline link */}
-              <div
-                data-pj-reveal
-                className="mt-12 inline-flex items-baseline gap-3 sm:mt-14 md:mt-16"
-              >
-                <Link
-                  to="/kontakt"
-                  className="group relative inline-flex items-baseline gap-3 text-[15.5px] font-medium tracking-[0.001em] text-white no-underline sm:text-[16.5px] md:text-[17.5px]"
-                  aria-label="Projekt anfragen"
-                >
-                  <span className="relative pb-3">
-                    <span className="font-ui">Projekt anfragen</span>
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 block h-px bg-white/32"
-                    />
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 block h-px origin-left scale-x-0 bg-white transition-transform duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
-                    />
-                  </span>
-                  <span
-                    aria-hidden
-                    className="font-instrument text-[1.05em] italic text-white/85 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px]"
-                  >
-                    ↗︎
-                  </span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <SectionTransition from="§ 00  Hero" to="§ 01  Kuration" />
-
-        {/* =========================================================
-           § 01 — CREDO
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[var(--magicks-bg-elevated)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.2]"
-            style={{
-              background:
-                "radial-gradient(ellipse 58% 44% at 50% 50%, rgba(255,255,255,0.028), transparent 64%)",
-            }}
-          />
           <div className="relative layout-max">
-            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-pj-reveal className="md:pt-2">
-                <div className="flex flex-col gap-4">
-                  <p className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/48 sm:text-[11px] sm:tracking-[0.22em]">
-                    § 01 — Kuration
-                  </p>
-                  <ChapterMarker num="01" label="Credo" />
-                  <span
-                    aria-hidden
-                    className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.2em] text-white/34 sm:text-[11px] sm:tracking-[0.18em]"
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(21rem,0.56fr)] lg:items-end lg:gap-16">
+                <div>
+                  <div data-projects-hero>
+                    <Eyebrow>Projekte</Eyebrow>
+                  </div>
+
+                  <h1
+                    data-projects-hero
+                    className="font-ui mt-7 max-w-[18ch] text-[2.38rem] font-[650] leading-[0.98] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.97)] sm:text-[3.35rem] md:text-[4.38rem] lg:text-[5.1rem]"
                   >
-                    Substanz · Auswahl · Linie
-                  </span>
-                </div>
-              </div>
+                    Ausgewählte Projekte von MAGICKS Studio.
+                  </h1>
 
-              <div>
-                <h2
-                  data-pj-reveal
-                  className="font-instrument max-w-[58rem] text-[2.25rem] leading-[1.05] tracking-[-0.028em] text-white sm:text-[2.95rem] md:text-[3.7rem] lg:text-[4.3rem] xl:text-[4.75rem]"
-                >
-                  <span className="block">{CREDO_HEADLINE_A}</span>
-                  <em className="mt-2 block italic text-white/62 sm:mt-3 md:mt-4">
-                    {CREDO_HEADLINE_B}
-                  </em>
-                </h2>
-
-                <div className="mt-10 max-w-[44rem] space-y-5 md:mt-14 md:space-y-6">
                   <p
-                    data-pj-reveal
-                    className="font-instrument text-[1.28rem] italic leading-[1.44] tracking-[-0.008em] text-white/88 sm:text-[1.4rem] md:text-[1.52rem]"
+                    data-projects-hero
+                    className="font-ui mt-8 max-w-[55rem] text-[1.03rem] font-[480] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.72)] sm:text-[1.1rem] md:text-[1.18rem]"
                   >
-                    {CREDO_P1_A}
+                    Einblicke in Websites, Landingpages und digitale Auftritte,
+                    die MAGICKS für reale Unternehmen umgesetzt hat — mit klarer
+                    Struktur, hochwertiger Gestaltung, technischer Umsetzung und
+                    einem Fokus auf Wirkung im Alltag.
                   </p>
-                  <p
-                    data-pj-reveal
-                    className="font-ui text-[16px] leading-[1.76] text-white/68 md:text-[17px]"
-                  >
-                    {CREDO_P1_B}
-                  </p>
-                </div>
 
-                {/* Triptych — three typographic "Mal..." beats.
-                    Each reads as a mode the studio actually works in. */}
-                <ul className="mt-14 grid grid-cols-1 border-t border-white/[0.08] md:mt-16 md:grid-cols-3 md:border-y">
-                  {CREDO_TRIPTYCH.map((line, i) => (
-                    <li
-                      key={line}
-                      data-pj-reveal
-                      className={`flex flex-col gap-4 border-b border-white/[0.08] py-7 md:border-b-0 md:py-9 ${
-                        i > 0 ? "md:border-l md:border-white/[0.08] md:pl-8 lg:pl-10" : ""
-                      }`}
-                    >
-                      <span className="font-mono tabular-nums text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/42 md:text-[11px] md:tracking-[0.22em]">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <p className="font-instrument max-w-[19rem] text-[1.16rem] italic leading-[1.38] tracking-[-0.008em] text-white/92 md:text-[1.24rem]">
-                        {line}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <SectionTransition from="§ 01  Credo" to="§ 02  Auswahl" tone="darker" />
-
-        {/* =========================================================
-           § 02 — PROJEKTE (unified editorial list)
-        ========================================================= */}
-        <section className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="relative layout-max">
-            <div
-              data-pj-reveal
-              className="mb-14 flex items-center gap-5 sm:mb-20"
-            >
-              <span aria-hidden className="h-px w-14 bg-white/24 sm:w-24" />
-              <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/46 sm:text-[11px] sm:tracking-[0.22em]">
-                § 02 — Auswahl · {String(projects.length).padStart(2, "0")}{" "}
-                {projects.length === 1 ? "Arbeit" : "Arbeiten"}
-              </span>
-              <span aria-hidden className="h-px flex-1 bg-white/12" />
-            </div>
-
-            {projects.length > 0 ? (
-              /* Unified editorial row list — every project renders with
-                 the same compact, typographic register. No privileged
-                 "featured split"; the catalogue reads as one continuous
-                 sheet so the eye moves down the page without a stylistic
-                 break between entries. The top hairline + per-row
-                 bottom hairlines give the list its printed-spread
-                 rhythm. */
-              <ul className="grid grid-cols-1 gap-0 border-t border-white/[0.08]">
-                {projects.map((p, i) => (
-                  <CompactProjectRow key={p.slug} project={p} index={i + 1} />
-                ))}
-              </ul>
-            ) : (
-              // Premium "Nächste Ausgabe" plate — frames the single-
-              // entry state as intentional curation, not scarcity.
-              // When more projects arrive, this block is automatically
-              // replaced by the compact list above.
-              <div
-                data-pj-reveal
-                className="relative mt-20 overflow-hidden border border-white/[0.09] bg-[var(--magicks-bg-lifted)] md:mt-28"
-              >
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 opacity-[0.22]"
-                  style={{
-                    backgroundImage:
-                      "repeating-linear-gradient(90deg, rgba(255,255,255,0.014) 0 1px, transparent 1px 118px)",
-                    maskImage:
-                      "radial-gradient(ellipse 72% 64% at 50% 50%, black, transparent)",
-                    WebkitMaskImage:
-                      "radial-gradient(ellipse 72% 64% at 50% 50%, black, transparent)",
-                  }}
-                />
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0"
-                  style={{
-                    background:
-                      "radial-gradient(ellipse 46% 40% at 50% 50%, rgba(255,255,255,0.042), transparent 62%)",
-                  }}
-                />
-
-                {/* Top plate rail */}
-                <div className="relative flex items-center justify-between gap-4 border-b border-white/[0.08] px-6 py-4 sm:px-8 md:px-12 md:py-5">
-                  <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/56 sm:text-[11px] sm:tracking-[0.22em]">
-                    Nächste Ausgabe
-                  </span>
-                  <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.22em] text-white/38 sm:text-[10.5px] sm:tracking-[0.2em]">
-                    Vol. 02 · in Arbeit
-                  </span>
-                </div>
-
-                <div className="relative flex flex-col gap-10 px-6 py-12 sm:px-8 md:flex-row md:items-center md:justify-between md:gap-14 md:px-14 md:py-16 lg:px-20 lg:py-20">
-                  <div className="max-w-[40rem]">
-                    <p className="font-instrument text-[1.35rem] italic leading-[1.3] tracking-[-0.014em] text-white/90 sm:text-[1.55rem] md:text-[1.78rem] lg:text-[1.92rem]">
-                      Weitere Arbeiten folgen —{" "}
-                      <em className="not-italic text-white/58">
-                        mit Absicht kuratiert, nicht gesammelt.
-                      </em>
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-5 md:flex-col md:items-end md:gap-3">
-                    {/* Diamond marker — MAGICKS signature. */}
-                    <div
-                      aria-hidden
-                      className="relative flex h-[18px] w-[18px] items-center justify-center"
-                    >
-                      <span className="absolute inset-0 block rotate-45 border border-white/64 bg-[var(--magicks-bg-lifted)]" />
-                      <span className="absolute h-[6px] w-[6px] rotate-45 bg-white/84" />
-                    </div>
-                    <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.24em] text-white/52 sm:text-[11px] sm:tracking-[0.22em]">
-                      Studio · Kassel · MMXXVI
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
-
-        <SectionTransition from="§ 02  Auswahl" to="§ 03  Messbar" />
-
-        {/* =========================================================
-           § 03 — WORAN WIR PROJEKTE MESSEN
-        ========================================================= */}
-        <section className="relative px-5 py-28 sm:px-8 sm:py-36 md:px-12 md:py-44 lg:px-16">
-          <div className="layout-max">
-            <div className="grid gap-12 md:grid-cols-[max-content_minmax(0,1fr)] md:gap-20 lg:gap-28">
-              <div data-pj-reveal className="md:pt-2">
-                <div className="flex flex-col gap-4">
-                  <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.34em] text-white/48 sm:text-[10.5px]">
-                    § 03 — Messbar
-                  </p>
-                  <ChapterMarker num="03" label="Maßstab" />
-                </div>
-              </div>
-
-              <div>
-                <h2
-                  data-pj-reveal
-                  className="font-instrument max-w-[52rem] text-[2rem] leading-[1.05] tracking-[-0.028em] text-white sm:text-[2.55rem] md:text-[3.1rem] lg:text-[3.55rem]"
-                >
-                  {MESSBAR_HEADLINE}
-                </h2>
-
-                <div className="mt-10 grid gap-10 md:mt-14 md:grid-cols-2 md:gap-16">
-                  <div className="max-w-[32rem] space-y-5">
-                    <p
-                      data-pj-reveal
-                      className="font-instrument text-[1.22rem] italic leading-[1.4] tracking-[-0.012em] text-white/88 sm:text-[1.32rem] md:text-[1.44rem]"
-                    >
-                      {MESSBAR_P1_A}
-                    </p>
-                    <p
-                      data-pj-reveal
-                      className="font-ui text-[15.5px] leading-[1.72] text-white/66 md:text-[16.5px]"
-                    >
-                      {MESSBAR_P1_B}
-                    </p>
-                  </div>
-                  <div className="max-w-[34rem]">
-                    <p
-                      data-pj-reveal
-                      className="font-ui text-[15.5px] leading-[1.72] text-white/66 md:text-[16.5px]"
-                    >
-                      {MESSBAR_P2}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Dimensions register — 5 editorial cells with
-                    italic serif label + monospace micro-gloss.
-                    Reads as a printed register, not a tag strip. */}
-                <div
-                  data-pj-reveal
-                  className="mt-14 border-y border-white/[0.08] md:mt-16"
-                >
-                  {/* Register rail */}
-                  <div className="flex items-center justify-between gap-4 py-3 md:py-4">
-                    <span className="font-mono text-[9.5px] font-medium uppercase leading-none tracking-[0.42em] text-white/42 sm:text-[10px]">
-                      Dimensionen · Studio-Register
-                    </span>
-                    <span className="font-mono tabular-nums text-[9.5px] font-medium uppercase leading-none tracking-[0.34em] text-white/34 sm:text-[10px]">
-                      {String(MESSBAR_ITEMS.length).padStart(2, "0")} Positionen
-                    </span>
-                  </div>
-
-                  <ul className="grid grid-cols-2 gap-0 border-t border-white/[0.08] md:grid-cols-5">
-                    {MESSBAR_ITEMS.map((item, i) => (
-                      <li
-                        key={item.num}
-                        className={`flex flex-col gap-4 px-4 py-7 md:px-6 md:py-9 lg:px-8 ${
-                          i < MESSBAR_ITEMS.length - 2
-                            ? "border-b border-white/[0.06] md:border-b-0"
-                            : i === MESSBAR_ITEMS.length - 2
-                            ? "border-b border-white/[0.06] md:border-b-0 md:border-r md:border-white/[0.08]"
-                            : ""
-                        } ${
-                          i % 2 === 0
-                            ? "border-r border-white/[0.06] md:border-r md:border-white/[0.08]"
-                            : "md:border-r md:border-white/[0.08]"
-                        } ${
-                          i === MESSBAR_ITEMS.length - 1 ? "md:border-r-0" : ""
-                        }`}
-                      >
-                        <span className="font-mono tabular-nums text-[10px] font-medium uppercase leading-none tracking-[0.38em] text-white/46 md:text-[10.5px]">
-                          {item.num}
-                        </span>
-                        <span className="font-instrument text-[1.14rem] italic leading-[1.14] tracking-[-0.014em] text-white md:text-[1.28rem] lg:text-[1.36rem]">
-                          {item.label}
-                        </span>
-                        <span aria-hidden className="h-px w-8 bg-white/18" />
-                        <span className="font-mono text-[9.5px] font-medium uppercase leading-[1.5] tracking-[0.22em] text-white/44 md:text-[10px]">
-                          {item.note}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* =========================================================
-           § END — FINAL CTA
-        ========================================================= */}
-        <section
-          data-pj-final
-          className="relative overflow-hidden bg-[var(--magicks-bg-lifted)] px-5 pb-32 pt-32 sm:px-8 sm:pb-40 sm:pt-40 md:px-12 md:pb-48 md:pt-48 lg:px-16 lg:pt-56"
-        >
-          <div aria-hidden className="section-top-rule" />
-
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-[44%] aspect-square w-[116vw] max-w-[1160px] -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle at center, rgba(255,255,255,0.042) 0%, rgba(255,255,255,0.014) 32%, transparent 62%)",
-            }}
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.16]"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(90deg, rgba(255,255,255,0.09) 0 1px, transparent 1px 118px)",
-              maskImage:
-                "radial-gradient(ellipse 72% 60% at 50% 46%, black, transparent)",
-              WebkitMaskImage:
-                "radial-gradient(ellipse 72% 60% at 50% 46%, black, transparent)",
-            }}
-          />
-
-          <div className="relative layout-max">
-            <div className="mx-auto max-w-[72rem] text-center">
-              <p
-                data-pj-reveal
-                className="font-mono mb-6 text-[9.5px] font-medium uppercase leading-none tracking-[0.46em] text-white/42 sm:mb-8 sm:text-[10px]"
-              >
-                Studio · Projekt · MMXXVI
-              </p>
-
-              <div
-                data-pj-reveal
-                className="mb-12 inline-flex sm:mb-16"
-              >
-                <ChapterMarker num="END" label="Projekt" align="center" variant="end" />
-              </div>
-
-              <h2
-                data-pj-final-head
-                className="font-instrument text-[2.2rem] leading-[1.05] tracking-[-0.03em] text-white sm:text-[3rem] md:text-[3.95rem] lg:text-[4.75rem] xl:text-[5.3rem]"
-              >
-                {FINAL_CTA_HEADLINE}
-              </h2>
-
-              <p
-                data-pj-reveal
-                className="font-ui mx-auto mt-12 max-w-[46rem] text-[16px] leading-[1.76] text-white/66 md:mt-14 md:text-[17.5px]"
-              >
-                {FINAL_CTA_BODY}
-              </p>
-
-              <div
-                data-pj-reveal
-                className="mt-14 flex justify-center sm:mt-16 md:mt-20"
-              >
-                <Link
-                  to="/kontakt"
-                  className="group relative inline-flex items-center gap-3 rounded-full border border-white/22 bg-white py-4 pl-8 pr-3 text-[15.5px] font-medium tracking-[0.008em] text-[#0A0A0A] no-underline shadow-[0_34px_80px_-32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.45)] magicks-duration-hover magicks-ease-out transition-[transform,box-shadow] hover:-translate-y-[2px] hover:shadow-[0_44px_90px_-28px_rgba(0,0,0,1),inset_0_1px_0_rgba(255,255,255,0.55)] active:translate-y-0 active:scale-[0.985] md:text-[16.5px]"
-                >
-                  <span>Lass uns über dein Projekt sprechen</span>
-                  <span
-                    aria-hidden
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--magicks-ink-strong)] text-[var(--magicks-bg-lifted)] magicks-duration-hover magicks-ease-out transition-transform group-hover:translate-x-[2px] group-hover:-translate-y-[1px]"
-                  >
-                    <svg
-                      viewBox="0 0 14 14"
-                      width="12"
-                      height="12"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.4"
-                    >
-                      <path
-                        d="M3 11 L11 3 M5 3 H11 V9"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Closing ledger */}
-            <div
-              data-pj-reveal
-              className="mt-24 border-t border-white/[0.06] pt-7 sm:mt-28"
-            >
-              <div className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4 sm:gap-x-0">
-                {[
-                  { k: "§ End", v: "Studio · Arbeit" },
-                  { k: "Studio", v: "Kassel · Nordhessen" },
-                  { k: "Maßstab", v: "Struktur · Wirkung" },
-                  { k: "Edition", v: "Magicks · MMXXVI" },
-                ].map((item, i) => (
                   <div
-                    key={item.k}
-                    className={`flex flex-col gap-2 ${
-                      i > 0 ? "sm:border-l sm:border-white/[0.08] sm:pl-5 md:pl-7" : ""
-                    }`}
+                    data-projects-hero
+                    className="mt-10 flex flex-wrap items-center gap-4 sm:mt-12"
                   >
-                    <span className="font-mono text-[9.75px] font-medium uppercase leading-none tracking-[0.22em] text-white/36 sm:text-[10px] sm:tracking-[0.2em]">
-                      {item.k}
-                    </span>
-                    <span className="font-mono tabular-nums text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-white/68 sm:text-[11px] sm:tracking-[0.16em]">
-                      {item.v}
-                    </span>
+                    <PrimaryCta to="/kontakt" label="Projekt besprechen" />
+                    <SecondaryCta to="/leistungen" label="Leistungen ansehen" />
                   </div>
+                </div>
+
+                <aside
+                  data-projects-hero
+                  className="rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.66)] p-5 shadow-[0_24px_68px_-52px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.76)] sm:p-6"
+                >
+                  <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.72)]">
+                    Projektprinzip
+                  </p>
+                  <p className="font-ui mt-5 text-[1rem] font-[610] leading-[1.35] tracking-[-0.012em] text-[rgb(var(--magicks-ink-rgb)/0.9)]">
+                    Echte Projekte. Keine erfundenen Kennzahlen. Keine
+                    Demo-Cases.
+                  </p>
+                  <p className="font-ui mt-4 text-[14.5px] leading-[1.64] text-[rgb(var(--magicks-ink-rgb)/0.64)]">
+                    Die Projektseiten zeigen reale Auftritte und qualitative
+                    Einblicke. Messwerte werden nur ergänzt, wenn sie verifiziert
+                    vorliegen.
+                  </p>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-20 sm:px-8 sm:py-24 md:px-12 md:py-28 lg:px-16">
+          <div aria-hidden className="section-top-rule" />
+          <div className="layout-max">
+            <div className="mx-auto grid max-w-[76rem] gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+              <div data-projects-reveal>
+                <Eyebrow>Was wir zeigen</Eyebrow>
+                <h2 className="font-ui mt-7 max-w-[21ch] text-[2.05rem] font-[620] leading-[1.03] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.65rem] md:text-[3.25rem]">
+                  Projekte sind hier kein dekoratives Portfolio.
+                </h2>
+              </div>
+              <div data-projects-reveal className="lg:pt-14">
+                <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                  MAGICKS zeigt Projekte mit Blick auf Aufgabe, Aufbau und
+                  Alltagstauglichkeit. Entscheidend ist, was ein Auftritt leisten
+                  sollte: verständlicher erklären, hochwertiger wirken,
+                  Vertrauen schaffen, technisch sauber funktionieren oder eine
+                  bessere Grundlage für Sichtbarkeit schaffen.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-base)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div data-projects-reveal className="max-w-[58rem]">
+                <Eyebrow>Ausgewählte reale Projekte</Eyebrow>
+                <h2 className="font-ui mt-7 max-w-[20ch] text-[2.1rem] font-[620] leading-[1.01] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.85rem] md:text-[3.65rem]">
+                  Digitale Auftritte, an denen die Arbeit sichtbar wird.
+                </h2>
+              </div>
+
+              {projects.length > 0 ? (
+                <div className="mt-12 grid gap-6 md:mt-14">
+                  {featured ? <FeaturedProjectCard project={featured} /> : null}
+
+                  {remainingProjects.length > 0 ? (
+                    <div className="grid gap-6 lg:grid-cols-2">
+                      {remainingProjects.map((project) => (
+                        <ProjectCard key={project.slug} project={project} />
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              ) : (
+                <EmptyProjectState />
+              )}
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-elevated)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div aria-hidden className="section-top-rule" />
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div className="grid gap-10 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-16">
+                <div data-projects-reveal>
+                  <Eyebrow>Maßstab</Eyebrow>
+                  <h2 className="font-ui mt-7 max-w-[19ch] text-[2.05rem] font-[620] leading-[1.03] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.65rem] md:text-[3.25rem]">
+                    Woran wir gute digitale Projekte messen.
+                  </h2>
+                </div>
+                <div data-projects-reveal className="lg:pt-14">
+                  <p className="font-ui text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                    Ein gutes Projekt endet nicht beim Design. Es muss
+                    verständlich aufgebaut sein, schnell funktionieren, Nutzer
+                    gut führen, technisch sauber umgesetzt sein und im Alltag des
+                    Unternehmens einen echten Zweck erfüllen.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+                {MEASURE_ITEMS.map((item, index) => (
+                  <MeasureCard key={item.title} item={item} index={index} />
                 ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative bg-[var(--magicks-bg-lifted)] px-5 py-24 sm:px-8 sm:py-32 md:px-12 md:py-40 lg:px-16">
+          <div className="layout-max">
+            <div className="mx-auto max-w-[76rem]">
+              <div data-projects-reveal className="max-w-[58rem]">
+                <Eyebrow>Projektarten</Eyebrow>
+                <h2 className="font-ui mt-7 max-w-[21ch] text-[2.05rem] font-[620] leading-[1.03] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.75rem] md:text-[3.45rem]">
+                  Welche Art von Projekten MAGICKS umsetzt.
+                </h2>
+                <p className="font-ui mt-7 max-w-[52rem] text-[1rem] font-[470] leading-[1.72] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                  Ein Projekt kann als Website starten und später mit SEO,
+                  Content, Shop, Software oder Automation weiterwachsen.
+                  Entscheidend ist, welche digitale Grundlage Ihr Unternehmen
+                  wirklich braucht.
+                </p>
+              </div>
+
+              <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                {SERVICE_LINKS.map((link) => (
+                  <ServiceAreaLink key={link.to} link={link} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative overflow-hidden bg-[var(--magicks-bg-soft)] px-5 pb-24 pt-24 sm:px-8 sm:pb-32 sm:pt-32 md:px-12 md:pb-40 md:pt-40 lg:px-16">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(ellipse 62% 46% at 24% 20%, rgba(166,138,98,0.13), transparent 74%), radial-gradient(ellipse 52% 40% at 80% 76%, rgba(96,128,138,0.1), transparent 76%)",
+            }}
+          />
+          <div className="relative layout-max">
+            <div
+              data-projects-reveal
+              className="mx-auto max-w-[70rem] rounded-[2rem] border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[linear-gradient(170deg,rgba(255,255,255,0.82)_0%,rgba(245,241,233,0.7)_100%)] px-6 py-12 text-center shadow-[0_30px_86px_-56px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.84)] sm:px-10 sm:py-14 md:px-14 md:py-18"
+            >
+              <Eyebrow>Nächster Schritt</Eyebrow>
+              <h2 className="font-ui mx-auto mt-7 max-w-[20ch] text-[2.2rem] font-[620] leading-[1.01] tracking-[-0.034em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3rem] md:text-[3.9rem]">
+                Lassen Sie uns über Ihr nächstes digitales Projekt sprechen.
+              </h2>
+              <p className="font-ui mx-auto mt-7 max-w-[54rem] text-[1rem] leading-[1.72] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.08rem]">
+                Ob Website, Landingpage, Shop, Produktkonfigurator,
+                Web-Software oder Automation: Beschreiben Sie kurz, worum es
+                geht. MAGICKS meldet sich mit einer klaren Einschätzung.
+              </p>
+
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-4 sm:mt-12">
+                <PrimaryCta to="/kontakt" label="Projekt besprechen" />
+                <SecondaryCta to="/kontakt" label="Kontakt aufnehmen" />
               </div>
             </div>
           </div>
@@ -813,52 +393,216 @@ export default function ProjektePage() {
   );
 }
 
-/* ------------------------------------------------------------------
- * CompactProjectRow — horizontal editorial row, used for every
- * project on the overview page. Kept thin so the catalogue scales
- * cleanly to many entries without becoming a card wall and so all
- * projects read with the same editorial weight.
- * ------------------------------------------------------------------ */
-
-function CompactProjectRow({
-  project,
-  index,
-}: {
-  project: Project;
-  index: number;
-}) {
+function FeaturedProjectCard({ project }: { project: Project }) {
   return (
-    <li data-pj-reveal className="border-b border-[rgb(var(--magicks-line-rgb)/0.16)]">
-      <Link
-        to={`/projekte/${project.slug}`}
-        className="group grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 py-8 no-underline md:grid-cols-[auto_minmax(0,1.5fr)_minmax(0,2fr)_auto] md:gap-10 md:py-10"
-      >
-        <span className="font-mono tabular-nums text-[10.75px] font-medium uppercase leading-none tracking-[0.22em] text-white/44 md:tracking-[0.2em]">
-          {String(index).padStart(2, "0")}
-        </span>
-        <div className="flex flex-col gap-2">
-          <span className="font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.22em] text-white/44 md:text-[10.75px] md:tracking-[0.2em]">
-            {project.category}
-            {project.industry ? <> &nbsp;·&nbsp; {project.industry}</> : null}
-          </span>
-          <h3 className="font-instrument text-[1.35rem] leading-[1.14] tracking-[-0.016em] text-white md:text-[1.58rem] lg:text-[1.75rem]">
+    <article
+      data-projects-reveal
+      className="group overflow-hidden rounded-[1.65rem] border border-[rgb(var(--magicks-line-rgb)/0.11)] bg-[linear-gradient(160deg,rgba(255,255,255,0.86)_0%,rgba(246,242,233,0.72)_100%)] shadow-[0_28px_76px_-58px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.82)]"
+    >
+      <div className="grid gap-0 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
+        <ProjectVisual project={project} large />
+        <div className="flex flex-col p-6 sm:p-8 md:p-10">
+          <ProjectMeta project={project} />
+          <h3 className="font-ui mt-5 text-[1.9rem] font-[630] leading-[1.08] tracking-[-0.026em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.35rem] md:text-[2.75rem]">
             {project.title}
           </h3>
-          <p className="font-ui max-w-[34rem] text-[14.5px] leading-[1.66] text-white/62 md:hidden">
+          <p className="font-ui mt-5 max-w-[38rem] text-[1rem] leading-[1.7] text-[rgb(var(--magicks-ink-rgb)/0.7)] sm:text-[1.06rem]">
             {project.teaser}
           </p>
+          <ProjectFocus project={project} />
+          <ProjectActions project={project} />
         </div>
-        <p className="font-ui hidden max-w-[34rem] text-[15px] leading-[1.72] text-white/62 md:block">
-          {project.teaser}
-        </p>
-        <span
-          aria-hidden
-          className="font-instrument text-[1.25rem] italic text-white/72 transition-transform duration-[600ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[3px] group-hover:translate-x-[3px] md:text-[1.45rem]"
-        >
-          ↗︎
-        </span>
-      </Link>
-    </li>
+      </div>
+    </article>
   );
 }
 
+function ProjectCard({ project }: { project: Project }) {
+  return (
+    <article
+      data-projects-reveal
+      className="group flex h-full flex-col overflow-hidden rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.62)] shadow-[0_20px_58px_-48px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)]"
+    >
+      <ProjectVisual project={project} />
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <ProjectMeta project={project} />
+        <h3 className="font-ui mt-4 text-[1.45rem] font-[630] leading-[1.12] tracking-[-0.022em] text-[rgb(var(--magicks-ink-rgb)/0.94)] sm:text-[1.72rem]">
+          {project.title}
+        </h3>
+        <p className="font-ui mt-4 text-[15px] leading-[1.66] text-[rgb(var(--magicks-ink-rgb)/0.68)]">
+          {project.teaser}
+        </p>
+        <ProjectFocus project={project} compact />
+        <ProjectActions project={project} />
+      </div>
+    </article>
+  );
+}
+
+function ProjectVisual({ project, large = false }: { project: Project; large?: boolean }) {
+  const aspectClass = large ? "aspect-[4/3] lg:aspect-auto lg:min-h-full" : "aspect-[16/10]";
+
+  if (project.cover) {
+    return (
+      <Link
+        to={`/projekte/${project.slug}`}
+        className={`relative block overflow-hidden bg-[rgb(var(--magicks-bg-elevated-rgb)/0.7)] no-underline ${aspectClass}`}
+        aria-label={`${project.title} ansehen`}
+      >
+        <img
+          src={project.cover.src}
+          alt={project.cover.alt}
+          loading="lazy"
+          decoding="async"
+          className="h-full w-full object-cover transition-transform duration-[900ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.018]"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[rgba(20,28,44,0.24)] via-transparent to-transparent opacity-80"
+        />
+      </Link>
+    );
+  }
+
+  return (
+    <Link
+      to={`/projekte/${project.slug}`}
+      className={`relative block overflow-hidden bg-[linear-gradient(160deg,rgba(255,255,255,0.72)_0%,rgba(239,235,226,0.82)_100%)] no-underline ${aspectClass}`}
+      aria-label={`${project.title} ansehen`}
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.2]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(46,56,76,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(46,56,76,0.06) 1px, transparent 1px)",
+          backgroundSize: "56px 56px",
+        }}
+      />
+      <div className="absolute inset-6 rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.12)]" />
+      <span className="font-mono absolute bottom-6 left-6 text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-ink-rgb)/0.46)]">
+        Bildmaterial folgt
+      </span>
+    </Link>
+  );
+}
+
+function ProjectMeta({ project }: { project: Project }) {
+  return (
+    <p className="font-mono flex flex-wrap items-center gap-x-2 gap-y-1 text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.74)]">
+      <span>{project.category}</span>
+      {project.industry ? (
+        <>
+          <span aria-hidden className="text-[rgb(var(--magicks-ink-rgb)/0.28)]">
+            ·
+          </span>
+          <span>{project.industry}</span>
+        </>
+      ) : null}
+    </p>
+  );
+}
+
+function ProjectFocus({ project, compact = false }: { project: Project; compact?: boolean }) {
+  const focusItems = (project.services ?? project.goals ?? []).slice(0, compact ? 3 : 4);
+
+  if (focusItems.length === 0) return null;
+
+  return (
+    <ul className="mt-6 flex flex-wrap gap-2">
+      {focusItems.map((item) => (
+        <li
+          key={item}
+          className="rounded-full border border-[rgb(var(--magicks-line-rgb)/0.12)] bg-[rgb(var(--magicks-bg-base-rgb)/0.5)] px-3 py-1.5 font-ui text-[13px] font-[520] leading-none text-[rgb(var(--magicks-ink-rgb)/0.68)]"
+        >
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function ProjectActions({ project }: { project: Project }) {
+  return (
+    <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-3 pt-8">
+      <Link
+        to={`/projekte/${project.slug}`}
+        className="group/link inline-flex min-h-11 items-center gap-2 font-ui text-[15px] font-[620] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.86)] no-underline transition-colors duration-500 hover:text-[rgb(var(--magicks-ink-rgb)/1)]"
+      >
+        Projekt ansehen
+        <span aria-hidden className="font-instrument italic transition-transform duration-500 group-hover/link:translate-x-1">
+          ↗
+        </span>
+      </Link>
+      {project.publicUrl ? (
+        <a
+          href={project.publicUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group/live inline-flex min-h-11 items-center gap-2 font-ui text-[14.5px] font-[560] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.58)] no-underline transition-colors duration-500 hover:text-[rgb(var(--magicks-ink-rgb)/0.9)]"
+        >
+          Live ansehen
+          <span aria-hidden className="font-instrument italic transition-transform duration-500 group-hover/live:translate-x-1">
+            ↗
+          </span>
+        </a>
+      ) : null}
+    </div>
+  );
+}
+
+function MeasureCard({ item, index }: { item: MeasureItem; index: number }) {
+  return (
+    <article
+      data-projects-reveal
+      className="rounded-[1rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.58)] p-5 shadow-[0_18px_52px_-44px_rgba(20,28,44,0.28),inset_0_1px_0_rgba(255,255,255,0.72)]"
+    >
+      <p className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.7)]">
+        {String(index + 1).padStart(2, "0")}
+      </p>
+      <h3 className="font-ui mt-4 text-[1.08rem] font-[620] leading-[1.28] tracking-[-0.013em] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+        {item.title}
+      </h3>
+      <p className="font-ui mt-3 text-[14.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.66)]">
+        {item.text}
+      </p>
+    </article>
+  );
+}
+
+function ServiceAreaLink({ link }: { link: ServiceLink }) {
+  return (
+    <Link
+      data-projects-reveal
+      to={link.to}
+      className="group rounded-[1.05rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-base-rgb)/0.48)] p-5 no-underline shadow-[0_18px_48px_-42px_rgba(20,28,44,0.24),inset_0_1px_0_rgba(255,255,255,0.68)] transition-[transform,border-color,background-color] duration-500 hover:-translate-y-[1px] hover:border-[rgb(var(--magicks-line-rgb)/0.2)] hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/0.72)]"
+    >
+      <h3 className="font-ui text-[1.05rem] font-[620] leading-[1.3] tracking-[-0.013em] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+        {link.title}
+        <span className="font-instrument ml-2 italic text-[rgb(var(--magicks-accent-ink-rgb)/0.7)] transition-transform duration-500 group-hover:translate-x-1">
+          ↗
+        </span>
+      </h3>
+      <p className="font-ui mt-3 text-[14.5px] leading-[1.62] text-[rgb(var(--magicks-ink-rgb)/0.64)]">
+        {link.text}
+      </p>
+    </Link>
+  );
+}
+
+function EmptyProjectState() {
+  return (
+    <div
+      data-projects-reveal
+      className="mt-12 rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.62)] p-6 shadow-[0_20px_58px_-48px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:p-8"
+    >
+      <h3 className="font-ui text-[1.35rem] font-[620] leading-[1.2] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+        Weitere Projekte werden vorbereitet.
+      </h3>
+      <p className="font-ui mt-4 max-w-[38rem] text-[15px] leading-[1.66] text-[rgb(var(--magicks-ink-rgb)/0.68)]">
+        Sobald reale Projektfreigaben und Bildmaterial vorliegen, ergänzt
+        MAGICKS die Übersicht.
+      </p>
+    </div>
+  );
+}
