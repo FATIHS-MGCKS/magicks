@@ -15,9 +15,8 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
  *   · centred CTA with dual underline sweep
  *   · thin scroll cue (bottom-centre)
  *
- * Typography keeps the headline's first line and subtext in Apple-system
- * for SF Pro precision; the italic second line shifts to Instrument Serif
- * as the hero's editorial accent.
+ * Typography keeps both headline lines in Instrument Serif as the hero's
+ * editorial accent, with "Online." scaled down for a quieter second beat.
  */
 
 const LINE_A = ["Mehr", "als", "nur"];
@@ -375,7 +374,7 @@ export function Hero() {
               id="hero-heading"
               className="font-ui text-[3rem] leading-[0.96] tracking-[-0.042em] text-[rgb(var(--magicks-ink-rgb)/0.98)] [text-shadow:0_1px_0_rgba(255,255,255,0.74)] sm:text-[4.35rem] md:text-[5.45rem] lg:text-[6.35rem] xl:text-[7rem]"
             >
-              <span className="block font-[640]">
+              <span className="font-instrument block font-[460] italic text-[rgb(var(--magicks-ink-rgb)/0.78)]">
                 {LINE_A.map((w, i) => (
                   <span
                     key={`a-${i}`}
@@ -387,24 +386,24 @@ export function Hero() {
                   </span>
                 ))}
               </span>
-              <span className="font-instrument mt-1 block font-[460] italic text-[rgb(var(--magicks-ink-rgb)/0.78)] sm:mt-2">
+              <span className="font-instrument mt-1 block text-[0.74em] font-[460] italic leading-[0.98] sm:mt-2 md:text-[0.7em] lg:text-[0.68em]">
                 {LINE_B.map((w, i) => (
                   <span
                     key={`b-${i}`}
-                    className="mr-[0.18em] inline-block overflow-hidden px-[0.18em] -mx-[0.18em] py-[0.12em] -my-[0.12em] align-bottom last:mr-0 text-emerald-700"
+                    className="mr-[0.16em] inline-block overflow-hidden px-[0.14em] -mx-[0.14em] py-[0.08em] -my-[0.08em] align-bottom last:mr-0 text-emerald-700"
                   >
                     <span
                       data-hero-b
-                      className="relative inline-flex items-center gap-[0.25em] text-emerald-700 [text-shadow:0_0.025em_0_rgba(255,255,255,0.72)] after:absolute after:inset-x-[0.02em] after:bottom-[0.08em] after:h-[0.045em] after:rounded-full after:bg-[linear-gradient(90deg,transparent_0%,rgb(var(--magicks-accent-rgb)/0.28)_18%,rgba(5,150,105,0.24)_50%,rgb(var(--magicks-accent-rgb)/0.18)_82%,transparent_100%)] after:content-[''] will-change-[transform,opacity]"
+                      className="relative inline-flex items-center gap-[0.18em] text-emerald-700 [text-shadow:0_0.02em_0_rgba(255,255,255,0.72)] after:absolute after:inset-x-[0.02em] after:bottom-[0.07em] after:h-[0.04em] after:rounded-full after:bg-[linear-gradient(90deg,transparent_0%,rgb(var(--magicks-accent-rgb)/0.28)_18%,rgba(5,150,105,0.24)_50%,rgb(var(--magicks-accent-rgb)/0.18)_82%,transparent_100%)] after:content-[''] will-change-[transform,opacity]"
                     >
                       <span className="relative flex items-center justify-center">
                         <span
                           aria-hidden
-                          className="absolute h-[0.26em] w-[0.26em] animate-pulse rounded-full bg-emerald-500 blur-[0.1em] opacity-80"
+                          className="absolute h-[0.18em] w-[0.18em] animate-pulse rounded-full bg-emerald-500 blur-[0.06em] opacity-75"
                         />
                         <span
                           aria-hidden
-                          className="relative inline-block h-[0.26em] w-[0.26em] rounded-full border border-white/30 bg-[radial-gradient(circle_at_30%_30%,#34d399,#059669_70%,#022c22_100%)] align-middle shadow-[inset_0_0.04em_0.04em_rgba(255,255,255,0.6),inset_0_-0.04em_0.08em_rgba(0,0,0,0.4),0_0.04em_0.08em_rgba(0,0,0,0.2)]"
+                          className="relative inline-block h-[0.18em] w-[0.18em] rounded-full border border-white/30 bg-[radial-gradient(circle_at_30%_30%,#34d399,#059669_70%,#022c22_100%)] align-middle shadow-[inset_0_0.03em_0.03em_rgba(255,255,255,0.6),inset_0_-0.03em_0.06em_rgba(0,0,0,0.35),0_0.03em_0.06em_rgba(0,0,0,0.18)]"
                         />
                       </span>
                       {w}
