@@ -221,20 +221,19 @@ export function Services() {
       />
 
       <div className="layout-max">
-        <div className="mb-6 sm:mb-8 md:mb-10">
-          <span className="mx-auto inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[11px] sm:tracking-[0.22em]">
+        <div className="mx-auto mb-14 max-w-[58rem] text-center md:mb-18 lg:mb-20">
+          <span className="mx-auto inline-flex items-center gap-2.5 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.2)] bg-[rgb(var(--magicks-accent-rgb)/0.065)] px-3 py-1.5 font-ui text-[0.62rem] font-[620] uppercase leading-none tracking-[0.15em] text-[rgb(var(--magicks-accent-ink-rgb)/0.76)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[0.64rem] sm:tracking-[0.17em]">
             <span
               aria-hidden
               className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.72)]"
             />
             Leistungen
           </span>
-        </div>
-        <div className="mb-16 grid gap-8 md:mb-24 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-end md:gap-14">
+
           <h2
             id="services-heading"
             data-services-headline
-            className="font-ui text-[2.32rem] font-[700] leading-[1.04] tracking-[-0.028em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[3.05rem] md:text-[4.05rem] lg:text-[4.7rem]"
+            className="font-ui mx-auto mt-5 max-w-[18ch] text-[2.05rem] font-[680] leading-[1.05] tracking-[-0.032em] text-[rgb(var(--magicks-ink-rgb)/0.95)] sm:text-[2.45rem] md:text-[3rem] lg:text-[3.35rem] xl:text-[3.55rem]"
             style={{ perspective: "1000px" }}
           >
             <span className="inline-block overflow-hidden pb-1 -mb-1">
@@ -254,11 +253,8 @@ export function Services() {
               <span data-build-part className="inline-block will-change-transform">.</span>
             </span>
           </h2>
-          <div
-            data-services-caption
-            className="relative pl-5 before:absolute before:left-0 before:top-2 before:h-[calc(100%-16px)] before:w-px before:bg-gradient-to-b before:from-[rgb(var(--magicks-line-rgb)/0.28)] before:via-[rgb(var(--magicks-line-rgb)/0.1)] before:to-transparent"
-          >
-            <p className="font-ui max-w-[30rem] text-[1.04rem] font-[450] leading-[1.7] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.7)] md:text-[1.1rem]">
+          <div data-services-caption className="mx-auto mt-7 max-w-[46rem]">
+            <p className="font-ui mx-auto rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.52)] px-6 py-5 text-[0.9rem] font-[500] leading-[1.62] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.7)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-8 sm:py-6 sm:text-[0.94rem] lg:text-[0.95rem]">
               Schönes Design ist nur der Anfang. Wir entwickeln Websites, Shops,
               3D-Konfiguratoren, Software und KI-Automationen. Alles, was Ihr
               Business digital stärker oder effizienter macht.

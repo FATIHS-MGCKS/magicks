@@ -210,7 +210,7 @@ export function About() {
           <div className="mx-auto max-w-[68rem] text-center">
             <span
               data-about-intro
-              className="mx-auto inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[11px] sm:tracking-[0.22em]"
+              className="mx-auto inline-flex items-center gap-2.5 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.2)] bg-[rgb(var(--magicks-accent-rgb)/0.065)] px-3 py-1.5 font-ui text-[0.62rem] font-[620] uppercase leading-none tracking-[0.15em] text-[rgb(var(--magicks-accent-ink-rgb)/0.76)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[0.64rem] sm:tracking-[0.17em]"
             >
               <span
                 aria-hidden
@@ -222,7 +222,7 @@ export function About() {
             <h2
               id="about-heading"
               data-about-intro
-              className="font-ui mx-auto mt-6 max-w-[26ch] text-[2.55rem] font-[660] leading-[1.02] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[3.5rem] md:text-[76px] lg:max-w-[26ch] lg:text-[5.45rem]"
+              className="font-ui mx-auto mt-5 max-w-[24ch] text-[2.2rem] font-[660] leading-[1.04] tracking-[-0.035em] text-[rgb(var(--magicks-ink-rgb)/0.96)] [text-wrap:balance] sm:text-[2.6rem] md:text-[3rem] lg:max-w-[22ch] lg:text-[3.4rem] xl:text-[3.65rem]"
             >
               <span className="block">Wir bauen keine</span>
               <span className="block whitespace-nowrap font-instrument italic font-normal text-[rgb(var(--magicks-ink-rgb)/0.64)]">
@@ -233,32 +233,26 @@ export function About() {
 
             <div
               data-about-intro
-              className="mx-auto mt-9 max-w-[52rem] text-balance sm:mt-11"
+              className="mx-auto mt-8 max-w-[54rem] sm:mt-10"
             >
-              <div className="font-ui rounded-[1.2rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-6 text-center text-[1.02rem] font-[500] leading-[1.66] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.74)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-7 sm:py-7 sm:text-[1.1rem] md:text-[20px]">
-                <div className="mx-auto max-w-[45rem]">
+              <div className="font-ui rounded-[1.4rem] border border-[rgb(var(--magicks-line-rgb)/0.08)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-7 py-7 text-[0.95rem] font-[500] leading-[1.72] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.74)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.74)] sm:px-10 sm:py-9 sm:text-[1rem] sm:leading-[1.74] md:px-12">
+                <div className="mx-auto max-w-[58ch] text-center [text-wrap:pretty]">
                   <p className="m-0">
-                    <span className="block">
-                      <strong className="font-[720] text-[rgb(var(--magicks-ink-rgb)/0.94)]">
-                        3 Sekunden.
-                      </strong>{" "}
-                      Mehr Zeit bleibt oft nicht.
-                    </span>
-                    <span className="block">Dann entscheidet ein potenzieller Kunde,</span>
-                    <span className="block">ob er bleibt, vertraut — oder weitersucht.</span>
+                    <strong className="font-[720] text-[rgb(var(--magicks-ink-rgb)/0.94)]">
+                      3 Sekunden.
+                    </strong>{" "}
+                    Mehr Zeit bleibt oft nicht. Dann entscheidet ein potenzieller
+                    Kunde, ob er bleibt, vertraut — oder weitersucht.
                   </p>
 
-                  <p className="m-0 mt-8 sm:mt-9">
-                    <span className="block">Wir sorgen dafür, dass diese 3 Sekunden</span>
-                    <span className="block">für Sie arbeiten.</span>
+                  <p className="m-0 mt-5">
+                    Wir sorgen dafür, dass diese 3 Sekunden für Sie arbeiten.
                   </p>
 
-                  <p className="m-0 mt-8 sm:mt-9">
-                    <span className="block">Als Ihr Partner für Strategie, Design,</span>
-                    <span className="block">
-                      Inhalt und Technik machen wir Ihre Botschaft
-                    </span>
-                    <span className="block">sichtbar, verständlich und überzeugend.</span>
+                  <p className="m-0 mt-5">
+                    Als Ihr Partner für Strategie, Design, Inhalt und Technik
+                    machen wir Ihre Botschaft sichtbar, verständlich und
+                    überzeugend.
                   </p>
                 </div>
               </div>

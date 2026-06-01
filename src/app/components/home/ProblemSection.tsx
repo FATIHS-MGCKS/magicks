@@ -165,7 +165,7 @@ export function ProblemSection() {
     <section
       ref={rootRef}
       id="problem"
-      className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-20 sm:px-8 sm:py-28 md:px-12 lg:px-16 lg:py-20"
+      className="relative overflow-hidden bg-[var(--magicks-bg-base)] px-5 py-20 sm:px-8 sm:py-28 md:px-12 md:py-32 lg:px-16 lg:py-24 xl:py-28"
       aria-labelledby="problem-heading"
     >
       <div aria-hidden className="section-top-rule" />
@@ -183,14 +183,14 @@ export function ProblemSection() {
       <div className="relative layout-max">
         <div
           data-problem-desktop
-          className="mx-auto hidden max-w-[84rem] lg:block"
+          className="mx-auto hidden max-w-[76rem] lg:block"
         >
-          <div className="grid w-full grid-cols-[0.46fr_0.54fr] items-center gap-10 xl:gap-14">
+          <div className="grid w-full grid-cols-[minmax(0,0.52fr)_minmax(0,0.48fr)] items-center gap-8 xl:gap-10">
             <ProblemIntro />
 
             <div
               data-problem-phone
-              className="relative mx-auto w-[clamp(320px,30vw,440px)] will-change-[opacity,transform,filter]"
+              className="relative mx-auto w-[clamp(300px,27vw,390px)] will-change-[opacity,transform,filter]"
             >
               <ProblemIphoneMockup
                 activeIndex={clampedSlide}
@@ -222,10 +222,10 @@ export function ProblemSection() {
 
 function ProblemIntro() {
   return (
-    <div className="relative z-10 text-center lg:text-left">
+    <div className="relative z-10 mx-auto max-w-[35rem] text-center lg:mx-0 lg:max-w-[37rem] lg:rounded-[2rem] lg:border lg:border-[rgb(var(--magicks-line-rgb)/0.1)] lg:bg-[rgb(var(--magicks-bg-lifted-rgb)/0.48)] lg:p-8 lg:text-left lg:shadow-[0_30px_90px_-70px_rgba(20,28,44,0.4),inset_0_1px_0_rgba(255,255,255,0.72)] xl:p-9">
       <span
         data-problem-copy
-        className="mx-auto inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[11px] sm:tracking-[0.22em] lg:mx-0"
+        className="mx-auto inline-flex items-center gap-2.5 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.2)] bg-[rgb(var(--magicks-accent-rgb)/0.065)] px-3 py-1.5 font-ui text-[0.62rem] font-[620] uppercase leading-none tracking-[0.15em] text-[rgb(var(--magicks-accent-ink-rgb)/0.76)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[0.64rem] sm:tracking-[0.17em] lg:mx-0"
       >
         <span
           aria-hidden
@@ -237,19 +237,19 @@ function ProblemIntro() {
       <h2
         id="problem-heading"
         data-problem-copy
-        className="font-ui mx-auto mt-6 max-w-[17ch] text-[2.25rem] font-[700] leading-[0.98] tracking-[-0.044em] text-[rgb(var(--magicks-ink-rgb)/0.98)] will-change-[opacity,transform,filter] sm:text-[2.85rem] md:text-[62px] lg:mx-0 lg:max-w-[15ch] lg:text-[4.45rem]"
+        className="font-instrument mx-auto mt-5 max-w-[17ch] text-[2.2rem] font-[460] italic leading-[1.0] tracking-[-0.022em] text-[rgb(var(--magicks-ink-rgb)/0.86)] [text-wrap:balance] will-change-[opacity,transform,filter] sm:text-[2.6rem] md:text-[3rem] lg:mx-0 lg:max-w-[14ch] lg:text-[3.25rem] xl:text-[3.5rem]"
       >
         <span className="block">Ihre Webseite ist</span>
         <span className="block whitespace-nowrap text-emerald-700">
-          <span className="inline-flex items-center gap-[0.35em] whitespace-nowrap">
+          <span className="inline-flex items-center gap-[0.22em] whitespace-nowrap text-emerald-700">
             <span className="relative flex items-center justify-center">
               <span
                 aria-hidden
-                className="absolute h-[0.26em] w-[0.26em] animate-pulse rounded-full bg-emerald-500 blur-[0.1em] opacity-80"
+                className="absolute h-[0.18em] w-[0.18em] animate-pulse rounded-full bg-emerald-500 blur-[0.06em] opacity-70"
               />
               <span
                 aria-hidden
-                className="relative inline-block h-[0.26em] w-[0.26em] rounded-full border border-white/30 bg-[radial-gradient(circle_at_30%_30%,#34d399,#059669_70%,#022c22_100%)] align-middle shadow-[inset_0_0.04em_0.04em_rgba(255,255,255,0.6),inset_0_-0.04em_0.08em_rgba(0,0,0,0.4),0_0.04em_0.08em_rgba(0,0,0,0.2)]"
+                className="relative inline-block h-[0.18em] w-[0.18em] rounded-full border border-white/30 bg-[radial-gradient(circle_at_30%_30%,#34d399,#059669_70%,#022c22_100%)] align-middle shadow-[inset_0_0.03em_0.03em_rgba(255,255,255,0.58),inset_0_-0.03em_0.06em_rgba(0,0,0,0.34),0_0.03em_0.06em_rgba(0,0,0,0.16)]"
               />
             </span>
             Online
@@ -260,7 +260,7 @@ function ProblemIntro() {
 
       <p
         data-problem-copy
-        className="font-ui mx-auto mt-7 max-w-[36rem] text-justify text-[1.02rem] font-[500] leading-[1.66] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.74)] will-change-[opacity,transform,filter] sm:text-[1.1rem] md:text-[20px] lg:text-[20px]"
+        className="font-ui mx-auto mt-6 max-w-[32rem] text-center text-[0.9rem] font-[500] leading-[1.6] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.72)] will-change-[opacity,transform,filter] sm:text-[0.94rem] lg:mx-0 lg:text-left lg:text-[0.95rem]"
       >
         Ihre Website arbeitet rund um die Uhr für Ihr Unternehmen. Sie
         präsentiert Ihr Angebot, erklärt Ihre Leistungen und macht aus Besuchern
@@ -269,21 +269,18 @@ function ProblemIntro() {
 
       <p
         data-problem-copy
-        className="font-ui mx-auto mt-5 max-w-[38rem] rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.56)] px-5 py-5 text-center text-[1.02rem] font-[500] leading-[1.66] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.74)] shadow-[0_28px_78px_-58px_rgba(20,28,44,0.32),inset_0_1px_0_rgba(255,255,255,0.72)] will-change-[opacity,transform,filter] sm:px-6 sm:py-6 sm:text-[1.1rem] md:text-[20px] lg:text-[20px]"
+        className="font-ui mx-auto mt-5 max-w-[33rem] rounded-[1.35rem] border border-[rgb(var(--magicks-line-rgb)/0.1)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.58)] px-5 py-4 text-center text-[0.9rem] font-[500] leading-[1.56] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.72)] shadow-[0_24px_70px_-58px_rgba(20,28,44,0.3),inset_0_1px_0_rgba(255,255,255,0.72)] will-change-[opacity,transform,filter] sm:px-6 sm:py-5 sm:text-[0.94rem] lg:mx-0 lg:text-left lg:text-[0.95rem]"
       >
-        <span className="block">Doch wenn am Ende keine Kontakte,</span>
-        <span className="block">keine Buchungen und keine neuen</span>
-        <span className="block">Kunden entstehen, bleibt sie nur</span>
-        <span className="block">
-          <strong className="font-[680] text-[rgb(var(--magicks-ink-rgb)/0.82)]">
-            sichtbar
-          </strong>{" "}
-          aber nicht{" "}
-          <strong className="font-[720] text-[rgb(var(--magicks-ink-rgb)/0.9)] underline decoration-[rgb(var(--magicks-accent-rgb)/0.42)] decoration-2 underline-offset-[0.16em]">
-            wirksam
-          </strong>
-          .
-        </span>
+        Doch wenn am Ende keine Kontakte, keine Buchungen und keine neuen Kunden
+        entstehen, bleibt sie nur{" "}
+        <strong className="font-[680] text-[rgb(var(--magicks-ink-rgb)/0.82)]">
+          sichtbar
+        </strong>{" "}
+        aber nicht{" "}
+        <strong className="font-[720] text-[rgb(var(--magicks-ink-rgb)/0.9)] underline decoration-[rgb(var(--magicks-accent-rgb)/0.42)] decoration-2 underline-offset-[0.16em]">
+          wirksam
+        </strong>
+        .
       </p>
     </div>
   );
@@ -899,22 +896,24 @@ function ProblemClosing() {
   return (
     <div
       data-problem-closing
-      className="relative z-10 mx-auto mt-20 max-w-[58rem] text-center will-change-[opacity,transform,filter] sm:mt-24 lg:mt-24 lg:pb-20"
+      className="relative z-10 mx-auto mt-16 max-w-[48rem] text-center will-change-[opacity,transform,filter] sm:mt-20 lg:mt-20 lg:pb-16"
     >
-      <p className="mx-auto inline-flex items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-accent-rgb)/0.07)] px-3 py-2 font-mono text-[10.5px] font-medium uppercase leading-none tracking-[0.18em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[11px] sm:tracking-[0.22em]">
+      <p className="mx-auto inline-flex items-center gap-2.5 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.2)] bg-[rgb(var(--magicks-accent-rgb)/0.065)] px-3 py-1.5 font-ui text-[0.62rem] font-[620] uppercase leading-none tracking-[0.15em] text-[rgb(var(--magicks-accent-ink-rgb)/0.76)] shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:text-[0.64rem] sm:tracking-[0.17em]">
         Um es kurz zu fassen
       </p>
-      <p className="font-ui mx-auto mt-5 max-w-[16ch] text-[2.5rem] font-[720] leading-[0.98] tracking-[-0.052em] text-[rgb(var(--magicks-ink-rgb)/0.98)] sm:text-[4.2rem] lg:text-[5.6rem]">
+      <p className="font-ui mx-auto mt-5 max-w-[15ch] text-[2.05rem] font-[700] leading-[1.02] tracking-[-0.04em] text-[rgb(var(--magicks-ink-rgb)/0.96)] sm:text-[2.8rem] md:text-[3.15rem] lg:text-[3.55rem]">
         <span className="block whitespace-nowrap">Keine Überzeugung</span>
-        <span className="block">=</span>
+        <span className="font-instrument block py-1 text-[0.7em] font-[460] italic leading-none tracking-[-0.02em] text-[rgb(var(--magicks-ink-rgb)/0.52)]">
+          =
+        </span>
         <span className="block">
-          <span className="relative inline-block pb-4">
+          <span className="relative inline-block pb-3">
             Kein Umsatz
             <svg
               aria-hidden
               viewBox="0 0 620 72"
               preserveAspectRatio="none"
-              className="pointer-events-none absolute -bottom-2 left-[-5%] h-[0.38em] w-[110%] rotate-[-1.4deg] overflow-visible"
+              className="pointer-events-none absolute -bottom-1.5 left-[-5%] h-[0.34em] w-[110%] rotate-[-1.4deg] overflow-visible"
             >
               <defs>
                 <linearGradient id="problem-brush-red" x1="0" x2="1" y1="0" y2="0">
