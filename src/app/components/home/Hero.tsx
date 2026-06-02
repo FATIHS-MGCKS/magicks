@@ -282,23 +282,24 @@ export function Hero() {
         }}
       />
 
-      {/* 3 — centred reading field: keeps the headline readable over video */}
+      {/* 3 — upper reading field: keeps the headline readable while leaving
+             the new floral video edge visually present. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 78% 64% at 50% 45%, rgba(255,253,247,0.56) 0%, rgba(251,247,239,0.42) 28%, rgba(248,244,235,0.22) 50%, rgba(245,240,230,0.06) 70%, transparent 100%)",
+            "radial-gradient(ellipse 72% 50% at 50% 32%, rgba(255,253,247,0.66) 0%, rgba(251,247,239,0.44) 30%, rgba(248,244,235,0.16) 56%, transparent 78%)",
         }}
       />
 
       {/* 3b — centred cinematic key light behind the headline */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-[13%] h-[66%] w-[min(82vw,920px)] -translate-x-1/2 rounded-[2.5rem]"
+        className="pointer-events-none absolute left-1/2 top-[8%] h-[58%] w-[min(82vw,900px)] -translate-x-1/2 rounded-[2.5rem]"
         style={{
           background:
-            "radial-gradient(ellipse 78% 70% at 50% 48%, rgba(255,255,255,0.28) 0%, rgba(250,246,238,0.17) 46%, rgba(248,244,235,0.06) 72%, transparent 100%)",
+            "radial-gradient(ellipse 78% 66% at 50% 42%, rgba(255,255,255,0.3) 0%, rgba(250,246,238,0.16) 48%, rgba(248,244,235,0.045) 74%, transparent 100%)",
         }}
       />
 
@@ -358,11 +359,11 @@ export function Hero() {
       {/* Main content column */}
       <div
         data-hero-copy
-        className="relative z-10 flex flex-1 items-center justify-center px-5 pb-[7.5rem] pt-24 text-center sm:px-8 sm:pb-[8.5rem] md:px-12 md:pb-[9.5rem] md:pt-32 lg:px-16 lg:pb-[10.5rem] xl:px-20"
+        className="relative z-10 flex flex-1 items-center justify-center px-5 pb-[10rem] pt-24 text-center sm:px-8 sm:pb-[11.5rem] md:px-12 md:pb-[13.5rem] md:pt-[7.5rem] lg:px-16 lg:pb-[15rem] xl:px-20"
       >
         <div className="layout-max w-full">
-          <div className="mx-auto flex max-w-[min(58rem,92vw)] flex-col items-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.7)] px-3.5 py-2 font-mono text-[10px] font-medium uppercase leading-none tracking-[0.2em] text-[rgb(var(--magicks-accent-ink-rgb)/0.78)] shadow-[0_18px_52px_-42px_rgba(20,28,44,0.4),inset_0_1px_0_rgba(255,255,255,0.78)] sm:mb-7 sm:px-4 sm:text-[10.5px] sm:tracking-[0.24em]">
+          <div className="mx-auto flex max-w-[min(54rem,92vw)] flex-col items-center">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.22)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.74)] px-3.5 py-1.5 font-ui text-[0.62rem] font-[620] uppercase leading-none tracking-[0.15em] text-[rgb(var(--magicks-accent-ink-rgb)/0.76)] shadow-[0_18px_52px_-44px_rgba(20,28,44,0.38),inset_0_1px_0_rgba(255,255,255,0.78)] sm:mb-6 sm:px-4 sm:text-[0.64rem] sm:tracking-[0.18em]">
               <span
                 aria-hidden
                 className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.72)] shadow-[0_0_0_0.25em_rgb(var(--magicks-accent-rgb)/0.08)]"
@@ -372,7 +373,7 @@ export function Hero() {
 
             <h1
               id="hero-heading"
-              className="font-ui text-[3rem] leading-[0.96] tracking-[-0.042em] text-[rgb(var(--magicks-ink-rgb)/0.98)] [text-shadow:0_1px_0_rgba(255,255,255,0.74)] sm:text-[4.35rem] md:text-[5.45rem] lg:text-[6.35rem] xl:text-[7rem]"
+              className="font-ui text-[2.85rem] leading-[0.94] tracking-[-0.042em] text-[rgb(var(--magicks-ink-rgb)/0.98)] [text-shadow:0_1px_0_rgba(255,255,255,0.74)] sm:text-[4.05rem] md:text-[5.05rem] lg:text-[5.75rem] xl:text-[6.3rem]"
             >
               <span className="font-instrument block font-[460] italic text-[rgb(var(--magicks-ink-rgb)/0.78)]">
                 {LINE_A.map((w, i) => (
@@ -386,7 +387,7 @@ export function Hero() {
                   </span>
                 ))}
               </span>
-              <span className="font-instrument mt-1 block text-[0.74em] font-[460] italic leading-[0.98] sm:mt-2 md:text-[0.7em] lg:text-[0.68em]">
+              <span className="font-instrument mt-0.5 block text-[0.72em] font-[460] italic leading-[0.98] sm:mt-1 md:text-[0.69em] lg:text-[0.66em]">
                 {LINE_B.map((w, i) => (
                   <span
                     key={`b-${i}`}
@@ -413,61 +414,63 @@ export function Hero() {
               </span>
             </h1>
 
-            {/* Quiet H2 subtext — centred and placed on a calm surface so it
-                remains readable over the moving video frame. */}
-            <h2
-              data-hero-subline
-              className="font-ui mx-auto mt-7 max-w-[38rem] rounded-[999px] border border-[rgb(var(--magicks-accent-line-rgb)/0.18)] bg-[linear-gradient(180deg,rgba(255,253,249,0.82)_0%,rgba(244,238,227,0.58)_100%)] px-5 py-3.5 text-center text-[16px] font-[520] leading-[1.5] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.8)] shadow-[0_22px_64px_-52px_rgba(20,28,44,0.34),inset_0_1px_0_rgba(255,255,255,0.78),inset_0_-1px_0_rgba(148,124,92,0.08)] sm:mt-8 sm:max-w-[42rem] sm:px-7 sm:py-4 sm:text-[17.5px] md:mt-9 md:text-[19px] lg:text-[20px]"
-            >
-              Für Unternehmen, die{" "}
-              <span className="font-instrument px-[0.06em] text-[1.12em] italic tracking-[-0.012em] text-[rgb(var(--magicks-accent-ink-rgb)/0.88)]">
-                klar zeigen
-              </span>{" "}
-              möchten, warum Kunden{" "}
-              <span className="font-[640] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
-                Vertrauen fassen
-              </span>{" "}
-              und sich entscheiden.
-            </h2>
-
-            {/* Hero CTA — warm ivory pill with a refined arrow chip. */}
-            <div data-hero-cta className="mt-9 inline-block sm:mt-11 md:mt-12">
-              <Link
-                to="/kontakt"
-                // Baseline-aligned at every viewport: the arrow's text
-                // baseline locks onto the label's baseline so it never
-                // drifts low on mobile. min-h-11 + py-1 keep the touch
-                // target ≥ 44 px below lg without affecting alignment.
-                className="group relative inline-flex min-h-12 items-center gap-3 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[linear-gradient(180deg,rgba(255,253,249,0.96)_0%,rgba(244,238,227,0.9)_100%)] py-2.5 pl-6 pr-2 font-ui text-[15.5px] font-[600] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline shadow-[0_22px_62px_-42px_rgba(20,28,44,0.46),inset_0_1px_0_rgba(255,255,255,0.88),inset_0_-1px_0_rgba(148,124,92,0.12)] transition-[transform,box-shadow,background-color,border-color] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:border-[rgb(var(--magicks-accent-line-rgb)/0.4)] hover:bg-[linear-gradient(180deg,rgba(255,254,251,0.98)_0%,rgba(247,241,230,0.94)_100%)] hover:shadow-[0_32px_82px_-40px_rgba(20,28,44,0.52),inset_0_1px_0_rgba(255,255,255,0.92),inset_0_-1px_0_rgba(148,124,92,0.16)] active:translate-y-0 active:scale-[0.99] sm:min-h-[52px] sm:pl-7 sm:pr-2.5 sm:text-[16px] md:text-[16.5px]"
-                aria-label="Kostenlose Ersteinschätzung"
+            <div className="mx-auto mt-5 flex w-full max-w-[43rem] flex-col items-center gap-3 rounded-[1.5rem] border border-[rgb(var(--magicks-accent-line-rgb)/0.18)] bg-[linear-gradient(180deg,rgba(255,253,249,0.9)_0%,rgba(244,238,227,0.74)_100%)] px-4 py-3 shadow-[0_24px_70px_-54px_rgba(20,28,44,0.38),inset_0_1px_0_rgba(255,255,255,0.82),inset_0_-1px_0_rgba(148,124,92,0.08)] sm:mt-6 sm:max-w-[45rem] sm:flex-row sm:justify-between sm:gap-5 sm:px-5 sm:py-3.5">
+              {/* Quiet H2 subtext — placed inside the action card so the copy
+                  reads as a deliberate title card over the new video frame. */}
+              <h2
+                data-hero-subline
+                className="font-ui m-0 max-w-[32rem] text-center text-[14px] font-[520] leading-[1.45] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.79)] sm:text-left sm:text-[15px] md:text-[15.5px]"
               >
-                <span className="relative">
-                  <span className="font-ui magicks-hero-cta-label inline-block transition-[letter-spacing,color] duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:tracking-[0.004em] group-focus-visible:tracking-[0.004em]">
-                    Kostenlose Ersteinschätzung
-                  </span>
-                </span>
+                Für Unternehmen, die{" "}
+                <span className="font-instrument px-[0.06em] text-[1.13em] italic tracking-[-0.012em] text-[rgb(var(--magicks-accent-ink-rgb)/0.88)]">
+                  klar zeigen
+                </span>{" "}
+                möchten, warum Kunden{" "}
+                <span className="font-[640] text-[rgb(var(--magicks-ink-rgb)/0.92)]">
+                  Vertrauen fassen
+                </span>{" "}
+                und sich entscheiden.
+              </h2>
 
-                {/* Hairline carriage divider — thin vertical rule between
-                    label and arrow chip. Brightens on hover so the
-                    chip reads as a separate "stop". */}
-                <span
-                  aria-hidden
-                  className="ml-1 h-5 w-px bg-[rgb(var(--magicks-accent-rgb)/0.22)] transition-[background-color] duration-[720ms] group-hover:bg-[rgb(var(--magicks-accent-rgb)/0.42)] group-focus-visible:bg-[rgb(var(--magicks-accent-rgb)/0.42)] sm:h-6"
-                />
-
-                <span
-                  aria-hidden
-                  // U+FE0E (VARIATION SELECTOR-15) forces text-style
-                  // rendering of U+2197. Without it, iOS/Android route
-                  // the arrow through the system emoji font and the
-                  // glyph looks different from the desktop italic
-                  // serif rendering. The selector is invisible.
-                  className="font-instrument flex h-8 w-8 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.34)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.9)] text-[1.05em] italic text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_12px_30px_-24px_rgba(20,28,44,0.46)] transition-[transform,background-color,border-color,box-shadow] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[3px] group-hover:border-[rgb(var(--magicks-accent-line-rgb)/0.5)] group-hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/1)] group-hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_16px_36px_-24px_rgba(20,28,44,0.52)] group-focus-visible:-translate-y-[2px] group-focus-visible:translate-x-[3px]"
-                  style={{ fontVariantEmoji: "text" }}
+              {/* Hero CTA — warm ivory pill with a refined arrow chip. */}
+              <div data-hero-cta className="shrink-0">
+                <Link
+                  to="/kontakt"
+                  // Baseline-aligned at every viewport: the arrow's text
+                  // baseline locks onto the label's baseline so it never
+                  // drifts low on mobile. min-h-11 keeps the touch target
+                  // above 44 px without affecting alignment.
+                  className="group relative inline-flex min-h-11 items-center gap-2.5 rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.24)] bg-[linear-gradient(180deg,rgba(255,253,249,0.98)_0%,rgba(244,238,227,0.92)_100%)] py-2 pl-5 pr-2 font-ui text-[14px] font-[620] tracking-[-0.004em] text-[rgb(var(--magicks-ink-rgb)/0.92)] no-underline shadow-[0_18px_48px_-36px_rgba(20,28,44,0.46),inset_0_1px_0_rgba(255,255,255,0.9),inset_0_-1px_0_rgba(148,124,92,0.12)] transition-[transform,box-shadow,background-color,border-color] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[1.5px] hover:border-[rgb(var(--magicks-accent-line-rgb)/0.4)] hover:bg-[linear-gradient(180deg,rgba(255,254,251,1)_0%,rgba(247,241,230,0.96)_100%)] hover:shadow-[0_26px_68px_-36px_rgba(20,28,44,0.52),inset_0_1px_0_rgba(255,255,255,0.92),inset_0_-1px_0_rgba(148,124,92,0.16)] active:translate-y-0 active:scale-[0.99] sm:text-[14.5px]"
+                  aria-label="Kostenlose Ersteinschätzung"
                 >
-                  {"\u2197\uFE0E"}
-                </span>
-              </Link>
+                  <span className="relative">
+                    <span className="font-ui magicks-hero-cta-label inline-block transition-[letter-spacing,color] duration-[820ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:tracking-[0.004em] group-focus-visible:tracking-[0.004em]">
+                      Kostenlose Ersteinschätzung
+                    </span>
+                  </span>
+
+                  {/* Hairline carriage divider — thin vertical rule between
+                      label and arrow chip. Brightens on hover so the
+                      chip reads as a separate "stop". */}
+                  <span
+                    aria-hidden
+                    className="ml-0.5 h-5 w-px bg-[rgb(var(--magicks-accent-rgb)/0.22)] transition-[background-color] duration-[720ms] group-hover:bg-[rgb(var(--magicks-accent-rgb)/0.42)] group-focus-visible:bg-[rgb(var(--magicks-accent-rgb)/0.42)]"
+                  />
+
+                  <span
+                    aria-hidden
+                    // U+FE0E (VARIATION SELECTOR-15) forces text-style
+                    // rendering of U+2197. Without it, iOS/Android route
+                    // the arrow through the system emoji font and the
+                    // glyph looks different from the desktop italic
+                    // serif rendering. The selector is invisible.
+                    className="font-instrument flex h-7 w-7 items-center justify-center rounded-full border border-[rgb(var(--magicks-accent-line-rgb)/0.34)] bg-[rgb(var(--magicks-bg-lifted-rgb)/0.92)] text-[1.05em] italic text-[rgb(var(--magicks-ink-rgb)/0.88)] shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_12px_30px_-24px_rgba(20,28,44,0.46)] transition-[transform,background-color,border-color,box-shadow] duration-[720ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[2px] group-hover:translate-x-[3px] group-hover:border-[rgb(var(--magicks-accent-line-rgb)/0.5)] group-hover:bg-[rgb(var(--magicks-bg-lifted-rgb)/1)] group-hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_16px_36px_-24px_rgba(20,28,44,0.52)] group-focus-visible:-translate-y-[2px] group-focus-visible:translate-x-[3px]"
+                    style={{ fontVariantEmoji: "text" }}
+                  >
+                    {"\u2197\uFE0E"}
+                  </span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

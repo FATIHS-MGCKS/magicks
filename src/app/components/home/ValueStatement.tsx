@@ -427,7 +427,7 @@ export function ValueStatement() {
                   <p
                     key={block.text}
                     data-value-sentence
-                    className="font-ui mx-auto mt-12 max-w-[42rem] whitespace-pre-line text-[1.02rem] font-[500] leading-[1.66] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.74)] will-change-[opacity] sm:mt-14 sm:text-[1.1rem] md:text-[20px] md:will-change-[opacity,filter] lg:text-[20px]"
+                    className="font-ui mx-auto mt-7 max-w-[40rem] text-[1.02rem] font-[500] leading-[1.62] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.74)] [text-wrap:balance] will-change-[opacity] sm:mt-9 sm:text-[1.08rem] md:text-[1.18rem] md:will-change-[opacity,filter]"
                   >
                     {block.text}
                   </p>
@@ -445,17 +445,16 @@ export function ValueStatement() {
               — fine print in the magazine sense, not a chrome bar. */}
           <figure
             data-value-sign
-            className="relative z-10 mx-auto mt-12 flex w-full max-w-[18rem] flex-col items-center will-change-[opacity,transform,filter] sm:mt-14 sm:max-w-[21rem] md:mt-16 md:max-w-[24rem]"
+            className="relative z-10 mx-auto mt-9 flex w-full max-w-[17rem] flex-col items-center will-change-[opacity,transform,filter] sm:mt-11 sm:max-w-[20rem] md:mt-12 md:max-w-[22rem]"
           >
-            <MagicksSignatureReveal className="mx-auto w-full max-w-[16rem] sm:max-w-[19rem] md:max-w-[22rem]" />
+            <MagicksSignatureReveal className="mx-auto w-full max-w-[15rem] sm:max-w-[18rem] md:max-w-[20rem]" />
 
-            <figcaption className="font-mono mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 self-stretch text-center text-[10px] font-medium uppercase leading-none tracking-[0.16em] text-[rgb(var(--magicks-ink-rgb)/0.44)] sm:mt-6 sm:gap-x-5 sm:text-[10.5px] sm:tracking-[0.2em]">
-              <span className="flex items-center gap-2 sm:gap-3">
-                <span aria-hidden className="h-px w-5 bg-[rgb(var(--magicks-accent-line-rgb)/0.42)] sm:w-8" />
-                <span>Studio · Kassel</span>
+            <figcaption className="mt-5 flex items-center justify-center gap-3 self-stretch sm:mt-6 sm:gap-4">
+              <span aria-hidden className="h-px w-8 bg-[linear-gradient(90deg,transparent,rgb(var(--magicks-accent-line-rgb)/0.45))] sm:w-12" />
+              <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.22em] text-[rgb(var(--magicks-ink-rgb)/0.46)] sm:text-[10.5px] sm:tracking-[0.26em]">
+                Studio · Kassel
               </span>
-              <span aria-hidden className="hidden h-1 w-1 rounded-full bg-[rgb(var(--magicks-accent-rgb)/0.52)] sm:inline-block" />
-              <span className="text-[rgb(var(--magicks-ink-rgb)/0.36)]">N51°19′ · E9°29′</span>
+              <span aria-hidden className="h-px w-8 bg-[linear-gradient(90deg,rgb(var(--magicks-accent-line-rgb)/0.45),transparent)] sm:w-12" />
             </figcaption>
           </figure>
 
