@@ -11,10 +11,10 @@ import {
 import { MagicksSignatureReveal } from "./MagicksSignatureReveal";
 
 /**
- * Four statement lines. The lens rack-pulls down the paragraph as the user
- * scrolls — each line exists in layout from the start as soft-focused
- * ghost text, and every line's clarity is a direct function of scroll
- * position. Scrolling back up reverses the pull cleanly.
+ * Agency introduction. The lens rack-pulls down the headline and paragraph
+ * as the user scrolls — each line exists in layout from the start as
+ * soft-focused ghost text, and every line's clarity is a direct function of
+ * scroll position. Scrolling back up reverses the pull cleanly.
  *
  * A luminous focus band (a thin horizontal light) rides beside the
  * active line as a physical "lens carriage" — it's never called out,
@@ -34,13 +34,13 @@ type ValueStatementBlock =
 const STATEMENT_BLOCKS: ValueStatementBlock[] = [
   {
     tone: "headline",
-    primary: "Der erste Eindruck entscheidet.",
-    secondary: "Der zweite bleibt.",
+    primary: "Ihre Webagentur",
+    secondary: "um digitale Probleme zu lösen.",
   },
   {
     tone: "body",
     text:
-      "Wir kreieren starke digitale Auftritte,\ndie Ihre Besucher überzeugen und Ihrem Unternehmen zu mehr Umsatz\nund Wachstum verhelfen.",
+      "Wir finden heraus, warum Besucher zögern, Anfragen ausbleiben oder Abläufe zu viel Zeit kosten — und bauen digitale Lösungen, die Vertrauen schaffen, Entscheidungen erleichtern und Ihr Unternehmen spürbar voranbringen.",
   },
 ];
 
@@ -412,10 +412,10 @@ export function ValueStatement() {
                     key={block.primary}
                     id="value-heading"
                     data-value-sentence
-                    className="mx-auto max-w-[22ch] font-ui text-[clamp(2.45rem,6.4vw,4.35rem)] font-[700] leading-[1.02] tracking-[-0.046em] text-[rgb(var(--magicks-ink-rgb)/0.97)] will-change-[opacity] md:max-w-[22ch] md:will-change-[opacity,filter]"
+                    className="mx-auto max-w-[24ch] font-ui text-[clamp(2.35rem,6vw,4.15rem)] font-[700] leading-[1.02] tracking-[-0.044em] text-[rgb(var(--magicks-ink-rgb)/0.97)] [text-wrap:balance] will-change-[opacity] md:max-w-[24ch] md:will-change-[opacity,filter]"
                   >
                     <span className="block">{block.primary}</span>
-                    <em className="mx-auto mt-2 block max-w-[18ch] font-instrument italic text-[0.94em] font-normal tracking-[-1.2046px] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:mt-3">
+                    <em className="mx-auto mt-2 block max-w-[21ch] font-instrument italic text-[0.82em] font-normal leading-[1.02] tracking-[-0.018em] text-[rgb(var(--magicks-ink-rgb)/0.62)] sm:mt-3 md:text-[0.8em]">
                       {block.secondary}
                     </em>
                   </h2>
@@ -427,7 +427,7 @@ export function ValueStatement() {
                   <p
                     key={block.text}
                     data-value-sentence
-                    className="font-ui mx-auto mt-7 max-w-[40rem] text-[1.02rem] font-[500] leading-[1.62] tracking-[-0.008em] text-[rgb(var(--magicks-ink-rgb)/0.74)] [text-wrap:balance] will-change-[opacity] sm:mt-9 sm:text-[1.08rem] md:text-[1.18rem] md:will-change-[opacity,filter]"
+                    className="font-ui mx-auto mt-7 max-w-[46rem] text-[0.98rem] font-[500] leading-[1.66] tracking-[-0.006em] text-[rgb(var(--magicks-ink-rgb)/0.74)] [text-wrap:pretty] will-change-[opacity] sm:mt-9 sm:text-[1.04rem] md:text-[1.12rem] md:will-change-[opacity,filter]"
                   >
                     {block.text}
                   </p>
@@ -436,8 +436,8 @@ export function ValueStatement() {
             })}
           </div>
 
-          {/* Editorial signature — signing hand directly below the
-              statement. The handwritten mark IS the closing flourish;
+          {/* Editorial signature — signing hand directly below the agency
+              introduction. The handwritten mark IS the closing flourish;
               the previous trailing gradient rule was redundant and has
               been removed so the signature reads as the natural
               terminus of the manifesto. The colophon under it (Studio
